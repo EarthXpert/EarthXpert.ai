@@ -8,7 +8,7 @@ if(POLICY CMP0079)
   cmake_policy(SET CMP0079 NEW)
 endif()
 
-project(watxtract)
+project(earthxpert)
 set(WATXTRACT_VERSION 1.0.0)
 
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
