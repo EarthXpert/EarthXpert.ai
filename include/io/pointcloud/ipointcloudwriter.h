@@ -5,23 +5,22 @@
 #pragma once
 
 #include "io/wxio.h"
-#include "core/formats/pointswindow.h"
+#include "core/datasource/pointcloud.h"
 
 namespace watxtract {
 /**
- *  Point Cloud Reader interface. Write the points data into a new las file
+ *  The interface IPointcloudWriter specifies the behaviours for 
+ *  serielizing an array of points in a Pointcloud object into a disk file.
  */
-class WXIO_EXPORTS IPointCloudWriter {
+class WXIO_EXPORTS IPointcloudWriter {
 public:
-  virtual ~IPointCloudWriter() {}
+  virtual ~IPointcloudWriter() {}
 
   /**
-   *  \brief Write the file into the opened file. the area and offset will be
-   *	\stored in PointsWindow and the writer will handle the merge of the
-   *  \points
+   *  \brief Write an array of points into the opened file.
    *
-   *  \param [in] pointsWindow the pointswindow that containing the points data
+   *  \param [in] pointCloud the Pointcloud object holding an array of points
    */
-  virtual void WritePoints(PointsWindow const *const pointsWindow) = 0;
+  virtual void WritePointcloud(Pointcloud const *const pointCloud) = 0;
 };
 } // namespace watxtract
