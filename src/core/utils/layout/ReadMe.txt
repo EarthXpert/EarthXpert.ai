@@ -1,0 +1,1 @@
+block level layout for resource managmement.

@@ -1,0 +1,1 @@
+Convenience helpers from OGR, Proj.4, etc.
