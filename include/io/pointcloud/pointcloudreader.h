@@ -48,6 +48,13 @@ public:
   PointcloudHeader* GetHeader() const override;
 
   /**
+   *  \return Returns total number of points of las file
+   */
+  int64 GetPointCount() const noexcept override {
+    return mFilePointCount;
+  }
+
+  /**
    *  \brief Reads point tile defined by tile, internal margin size.
    *
    *  \param [in] xOffset x location of the bottom-left corner of the tile [unit: meter]

@@ -1,5 +1,11 @@
 project(tests_cppunit_io CXX)
 
+add_cppunit_test(pointcloudreader_tests 
+  wx3rd_party core dataio 
+  ${LASLIB_LIBRARY})
+add_cppunit_test(pointcloudwriter_tests 
+  wx3rd_party core dataio 
+  ${LASLIB_LIBRARY})
 add_cppunit_test(rasterreader_tests 
   wx3rd_party core dataio 
   ${GDAL_LIBRARY} ${OPENCV_LIBS})
@@ -15,11 +21,13 @@ ${GTEST_BIN_DIR};${BOOST_BIN_DIR};${GDAL_BIN_DIR};${OPENCV_BIN_DIR};${OPENNI_BIN
 ${TESTS_BIN_DIR};$ENV{PATH}")
   string(REPLACE ";" "\\;" TESTS_IO_PATH "${TESTS_IO_PATH}")
   message(STATUS "Tests_Io_Path: ${TESTS_IO_PATH}")
-  set_tests_properties(rasterreader_tests rasterwriter_tests
+  set_tests_properties(pointcloudreader_tests pointcloudwriter_tests rasterreader_tests rasterwriter_tests
     PROPERTIES ENVIRONMENT "${TESTS_IO_PATH}")
 endif()
 
 if(WATXTRACT_INSTALL_TESTS_CPPUNIT)
+  watxtract_install_test(pointcloudreader_tests)
+  watxtract_install_test(pointcloudwriter_tests)
   watxtract_install_test(rasterreader_tests)
   watxtract_install_test(rasterwriter_tests)
 endif()
