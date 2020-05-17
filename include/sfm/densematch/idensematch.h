@@ -15,8 +15,8 @@ namespace watxtract {
 class WXSFM_EXPORTS IDenseMatch {
 public:
   enum MatchType {
-    eDISPARITY,
-    eDEPTH
+    eDEPTH,
+    eDISPARITY
   };
 
   virtual ~IDenseMatch() = default;

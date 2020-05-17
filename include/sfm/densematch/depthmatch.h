@@ -5,6 +5,10 @@
 #pragma once
 
 #include "sfm/densematch/densematch.h"
+#include "sfm/densematch/censuscostfunction.h"
+#include "sfm/densematch/circleneighbor.h"
+#include "sfm/densematch/micostfunction.h"
+#include "sfm/densematch/rectneighbor.h"
 
 namespace watxtract {
 
