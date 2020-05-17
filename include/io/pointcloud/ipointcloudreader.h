@@ -38,6 +38,11 @@ public:
   virtual PointcloudHeader* GetHeader() const = 0;
 
   /**
+   *  \return Returns total number of points of las file
+   */
+  virtual int64 GetPointCount() const noexcept = 0;
+
+  /**
    *  \brief Reads point tile defined by tile, internal margin size.
    *
    *  \param [in] xOffset x location of the bottom-left corner of the tile [unit: meter]
