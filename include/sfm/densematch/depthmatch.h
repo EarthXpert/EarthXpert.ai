@@ -15,7 +15,9 @@ namespace watxtract {
 /**
  *  The class DenseMatch implements a multi-view semi-global matching algorithm.
  *  The algorithm computes the dpeth/elevation map directly in image space and 
- *  is fullfilled simuteneously in ground space.
+ *  is fullfilled simuteneously in ground space. The input images' geometry is
+ *  represented by sensor models. A depth is considered valid iff the object point 
+ *  occured on N-view (N is 2+) and is validated.
  *
  *  \param CostFunction defines the behaviour of calculating cost
  *  \param Neighborhood defines the behaviour of neighborhood selection
@@ -28,7 +30,10 @@ public:
 
   ~DepthMatch() = default;
 
-  std::unique_ptr<IRaster> Match();
+  /**
+   *  \return Retruns x- and y-disparity maps.
+   */
+  std::pair<std::unique_ptr<IRaster>, std::unique_ptr<IRaster>> Match();
 
   MatchType GetMatchType() const noexcept {
     return eDEPTH;

@@ -12,15 +12,18 @@
 
 using namespace watxtract;
 
+/**
+ *  \return Retruns x- and y-disparity maps.
+ */
 template <class GeometryModel, class CostFunction, class Neighborhood>
-std::unique_ptr<IRaster> DisparityMatch<GeometryModel, CostFunction, Neighborhood>::Match() {
+std::pair<std::unique_ptr<IRaster>, std::unique_ptr<IRaster>> DisparityMatch<GeometryModel, CostFunction, Neighborhood>::Match() {
   Preprocess();
   CalculateCost();
   AggreagateCost();
   OptimizeDisparity();
   Postprocess();
 
-  return nullptr;
+  return { nullptr, nullptr };
 }
 
 template <class GeometryModel, class CostFunction, class Neighborhood>

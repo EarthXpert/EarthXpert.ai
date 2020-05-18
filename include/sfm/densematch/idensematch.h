@@ -6,6 +6,7 @@
 
 #include "sfm/wxsfm.h"
 #include "core/datasource/iraster.h"
+#include <utility>
 
 namespace watxtract {
 
@@ -21,7 +22,10 @@ public:
 
   virtual ~IDenseMatch() = default;
 
-  virtual std::unique_ptr<IRaster> Match() = 0;
+  /**
+   *  \return Retruns x- and y-disparity maps.
+   */
+  virtual std::pair<std::unique_ptr<IRaster>, std::unique_ptr<IRaster>> Match() = 0;
 
   virtual MatchType GetMatchType() const noexcept = 0;
 };
