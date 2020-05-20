@@ -22,6 +22,13 @@ public:
     eRANK       // rank transform
   };
 
+  // cost activation functions
+  enum CostActivate {
+    eIDENTITY,   // identical, no transformation
+    eNORMALIZE,  // offset and scale
+    eSIGMOID     // sigmoid function
+  };
+
   virtual ~ICostFunction() = default;
 
   virtual CostType GetCostType() const noexcept = 0;

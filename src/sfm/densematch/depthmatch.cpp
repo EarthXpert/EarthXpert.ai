@@ -13,11 +13,14 @@
 using namespace watxtract;
 
 /**
- *  \return Retruns x- and y-disparity maps.
+ *  \brief
+ *
+ *  \return Retruns the depth map where the element value represents the
+ *  the depth of the corresonding pixel.
  */
 template <class CostFunction, class Neighborhood>
-std::pair<std::unique_ptr<IRaster>, std::unique_ptr<IRaster>> DepthMatch<CostFunction, Neighborhood>::Match() {
-  return { nullptr, nullptr };
+std::unique_ptr<IRaster> DepthMatch<CostFunction, Neighborhood>::Match() {
+  return nullptr;
 }
 
 template <class CostFunction, class Neighborhood>
