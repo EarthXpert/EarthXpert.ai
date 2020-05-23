@@ -8,7 +8,7 @@
 
 #include <utility>
 
-namespace watxtract {
+namespace earthxpert {
 /**
  *  The class defines image product vs focal plane relationship for pushbroom
  * line scanner.

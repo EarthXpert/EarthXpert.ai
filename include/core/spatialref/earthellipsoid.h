@@ -12,7 +12,7 @@
 
 #include <memory>
 
-namespace watxtract {
+namespace earthxpert {
 /**
  * The class EarthEllipsoid implements coordinate conversion of the ellipsoids
  * for ECEF/ECF coordinate frame.

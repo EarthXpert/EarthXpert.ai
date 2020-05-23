@@ -4,7 +4,7 @@
  */
 #include "sfm/densematch/rectneighbor.h"
 
-using watxtract::RectNeighbor;
+using earthxpert::RectNeighbor;
 
 RectNeighbor::RectNeighbor(const int width, const int height)
   : mWidth(width), mHeight(height) {

@@ -6,7 +6,7 @@
 
 #include "core/wxcore.h"
 
-namespace watxtract {
+namespace earthxpert {
 /**
  *  The interface IRasterResample defines behavior given a resampling kernel.
  */

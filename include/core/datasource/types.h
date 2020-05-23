@@ -7,7 +7,7 @@
 #include <array>
 #include <bitset>
 
-namespace watxtract {
+namespace earthxpert {
 using MarginFlag = ::std::bitset<4>;
 using MarginFillDim = ::std::array<int, 4>;
 

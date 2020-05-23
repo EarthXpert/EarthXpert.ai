@@ -18,7 +18,7 @@ ${TESTS_BIN_DIR};$ENV{PATH}")
   set_tests_properties(earthellipsoid_tests pointcloud_tests PROPERTIES ENVIRONMENT "${TESTS_CORE_PATH}")
 endif()
 
-if(WATXTRACT_INSTALL_TESTS_CPPUNIT)
+if(EARTHXPERT_INSTALL_TESTS_CPPUNIT)
   watxtract_install_test(earthellipsoid_tests)
   watxtract_install_test(pointcloud_tests)
 endif()

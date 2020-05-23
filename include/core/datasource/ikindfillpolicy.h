@@ -6,7 +6,7 @@
 
 #include "core/wxcore.h"
 
-namespace watxtract {
+namespace earthxpert {
 /**
  *  The interface IKindFillPolicy defines the margin filling behaviour.
  */

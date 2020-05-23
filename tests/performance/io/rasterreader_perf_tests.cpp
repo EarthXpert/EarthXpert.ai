@@ -10,7 +10,7 @@
 #include "core/datasource/utils.h"
 #include "io/raster/rasterreader.h"
 
-using namespace watxtract;
+using namespace earthxpert;
 
 /**
  *  \brief cv::Mat test cases

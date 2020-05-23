@@ -7,7 +7,7 @@
 #include <algorithm>
 #include <stdexcept>
 
-using namespace watxtract;
+using namespace earthxpert;
 
 /**
  *  \param [in] numCols    width of image [unit: pixels]

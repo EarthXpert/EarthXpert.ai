@@ -5,7 +5,7 @@
 #pragma once
 #include "sensormodel/wxsensormodel.h"
 
-namespace watxtract {
+namespace earthxpert {
 /**
  *  The class defines intrinsic parameters for interior orientation
  *  of pushbroom line scanner.

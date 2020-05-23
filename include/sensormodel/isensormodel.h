@@ -12,7 +12,7 @@
 #include <vector>
 #include <utility>
 
-namespace watxtract {
+namespace earthxpert {
 /**
  *  The interface ISensorModel defines the geometric behaviours of an
  *  imaging sensor system.

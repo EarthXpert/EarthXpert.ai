@@ -11,8 +11,8 @@
 #include "pybind11/stl.h"
 
 namespace pb = pybind11;
-using namespace watxtract;
-using namespace watxtract::epipolar;
+using namespace earthxpert;
+using namespace earthxpert::epipolar;
 
 // \todo all pure virtual
 template <class Base = ISensorModel> class PyISensorModel : public Base {

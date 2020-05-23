@@ -12,8 +12,8 @@
 #include <boost/program_options.hpp>
 #include <iostream>
 
-using namespace watxtract;
-using namespace watxtract::epipolar;
+using namespace earthxpert;
+using namespace earthxpert::epipolar;
 using SensorType = ISensorModel::ModelType;
 namespace po = boost::program_options;
 

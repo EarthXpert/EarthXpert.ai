@@ -1,17 +1,17 @@
 /* -----------------------------------------------------------------------------
- *  Copyright (c) 2019.  All rights reserved.
+ *  Copyright (c) 2018.  All rights reserved.
  * -----------------------------------------------------------------------------
  */
 #pragma once
 
-#ifdef WX3RDPARTY_API
+#ifdef EXCORE_API
 #if (defined _WIN32 || defined WINCE || defined __CYGWIN__)
-#define WX3RDPARTY_EXPORTS __declspec(dllexport)
+#define EXCORE_EXPORTS __declspec(dllexport)
 #elif defined __GNUC__ && __GNUC__ >= 4
-#define WX3RDPARTY_EXPORTS __attribute__((visibility("default")))
+#define EXCORE_EXPORTS __attribute__((visibility("default")))
 #endif
 #endif
 
-#ifndef WX3RDPARTY_EXPORTS
-#define WX3RDPARTY_EXPORTS
+#ifndef EXCORE_EXPORTS
+#define EXCORE_EXPORTS
 #endif

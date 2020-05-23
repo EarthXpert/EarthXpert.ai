@@ -4,10 +4,10 @@
  */
 #pragma once
 
-#include "core/wxcore.h"
-#include "3rd_party/opencv/wxopencv.h"
+#include "core/excore.h"
+#include "3rd_party/opencv/exopencv.h"
 
-namespace watxtract {
+namespace earthxpert {
 
 class WXCORE_EXPORTS Geocoding {
 public:
@@ -58,4 +58,4 @@ private:
   double mInvPixX{ 1.0 };
   double mInvPixY{ 1.0 };
 };
-} // namespace watxtract
+} // namespace earthxpert

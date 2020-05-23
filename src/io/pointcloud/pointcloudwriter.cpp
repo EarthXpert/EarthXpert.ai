@@ -5,7 +5,7 @@
 #include "io/pointcloud/pointcloudwriter.h"
 #include "core/exceptions/wxexcept.h"
 
-using namespace watxtract;
+using namespace earthxpert;
 
 /**
  *  \brief Open/create the las file for write

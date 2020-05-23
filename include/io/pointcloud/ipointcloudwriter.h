@@ -7,7 +7,7 @@
 #include "io/wxio.h"
 #include "core/datasource/pointcloud.h"
 
-namespace watxtract {
+namespace earthxpert {
 /**
  *  The interface IPointcloudWriter specifies the behaviours for 
  *  serielizing an array of points in a Pointcloud object into a disk file.

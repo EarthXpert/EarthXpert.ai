@@ -7,8 +7,8 @@
 #include <cmath>
 #include <cstring>
 
-using watxtract::EarthEllipsoid;
-using watxtract::Point3d;
+using earthxpert::EarthEllipsoid;
+using earthxpert::Point3d;
 
 /**
  * constructor.

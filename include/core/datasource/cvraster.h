@@ -8,7 +8,7 @@
 
 #include "opencv2/core.hpp"
 
-namespace watxtract {
+namespace earthxpert {
 /**
  *  The class Raster stores a 2D pixel block that is pixel interleaved. For color image,
  *  the pixel bands are arranged in BGR sequence. 

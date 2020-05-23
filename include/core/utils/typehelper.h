@@ -8,7 +8,7 @@
 #include <type_traits>
 #include <tuple>
 
-namespace watxtract {
+namespace earthxpert {
 using Tuple3d = std::tuple<double, double, double>;
 using Tuple4d = std::tuple<double, double, double, double>;
 

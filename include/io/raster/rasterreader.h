@@ -10,7 +10,7 @@
 #include <tuple>
 #include <vector>
 
-namespace watxtract {
+namespace earthxpert {
 class CvRaster;
 class GdalRaster;
 

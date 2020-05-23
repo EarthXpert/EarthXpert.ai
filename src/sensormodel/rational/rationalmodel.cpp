@@ -9,13 +9,13 @@
 #include <algorithm>
 #include <cassert>
 
-using watxtract::EqualD;
-using watxtract::ISensorModel;
-using watxtract::Point2d;
-using watxtract::Point3d;
-using watxtract::RationalModel;
-using watxtract::SpatialReferenceSystem;
-using watxtract::Tuple4d;
+using earthxpert::EqualD;
+using earthxpert::ISensorModel;
+using earthxpert::Point2d;
+using earthxpert::Point3d;
+using earthxpert::RationalModel;
+using earthxpert::SpatialReferenceSystem;
+using earthxpert::Tuple4d;
 
 /**
  *  \brief Construct a standard third-order rational function model.

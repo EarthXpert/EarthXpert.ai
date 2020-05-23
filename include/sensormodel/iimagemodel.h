@@ -10,7 +10,7 @@
 #include <array>
 #include <utility>
 
-namespace watxtract {
+namespace earthxpert {
 /**
  *  The class defines interface of image product vs focal plane relationship.
  *

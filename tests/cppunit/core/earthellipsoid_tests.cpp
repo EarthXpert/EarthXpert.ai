@@ -8,7 +8,7 @@
 #include "core/spatialref/earthellipsoid.h"
 #include "core/utils/typehelper.h"
 
-using namespace watxtract;
+using namespace earthxpert;
 
 TEST(earthellipsoid, ECEF_LPH) {
   EarthEllipsoid ee;

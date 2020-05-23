@@ -10,7 +10,7 @@
 #include <map>
 #include <numeric>
 
-namespace watxtract {
+namespace earthxpert {
   // local details
   namespace detail {
     // Pixel data types of GDAL & CV

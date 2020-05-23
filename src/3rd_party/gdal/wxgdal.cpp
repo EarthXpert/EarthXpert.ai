@@ -5,7 +5,7 @@
 #include "3rd_party/gdal/wxgdal.h"
 #include <stdexcept>
 
-namespace watxtract {
+namespace earthxpert {
 /**
  *  \brief Initialize GDAL library
  */
@@ -40,4 +40,4 @@ GDALDataset *CreateRasterDataset(const std::string& imgFile,
 
   return driver->Create(imgFile.c_str(), numCols, numRows, numBands, dataType, nullptr);
 }
-} // namespace watxtract
+} // namespace earthxpert

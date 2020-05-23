@@ -10,7 +10,7 @@
 
 #include <memory>
 
-namespace watxtract {
+namespace earthxpert {
 /**
  *  The interface PointcloudReader specifies the behaviours for
  *  extracting an array of points in a Pointcloud object.

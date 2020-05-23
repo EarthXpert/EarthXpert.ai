@@ -9,6 +9,6 @@ if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
   set_tests_properties(gtest_tests PROPERTIES ENVIRONMENT "${TESTS_GTEST_PATH}")
 endif()
 
-if(WATXTRACT_INSTALL_TESTS_3RDPARTY)
-  watxtract_install_test(gtest_tests)
+if(EARTHXPERT_INSTALL_TESTS_3RDPARTY)
+  earthxpert_install_test(gtest_tests)
 endif()

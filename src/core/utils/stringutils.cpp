@@ -4,7 +4,7 @@
  */
 #include "core/utils/stringutils.h"
 
-namespace watxtract::utils {
+namespace earthxpert::utils {
 /**
  *  \brief compare two string case-insensitive
  *

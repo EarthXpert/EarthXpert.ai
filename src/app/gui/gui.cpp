@@ -7,8 +7,8 @@
 
 #include <iostream>
 
-using watxtract::RasterLayout;
-using watxtract::RasterWindow;
+using earthxpert::RasterLayout;
+using earthxpert::RasterWindow;
 
 int main(int argc, char** argv) {
   // get full path of command line app by name

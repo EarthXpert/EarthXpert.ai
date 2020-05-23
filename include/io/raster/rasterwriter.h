@@ -8,7 +8,7 @@
 #include "io/raster/rasterreader.h"
 #include "core/spatialref/geocoding.h"
 
-namespace watxtract {
+namespace earthxpert {
 /**
  *  The class RasterWriter provides functios to write into an image file
  *  with GDAL as backend, and serialize pixle block in an IRaster object

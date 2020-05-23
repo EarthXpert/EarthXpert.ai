@@ -5,7 +5,7 @@
 #pragma once
 
 #include "sensormodel/distortiongrid.h"
-#include "3rd_party/opencv/wxopencv.h"
+#include "3rd_party/opencv/exopencv.h"
 
 #include <array>
 #include <bitset>
@@ -17,7 +17,7 @@ namespace watxtract {
  *
  *  \detail
  */
-class WXSENSORMODEL_EXPORTS FrameIP {
+class EXSENSORMODEL_EXPORTS FrameIP {
 public:
   // index of radial distortion coefficients
   enum RadialCoeff {

@@ -25,7 +25,7 @@ ${TESTS_BIN_DIR};$ENV{PATH}")
     PROPERTIES ENVIRONMENT "${TESTS_IO_PATH}")
 endif()
 
-if(WATXTRACT_INSTALL_TESTS_CPPUNIT)
+if(EARTHXPERT_INSTALL_TESTS_CPPUNIT)
   watxtract_install_test(pointcloudreader_tests)
   watxtract_install_test(pointcloudwriter_tests)
   watxtract_install_test(rasterreader_tests)

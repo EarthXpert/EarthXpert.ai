@@ -4,7 +4,7 @@
  */
 #include "sfm/densematch/circleneighbor.h"
 
-using watxtract::CircleNeighbor;
+using earthxpert::CircleNeighbor;
 
 CircleNeighbor::CircleNeighbor(const int radius)
   : mRadius(radius) {

@@ -11,7 +11,7 @@
 #include <memory>
 #include <utility>
 
-namespace watxtract {
+namespace earthxpert {
 /**
  *  The interface IRaster defines a 2D pixel block, that provides 
  *  information about pixel value, size, data type, position and margin.

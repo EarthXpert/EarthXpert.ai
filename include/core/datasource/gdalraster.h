@@ -9,7 +9,7 @@
 
 #include "gdal_priv.h"
 
-namespace watxtract {
+namespace earthxpert {
 /**
  *  The class Raster stores a 2D pixel block that is band interleaved.
  *  The pixel block may consist of the image itself and possibly the extra margin/border.

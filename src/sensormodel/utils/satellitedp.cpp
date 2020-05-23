@@ -9,7 +9,7 @@
 #include <limits>
 #include <numeric>
 
-using watxtract::SatelliteDP;
+using earthxpert::SatelliteDP;
 
 /**
  * Constructor

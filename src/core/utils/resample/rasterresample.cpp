@@ -10,7 +10,7 @@
 #include <stdexcept>
 #include <type_traits>
 
-using namespace watxtract;
+using namespace earthxpert;
 
 /**
  *  constructor

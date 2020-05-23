@@ -7,7 +7,7 @@
 
 #include <limits>
 
-using namespace watxtract;
+using namespace earthxpert;
 
 /**
  *  \brief constractor, open the las file for read

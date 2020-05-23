@@ -9,7 +9,7 @@
 
 #include <vector>
 
-namespace watxtract {
+namespace earthxpert {
 /**
  *  The class PointcloudHeader defines information given in the header section.
  */

@@ -14,7 +14,7 @@
 #include <array>
 #include <chrono>
 
-namespace watxtract {
+namespace earthxpert {
 /**
  *  The class PushBroomModel implements the physical geometry model
  *  for optical line-scanning/framelet sensors.

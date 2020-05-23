@@ -19,7 +19,7 @@ ${TESTS_BIN_DIR};$ENV{PATH}")
     PROPERTIES ENVIRONMENT "${TESTS_SENSORMODEL_PATH}")
 endif()
 
-if(WATXTRACT_INSTALL_TESTS_CPPUNIT)
+if(EARTHXPERT_INSTALL_TESTS_CPPUNIT)
   watxtract_install_test(framemodel_tests)
   watxtract_install_test(rationalmodel_tests)
 endif()

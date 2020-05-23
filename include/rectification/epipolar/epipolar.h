@@ -10,7 +10,7 @@
 #include <string>
 #include <vector>
 
-namespace watxtract {
+namespace earthxpert {
 class IEpipolarModel;
 class IRasterResample;
 class ISensorModel;

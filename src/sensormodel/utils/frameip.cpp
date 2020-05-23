@@ -10,9 +10,9 @@
 #include <limits>
 #include <numeric>
 
-using watxtract::DistortionGridF;
-using watxtract::FrameIP;
-using watxtract::Point2d;
+using earthxpert::DistortionGridF;
+using earthxpert::FrameIP;
+using earthxpert::Point2d;
 
 /**
  * Constructor

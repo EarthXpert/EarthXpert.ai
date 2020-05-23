@@ -10,7 +10,7 @@
 #include <array>
 #include <chrono>
 
-namespace watxtract {
+namespace earthxpert {
 class ScannerImageModel;
 class ScannerIP;
 class ScannerEP;

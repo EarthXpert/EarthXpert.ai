@@ -9,12 +9,12 @@
 #include <iostream>
 #include <sstream>
 
-using watxtract::DigitalFrameModel;
-using watxtract::FilmFrameModel;
-using watxtract::FrameIP;
-using watxtract::FrameModelMarshaller;
-using watxtract::ISensorModel;
-using watxtract::utils::CompareI;
+using earthxpert::DigitalFrameModel;
+using earthxpert::FilmFrameModel;
+using earthxpert::FrameIP;
+using earthxpert::FrameModelMarshaller;
+using earthxpert::ISensorModel;
+using earthxpert::utils::CompareI;
 
 /**
  *  \brief read from a bingo directory into a framemodel

@@ -6,7 +6,7 @@
 
 #include "core/wxcore.h"
 
-namespace watxtract {
+namespace earthxpert {
 /**
  *  The class Metadata provides data of the tags describing the file- and 
  *  band-level information.

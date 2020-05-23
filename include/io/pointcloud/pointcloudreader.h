@@ -10,7 +10,7 @@
 #include <iostream>
 #include <vector>
 
-namespace watxtract {
+namespace earthxpert {
 /**
  *  The class PointcloudReader provides format in-dependent functios to read from
  *  a point cloud file with LASlib as backend, and extract points in a Cloudpoint object

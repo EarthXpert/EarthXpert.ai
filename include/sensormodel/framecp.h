@@ -6,7 +6,7 @@
 
 #include "sensormodel/wxsensormodel.h"
 
-namespace watxtract {
+namespace earthxpert {
 /**
  *  The class defines correction parameters for external effects.
  *

@@ -9,7 +9,7 @@
 
 #include <array>
 
-namespace watxtract {
+namespace earthxpert {
 /**
  *  The class RationalModel implements the replacement geometry
  *  model for various physical sensors.

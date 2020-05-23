@@ -10,7 +10,7 @@
 #include <cassert>
 #include <vector>
 
-namespace watxtract {
+namespace earthxpert {
 /**
  *  The class RasterLayout formulate the non-overlapping tiling of image.
  */

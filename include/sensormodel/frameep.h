@@ -11,7 +11,7 @@
 #include <chrono>
 #include <memory>
 
-namespace watxtract {
+namespace earthxpert {
 /**
  *  The class defines extrinsic parameters defining exterior orientation.
  *

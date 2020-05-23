@@ -4,7 +4,7 @@
  */
 #include "core/datasource/cvraster.h"
 
-using namespace watxtract;
+using namespace earthxpert;
 
 /**
  *  \brief Construct raster object by allocating & owing a memory buffer.

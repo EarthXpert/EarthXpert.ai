@@ -6,7 +6,7 @@
 
 #include "sensormodel/isensormodel.h"
 
-namespace watxtract {
+namespace earthxpert {
 /**
  *  The class SensorModel implements the template methods having logic
  *  common to mulitple sensor systems. A concrete sensor model may override

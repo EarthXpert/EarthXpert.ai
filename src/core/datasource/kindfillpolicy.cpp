@@ -6,7 +6,7 @@
 #include "core/utils/typehelper.h"
 #include "core/exceptions/wxexcept.h"
 
-using namespace watxtract;
+using namespace earthxpert;
 
 /**
  *  Constructor

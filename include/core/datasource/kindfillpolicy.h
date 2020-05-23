@@ -10,7 +10,7 @@
 
 #include <cstring>
 
-namespace watxtract {
+namespace earthxpert {
 /**
  *  \brief Set a constant value, e.g. 0, to the margin pixels.
  *

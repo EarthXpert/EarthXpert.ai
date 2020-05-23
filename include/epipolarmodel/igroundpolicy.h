@@ -7,7 +7,7 @@
 #include "epipolarmodel/wxepipolarmodel.h"
 #include "3rd_party/opencv/wxopencv.h"
 
-namespace watxtract {
+namespace earthxpert {
 /**
  *  The interface IGroundPolicy defines the ground transformation
  *  between the model and rectification coordinates.

@@ -9,7 +9,7 @@
 #include <memory>
 #include <string>
 
-namespace watxtract {
+namespace earthxpert {
 class ISensorModel;
 
 /**

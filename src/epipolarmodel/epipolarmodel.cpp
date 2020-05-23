@@ -12,16 +12,16 @@
 #include <execution>
 #include <omp.h>
 
-using watxtract::GeographicGround;
-using watxtract::LocalGround;
-using watxtract::MapGround;
-using watxtract::EpipolarModel;
-using watxtract::EpipolarRect;
-using watxtract::IEpipolarModel;
-using watxtract::ISensorModel;
-using watxtract::InterpGridF;
-using watxtract::Point2d;
-using watxtract::Point3d;
+using earthxpert::GeographicGround;
+using earthxpert::LocalGround;
+using earthxpert::MapGround;
+using earthxpert::EpipolarModel;
+using earthxpert::EpipolarRect;
+using earthxpert::IEpipolarModel;
+using earthxpert::ISensorModel;
+using earthxpert::InterpGridF;
+using earthxpert::Point2d;
+using earthxpert::Point3d;
 using EpiStereoPos = IEpipolarModel::StereoPos;
 
 /**

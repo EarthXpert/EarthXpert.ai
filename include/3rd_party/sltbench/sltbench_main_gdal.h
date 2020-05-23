@@ -1,8 +1,8 @@
 #include "sltbench/Bench.h"
-#include "3rd_party/gdal/wxgdal.h"
+#include "3rd_party/gdal/exgdal.h"
 
 int main(int argc, char **argv) {
-  watxtract::GDALInitialize();
+  earthxpert::GDALInitialize();
 
   return sltbench::Main(argc, argv);
 }

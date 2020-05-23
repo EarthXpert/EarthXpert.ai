@@ -7,7 +7,7 @@
 #include "epipolarmodel/igroundpolicy.h"
 #include "core/spatialref/earthellipsoid.h"
 
-namespace watxtract {
+namespace earthxpert {
 /**
  *  The class GeographicGround offers the ground transformation
  *  between the geographic and LSR coordinates.

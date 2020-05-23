@@ -6,7 +6,7 @@
 
 #include "sensormodel/iimagemodel.h"
 
-namespace watxtract {
+namespace earthxpert {
 /**
  *  The class defines image product vs frame/focal plane relationship
  *  for the CCD scanned digital imagery.

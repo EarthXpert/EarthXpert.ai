@@ -5,11 +5,11 @@
 #pragma once
 
 #include "core/math/interpgrid.h"
-#include "sensormodel/wxsensormodel.h"
+#include "sensormodel/exsensormodel.h"
 
 #include <string>
 
-namespace watxtract {
+namespace earthxpert {
 /**
  *  Encapsulates a calibrated grid of camera lens distortion.
  */

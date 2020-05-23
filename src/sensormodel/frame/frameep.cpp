@@ -9,8 +9,8 @@
 #include <limits>
 #include <string>
 
-using watxtract::FrameEP;
-using watxtract::SpatialReferenceSystem;
+using earthxpert::FrameEP;
+using earthxpert::SpatialReferenceSystem;
 
 /**
  * Constructor

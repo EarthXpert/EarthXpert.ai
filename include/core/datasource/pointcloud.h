@@ -11,7 +11,7 @@
 #include <type_traits>
 #include <vector>
 
-namespace watxtract {
+namespace earthxpert {
 /**
  *  The class Pointcloud stores an array of points in groups of fields.
  */

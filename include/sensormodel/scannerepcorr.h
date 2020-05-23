@@ -5,7 +5,7 @@
 #pragma once
 #include "sensormodel/wxsensormodel.h"
 
-namespace watxtract {
+namespace earthxpert {
 /**
  *  The class defines corrections to extrinsic parameters for exterior
  * orientation.

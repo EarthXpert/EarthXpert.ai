@@ -10,16 +10,16 @@
 #include "sensormodel/scannerep.h"
 #include "sensormodel/scannerepcorr.h"
 
-using watxtract::FrameIP;
-using watxtract::DigitalImageModelImp;
-using watxtract::ISensorModel;
-using watxtract::Point2d;
-using watxtract::Point3d;
-using watxtract::RollingShutterModel;
-using watxtract::SatelliteDP;
-using watxtract::ScannerEP;
-using watxtract::ScannerEPCorr;
-using watxtract::SpatialReferenceSystem;
+using earthxpert::FrameIP;
+using earthxpert::DigitalImageModelImp;
+using earthxpert::ISensorModel;
+using earthxpert::Point2d;
+using earthxpert::Point3d;
+using earthxpert::RollingShutterModel;
+using earthxpert::SatelliteDP;
+using earthxpert::ScannerEP;
+using earthxpert::ScannerEPCorr;
+using earthxpert::SpatialReferenceSystem;
 
 /**
  *  \brief Construct an aerial rolling-shutter geometry model.

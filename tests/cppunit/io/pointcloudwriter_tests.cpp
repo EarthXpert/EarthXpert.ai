@@ -7,7 +7,7 @@
 
 #include "io/pointcloud/pointcloudwriter.h"
 
-using namespace watxtract;
+using namespace earthxpert;
 
 /**
  *  \brief PointcloudWriter test cases

@@ -12,7 +12,7 @@
 
 #include <numeric>
 
-using namespace watxtract;
+using namespace earthxpert;
 
 /**
  *  \brief Construct reader object.
@@ -271,7 +271,7 @@ void RasterReader::ReadRaster(GdalRaster* const raster) {
  *  \param [in] fillDim tells the dimensions of the four sides.
  */
 void RasterReader::FillMargins(CvRaster* const raster, MarginFillDim fillDim) {
-  watxtract::FillMargins(raster, fillDim);
+  earthxpert::FillMargins(raster, fillDim);
 }
 
 /**

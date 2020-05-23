@@ -13,16 +13,16 @@
 #include <numeric>
 #include <stdexcept>
 
-using watxtract::DigitalImageModel;
-using watxtract::FilmImageModel;
-using watxtract::FrameCP;
-using watxtract::FrameEP;
-using watxtract::FrameIP;
-using watxtract::FrameModel;
-using watxtract::Point2d;
-using watxtract::Point3d;
-using watxtract::SpatialReferenceSystem;
-using namespace watxtract::math;
+using earthxpert::DigitalImageModel;
+using earthxpert::FilmImageModel;
+using earthxpert::FrameCP;
+using earthxpert::FrameEP;
+using earthxpert::FrameIP;
+using earthxpert::FrameModel;
+using earthxpert::Point2d;
+using earthxpert::Point3d;
+using earthxpert::SpatialReferenceSystem;
+using namespace earthxpert::math;
 
 /**
  *  \brief Construct a geometry model considering distortions from

@@ -13,7 +13,7 @@
 #include <memory>
 #include <vector>
 
-namespace watxtract {
+namespace earthxpert {
 int WXCORE_EXPORTS ConvertPixelType(GDALDataType gdalType, int numBands);
 std::pair<GDALDataType, int> WXCORE_EXPORTS ConvertPixelType(int cvType);
 

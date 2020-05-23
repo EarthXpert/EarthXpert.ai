@@ -6,7 +6,7 @@
 
 #include "core/wxcore.h"
 
-namespace watxtract {
+namespace earthxpert {
 /**
  *  The structure RasterWindow contains the offset and size information.
  */

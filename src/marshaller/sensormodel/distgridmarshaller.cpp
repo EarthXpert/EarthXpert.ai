@@ -13,8 +13,8 @@
 #include <iomanip>
 #include <limits>
 
-using watxtract::DistGridMarshaller;
-using watxtract::DistortionGridF;
+using earthxpert::DistGridMarshaller;
+using earthxpert::DistortionGridF;
 
 /**
  *  Serialize a distortion grid into a text file.

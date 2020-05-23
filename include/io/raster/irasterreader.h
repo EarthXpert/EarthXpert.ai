@@ -9,7 +9,7 @@
 #include "core/datasource/iraster.h"
 #include "core/datasource/metadata.h"
 
-namespace watxtract {
+namespace earthxpert {
 class Geocoding;
 //class IPyramidReader;
 using RasterType = IRaster::RasterType;

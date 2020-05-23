@@ -4,7 +4,7 @@
  */
 #include "sensormodel/framecp.h"
 
-using watxtract::FrameCP;
+using earthxpert::FrameCP;
 
 /**
  * constructor

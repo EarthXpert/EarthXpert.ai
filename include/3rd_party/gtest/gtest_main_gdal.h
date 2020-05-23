@@ -1,9 +1,9 @@
 #include "gtest/gtest.h"
-#include "3rd_party/gdal/wxgdal.h"
+#include "3rd_party/gdal/exgdal.h"
 
 int main(int argc, char **argv) {
   testing::InitGoogleTest(&argc, argv);
-  watxtract::GDALInitialize();
+  earthxpert::GDALInitialize();
 
   return RUN_ALL_TESTS();
 }

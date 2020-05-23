@@ -12,7 +12,7 @@
 #include <cmath>
 #include <iostream>
 
-using namespace watxtract;
+using namespace earthxpert;
 
 static std::unique_ptr<DigitalFrameModel> CreateDigitalFrameModel();
 

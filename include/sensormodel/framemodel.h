@@ -14,7 +14,7 @@
 
 #include "opencv2/core/mat.hpp"
 
-namespace watxtract {
+namespace earthxpert {
 /**
  *  The class FrameModel implements the projective geometry of
  *  the pin-hole model for the global-shutter frame camera.

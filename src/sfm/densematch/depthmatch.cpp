@@ -10,7 +10,7 @@
 #include <execution>
 #include <omp.h>
 
-using namespace watxtract;
+using namespace earthxpert;
 
 /**
  *  \brief

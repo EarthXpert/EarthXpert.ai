@@ -11,9 +11,9 @@
 #include <iostream>
 #include <sstream>
 
-using watxtract::EpipolarModel;
-using watxtract::EpipolarModelMarshaller;
-using watxtract::IEpipolarModel;
+using earthxpert::EpipolarModel;
+using earthxpert::EpipolarModelMarshaller;
+using earthxpert::IEpipolarModel;
 
 /**
  *  \brief serialize an epipolarmodel into a json file

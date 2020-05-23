@@ -11,7 +11,7 @@
 #include <memory>
 #include <sys/stat.h>
 
-using namespace watxtract;
+using namespace earthxpert;
 
 /**
  *  \brief create a lax index file for storing quadtree of the

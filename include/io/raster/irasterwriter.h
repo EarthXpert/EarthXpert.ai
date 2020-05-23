@@ -4,10 +4,10 @@
  */
 #pragma once
 
-#include "io/wxio.h"
-#include "3rd_party/gdal/wxgdal.h"
+#include "io/exio.h"
+#include "3rd_party/gdal/exgdal.h"
 
-namespace watxtract {
+namespace earthxpert {
 class Geocoding;
 class IRaster;
 class Metadata;

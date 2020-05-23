@@ -9,7 +9,7 @@
 #include "laswriter.hpp"
 #include <vector>
 
-namespace watxtract {
+namespace earthxpert {
 /**
  *  The class PointcloudWriter provides functios to write into a points file
  *  with LASlib as backend, and serialize points in a Pointcloud object

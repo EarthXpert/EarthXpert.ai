@@ -7,7 +7,7 @@
 #include "core/utils/irasterresample.h"
 #include <string>
 
-namespace watxtract {
+namespace earthxpert {
 /**
  *  The class RasterResample implements behavior given a resampling kernel.
  */

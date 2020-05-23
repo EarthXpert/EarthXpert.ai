@@ -9,7 +9,7 @@
 #include "core/datasource/utils.h"
 #include "core/exceptions/wxexcept.h"
 
-using namespace watxtract;
+using namespace earthxpert;
 
 /**
  *  \brief Construct wrtier object for existing image file.

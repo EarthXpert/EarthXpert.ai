@@ -9,7 +9,7 @@
 
 #include <memory>
 
-namespace watxtract {
+namespace earthxpert {
 /**
  *  The class DigitalImageModel offers the transformation
  *  between the focal plane and the raster imagery.

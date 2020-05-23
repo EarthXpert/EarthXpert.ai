@@ -4,7 +4,7 @@
  */
 #include "core/utils/fsutils.h"
 
-namespace watxtract::utils {
+namespace earthxpert::utils {
 /**
  *  \brief insert prefix for filename component
  *

@@ -8,7 +8,7 @@
 #include "sensormodel/isensormodel.h"
 #include <string>
 
-namespace watxtract {
+namespace earthxpert {
 ISensorModel::ModelType WXSENSORMODEL_EXPORTS SensorNameToType(const std::string& name);
 std::string WXSENSORMODEL_EXPORTS SensorTypeToName(ISensorModel::ModelType type);
 }
