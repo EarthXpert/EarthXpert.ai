@@ -7,7 +7,7 @@
 #include "core/datasource/cvraster.h"
 #include "core/datasource/gdalraster.h"
 #include "core/datasource/utils.h"
-#include "core/exceptions/wxexcept.h"
+#include "core/exceptions/exexcept.h"
 
 using namespace earthxpert;
 
@@ -16,7 +16,7 @@ using namespace earthxpert;
  *
  *  \param [in] imageFile full path of the image file
  */
-RasterWriter::RasterWriter(const std::string& imageFile) 
+RasterWriter::RasterWriter(const std::string& imageFile)
   : RasterWriter(imageFile, {}) {}
 
 /**
@@ -257,7 +257,7 @@ RasterWriter::ObtainWriteWindow(const IRaster* raster) const {
 
   const auto [colOffset, rowOffset] = raster->GetOffsets();
   const auto [numCols, numRows] = raster->GetSize();
-  if (0 > colOffset || mFileNumCols < colOffset+numCols || 
+  if (0 > colOffset || mFileNumCols < colOffset+numCols ||
       0 > rowOffset || mFileNumRows < rowOffset+numRows) {
     throw std::out_of_range("raster object context is outside of image file");
   }

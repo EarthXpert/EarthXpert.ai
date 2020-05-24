@@ -2,7 +2,7 @@
  *  Copyright (c) 2019.  All rights reserved.                          -
  * ----------------------------------------------------------------------
  */
-#include "3rd_party/gdal/wxgdal.h"
+#include "3rd_party/gdal/exgdal.h"
 #include <stdexcept>
 
 namespace earthxpert {
@@ -25,7 +25,7 @@ void GDALInitialize() {
  *  \param [in] numBands number of bands in the image
  *  \return Return pointer to GDALDataset if operation succeeds.
  */
-GDALDataset *CreateRasterDataset(const std::string& imgFile, 
+GDALDataset *CreateRasterDataset(const std::string& imgFile,
   const std::string format, const int numCols, const int numRows,
   const GDALDataType dataType, const int numBands) {
   auto driver = GetGDALDriverManager()->GetDriverByName(format.c_str());

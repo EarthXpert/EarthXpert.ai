@@ -11,14 +11,14 @@
 
 #define matrixSize 9
 
-namespace watxtract {
+namespace earthxpert {
 class ISensorModel;
 
 /**
  *  The class FrameEpipolarModel defines the xxx algorithm
  *  for generating epipolar images from image products with frame models.
  */
-class WXEPIPOLARMODEL_EXPORTS FrameEpipolarModel final : public IEpipolarModel {
+class EXEPIPOLARMODEL_EXPORTS FrameEpipolarModel final : public IEpipolarModel {
 public:
   /**
    *  Constructor.
@@ -95,4 +95,4 @@ private:
 
   // cached data for convenience
 };
-} // namespace watxtract
+} // namespace earthxpert

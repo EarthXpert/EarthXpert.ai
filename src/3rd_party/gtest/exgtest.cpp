@@ -2,5 +2,5 @@
  *  Copyright (c) 2019.  All rights reserved.                          -
  * ----------------------------------------------------------------------
  */
-#include "3rd_party/sltbench/wxsltbench.h"
+#include "3rd_party/gtest/exgtest.h"
 

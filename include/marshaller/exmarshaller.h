@@ -4,14 +4,14 @@
  */
 #pragma once
 
-#ifdef WXMARSHALLER_API
+#ifdef EXMARSHALLER_API
 #if (defined _WIN32 || defined WINCE || defined __CYGWIN__)
-#define WXMARSHALLER_EXPORTS __declspec(dllexport)
+#define EXMARSHALLER_EXPORTS __declspec(dllexport)
 #elif defined __GNUC__ && __GNUC__ >= 4
-#define WXMARSHALLER_EXPORTS __attribute__((visibility("default")))
+#define EXMARSHALLER_EXPORTS __attribute__((visibility("default")))
 #endif
 #endif
 
-#ifndef WXMARSHALLER_EXPORTS
-#define WXMARSHALLER_EXPORTS
+#ifndef EXMARSHALLER_EXPORTS
+#define EXMARSHALLER_EXPORTS
 #endif

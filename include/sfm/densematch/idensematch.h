@@ -4,16 +4,16 @@
  */
 #pragma once
 
-#include "sfm/wxsfm.h"
+#include "sfm/exsfm.h"
 #include "core/datasource/iraster.h"
 #include <utility>
 
-namespace watxtract {
+namespace earthxpert {
 
 /**
  *  The interface IDenseMatch defines the behaviours of dense matching algorithms.
  */
-class WXSFM_EXPORTS IDenseMatch {
+class EXSFM_EXPORTS IDenseMatch {
 public:
   // match algorithm
   enum MatchAlgo {

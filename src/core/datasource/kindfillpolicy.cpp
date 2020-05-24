@@ -4,7 +4,7 @@
  */
 #include "core/datasource/kindfillpolicy.h"
 #include "core/utils/typehelper.h"
-#include "core/exceptions/wxexcept.h"
+#include "core/exceptions/exexcept.h"
 
 using namespace earthxpert;
 

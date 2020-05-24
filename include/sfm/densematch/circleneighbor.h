@@ -7,12 +7,12 @@
 #include "sfm/densematch/ineighborhood.h"
 #include <vector>
 
-namespace watxtract {
+namespace earthxpert {
 
 /**
  *  The interface CircleNeighbor defines the behaviour of circular neighborhood selection.
  */
-class WXSFM_EXPORTS CircleNeighbor final : public INeighborhood {
+class EXSFM_EXPORTS CircleNeighbor final : public INeighborhood {
 public:
   CircleNeighbor(int radius);
   ~CircleNeighbor() = default;
@@ -31,4 +31,4 @@ private:
 
   void GenerateIndices();
 };
-}
+} // namespace earthxpert

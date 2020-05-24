@@ -3,7 +3,7 @@
  * -----------------------------------------------------------------------------
  */
 #include "io/pointcloud/pointcloudreader.h"
-#include "core/exceptions/wxexcept.h"
+#include "core/exceptions/exexcept.h"
 
 #include <limits>
 
@@ -14,7 +14,7 @@ using namespace earthxpert;
  *
  *  \param [in] lasFile file name
  */
-PointcloudReader::PointcloudReader(const std::string& lasFile) 
+PointcloudReader::PointcloudReader(const std::string& lasFile)
   : PointcloudReader(lasFile, {}) {
 }
 

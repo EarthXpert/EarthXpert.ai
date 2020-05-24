@@ -4,7 +4,7 @@
  */
 #pragma once
 
-#include "core/wxcore.h"
+#include "core/excore.h"
 #include "core/utils/typehelper.h"
 #include "3rd_party/opencv/exopencv.h"
 
@@ -22,7 +22,7 @@ namespace earthxpert {
  *
  * \param Ty A fundamental data type of elements on the cube
  */
-template <typename Ty> class WXCORE_EXPORTS InterpCube {
+template <typename Ty> class EXCORE_EXPORTS InterpCube {
 public:
   using ValueType = Ty;
 

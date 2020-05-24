@@ -4,8 +4,8 @@
  */
 #pragma once
 
-#include "sensormodel/wxsensormodel.h"
-#include "3rd_party/opencv/wxopencv.h"
+#include "sensormodel/exsensormodel.h"
+#include "3rd_party/opencv/exopencv.h"
 
 #include <array>
 #include <utility>
@@ -16,7 +16,7 @@ namespace earthxpert {
  *
  *  \detail
  */
-class WXSENSORMODEL_EXPORTS IImageModel {
+class EXSENSORMODEL_EXPORTS IImageModel {
 public:
   virtual ~IImageModel() {}
 
@@ -48,4 +48,4 @@ public:
    */
   virtual std::pair<double, double> GetSensorSize() const noexcept = 0;
 };
-} // namespace watxtract
+} // namespace earthxpert

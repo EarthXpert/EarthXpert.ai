@@ -4,20 +4,20 @@
  */
 #pragma once
 
-#include "epipolarmodel/wxepipolarmodel.h"
-#include "3rd_party/opencv/wxopencv.h"
+#include "epipolarmodel/exepipolarmodel.h"
+#include "3rd_party/opencv/exopencv.h"
 
 namespace earthxpert {
 /**
  *  The interface IGroundPolicy defines the ground transformation
  *  between the model and rectification coordinates.
  */
-class WXEPIPOLARMODEL_EXPORTS IGroundPolicy {
+class EXEPIPOLARMODEL_EXPORTS IGroundPolicy {
 public:
   enum class GroundPolicyType {
     eGEOGRAPHIC, //
-    eLOCAL, // 
-    eMAP // 
+    eLOCAL, //
+    eMAP //
   };
   using gpt = GroundPolicyType;
 

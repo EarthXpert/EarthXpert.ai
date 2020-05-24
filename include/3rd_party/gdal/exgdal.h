@@ -9,8 +9,8 @@
 #include "ogr_spatialref.h"
 
 namespace earthxpert {
-void WX3RDPARTY_EXPORTS GDALInitialize();
-WX3RDPARTY_EXPORTS GDALDataset *CreateRasterDataset(const std::string& imgFile,
+void EX3RDPARTY_EXPORTS GDALInitialize();
+EX3RDPARTY_EXPORTS GDALDataset *CreateRasterDataset(const std::string& imgFile,
   const std::string format, int numCols, int numRows,
   GDALDataType dataType, int numBands);
 

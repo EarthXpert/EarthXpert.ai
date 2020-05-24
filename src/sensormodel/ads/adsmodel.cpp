@@ -3,7 +3,7 @@
  * -----------------------------------------------------------------------------
  */
 #include "sensormodel/adsmodel.h"
-#include "3rd_party/gdal/wxgdal.h"
+#include "3rd_party/gdal/exgdal.h"
 #include "sensormodel/scannerep.h"
 #include "sensormodel/scannerimagemodel.h"
 #include "sensormodel/scannerip.h"

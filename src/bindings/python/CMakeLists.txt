@@ -1,11 +1,11 @@
-project(wxpyext)
+project(expyext)
 
 include_directories(${pybind11_INCLUDE_DIRS}) 
 include_directories(${PYTHON_INCLUDE_DIRS}) 
 
 # Build a Python extension module:
-function(watxtract_add_py_library name libs_dir)
-  watxtract_add_library(${name} ${libs_dir} ${ARGN})
+function(earthxpert_add_py_library name libs_dir)
+  earthxpert_add_library(${name} ${libs_dir} ${ARGN})
 
   # Python debug libraries expose slightly different objects
   # https://docs.python.org/3.6/c-api/intro.html#debugging-builds
@@ -22,9 +22,9 @@ function(watxtract_add_py_library name libs_dir)
       SUFFIX "${PYTHON_MODULE_EXTENSION}")
 endfunction()
 
-watxtract_add_py_library(wxpyext "bindings"
-  SRCS "wxpyext.cpp"
-  ITEMS wx3rd_party core dataio epipolar epipolarmodel marshaller sensormodel
+earthxpert_add_py_library(expyext "bindings"
+  SRCS "expyext.cpp"
+  ITEMS ex3rd_party core dataio epipolar epipolarmodel marshaller sensormodel
         ${Boost_LIBRARIES} ${GDAL_LIBRARY} ${PYTHON_LIBRARIES})
 
-watxtract_install_target(wxpyext)
+earthxpert_install_target(expyext)

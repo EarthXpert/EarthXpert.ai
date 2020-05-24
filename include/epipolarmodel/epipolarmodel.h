@@ -4,7 +4,7 @@
  */
 #pragma once
 
-#include "3rd_party/opencv/wxopencv.h"
+#include "3rd_party/opencv/exopencv.h"
 #include "core/math/interpgrid.h"
 #include "epipolarmodel/epipolarrect.h"
 #include "epipolarmodel/iepipolarmodel.h"
@@ -13,7 +13,7 @@
 
 #include <optional>
 
-namespace watxtract {
+namespace earthxpert {
 
 /**
  *  The class EpipolarModel defines a sensor-independent algorithm
@@ -23,7 +23,7 @@ namespace watxtract {
  * the model coordinate system and the rectification coordinate system
  */
 template <class GroundPolicy>
-class WXEPIPOLARMODEL_EXPORTS EpipolarModel final : public IEpipolarModel {
+class EXEPIPOLARMODEL_EXPORTS EpipolarModel final : public IEpipolarModel {
 public:
   using PolicyType = GroundPolicy;
 
@@ -92,9 +92,9 @@ public:
    * positions on epipolar.
    *
    *  \param [in] img List of 2d positions (col, row) in image raster coordinate
-   * system 
+   * system
    *  \param [in] epi List of 2d positions (col, row) in epipolar raster
-   * coordinate system 
+   * coordinate system
    *  \param [in] pos Component position of stereo model
    *  \return Returns number of successful operations
    */
@@ -152,4 +152,4 @@ private:
 using GeoEpipolarModel = EpipolarModel<GeographicGround>;
 using LocalEpipolarModel = EpipolarModel<LocalGround>;
 using MapEpipolarModel = EpipolarModel<MapGround>;
-} // namespace watxtract
+} // namespace earthxpert

@@ -13,10 +13,10 @@ class IRaster;
 class Metadata;
 
 /**
- *  The interface IRasterWriter defines the behaviors for writing into 
+ *  The interface IRasterWriter defines the behaviors for writing into
  *  an image file, and serialize pixle block in an IRaster object.
  */
-class WXIO_EXPORTS IRasterWriter {
+class EXIO_EXPORTS IRasterWriter {
 public:
   virtual ~IRasterWriter() {}
 
@@ -53,4 +53,4 @@ public:
    */
   virtual void BuildPyramids() = 0;
 };
-} // namespace watxtract
+} // namespace earthxpert

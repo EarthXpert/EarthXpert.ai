@@ -8,7 +8,7 @@
 
 #include <memory>
 
-namespace watxtract {
+namespace earthxpert {
 class ISensorModel;
 class RationalModel;
 
@@ -16,7 +16,7 @@ class RationalModel;
  *  The class SensorModelFactory defines the behaviours for creating
  *  sensor model from image products.
  */
-class WXSENSORMODEL_EXPORTS SensorModelFactory {
+class EXSENSORMODEL_EXPORTS SensorModelFactory {
 public:
   /**
    *  \brief
@@ -38,4 +38,4 @@ public:
    */
   static std::unique_ptr<RationalModel> CreateRationalModel();
 };
-} // namespace watxtract
+} // namespace earthxpert

@@ -20,7 +20,7 @@ class PushBroomModel;
  *  The class AdsModel implements the physical geometry model
  *  for aerial digital scanner (ADS) line-scanning sensors.
  */
-class WXSENSORMODEL_EXPORTS AdsModel final : public SensorModel {
+class EXSENSORMODEL_EXPORTS AdsModel final : public SensorModel {
 public:
   ~AdsModel() {}
 
@@ -117,4 +117,4 @@ private:
   std::unique_ptr<InterpCubeD>
       mEll2Lsr; // interpolation cube for col/row/ell_hgt to lsr_hgt transform
 };
-} // namespace watxtract
+} // namespace earthxpert

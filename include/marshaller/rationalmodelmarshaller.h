@@ -11,7 +11,7 @@
 #include <ostream>
 #include <string>
 
-namespace watxtract {
+namespace earthxpert {
 /**
  *  The class RationalModelMarshaller serialize and deserialize rational models.
  *
@@ -23,7 +23,7 @@ namespace watxtract {
  *
  *  \codeblock
  */
-class WXMARSHALLER_EXPORTS RationalModelMarshaller {
+class EXMARSHALLER_EXPORTS RationalModelMarshaller {
 public:
   // foramt of coefficients in mdoel file
   enum CoefFormat {
@@ -42,7 +42,7 @@ public:
    *  \param[in] modelFile the file to insert model coefficients
    *  \param[in] rationalModel the rational model to be seralized
    */
-  void Serialize(const std::string& modelFile, 
+  void Serialize(const std::string& modelFile,
     const RationalModel* const rationalModel);
 
   /**
@@ -100,4 +100,4 @@ private:
   void ExtractCoefs(std::istream& inStream,
     std::array<double, RationalModel::NumCoef>& coefs);
 };
-} // namespace watxtract
+} // namespace earthxpert

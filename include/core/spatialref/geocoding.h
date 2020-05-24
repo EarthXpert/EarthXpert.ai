@@ -9,7 +9,7 @@
 
 namespace earthxpert {
 
-class WXCORE_EXPORTS Geocoding {
+class EXCORE_EXPORTS Geocoding {
 public:
   double mOriginX{};
   double mOriginY{};

@@ -7,7 +7,7 @@ file(MAKE_DIRECTORY ${EARTHXPERT_TEST_OUTPUT_DIR})
 
 include_directories(${CMAKE_BINARY_DIR}/tests/)
 
-function(watxtract_add_test name tests_dir)
+function(earthxpert_add_test name tests_dir)
   add_executable(${name} ${name}.cpp)
   set_target_properties(${name}
     PROPERTIES
@@ -22,7 +22,7 @@ function(watxtract_add_test name tests_dir)
   set_property(TARGET ${name} PROPERTY FOLDER ${tests_dir})
 endfunction()
 
-function(watxtract_install_test name)
+function(earthxpert_install_test name)
   install(TARGETS ${name} ${ARGN}
     RUNTIME DESTINATION ${EARTHXPERT_BIN_DIR})
   if(WIN32 AND MSVC AND (NOT MSVC_VERSION LESS 1600))

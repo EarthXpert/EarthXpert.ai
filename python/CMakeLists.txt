@@ -1,4 +1,4 @@
-project(wxpy)
+project(expy)
 
 install(DIRECTORY api/ 
         DESTINATION py/api

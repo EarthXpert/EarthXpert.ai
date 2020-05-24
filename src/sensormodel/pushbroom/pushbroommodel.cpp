@@ -3,7 +3,7 @@
  * -----------------------------------------------------------------------------
  */
 #include "sensormodel/pushbroommodel.h"
-#include "3rd_party/gdal/wxgdal.h"
+#include "3rd_party/gdal/exgdal.h"
 
 using earthxpert::ISensorModel;
 using earthxpert::Point2d;

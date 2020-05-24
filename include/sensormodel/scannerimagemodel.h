@@ -4,7 +4,7 @@
  */
 #pragma once
 
-#include "sensormodel/wxsensormodel.h"
+#include "sensormodel/exsensormodel.h"
 
 #include <utility>
 
@@ -15,7 +15,7 @@ namespace earthxpert {
  *
  *  \detail
  */
-class WXSENSORMODEL_EXPORTS ScannerImageModel {
+class EXSENSORMODEL_EXPORTS ScannerImageModel {
 public:
   /**
    * Constructor
@@ -35,4 +35,4 @@ private:
   int mNumCols{}; // number of columns of the image product
   int mNumRows{}; // number of rows of the image product
 };
-} // namespace watxtract
+} // namespace earthxpert

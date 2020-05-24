@@ -12,12 +12,12 @@ namespace earthxpert {
  *  The class GeographicGround offers the ground transformation
  *  between the geographic and LSR coordinates.
  */
-class WXEPIPOLARMODEL_EXPORTS GeographicGround final : public IGroundPolicy {
+class EXEPIPOLARMODEL_EXPORTS GeographicGround final : public IGroundPolicy {
 public:
   /**
    *  \brief Constructor.
    *
-   *  \param [in] 
+   *  \param [in]
    */
   GeographicGround(std::unique_ptr<EarthEllipsoid>&& earthEllip);
   GeographicGround(const GeographicGround &rhs);
@@ -65,7 +65,7 @@ private:
  *  The class LocalGround offers the ground transformation
  *  between the model LSR and the rectification LSR coordinates.
  */
-class WXEPIPOLARMODEL_EXPORTS LocalGround final : public IGroundPolicy{
+class EXEPIPOLARMODEL_EXPORTS LocalGround final : public IGroundPolicy{
 public:
   /**
    *  \brief Constructor.
@@ -118,7 +118,7 @@ private:
  *  The class MapGround offers the ground transformation
  *  between the model map and the rectification map coordinates.
  */
-class WXEPIPOLARMODEL_EXPORTS MapGround final : public IGroundPolicy {
+class EXEPIPOLARMODEL_EXPORTS MapGround final : public IGroundPolicy {
 public:
   /**
    *  \brief Constructor.
@@ -166,4 +166,4 @@ private:
   void CopyFrom(const MapGround &rhs);
   void MoveFrom(MapGround &&rhs) noexcept;
 };
-} // namespace watxtract
+} // namespace earthxpert

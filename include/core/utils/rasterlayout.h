@@ -4,7 +4,7 @@
  */
 #pragma once
 
-#include "core/wxcore.h"
+#include "core/excore.h"
 #include "core/utils/rasterwindow.h"
 
 #include <cassert>
@@ -14,7 +14,7 @@ namespace earthxpert {
 /**
  *  The class RasterLayout formulate the non-overlapping tiling of image.
  */
-class WXCORE_EXPORTS RasterLayout {
+class EXCORE_EXPORTS RasterLayout {
 public:
   /**
    *  \brief enum LayoutKind specifies the major direction of tile division.
@@ -24,7 +24,7 @@ public:
     eVERTICAL
   };
 
-  RasterLayout(int numCols, int numRows, 
+  RasterLayout(int numCols, int numRows,
     int winNumCols, int winNumRows, LayoutKind kind=LayoutKind::eHORIZONTAL);
   ~RasterLayout() {}
 

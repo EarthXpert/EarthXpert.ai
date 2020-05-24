@@ -10,12 +10,12 @@
 #include "sfm/densematch/micostfunction.h"
 #include "sfm/densematch/rectneighbor.h"
 
-namespace watxtract {
+namespace earthxpert {
 
 /**
  *  The class DisparityMatch implements a binocunar view semi-global matching algorithm.
- *  The algorithm computes the disparity map in image space. The input images determined 
- *  the GeometryModel policy, respectively, for epipolar images with epipolar model, or 
+ *  The algorithm computes the disparity map in image space. The input images determined
+ *  the GeometryModel policy, respectively, for epipolar images with epipolar model, or
  *  for raw images with sensor models. The latter also includes satellite OrthoReady images
  *  that are resampled epipolar images but with an RPC model.
  *
@@ -24,7 +24,7 @@ namespace watxtract {
  *  \param Neighborhood defines the behaviour of neighborhood selection
  */
 template <class GeometryModel, class CostFunction, class Neighborhood>
-class WXSFM_EXPORTS DisparityMatch final : public DenseMatch {
+class EXSFM_EXPORTS DisparityMatch final : public DenseMatch {
 public:
   using GeometryType = GeometryModel;
   using CostPolicyType = CostFunction;
@@ -33,7 +33,7 @@ public:
   ~DisparityMatch() = default;
 
   /**
-   *  \return Retruns the disparity map where the element value is the x-parallax 
+   *  \return Retruns the disparity map where the element value is the x-parallax
    *  (assuming a perfect epipolar), or the x- and y-parallax pair (e.g. Point2f).
    */
   std::unique_ptr<IRaster> Match();
@@ -49,4 +49,4 @@ private:
   void OptimizeDisparity();
   void Postprocess();
 };
-}
+} // namespace earthxpert

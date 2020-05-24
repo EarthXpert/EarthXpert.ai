@@ -4,8 +4,8 @@
  */
 #pragma once
 
-#include "io/wxio.h"
-#include "3rd_party/gdal/wxgdal.h"
+#include "io/exio.h"
+#include "3rd_party/gdal/exgdal.h"
 #include "core/datasource/iraster.h"
 #include "core/datasource/metadata.h"
 
@@ -18,7 +18,7 @@ using RasterType = IRaster::RasterType;
  *  The interface IRasterReader defines the behaviors for reading an image file
  *  and deserialize pixle block in an IRaster object.
  */
-class WXIO_EXPORTS IRasterReader {
+class EXIO_EXPORTS IRasterReader {
 public:
   virtual ~IRasterReader() {}
 
@@ -38,7 +38,7 @@ public:
   virtual int GetNumBands() const noexcept = 0;
 
   /**
-   *  \brief Set the margin size and kind. 
+   *  \brief Set the margin size and kind.
    *
    *  \param [in] marginCols the horizontal margin size
    *  \param [in] marginRows the vertical margin size
@@ -69,7 +69,7 @@ public:
   virtual std::unique_ptr<Geocoding> GetGeocoding() const = 0;
 
   /**
-   *  \brief Reads a pixel block defined by offsets, size, internal 
+   *  \brief Reads a pixel block defined by offsets, size, internal
    *  margin size, and kind. the offsets are relative to the upper-left corner
    *  pixel whose coordinates are (0, 0).
    *
@@ -83,7 +83,7 @@ public:
     int numCols, int numRows, RasterType rasterType = RasterType::eCVMAT) = 0;
 
   /**
-   *  \brief Reads a pixel block defined by the passed raster object, populates 
+   *  \brief Reads a pixel block defined by the passed raster object, populates
    *  the associated buffer.
    *
    *  \param [in/out] raster the raster object to be populated with the pixel block.
@@ -95,4 +95,4 @@ public:
    */
   //virtual std::unique_ptr<IPyramidReader> GetPyramidReader() = 0;
 };
-} // namespace watxtract
+} // namespace earthxpert

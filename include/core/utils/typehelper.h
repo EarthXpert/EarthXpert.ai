@@ -41,4 +41,4 @@ template <typename _Ty> struct Equal {
 };
 
 using EqualD = Equal<double>;
-} // namespace watxtract
+} // namespace earthxpert

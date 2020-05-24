@@ -10,7 +10,7 @@
 #include <array>
 #include <chrono>
 
-namespace watxtract {
+namespace earthxpert {
 class FrameIP;
 class ScannerEP;
 class SatelliteDP;
@@ -20,17 +20,17 @@ class ScannerEPCorr;
  *  The class RollingShutterModel implements the physical geometry model
  *  for optical rolling-shutter frame sensors.
  */
-class WXSENSORMODEL_EXPORTS RollingShutterModel final : public SensorModel {
+class EXSENSORMODEL_EXPORTS RollingShutterModel final : public SensorModel {
 public:
   /**
    *  \brief Construct an aerial rolling-shuter geometry model.
    *
    *  \param [in] imgModel image model defining raster vs focal plane
-   * relationship 
+   * relationship
    *  \param [in] scannerIP intrinsic parameters defining scanner
-   * interior orientation 
+   * interior orientation
    *  \param [in] scannerEP extrinsic parameters defining
-   * scanner exterior orientation 
+   * scanner exterior orientation
    *  \param [in] groundSRS ground coordinate system
    */
   RollingShutterModel(std::shared_ptr<DigitalImageModelImp> imgModel,
@@ -151,4 +151,4 @@ private:
       mFusedScannerEP; // extrinsic parameters combining original extrinsic
                        // parameters and their corrections
 };
-} // namespace watxtract
+} // namespace earthxpert

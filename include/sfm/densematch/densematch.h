@@ -11,7 +11,7 @@ namespace earthxpert {
 /**
  *  The class DenseMatch implements the template methods for Semi-global matching algorithm.
  */
-class WXSFM_EXPORTS DenseMatch : public IDenseMatch {
+class EXSFM_EXPORTS DenseMatch : public IDenseMatch {
 public:
   virtual ~DenseMatch() = default;
 
@@ -23,7 +23,7 @@ protected:
 
 private:
   int mP1{};  // smooth condition: a low penalty for continuity
-  int mP2{};  //                   a larger penalty for dis-continuity 
+  int mP2{};  //                   a larger penalty for dis-continuity
   int mStride{ 1 }; // interval between two rigorously matched pixels
 };
-}
+} // namespace earthxpert

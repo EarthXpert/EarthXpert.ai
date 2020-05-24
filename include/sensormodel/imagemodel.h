@@ -13,7 +13,7 @@ namespace earthxpert {
  *
  *  \detail
  */
-class WXSENSORMODEL_EXPORTS DigitalImageModelImp final : public IImageModel {
+class EXSENSORMODEL_EXPORTS DigitalImageModelImp final : public IImageModel {
 public:
   /**
    *  Constructor
@@ -89,7 +89,7 @@ private:
  *  \detail
  *  \remark test 6-parameter model (offset + affine)
  */
-class WXSENSORMODEL_EXPORTS FilmImageModelImp final : public IImageModel {
+class EXSENSORMODEL_EXPORTS FilmImageModelImp final : public IImageModel {
 public:
   /**
    *  Constructor
@@ -101,7 +101,7 @@ public:
    *  \param [in] xyToC xyToC Four coefficients to convert (x, y) in focal plane to col in image
    *  \param [in] xyToR xyToR Four coefficients to convert (x, y) in focal plane to row in image
    */
-  FilmImageModelImp(int numCols, int numRows, 
+  FilmImageModelImp(int numCols, int numRows,
     const std::array<double, 4> &crToX, const std::array<double, 4> &crToY,
     const std::array<double, 4> &xyToC, const std::array<double, 4> &xyToR);
 
@@ -180,4 +180,4 @@ private:
    */
   std::array<double, 4> mXYToR{0.0, 0.0, -1.0, 0.0};
 };
-} // namespace watxtract
+} // namespace earthxpert

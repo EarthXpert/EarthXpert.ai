@@ -4,15 +4,15 @@
  */
 #pragma once
 
-#include "io/wxio.h"
+#include "io/exio.h"
 #include "core/datasource/pointcloud.h"
 
 namespace earthxpert {
 /**
- *  The interface IPointcloudWriter specifies the behaviours for 
+ *  The interface IPointcloudWriter specifies the behaviours for
  *  serielizing an array of points in a Pointcloud object into a disk file.
  */
-class WXIO_EXPORTS IPointcloudWriter {
+class EXIO_EXPORTS IPointcloudWriter {
 public:
   virtual ~IPointcloudWriter() {}
 
@@ -23,4 +23,4 @@ public:
    */
   virtual void WritePointcloud(Pointcloud const *const pointCloud) = 0;
 };
-} // namespace watxtract
+} // namespace earthxpert

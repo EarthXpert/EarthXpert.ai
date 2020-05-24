@@ -1,7 +1,7 @@
 project(sfm)
 
-add_definitions(-DWXSFM_API)
-watxtract_add_library(sfm "api"
+add_definitions(-DEXSFM_API)
+earthxpert_add_library(sfm "api"
   SRCS "densematch/circleneighbor.cpp"
        "densematch/densematch.cpp"
        "densematch/densematchfactory.cpp"
@@ -9,7 +9,7 @@ watxtract_add_library(sfm "api"
        "densematch/disparitymatch.cpp"
        "densematch/rectneighbor.cpp"
        "sparsematch/sparsematch.cpp"
-  ITEMS wx3rd_party core dataio epipolarmodel sensormodel
+  ITEMS ex3rd_party core dataio epipolarmodel sensormodel
         ${GDAL_LIBRARY} ${OPENCV_LIBS})
 
-watxtract_install_target(sfm)
+earthxpert_install_target(sfm)

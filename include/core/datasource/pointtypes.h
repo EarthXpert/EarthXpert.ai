@@ -4,8 +4,8 @@
  */
 #pragma once
 
-#include "core/wxcore.h"
-#include "3rd_party/opencv/wxopencv.h"
+#include "core/excore.h"
+#include "3rd_party/opencv/exopencv.h"
 #include "core/math/math.h"
 
 #include <array>
@@ -24,7 +24,7 @@ struct FieldGroup : std::bitset<sizeof(size_t)> {
   static constexpr size_t kPOSRGB = 3;
   static constexpr size_t kPOSNIR = 4;
   static constexpr size_t kPOSTIM = 5;
-  static constexpr std::array<size_t, 6> kPOS = { 
+  static constexpr std::array<size_t, 6> kPOS = {
     kPOSXYZ, kPOSCLA, kPOSINT, kPOSRGB, kPOSNIR, kPOSTIM };
 
   // bit mask
@@ -38,7 +38,7 @@ struct FieldGroup : std::bitset<sizeof(size_t)> {
     kBITXYZ, kBITCLA, kBITINT, kBITRGB, kBITNIR, kBITTIM };
 
   static inline const std::map<size_t, size_t> kPOSBIT = {
-    {kPOSXYZ, kBITXYZ}, {kPOSCLA, kBITCLA}, {kPOSINT, kBITINT}, 
+    {kPOSXYZ, kBITXYZ}, {kPOSCLA, kBITCLA}, {kPOSINT, kBITINT},
     {kPOSNIR, kBITRGB}, {kPOSNIR, kBITNIR}, {kPOSTIM, kBITTIM} };
 
   /**

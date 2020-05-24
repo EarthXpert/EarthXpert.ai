@@ -11,7 +11,7 @@
 #include <bitset>
 #include <tuple>
 
-namespace watxtract {
+namespace earthxpert {
 /**
  *  The class defines intrinsic parameters for interior orientation.
  *
@@ -32,10 +32,10 @@ public:
 
   // index of decentering distortion coefficients
   enum DecenterCoeff {
-    eP1 = 0,        // 
-    eP2 = 1,        // 
-    eP3 = 2,        // 
-    eP4 = 3,        // 
+    eP1 = 0,        //
+    eP2 = 1,        //
+    eP3 = 2,        //
+    eP4 = 3,        //
     NumDecCoef = 4  // number of coefficients
   };
 
@@ -47,8 +47,8 @@ public:
   };
 
   // position of distortion flags in bitset
-  const size_t kRADDIST = 0; // radial 
-  const size_t kDECDIST = 1; // decentering 
+  const size_t kRADDIST = 0; // radial
+  const size_t kDECDIST = 1; // decentering
   const size_t kLINDIST = 2; // linear
   const size_t kGRDDIST = 3; // grid
 
@@ -140,4 +140,4 @@ private:
   // cached info
   mutable std::bitset<4> mDistFlags; // [Grid Linear Dec Rad]
 };
-} // namespace watxtract
+} // namespace earthxpert

@@ -17,7 +17,7 @@ namespace earthxpert {
  *
  *  \remark update an existing file?
  */
-class WXIO_EXPORTS PointcloudWriter final : public IPointcloudWriter {
+class EXIO_EXPORTS PointcloudWriter final : public IPointcloudWriter {
 public:
   /**
    *  \brief Open/create the las file for write
@@ -45,4 +45,4 @@ private:
 
   void ObtainLasInfo();
 };
-} // namespace watxtract
+} // namespace earthxpert

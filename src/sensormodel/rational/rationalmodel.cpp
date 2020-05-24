@@ -3,7 +3,7 @@
  * -----------------------------------------------------------------------------
  */
 #include "sensormodel/rationalmodel.h"
-#include "3rd_party/gdal/wxgdal.h"
+#include "3rd_party/gdal/exgdal.h"
 #include "core/utils/typehelper.h"
 
 #include <algorithm>
@@ -28,7 +28,7 @@ using earthxpert::Tuple4d;
  *  \param [in] sampNumCoef numerator polynomial of sample formulae
  *  \param [in] sampDenCoef denominator polynomial of sample formulae
  *  \param [in] groundCS ground coordinate system
- *  \remark The the image size is not stored in _rpc.txt/.rpb files. 
+ *  \remark The the image size is not stored in _rpc.txt/.rpb files.
  * If not known, good approx. values are estimated from offset & scale factors.
  */
 RationalModel::RationalModel(const int numCols, const int numRows,
@@ -67,7 +67,7 @@ RationalModel::RationalModel(const std::array<double, NumFact> &normalFators,
                              const std::array<double, NumCoef> &sampNumCoef,
                              const std::array<double, NumCoef> &sampDenCoef,
                              std::shared_ptr<SpatialReferenceSystem> groundSRS)
-  : RationalModel(0, 0, normalFators, lineNumCoef, lineDenCoef, 
+  : RationalModel(0, 0, normalFators, lineNumCoef, lineDenCoef,
     sampNumCoef, sampDenCoef, groundSRS) {
 }
 
@@ -398,12 +398,12 @@ void RationalModel::Clear() noexcept {
  *
  *   col = col_rpc + CS0 + CSS * col_rpc + CSL * row_rpc + ...
  *   row = row_rpc + CL0 + CLS * col_rpc + CLL * row_rpc + ...
- *  
- *   The uncorrected col/row are 
+ *
+ *   The uncorrected col/row are
  *
  *   col_rpc = col - (CS0 + CSS * col_rpc + CSL * row_rpc + ...)
  *   row_rpc = row - (CL0 + CLS * col_rpc + CLL * row_rpc + ...)
- *  
+ *
  *   Alternatively assuming that CL0, CS0 be primary and CLL, CSL, etc. are
  *   secondary, approx. col/row are
  *
@@ -465,12 +465,12 @@ Point2d RationalModel::ImageToSensor(const Point2d & image) const {
  *  \brief Given a 2d position in virtual sensor coordinate system,
  *  output the 2d rpc position in image coordinate system.
  *
- *  \param [in] sensor 2d position (x, y) in virtual sensor coordinate system 
- *  \return Return 2d apparant rpc position (col, row) in imagery coordinate system 
+ *  \param [in] sensor 2d position (x, y) in virtual sensor coordinate system
+ *  \return Return 2d apparant rpc position (col, row) in imagery coordinate system
  */
 Point2d RationalModel::SensorToImage(const Point2d &sensor) const {
   auto nfc = mNormalFators.data();
-  return { nfc[eOSAMP] + nfc[eSSAMP] * sensor.x, 
+  return { nfc[eOSAMP] + nfc[eSSAMP] * sensor.x,
            nfc[eOLINE] + nfc[eSLINE] * sensor.y };
 }
 
@@ -484,7 +484,7 @@ Point2d RationalModel::CalcCorrection(const Point2d& image) const {
   auto scc = mSampCorr.data();
   auto lcc = mLineCorr.data();
   const double CR[3] = { image.x * image.x, image.x * image.y, image.y * image.y };
-  
+
   return { scc[eCO] + scc[eCS] * image.x + scc[eCL] * image.y +
     scc[eCS2] * CR[0] + scc[eCSL] * CR[1] + scc[eCL2] * CR[2],
            lcc[eCO] + lcc[eCS] * image.x + lcc[eCL] * image.y +
@@ -514,8 +514,8 @@ bool RationalModel::GroundToSensor(const Point3d &uvw,
 /**
  *  Sensor-to-ground projection in virtual coordinate systems.
  *
- *  \brief Given a normalized 2d position in image coordinate system and 
- *  a normalized height in ground vertical coordinate system, output 
+ *  \brief Given a normalized 2d position in image coordinate system and
+ *  a normalized height in ground vertical coordinate system, output
  *  the ground horizontal position.
  *
  *  \param [in] x/c Normalized col in sensor coordinate system
@@ -560,7 +560,7 @@ bool RationalModel::GroundToSensor(const Point3d &uvw,
  * [dc, dr]. This iternative procedure is repeated until [dc, dr] are
  * sufficiently small.
  */
-bool RationalModel::SensorToGround(const double x, const double y, 
+bool RationalModel::SensorToGround(const double x, const double y,
   const double w, double& u, double& v) const {
   if (mCubeS2G)
   {
@@ -717,11 +717,11 @@ bool RationalModel::SensorToGround(const double x, const double y,
     v -= dv;
 
     // check if still diverging after several iterations
-    if (5 < iter && (tol_d < fabs(du) || tol_d < fabs(dv))) 
+    if (5 < iter && (tol_d < fabs(du) || tol_d < fabs(dv)))
       return false;
 
     // terminate if converged
-    if (fabs(dc) < tol_c && fabs(dr) < tol_r) 
+    if (fabs(dc) < tol_c && fabs(dr) < tol_r)
       break;
   }
 
@@ -741,7 +741,7 @@ bool RationalModel::SensorToGround(const double x, const double y,
  *  \param [in] P normalized latitude
  *  \param [in] H normalized height
  *  \param [out] uvw/LPH array of combined terms.
- *  \remark may use uvw instead of LPH in case of the lowercase l that looks like the number 1. 
+ *  \remark may use uvw instead of LPH in case of the lowercase l that looks like the number 1.
  */
 void RationalModel::CalcTerms(const double L, const double P,
                               const double H, double *LPH) const {
@@ -869,7 +869,7 @@ bool RationalModel::SensorToGroundLinear(const double x, const double y,
 /**
  *  Build a cube to provide fast X, Y coordinates used by SensorToGround.
  */
-void RationalModel::BuildCubeS2G() { 
+void RationalModel::BuildCubeS2G() {
   auto cubeS2G = std::make_unique<InterpCubeD>(2,
     -1.2, -1.2, -1.2, 1.2, 1.2, 1.2, 0.2, 0.2, 0.2);
 

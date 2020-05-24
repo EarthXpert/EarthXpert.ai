@@ -16,7 +16,7 @@ namespace earthxpert {
  *
  *  \todo accept a constant value.
  */
-class WXCORE_EXPORTS ConstantFill final : public IKindFillPolicy {
+class EXCORE_EXPORTS ConstantFill final : public IKindFillPolicy {
 public:
   /**
    *  Constructor
@@ -105,7 +105,7 @@ private:
 /**
  *  \brief Set the opposite read pixel to the margin pixel, reflecting w.r.t. the read border.
  */
-class WXCORE_EXPORTS ReflectionFill final : public IKindFillPolicy {
+class EXCORE_EXPORTS ReflectionFill final : public IKindFillPolicy {
 public:
   /**
    *  Constructor
@@ -211,7 +211,7 @@ private:
 /**
  *  \brief Duplicate the nearest border pixel to the margin pixel.
  */
-class WXCORE_EXPORTS ReplicationFill final : public IKindFillPolicy {
+class EXCORE_EXPORTS ReplicationFill final : public IKindFillPolicy {
 public:
   /**
    *  Constructor

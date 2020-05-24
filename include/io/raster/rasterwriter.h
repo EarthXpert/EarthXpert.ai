@@ -16,9 +16,9 @@ namespace earthxpert {
  *  Each RasterWriter instance is connected and thus bound to specific bands.
  *  Therefore a new instance is needed to write into different subsets of bands.
  *
- *  \remark will revisit for a better design. 
+ *  \remark will revisit for a better design.
  */
-class WXIO_EXPORTS RasterWriter final : public IRasterWriter, public IRasterReader {
+class EXIO_EXPORTS RasterWriter final : public IRasterWriter, public IRasterReader {
 public:
   RasterWriter(const std::string& imageFile);
   RasterWriter(const std::string& imageFile, const std::vector<int>& bands);
@@ -120,7 +120,7 @@ public:
    *  \param [in] marginRows the vertical margin size
    *  \param [in] marginKind the margin kind.
    */
-  void SetMargins(const int marginCols, const int marginRows, 
+  void SetMargins(const int marginCols, const int marginRows,
     const MarginKind marginKind) override {
     return mReader->SetMargins(marginCols, marginRows, marginKind);
   }
@@ -195,4 +195,4 @@ private:
   void ObtainDatasetInfo();
   std::tuple<RasterWindow, int64> ObtainWriteWindow(const IRaster* raster) const;
 };
-} // namespace watxtract
+} // namespace earthxpert

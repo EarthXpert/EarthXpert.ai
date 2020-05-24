@@ -6,12 +6,12 @@
 
 #include "sfm/densematch/icostfunction.h"
 
-namespace watxtract {
+namespace earthxpert {
 
 /**
  *  The class CensusCostFunction defines the census method used to calculate cost/difference.
  */
-class WXSFM_EXPORTS CensusCostFunction : public ICostFunction {
+class EXSFM_EXPORTS CensusCostFunction : public ICostFunction {
 public:
   ~CensusCostFunction() = default;
 

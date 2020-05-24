@@ -4,9 +4,9 @@
  */
 #pragma once
 
-#include "sensormodel/wxsensormodel.h"
-#include "3rd_party/gdal/wxgdal.h"
-#include "3rd_party/opencv/wxopencv.h"
+#include "sensormodel/exsensormodel.h"
+#include "3rd_party/gdal/exgdal.h"
+#include "3rd_party/opencv/exopencv.h"
 
 #include <memory>
 #include <vector>
@@ -30,7 +30,7 @@ namespace earthxpert {
  *  sensor space, such as image coordinates (column, row) [unit: pixel]
  *  w.r.t. the upper-left corner of the upper-left pixel in a raster image.
  */
-class WXSENSORMODEL_EXPORTS ISensorModel {
+class EXSENSORMODEL_EXPORTS ISensorModel {
 public:
   virtual ~ISensorModel() {}
 
@@ -63,7 +63,7 @@ public:
    *
    *  \param [in] image 2d position (x, y) in imagery raster coordinate system
    *  \param [in/out] ground 3d ground position (X, Y, Z) in ground coordinate
-   * system, among which Z's value is known. 
+   * system, among which Z's value is known.
    *  \return Returns true if the operation succeeds
    *
    *  \details
@@ -153,4 +153,4 @@ public:
    */
   //virtual std::pair<int, int> GetSensorSize() const noexcept = 0;
 };
-} // namespace watxtract
+} // namespace earthxpert

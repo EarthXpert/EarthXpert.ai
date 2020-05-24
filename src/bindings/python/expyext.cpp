@@ -2,7 +2,7 @@
  *  Copyright (c) 2019.  All rights reserved.
  * -----------------------------------------------------------------------------
  */
-#include "3rd_party/gdal/wxgdal.h"
+#include "3rd_party/gdal/exgdal.h"
 #include "core/spatialref/earthellipsoid.h"
 #include "rectification/epipolar/epipolar.h"
 #include "sensormodel/rationalmodel.h"
@@ -48,9 +48,9 @@ public:
   }
 };
 
-PYBIND11_MODULE(wxpyext, m) {
+PYBIND11_MODULE(expyext, m) {
   m.doc() = R"pbdoc(
-    WatXtract package for python 
+    WatXtract package for python
     ----------------------------
 
        // data types

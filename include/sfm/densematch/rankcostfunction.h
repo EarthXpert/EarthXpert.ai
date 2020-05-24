@@ -6,12 +6,12 @@
 
 #include "sfm/icostfunction.h"
 
-namespace watxtract {
+namespace earthxpert {
 
 /**
  *  The class RankCostFunction defines the rank transform method used to calculate cost/difference.
  */
-class WXSFM_EXPORTS RankCostFunction : public ICostFunction {
+class EXSFM_EXPORTS RankCostFunction : public ICostFunction {
 public:
   ~RankCostFunction() = default;
 

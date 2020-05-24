@@ -4,10 +4,10 @@
 */
 #pragma once
 
-#include "core/wxcore.h"
+#include "core/excore.h"
 #include "core/math/constants.h"
 #include "core/utils/typehelper.h"
-#include "3rd_party/opencv/wxopencv.h"
+#include "3rd_party/opencv/exopencv.h"
 #include "opencv2/core/mat.hpp"
 
 #include <memory>
@@ -17,7 +17,7 @@ namespace earthxpert {
  * The class EarthEllipsoid implements coordinate conversion of the ellipsoids
  * for ECEF/ECF coordinate frame.
  */
-class WXCORE_EXPORTS EarthEllipsoid
+class EXCORE_EXPORTS EarthEllipsoid
 {
 public:
   EarthEllipsoid(double semiMajor = kWGS84_A, double eccSq = kWGS84_ECCSQ);
@@ -31,12 +31,12 @@ public:
   }
 
   inline Point3d LPHToXYZ(const Point3d& lph) const {
-    return LPHToXYZ(lph.x, lph.y, lph.z); 
-  } 
+    return LPHToXYZ(lph.x, lph.y, lph.z);
+  }
   Point3d LPHToXYZ(double lon, double lat, double height) const;
 
   inline Point3d XYZToLPH(const Point3d& xyz) const {
-    return XYZToLPH(xyz.x, xyz.y, xyz.z); 
+    return XYZToLPH(xyz.x, xyz.y, xyz.z);
   }
   Point3d XYZToLPH(double X, double Y, double Z) const;
 
@@ -70,7 +70,7 @@ private:
   double mEccSq{kWGS84_ECCSQ};  // first Eccentricity squared
 
   Point3d mLsrOrigin{0.0, 0.0, 0.0}; // LSR origin Longitude/Latitude/Height
-  double mHgtTol{0.0001}; // Height tolerance 
+  double mHgtTol{0.0001}; // Height tolerance
 
   double RadiusInPrimeMeridian(double) const;
   double RadiusInPrimeVertical(double) const;
@@ -85,4 +85,4 @@ private:
   Point3d mLsrOriginXYZ{0.0, 0.0, 0.0}; // LSR origin XYZ position
   cv::Mat1d mL2E{ cv::Mat1d::eye(3, 3) }; // 3x3 rotation matrix from LSR to ECEF
 };
-}
+} // namespace earthxpert

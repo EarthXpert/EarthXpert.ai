@@ -4,14 +4,14 @@
  */
 #pragma once
 
-#include "sfm/wxsfm.h"
+#include "sfm/exsfm.h"
 
-namespace watxtract {
+namespace earthxpert {
 
 /**
  *  The interface INeighborhood defines the behaviour of neighborhood selection.
  */
-class WXSFM_EXPORTS INeighborhood {
+class EXSFM_EXPORTS INeighborhood {
 public:
   enum NeighborType {
     eCIRCLE,    // circular

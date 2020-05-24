@@ -5,16 +5,15 @@
 #pragma once
 
 #include "core/datasource/iraster.h"
-
 #include "opencv2/core.hpp"
 
 namespace earthxpert {
 /**
  *  The class Raster stores a 2D pixel block that is pixel interleaved. For color image,
- *  the pixel bands are arranged in BGR sequence. 
+ *  the pixel bands are arranged in BGR sequence.
  *  The pixel block may consist of the image itself and possibly the extra margin/border.
  */
-class WXCORE_EXPORTS CvRaster final : public IRaster {
+class EXCORE_EXPORTS CvRaster final : public IRaster {
 public:
   CvRaster(int numCols, int numRows, int dataType,
     int colOffset, int rowOffset, int marginCols, int marginRows, MarginKind marginKind);
@@ -178,8 +177,8 @@ public:
   int64 GetRowNumBytes() const noexcept { return mRowNumBytes; }
 
 private:
-  int mNumCols{};               // number of image columns 
-  int mNumRows{};               // number of image rows 
+  int mNumCols{};               // number of image columns
+  int mNumRows{};               // number of image rows
   int mDataType{ CV_8UC1 };     // data type of each band
   int mNumBands{};              // number of bands/channels
   int mColOffset{};             // col offset of image
@@ -187,7 +186,7 @@ private:
   int mMarginCols{};            // margin cols
   int mMarginRows{};            // margin rows
   MarginKind mMarginKind{ MarginKind::eCONSTANT };
-  mutable cv::Mat mMat;         // 2D matrix reprents the pixel block, each element is an pixel 
+  mutable cv::Mat mMat;         // 2D matrix reprents the pixel block, each element is an pixel
 
   // cached temporaries for performance
   int mBpb{};             // bytes occupied by one band
@@ -202,4 +201,4 @@ private:
 
   void ObtainMatInfo();
 };
-} // namespace watxtract
+} // namespace earthxpert

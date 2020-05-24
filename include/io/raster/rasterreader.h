@@ -15,16 +15,16 @@ class CvRaster;
 class GdalRaster;
 
 /**
- *  The class RasterReader provides format in-dependent functios to read from 
+ *  The class RasterReader provides format in-dependent functios to read from
  *  an image file with GDAL as backend, and deserialize pixle block in an IRaster object
  *  having specific configurations, such as size, offset, margin, bands, etc.
- *  Each RasterReader instance is connected and thus bound to specific bands. 
- *  Therefore a new instance is needed to read from different subsets of available bands. 
+ *  Each RasterReader instance is connected and thus bound to specific bands.
+ *  Therefore a new instance is needed to read from different subsets of available bands.
  */
-class WXIO_EXPORTS RasterReader final : public IRasterReader {
+class EXIO_EXPORTS RasterReader final : public IRasterReader {
 public:
   RasterReader(const std::string& imageFile);
-  RasterReader(const std::string& imageFile, const std::vector<int>& bands);  
+  RasterReader(const std::string& imageFile, const std::vector<int>& bands);
   RasterReader(GDALDataset* dataset);
   RasterReader(GDALDataset* dataset, const std::vector<int>& bands);
   RasterReader(const RasterReader&) = delete;
@@ -37,7 +37,7 @@ public:
   /**
    *  \return Returns the backend GDALDataset object. RasterReader
    *  exports partially the GDAL functions. The caller could exploit
-   *  the full GDAL capabilities via the returned object pointer.  
+   *  the full GDAL capabilities via the returned object pointer.
    */
   GDALDataset* GetDataset() const noexcept {
     return mDataset.get();
@@ -90,7 +90,7 @@ public:
    *  \param [in] marginRows the vertical margin size
    *  \param [in] marginKind the margin kind.
    */
-  void SetMargins(const int marginCols, const int marginRows, 
+  void SetMargins(const int marginCols, const int marginRows,
     const MarginKind marginKind) override {
     mMarginCols = marginCols;
     mMarginRows = marginRows;
@@ -124,7 +124,7 @@ public:
   std::unique_ptr<Geocoding> GetGeocoding() const override;
 
   /**
-   *  \brief Calculate the memory size in bytes to hold a raster  
+   *  \brief Calculate the memory size in bytes to hold a raster
    *  given the width and height.
    *
    *  \param [in] numCols horizontal width
@@ -188,4 +188,4 @@ private:
   MarginFlag ObtainMarginFlag(IRaster* const raster) const;
   MarginFillDim ObtainMarginFillDim(IRaster* const raster) const;
 };
-} // namespace watxtract
+} // namespace earthxpert

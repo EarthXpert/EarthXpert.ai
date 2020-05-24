@@ -9,7 +9,7 @@
 #include <limits>
 #include <numeric>
 
-using watxtract::FrameEPCorr;
+using earthxpert::FrameEPCorr;
 
 /**
  * Constructor

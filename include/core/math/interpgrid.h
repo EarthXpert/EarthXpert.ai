@@ -190,4 +190,4 @@ private:
 using InterpGridF = InterpGrid<float>;
 using InterpGridD = InterpGrid<double>;
 // using InterpGridLD = InterpGrid<long double>;
-} // namespace watxtract
+} // namespace earthxpert

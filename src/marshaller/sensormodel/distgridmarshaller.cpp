@@ -3,7 +3,7 @@
  * -----------------------------------------------------------------------------
  */
 #include "marshaller/distgridmarshaller.h"
-#include "core/exceptions/wxexcept.h"
+#include "core/exceptions/exexcept.h"
 
 #include <boost/algorithm/string.hpp>
 #include <algorithm>

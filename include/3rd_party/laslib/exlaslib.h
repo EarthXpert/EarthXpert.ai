@@ -8,5 +8,5 @@
 #include <string>
 
 namespace earthxpert {
-void WX3RDPARTY_EXPORTS CreateLAX(const std::string &lasFile);
+void EX3RDPARTY_EXPORTS CreateLAX(const std::string &lasFile);
 } // namespace earthxpert

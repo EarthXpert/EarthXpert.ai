@@ -3,7 +3,7 @@
  * -----------------------------------------------------------------------------
  */
 #pragma once
-#include "sensormodel/wxsensormodel.h"
+#include "sensormodel/exsensormodel.h"
 
 namespace earthxpert {
 /**
@@ -12,7 +12,7 @@ namespace earthxpert {
  *
  *  \detail
  */
-class WXSENSORMODEL_EXPORTS ScannerEP {
+class EXSENSORMODEL_EXPORTS ScannerEP {
 public:
   /**
    * Constructor
@@ -23,4 +23,4 @@ public:
 
 private:
 };
-} // namespace watxtract
+} // namespace earthxpert

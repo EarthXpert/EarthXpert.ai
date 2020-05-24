@@ -14,7 +14,7 @@ namespace earthxpert {
  *  The class DigitalImageModel offers the transformation
  *  between the focal plane and the raster imagery.
  */
-class WXSENSORMODEL_EXPORTS DigitalImageModel final : public IImageModelPolicy {
+class EXSENSORMODEL_EXPORTS DigitalImageModel final : public IImageModelPolicy {
 public:
   DigitalImageModel() {}
 
@@ -76,7 +76,7 @@ private:
  *  The class FilmImageModel offers the transformation
  *  between the focal plane and the raster imagery.
  */
-class WXSENSORMODEL_EXPORTS FilmImageModel final : public IImageModelPolicy {
+class EXSENSORMODEL_EXPORTS FilmImageModel final : public IImageModelPolicy {
 public:
   FilmImageModel() {}
 
@@ -112,7 +112,7 @@ public:
    *  output the 2d position in image coordinate system.
    *
    *  \param [in] sensor 2d position (x, y) in sensor focal plane coordinate
-   * system 
+   * system
    * system \return Return 2d position (col, row) in imagery coordinate if the operation succeeds
    */
   Point2d SensorToImage(const Point2d &sensor) const override;
@@ -133,4 +133,4 @@ private:
   void CopyFrom(const FilmImageModel &rhs);
   void MoveFrom(FilmImageModel &&rhs) noexcept;
 };
-} // namespace watxtract
+} // namespace earthxpert

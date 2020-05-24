@@ -2,7 +2,7 @@
  *  Copyright (c) 2019.  All rights reserved.                          -
  * ----------------------------------------------------------------------
  */
-#include "3rd_party/laslib/wxlaslib.h"
+#include "3rd_party/laslib/exlaslib.h"
 
 #include "lasindex.hpp"
 #include "lasquadtree.hpp"

@@ -33,7 +33,7 @@ TEST(framemodel, CreateFrameIP) {
 }
 
 TEST(framemodel, CreateFrameEP) {
-  std::cerr << "[   WXAI   ] "
+  std::cerr << "[   EXAI   ] "
             << "not implemented" << std::endl;
 }
 

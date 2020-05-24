@@ -1,11 +1,11 @@
 project(tests_performance_io CXX)
 
 add_performance_test(rasterreader_perf_tests 
-  wx3rd_party core dataio 
+  ex3rd_party core dataio 
   ${GDAL_LIBRARY} ${OPENCV_LIBS})
 if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
   get_filename_component(BOOST_BIN_DIR "${Boost_DIR}/../.." ABSOLUTE)
-  set(TESTS_IO_PATH "PATH=$<TARGET_FILE_DIR:wx3rd_party>;$<TARGET_FILE_DIR:core>;\
+  set(TESTS_IO_PATH "PATH=$<TARGET_FILE_DIR:ex3rd_party>;$<TARGET_FILE_DIR:core>;\
 $<TARGET_FILE_DIR:dataio>;$<TARGET_FILE_DIR:epipolar>;$<TARGET_FILE_DIR:epipolarmodel>;\
 $<TARGET_FILE_DIR:marshaller>;$<TARGET_FILE_DIR:sensormodel>;\
 ${GTEST_BIN_DIR};${BOOST_BIN_DIR};${GDAL_BIN_DIR};${OPENCV_BIN_DIR};${OPENNI_BIN_DIR};${QT_BIN_DIR};\
@@ -17,5 +17,5 @@ ${TESTS_BIN_DIR};$ENV{PATH}")
 endif()
 
 if(EARTHXPERT_INSTALL_TESTS_CPPUNIT)
-  watxtract_install_test(rasterreader_perf_tests)
+  earthxpert_install_test(rasterreader_perf_tests)
 endif()

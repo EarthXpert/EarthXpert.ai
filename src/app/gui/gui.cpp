@@ -12,10 +12,10 @@ using earthxpert::RasterWindow;
 
 int main(int argc, char** argv) {
   // get full path of command line app by name
-  std::string exe_path = SdkConfig::BinPath("wxgeoinfo");
+  std::string exe_path = SdkConfig::BinPath("exgeoinfo");
   std::cerr << "Full path: " << exe_path << std::endl;
 
-  // call WXAI's APIs
+  // call EXAI's APIs
   RasterLayout rasterLayout(1000, 1000, 600, 600);
   auto& rasterWins = rasterLayout.GetRasterWindows();
 

@@ -4,7 +4,7 @@
  */
 #pragma once
 
-#include "marshaller/wxmarshaller.h"
+#include "marshaller/exmarshaller.h"
 
 #include <memory>
 #include <string>
@@ -16,7 +16,7 @@ class ISensorModel;
  *  The interface ISensorModelMarshaller defines the behaviours of
  *  serializing and deserializing sensor models.
  */
-class WXMARSHALLER_EXPORTS ISensorModelMarshaller {
+class EXMARSHALLER_EXPORTS ISensorModelMarshaller {
 public:
   virtual ~ISensorModelMarshaller() {}
 
@@ -32,4 +32,4 @@ public:
   virtual std::unique_ptr<ISensorModel> Deserialize(
     const std::string &modelFile) const = 0;
 };
-} // namespace watxtract
+} // namespace earthxpert

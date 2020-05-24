@@ -4,15 +4,15 @@
  */
 #pragma once
 
-#include "sensormodel/wxsensormodel.h"
-#include "3rd_party/opencv/wxopencv.h"
+#include "sensormodel/exsensormodel.h"
+#include "3rd_party/opencv/exopencv.h"
 
-namespace watxtract {
+namespace earthxpert {
 /**
  *  The interface IImageModelPolicy defines the transformation
  *  between the focal plane and the raster imagery.
  */
-class WXSENSORMODEL_EXPORTS IImageModelPolicy {
+class EXSENSORMODEL_EXPORTS IImageModelPolicy {
 public:
   enum ImageModelPolicyType {
     eDIGITAL, //

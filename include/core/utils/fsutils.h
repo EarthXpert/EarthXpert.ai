@@ -4,12 +4,12 @@
  */
 #pragma once
 
-#include "core/wxcore.h"
+#include "core/excore.h"
 #include <filesystem>
 
 namespace fs = std::filesystem;
 
-namespace watxtract::utils {
+namespace earthxpert::utils {
 /**
  *  \brief insert prefix for filename component
  *
@@ -17,6 +17,6 @@ namespace watxtract::utils {
  *  \param [in] prefix string to be inserted
  *  \return Returns prefix + filename
  */
-std::string WXCORE_EXPORTS PathPrefixFilename(
+std::string EXCORE_EXPORTS PathPrefixFilename(
   const std::string& fileName, const std::string& prefix);
-} // namespace watxtract::utils
+} // namespace earthxpert::utils

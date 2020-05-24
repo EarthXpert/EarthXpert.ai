@@ -13,7 +13,7 @@ namespace earthxpert {
 /**
  *  Encapsulates a calibrated grid of camera lens distortion.
  */
-template <typename _Ty> class WXSENSORMODEL_EXPORTS DistortionGrid {
+template <typename _Ty> class EXSENSORMODEL_EXPORTS DistortionGrid {
 public:
   using ValueType = _Ty;
 
@@ -65,4 +65,4 @@ private:
 using DistortionGridF = DistortionGrid<float>;
 using DistortionGridD = DistortionGrid<double>;
 // using DistortionGridLD = DistortionGrid<long double>;
-} // namespace watxtract
+} // namespace earthxpert

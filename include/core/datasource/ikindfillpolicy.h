@@ -4,13 +4,13 @@
  */
 #pragma once
 
-#include "core/wxcore.h"
+#include "core/excore.h"
 
 namespace earthxpert {
 /**
  *  The interface IKindFillPolicy defines the margin filling behaviour.
  */
-class WXCORE_EXPORTS IKindFillPolicy {
+class EXCORE_EXPORTS IKindFillPolicy {
 public:
   virtual ~IKindFillPolicy() {}
 
