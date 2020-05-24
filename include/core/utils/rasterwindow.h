@@ -4,13 +4,13 @@
  */
 #pragma once
 
-#include "core/wxcore.h"
+#include "core/excore.h"
 
-namespace watxtract {
+namespace earthxpert {
 /**
  *  The structure RasterWindow contains the offset and size information.
  */
-struct WXCORE_EXPORTS RasterWindow {
+struct EXCORE_EXPORTS RasterWindow {
   int colOffset{};
   int rowOffset{};
   int numCols{};

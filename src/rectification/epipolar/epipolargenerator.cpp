@@ -8,11 +8,11 @@
 #include "io/raster/rasterreader.h"
 #include "io/raster/rasterwriter.h"
 
-using watxtract::EpipolarGenerator;
-using watxtract::IEpipolarModel;
-using watxtract::IRasterReader;
-using watxtract::IRasterResample;
-using watxtract::IRasterWriter;
+using earthxpert::EpipolarGenerator;
+using earthxpert::IEpipolarModel;
+using earthxpert::IRasterReader;
+using earthxpert::IRasterResample;
+using earthxpert::IRasterWriter;
 
 /**
  *  \brief

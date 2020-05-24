@@ -4,14 +4,14 @@
  */
 #pragma once
 
-#include "project/wxproject.h"
+#include "project/exproject.h"
 
-namespace watxtract {
+namespace earthxpert {
 /**
  *  The interface IProject defines the functionalities to access entires
  *  of a project composed of imagery data.
  */
-class WXPROJECT_EXPORTS IProject {
+class EXPROJECT_EXPORTS IProject {
 public:
   virtual ~IProject() {}
 }

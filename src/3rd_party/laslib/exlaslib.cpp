@@ -2,7 +2,7 @@
  *  Copyright (c) 2019.  All rights reserved.                          -
  * ----------------------------------------------------------------------
  */
-#include "3rd_party/laslib/wxlaslib.h"
+#include "3rd_party/laslib/exlaslib.h"
 
 #include "lasindex.hpp"
 #include "lasquadtree.hpp"
@@ -11,7 +11,7 @@
 #include <memory>
 #include <sys/stat.h>
 
-using namespace watxtract;
+using namespace earthxpert;
 
 /**
  *  \brief create a lax index file for storing quadtree of the

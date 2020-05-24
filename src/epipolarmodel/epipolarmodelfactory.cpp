@@ -13,13 +13,13 @@
 #include <cmath>
 #include <exception>
 
-using watxtract::EpipolarModelFactory;
-using watxtract::FrameModel;
-using watxtract::IEpipolarModel;
-using watxtract::ISensorModel;
-using watxtract::Point2d;
-using watxtract::Point3d;
-using watxtract::RationalModel;
+using earthxpert::EpipolarModelFactory;
+using earthxpert::FrameModel;
+using earthxpert::IEpipolarModel;
+using earthxpert::ISensorModel;
+using earthxpert::Point2d;
+using earthxpert::Point3d;
+using earthxpert::RationalModel;
 
 /**
  *  \brief

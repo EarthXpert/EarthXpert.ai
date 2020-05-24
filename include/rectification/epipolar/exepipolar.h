@@ -4,14 +4,14 @@
  */
 #pragma once
 
-#ifdef WXIO_API
+#ifdef EXEPIPOLAR_API
 #if (defined _WIN32 || defined WINCE || defined __CYGWIN__)
-#define WXIO_EXPORTS __declspec(dllexport)
+#define EXEPIPOLAR_EXPORTS __declspec(dllexport)
 #elif defined __GNUC__ && __GNUC__ >= 4
-#define WXIO_EXPORTS __attribute__((visibility("default")))
+#define EXEPIPOLAR_EXPORTS __attribute__((visibility("default")))
 #endif
 #endif
 
-#ifndef WXIO_EXPORTS
-#define WXIO_EXPORTS
+#ifndef EXEPIPOLAR_EXPORTS
+#define EXEPIPOLAR_EXPORTS
 #endif

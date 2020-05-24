@@ -3,10 +3,10 @@
 #  -----------------------------------------------------------------------------
 
 import argparse
-import wxpyext as wp
+import expyext as epy
 
 def genFrameEpi():
-  wp.generateFrameEpipolar()
+  epy.generateFrameEpipolar()
 
 '''
   The script frameepipolar generates epipolar images 

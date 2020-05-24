@@ -3,23 +3,23 @@
  * -----------------------------------------------------------------------------
  */
 #include "sensormodel/rollingshuttermodel.h"
-#include "3rd_party/gdal/wxgdal.h"
+#include "3rd_party/gdal/exgdal.h"
 #include "sensormodel/frameip.h"
 #include "sensormodel/imagemodel.h"
 #include "sensormodel/satellitedp.h"
 #include "sensormodel/scannerep.h"
 #include "sensormodel/scannerepcorr.h"
 
-using watxtract::FrameIP;
-using watxtract::DigitalImageModelImp;
-using watxtract::ISensorModel;
-using watxtract::Point2d;
-using watxtract::Point3d;
-using watxtract::RollingShutterModel;
-using watxtract::SatelliteDP;
-using watxtract::ScannerEP;
-using watxtract::ScannerEPCorr;
-using watxtract::SpatialReferenceSystem;
+using earthxpert::FrameIP;
+using earthxpert::DigitalImageModelImp;
+using earthxpert::ISensorModel;
+using earthxpert::Point2d;
+using earthxpert::Point3d;
+using earthxpert::RollingShutterModel;
+using earthxpert::SatelliteDP;
+using earthxpert::ScannerEP;
+using earthxpert::ScannerEPCorr;
+using earthxpert::SpatialReferenceSystem;
 
 /**
  *  \brief Construct an aerial rolling-shutter geometry model.

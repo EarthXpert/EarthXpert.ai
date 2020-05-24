@@ -1,17 +1,17 @@
 /* -----------------------------------------------------------------------------
- *  Copyright (c) 2019.  All rights reserved.
+ *  Copyright (c) 2018.  All rights reserved.
  * -----------------------------------------------------------------------------
  */
 #pragma once
 
-#ifdef WXPROJECT_API
+#ifdef EXSENSORMODEL_API
 #if (defined _WIN32 || defined WINCE || defined __CYGWIN__)
-#define WXPROJECT_EXPORTS __declspec(dllexport)
+#define EXSENSORMODEL_EXPORTS __declspec(dllexport)
 #elif defined __GNUC__ && __GNUC__ >= 4
-#define WXPROJECT_EXPORTS __attribute__((visibility("default")))
+#define EXSENSORMODEL_EXPORTS __attribute__((visibility("default")))
 #endif
 #endif
 
-#ifndef WXPROJECT_EXPORTS
-#define WXPROJECT_EXPORTS
+#ifndef EXSENSORMODEL_EXPORTS
+#define EXSENSORMODEL_EXPORTS
 #endif

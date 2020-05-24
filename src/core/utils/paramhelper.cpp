@@ -4,5 +4,5 @@
  */
 #include "core/utils/paramhelper.h"
 
-namespace watxtract::utils {
+namespace earthxpert::utils {
 }

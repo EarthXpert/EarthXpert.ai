@@ -9,7 +9,7 @@
 #include "laswriter.hpp"
 #include <vector>
 
-namespace watxtract {
+namespace earthxpert {
 /**
  *  The class PointcloudWriter provides functios to write into a points file
  *  with LASlib as backend, and serialize points in a Pointcloud object
@@ -17,7 +17,7 @@ namespace watxtract {
  *
  *  \remark update an existing file?
  */
-class WXIO_EXPORTS PointcloudWriter final : public IPointcloudWriter {
+class EXIO_EXPORTS PointcloudWriter final : public IPointcloudWriter {
 public:
   /**
    *  \brief Open/create the las file for write
@@ -45,4 +45,4 @@ private:
 
   void ObtainLasInfo();
 };
-} // namespace watxtract
+} // namespace earthxpert

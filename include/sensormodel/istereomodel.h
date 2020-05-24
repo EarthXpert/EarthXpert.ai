@@ -4,13 +4,13 @@
  */
 #pragma once
 
-#include "3rd_party/opencv/wxopencv.h"
-#include "sensormodel/wxsensormodel.h"
+#include "3rd_party/opencv/exopencv.h"
+#include "sensormodel/exsensormodel.h"
 
 #include <array>
 #include <vector>
 
-namespace watxtract {
+namespace earthxpert {
 class ISensorModel;
 
 /**
@@ -30,7 +30,7 @@ class ISensorModel;
  *  imagery raster space, such as image coordinates (column, row) [unit: pixel]
  *  w.r.t. the upper-left corner of the upper-left pixel in a raster image.
  */
-class WXSENSORMODEL_EXPORTS IStereoModel {
+class EXSENSORMODEL_EXPORTS IStereoModel {
 public:
   virtual ~IStereoModel() {}
 
@@ -43,11 +43,11 @@ public:
    *
    *  \param [in] leftModel left sensor model composing the stereo model
    *  \param [in] leftImage 2d position (x, y) in left imagery raster coordinate
-   * system 
+   * system
    *  \param [in] rightModel right sensor model composing the stereo model
    *  \param [in] rightImage the corresponding 2d position (x, y) in right
-   * imagery raster coordinate system 
-   *  \param [in/out] ground 3d ground position (X, Y, Z) in ground coordinate system 
+   * imagery raster coordinate system
+   *  \param [in/out] ground 3d ground position (X, Y, Z) in ground coordinate system
      \return Returns true if the operation succeeds
    *
    *  \details
@@ -185,4 +185,4 @@ public:
                 const std::vector<ISensorModel const *> &sensorModels,
                 std::vector<Point2d> &images) const = 0;
 };
-} // namespace watxtract
+} // namespace earthxpert

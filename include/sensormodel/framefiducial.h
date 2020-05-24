@@ -3,19 +3,19 @@
  * -----------------------------------------------------------------------------
  */
 #pragma once
-#include "sensormodel/wxsensormodel.h"
+#include "sensormodel/exsensormodel.h"
 
-namespace watxtract {
+namespace earthxpert {
 /**
  *  The class defines fiducial positions on focal plane and on image.
  *
  *  \detail
  */
-class WXSENSORMODEL_EXPORTS FilmFrameFiducial {
+class EXSENSORMODEL_EXPORTS FilmFrameFiducial {
 public:
   FilmFrameFiducial();
   ~FilmFrameFiducial() {}
 
 private:
 };
-} // namespace watxtract
+} // namespace earthxpert

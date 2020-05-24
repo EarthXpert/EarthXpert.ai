@@ -2,9 +2,9 @@
  *  Copyright (c) 2020.  All rights reserved.
  * -----------------------------------------------------------------------------
  */
-#include "3rd_party/boost/wxboost.h"
-#include "3rd_party/gdal/wxgdal.h"
-#include "core/exceptions/wxexcept.h"
+#include "3rd_party/boost/exboost.h"
+#include "3rd_party/gdal/exgdal.h"
+#include "core/exceptions/exexcept.h"
 #include "core/utils/rasterresample.h"
 #include "rectification/epipolar/epipolar.h"
 #include "sensormodel/utils.h"
@@ -12,21 +12,21 @@
 #include <boost/program_options.hpp>
 #include <iostream>
 
-using namespace watxtract;
-using namespace watxtract::epipolar;
+using namespace earthxpert;
+using namespace earthxpert::epipolar;
 using SensorType = ISensorModel::ModelType;
 namespace po = boost::program_options;
 
 /**
- *  The console program epipolar generates epipolar or pseudo epipolar images 
+ *  The console program epipolar generates epipolar or pseudo epipolar images
  *  from a pair of overlapping images acquired by the same sensor.
  *
  *  \detail Epipolar geometry is from the geometry of stereo vision. When a camera
- *  views a scene from two or more distinct positions, there are a number of 
- *  geometric relations between the 3D surface and its projections onto the 
+ *  views a scene from two or more distinct positions, there are a number of
+ *  geometric relations between the 3D surface and its projections onto the
  *  2D images that lead to constraints between the image pixels.
  *
- *  usage:  epipolar.exe 
+ *  usage:  epipolar.exe
  *            --sensorname <frame|rational>
  *            --prjdir [path_of_project_directory_or_file]
  *            --leftimg <path_of_left_image_file>    // "images/img01.tif"
@@ -41,8 +41,8 @@ namespace po = boost::program_options;
  *
  *  example:
  *
- *    wxepipolar.exe --sensorname="rational" --leftimg="D:/home/workspace/TestData/Imagery/Satellite/052522862010_01_P001_PAN/09JAN15034657-P2AS-052522862010_01_P001.RPB" --leftmdl="D:/home/workspace/TestData/Imagery/Satellite/052522862010_01_P001_PAN/po_162796_pan_0000000_rpc.txt" --rightimg="D:/home/workspace/TestData/Imagery/Satellite/052522862010_01_P001_PAN/09JAN15034801-P2AS-052522862010_01_P001.TIF" --rightmdl="D:/home/workspace/TestData/Imagery/Satellite/052522862010_01_P001_PAN/09JAN15034801-P2AS-052522862010_01_P001.RPB" --bands=1 --sample=1 --outdir="D:/home/workspace/build/windows/vs2019/tests/output/" --resample="cubic" --memsize=4000
- *    wxepipolar.exe --sensorname="rational" --leftimg="D:/home/workspace/TestData/Imagery/Satellite/po_162796_pan/po_162796_pan_0000000.tif" --leftmdl="D:/home/workspace/TestData/Imagery/Satellite/po_162796_pan/po_162796_pan_0000000_rpc.txt" --rightimg="D:/home/workspace/TestData/Imagery/Satellite/po_162796_pan/po_162796_pan_0010000.tif" --rightmdl="D:/home/workspace/TestData/Imagery/Satellite/po_162796_pan/po_162796_pan_0010000_rpc.txt" --bands=1 --sample=1 --outdir="D:/home/workspace/build/windows/vs2019/tests/output/" --resample="cubic" --memsize=4000
+ *    exepipolar.exe --sensorname="rational" --leftimg="D:/home/workspace/TestData/Imagery/Satellite/052522862010_01_P001_PAN/09JAN15034657-P2AS-052522862010_01_P001.RPB" --leftmdl="D:/home/workspace/TestData/Imagery/Satellite/052522862010_01_P001_PAN/po_162796_pan_0000000_rpc.txt" --rightimg="D:/home/workspace/TestData/Imagery/Satellite/052522862010_01_P001_PAN/09JAN15034801-P2AS-052522862010_01_P001.TIF" --rightmdl="D:/home/workspace/TestData/Imagery/Satellite/052522862010_01_P001_PAN/09JAN15034801-P2AS-052522862010_01_P001.RPB" --bands=1 --sample=1 --outdir="D:/home/workspace/build/windows/vs2019/tests/output/" --resample="cubic" --memsize=4000
+ *    exepipolar.exe --sensorname="rational" --leftimg="D:/home/workspace/TestData/Imagery/Satellite/po_162796_pan/po_162796_pan_0000000.tif" --leftmdl="D:/home/workspace/TestData/Imagery/Satellite/po_162796_pan/po_162796_pan_0000000_rpc.txt" --rightimg="D:/home/workspace/TestData/Imagery/Satellite/po_162796_pan/po_162796_pan_0010000.tif" --rightmdl="D:/home/workspace/TestData/Imagery/Satellite/po_162796_pan/po_162796_pan_0010000_rpc.txt" --bands=1 --sample=1 --outdir="D:/home/workspace/build/windows/vs2019/tests/output/" --resample="cubic" --memsize=4000
  */
 int main(int argc, char** argv) {
   po::options_description optDesc{ "Options" };

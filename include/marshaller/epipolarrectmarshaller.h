@@ -9,7 +9,7 @@
 #include <cereal/archives/json.hpp>
 #include <memory>
 
-namespace watxtract {
+namespace earthxpert {
 
 /**
  *  The class EpipolarRectMarshaller serialize and deserialize the
@@ -56,4 +56,4 @@ private:
   double mCosRot{};
   double mInvScale{};
 };
-} // namespace watxtract
+} // namespace earthxpert

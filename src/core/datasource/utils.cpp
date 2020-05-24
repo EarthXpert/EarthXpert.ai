@@ -5,12 +5,12 @@
 #include "core/datasource/utils.h"
 #include "core/datasource/kindfillpolicy.h"
 #include "core/datasource/marginfill.h"
-#include "core/exceptions/wxexcept.h"
+#include "core/exceptions/exexcept.h"
 
 #include <map>
 #include <numeric>
 
-namespace watxtract {
+namespace earthxpert {
   // local details
   namespace detail {
     // Pixel data types of GDAL & CV
@@ -51,7 +51,7 @@ namespace watxtract {
 
 /**
  *  \brief Convert pixel type from GDAL to OpenCV
- *  
+ *
  *  \param [in] gdalType
  *  \param [in] numBands
  *  \return Returns CV type
@@ -71,7 +71,7 @@ int ConvertPixelType(const GDALDataType gdalType, const int numBands) {
  *  \param [in] cvType
  *  \return Returns GDAL data type and band numbers
  */
-std::pair<GDALDataType, int> WXCORE_EXPORTS ConvertPixelType(const int cvType) {
+std::pair<GDALDataType, int> EXCORE_EXPORTS ConvertPixelType(const int cvType) {
   const auto depth = CV_MAT_DEPTH(cvType);
 
   const auto it = detail::sDataTypesC2G.find(depth);
@@ -216,9 +216,9 @@ std::unique_ptr<CvRaster> ConvertRaster(const GdalRaster* gdalRaster, const int 
  *  \param [in] bands 0-based indices, if empty, default to all bands.
  *              The order of CV bands follows the indices specified by this parameter.
  *  \return Returns a vector of cv::Mat that points to the internal buffer
- *  but has no ownership.  
+ *  but has no ownership.
  */
-std::vector<std::unique_ptr<CvRaster>> WXCORE_EXPORTS ConvertRaster(
+std::vector<std::unique_ptr<CvRaster>> EXCORE_EXPORTS ConvertRaster(
   const GdalRaster* gdalRaster, const std::vector<int>& bands) {
   std::vector<int> cvtBands{bands};
   const int numBands = gdalRaster->GetNumBands();

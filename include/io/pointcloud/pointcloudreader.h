@@ -10,7 +10,7 @@
 #include <iostream>
 #include <vector>
 
-namespace watxtract {
+namespace earthxpert {
 /**
  *  The class PointcloudReader provides format in-dependent functios to read from
  *  a point cloud file with LASlib as backend, and extract points in a Cloudpoint object
@@ -18,7 +18,7 @@ namespace watxtract {
  *  Each PointcloudReader instance is connected and thus bound to specific fields.
  *  Therefore a new instance is needed to read from different groups of available fields.
  */
-class WXIO_EXPORTS PointcloudReader final : public IPointcloudReader {
+class EXIO_EXPORTS PointcloudReader final : public IPointcloudReader {
 public:
   PointcloudReader(const std::string& lasFile);
   PointcloudReader(const std::string &lasFile, FieldGroup fieldGroup);
@@ -64,7 +64,7 @@ public:
    *
    *  \return Return Pointcloud container object.
    */
-  std::unique_ptr<Pointcloud> ReadPointcloud(double xOffset, double yOffset, 
+  std::unique_ptr<Pointcloud> ReadPointcloud(double xOffset, double yOffset,
     double width, double height) override;
 
   /**
@@ -104,4 +104,4 @@ private:
 
   void ObtainLasInfo();
 };
-} // namespace watxtract
+} // namespace earthxpert

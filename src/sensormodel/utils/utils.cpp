@@ -6,7 +6,7 @@
 
 #include <map>
 
-namespace watxtract {
+namespace earthxpert {
 using SensorType = ISensorModel::ModelType;
 
 namespace detail {

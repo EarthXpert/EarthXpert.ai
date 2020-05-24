@@ -4,20 +4,20 @@
  */
 #pragma once
 
-#include "3rd_party/gdal/wxgdal.h"
-#include "sensormodel/wxsensormodel.h"
+#include "3rd_party/gdal/exgdal.h"
+#include "sensormodel/exsensormodel.h"
 
 #include <array>
 #include <chrono>
 #include <memory>
 
-namespace watxtract {
+namespace earthxpert {
 /**
  *  The class defines extrinsic parameters defining exterior orientation.
  *
  *  \detail
  */
-class WXSENSORMODEL_EXPORTS FrameEP {
+class EXSENSORMODEL_EXPORTS FrameEP {
 public:
   FrameEP(const std::array<double, 3> &position,
           const std::array<double, 3> &rotation,
@@ -62,4 +62,4 @@ private:
   void CopyFrom(const FrameEP &rhs);
   void MoveFrom(FrameEP &&rhs) noexcept;
 };
-} // namespace watxtract
+} // namespace earthxpert

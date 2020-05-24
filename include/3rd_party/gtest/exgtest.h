@@ -4,7 +4,7 @@
  */
 #pragma once
 
-#include "3rd_party/wx3rd_party.h"
+#include "3rd_party/ex3rd_party.h"
 
-namespace watxtract {
-} // namespace watxtract
+namespace earthxpert {
+} // namespace earthxpert

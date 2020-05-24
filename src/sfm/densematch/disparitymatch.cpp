@@ -10,8 +10,14 @@
 #include <execution>
 #include <omp.h>
 
-using namespace watxtract;
+using namespace earthxpert;
 
+/**
+ *  \brief
+ *
+ *  \return Retruns the disparity map where the element value is the x-parallax
+ *  (assuming a perfect epipolar), or the x- and y-parallax pair (e.g. Point2f).
+ */
 template <class GeometryModel, class CostFunction, class Neighborhood>
 std::unique_ptr<IRaster> DisparityMatch<GeometryModel, CostFunction, Neighborhood>::Match() {
   Preprocess();

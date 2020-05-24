@@ -2,8 +2,8 @@
  *  Copyright (c) 2020.  All rights reserved.
  * -----------------------------------------------------------------------------
  */
-#include "3rd_party/boost/wxboost.h"
-#include "3rd_party/gdal/wxgdal.h"
+#include "3rd_party/boost/exboost.h"
+#include "3rd_party/gdal/exgdal.h"
 
 #include <iostream>
 #include <boost/program_options.hpp>

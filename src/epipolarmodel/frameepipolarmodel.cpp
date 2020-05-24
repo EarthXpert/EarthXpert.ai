@@ -12,11 +12,11 @@
 #include <cassert>
 #include <cmath>
 
-using watxtract::FrameEpipolarModel;
-using watxtract::IEpipolarModel;
-using watxtract::ISensorModel;
-using watxtract::Point2d;
-using watxtract::Point3d;
+using earthxpert::FrameEpipolarModel;
+using earthxpert::IEpipolarModel;
+using earthxpert::ISensorModel;
+using earthxpert::Point2d;
+using earthxpert::Point3d;
 
 /**
  *   Constructor

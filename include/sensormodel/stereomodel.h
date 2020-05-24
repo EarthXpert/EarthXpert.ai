@@ -6,7 +6,7 @@
 
 #include "sensormodel/istereomodel.h"
 
-namespace watxtract {
+namespace earthxpert {
 class ISensorModel;
 
 /**
@@ -16,7 +16,7 @@ class ISensorModel;
  *  rays from a block of sensor geometry models are used to implement
  *    forward intersection and backward projection in the network.
  */
-class WXSENSORMODEL_EXPORTS StereoModel : public IStereoModel {
+class EXSENSORMODEL_EXPORTS StereoModel : public IStereoModel {
 public:
   StereoModel();
   virtual ~StereoModel() {}
@@ -30,11 +30,11 @@ public:
    *
    *  \param [in] leftModel left sensor model composing the stereo model
    *  \param [in] leftImage 2d position (x, y) in left image raster coordinate
-   * system 
+   * system
    *  \param [in] rightModel right sensor model composing the stereo model
    *  \param [in] rightImage the corresponding 2d position (x, y) in right image
-   * raster coordinate system 
-   *  \param [in/out] ground 3d ground position (X, Y, Z) in ground coordinate 
+   * raster coordinate system
+   *  \param [in/out] ground 3d ground position (X, Y, Z) in ground coordinate
    * system \return Returns true if the operation succeeds
    *
    *  \details
@@ -170,4 +170,4 @@ public:
                 const std::vector<ISensorModel const *> &sensorModels,
                 std::vector<Point2d> &images) const override;
 };
-} // namespace watxtract
+} // namespace earthxpert

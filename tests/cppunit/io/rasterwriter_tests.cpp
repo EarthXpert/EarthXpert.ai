@@ -11,7 +11,7 @@
 #include "core/utils/rasterlayout.h"
 #include "io/raster/rasterwriter.h"
 
-using namespace watxtract;
+using namespace earthxpert;
 
 /**
  *  \brief cv::Mat test cases

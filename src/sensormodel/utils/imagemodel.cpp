@@ -9,11 +9,11 @@
 #include <numeric>
 #include <stdexcept>
 
-using watxtract::EqualD;
-using watxtract::DigitalImageModelImp;
-using watxtract::FilmImageModelImp;
-using watxtract::Point2d;
-using watxtract::Point3d;
+using earthxpert::EqualD;
+using earthxpert::DigitalImageModelImp;
+using earthxpert::FilmImageModelImp;
+using earthxpert::Point2d;
+using earthxpert::Point3d;
 
 /**
  *  Constructor

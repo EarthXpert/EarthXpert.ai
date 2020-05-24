@@ -9,7 +9,7 @@
 #include <limits>
 #include <numeric>
 
-using watxtract::ScannerImageModel;
+using earthxpert::ScannerImageModel;
 
 /**
  * Constructor

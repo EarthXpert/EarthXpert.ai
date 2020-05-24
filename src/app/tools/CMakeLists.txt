@@ -1,15 +1,15 @@
 project(tools)
 
-watxtract_add_executable(wxepipolar "apps"
+earthxpert_add_executable(exepipolar "apps"
   SRCS "epipolar.cpp"
-  ITEMS wx3rd_party core dataio epipolar epipolarmodel marshaller
+  ITEMS ex3rd_party core dataio epipolar epipolarmodel marshaller
         Boost::filesystem Boost::program_options
         ${GDAL_LIBRARY})
-watxtract_add_executable(wxgeoinfo "apps"
+earthxpert_add_executable(exgeoinfo "apps"
   SRCS "geoinfo.cpp"
-  ITEMS wx3rd_party core dataio
+  ITEMS ex3rd_party core dataio
         Boost::filesystem Boost::program_options
         ${GDAL_LIBRARY})
 
-watxtract_install_target(wxepipolar)
-watxtract_install_target(wxgeoinfo)
+earthxpert_install_target(exepipolar)
+earthxpert_install_target(exgeoinfo)

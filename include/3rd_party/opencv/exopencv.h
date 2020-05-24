@@ -7,9 +7,9 @@
 #include "opencv2/core/base.hpp"
 #include "opencv2/core/types.hpp"
 
-namespace watxtract {
+namespace earthxpert {
 using Point2f = cv::Point2f;
 using Point3f = cv::Point3f;
 using Point2d = cv::Point2d;
 using Point3d = cv::Point3d;
-} // namespace watxtract
+} // namespace earthxpert

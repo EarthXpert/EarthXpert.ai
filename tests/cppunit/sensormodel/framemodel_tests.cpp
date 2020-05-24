@@ -12,7 +12,7 @@
 #include <cmath>
 #include <iostream>
 
-using namespace watxtract;
+using namespace earthxpert;
 
 static std::unique_ptr<DigitalFrameModel> CreateDigitalFrameModel();
 
@@ -33,7 +33,7 @@ TEST(framemodel, CreateFrameIP) {
 }
 
 TEST(framemodel, CreateFrameEP) {
-  std::cerr << "[   WXAI   ] "
+  std::cerr << "[   EXAI   ] "
             << "not implemented" << std::endl;
 }
 

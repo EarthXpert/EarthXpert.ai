@@ -10,4 +10,4 @@
 #include <execution>
 #include <omp.h>
 
-using watxtract::DenseMatch;
+using earthxpert::DenseMatch;

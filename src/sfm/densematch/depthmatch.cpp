@@ -10,8 +10,14 @@
 #include <execution>
 #include <omp.h>
 
-using namespace watxtract;
+using namespace earthxpert;
 
+/**
+ *  \brief
+ *
+ *  \return Retruns the depth map where the element value represents the
+ *  the depth of the corresonding pixel.
+ */
 template <class CostFunction, class Neighborhood>
 std::unique_ptr<IRaster> DepthMatch<CostFunction, Neighborhood>::Match() {
   return nullptr;

@@ -3,16 +3,16 @@
  * -----------------------------------------------------------------------------
  */
 #include "io/pointcloud/pointcloudwriter.h"
-#include "core/exceptions/wxexcept.h"
+#include "core/exceptions/exexcept.h"
 
-using namespace watxtract;
+using namespace earthxpert;
 
 /**
  *  \brief Open/create the las file for write
  *
  *  \param [in] lasFile the file name to receive points
  */
-PointcloudWriter::PointcloudWriter(const std::string& lasFile) 
+PointcloudWriter::PointcloudWriter(const std::string& lasFile)
   : PointcloudWriter(lasFile, "LAS") {
 }
 

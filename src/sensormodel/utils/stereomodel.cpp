@@ -9,10 +9,10 @@
 #include <cassert>
 #include <omp.h>
 
-using watxtract::ISensorModel;
-using watxtract::Point2d;
-using watxtract::Point3d;
-using watxtract::StereoModel;
+using earthxpert::ISensorModel;
+using earthxpert::Point2d;
+using earthxpert::Point3d;
+using earthxpert::StereoModel;
 
 /**
  *  Constructor.

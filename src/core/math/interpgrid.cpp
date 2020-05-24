@@ -11,7 +11,7 @@
 #include <cstring>
 #include <type_traits>
 
-using watxtract::InterpGrid;
+using earthxpert::InterpGrid;
 
 /**
  * Constructor
@@ -279,5 +279,5 @@ template <typename Ty> void InterpGrid<Ty>::Clear() noexcept {
   mSpcY = 1;
 }
 
-template class watxtract::InterpGrid<float>;
-template class watxtract::InterpGrid<double>;
+template class earthxpert::InterpGrid<float>;
+template class earthxpert::InterpGrid<double>;

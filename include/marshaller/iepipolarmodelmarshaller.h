@@ -4,18 +4,18 @@
  */
 #pragma once
 
-#include "marshaller/wxmarshaller.h"
+#include "marshaller/exmarshaller.h"
 #include "epipolarmodel/epipolarmodel.h"
 
 #include <memory>
 
-namespace watxtract {
+namespace earthxpert {
 
 /**
  *  The class EpipolarModelMarshaller serialize and deserialize the
  *  epipolar model and links to associated sensor models.
  */
-class WXMARSHALLER_EXPORTS IEpipolarModelMarshaller {
+class EXMARSHALLER_EXPORTS IEpipolarModelMarshaller {
 public:
   ~IEpipolarModelMarshaller() {}
 
@@ -31,4 +31,4 @@ public:
   virtual std::unique_ptr<IEpipolarModel>
   Deserialize(const std::string &modelFile) const = 0;
 };
-} // namespace watxtract
+} // namespace earthxpert

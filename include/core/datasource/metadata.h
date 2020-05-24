@@ -4,13 +4,13 @@
  */
 #pragma once
 
-#include "core/wxcore.h"
+#include "core/excore.h"
 
-namespace watxtract {
+namespace earthxpert {
 /**
- *  The class Metadata provides data of the tags describing the file- and 
+ *  The class Metadata provides data of the tags describing the file- and
  *  band-level information.
  */
-class WXCORE_EXPORTS Metadata {
+class EXCORE_EXPORTS Metadata {
 };
-} // namespace watxtract
+} // namespace earthxpert

@@ -4,14 +4,14 @@
  */
 #pragma once
 
-#ifdef WXSFM_API
+#ifdef @EX_LIB_NAME@_API
 #if (defined _WIN32 || defined WINCE || defined __CYGWIN__)
-#define WXSFM_EXPORTS __declspec(dllexport)
+#define @EX_LIB_NAME@_EXPORTS __declspec(dllexport)
 #elif defined __GNUC__ && __GNUC__ >= 4
-#define WXSFM_EXPORTS __attribute__((visibility("default")))
+#define @EX_LIB_NAME@_EXPORTS __attribute__((visibility("default")))
 #endif
 #endif
 
-#ifndef WXSFM_EXPORTS
-#define WXSFM_EXPORTS
+#ifndef @EX_LIB_NAME@_EXPORTS
+#define @EX_LIB_NAME@_EXPORTS
 #endif

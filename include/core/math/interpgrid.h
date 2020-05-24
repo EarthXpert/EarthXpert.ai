@@ -4,16 +4,16 @@
  */
 #pragma once
 
-#include "core/wxcore.h"
+#include "core/excore.h"
 #include "core/utils/typehelper.h"
-#include "3rd_party/opencv/wxopencv.h"
+#include "3rd_party/opencv/exopencv.h"
 
 #include <cassert>
 #include <memory>
 #include <vector>
 #include <utility>
 
-namespace watxtract {
+namespace earthxpert {
 /**
  * The class InterpGrid stores a 2D grid and performs bilinear
  * interpolation to provide values at specified locations. If the
@@ -23,7 +23,7 @@ namespace watxtract {
  * \param _Ty A fundamental data type of elements on the grid
  * \remark The 2D coordinate system
  */
-template <typename _Ty> class WXCORE_EXPORTS InterpGrid {
+template <typename _Ty> class EXCORE_EXPORTS InterpGrid {
   static_assert(std::is_floating_point_v<_Ty>, "Requires that template argument be floating data type");
 
 public:
@@ -190,4 +190,4 @@ private:
 using InterpGridF = InterpGrid<float>;
 using InterpGridD = InterpGrid<double>;
 // using InterpGridLD = InterpGrid<long double>;
-} // namespace watxtract
+} // namespace earthxpert

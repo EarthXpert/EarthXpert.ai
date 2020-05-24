@@ -5,14 +5,14 @@
 #pragma once
 
 #include "core/datasource/pointtypes.h"
-#include "3rd_party/opencv/wxopencv.h"
+#include "3rd_party/opencv/exopencv.h"
 
 #include <vector>
 
-namespace watxtract {
+namespace earthxpert {
 /**
  *  The class PointcloudHeader defines information given in the header section.
  */
-class WXCORE_EXPORTS PointcloudHeader {
+class EXCORE_EXPORTS PointcloudHeader {
 };
 }

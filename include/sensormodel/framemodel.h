@@ -14,7 +14,7 @@
 
 #include "opencv2/core/mat.hpp"
 
-namespace watxtract {
+namespace earthxpert {
 /**
  *  The class FrameModel implements the projective geometry of
  *  the pin-hole model for the global-shutter frame camera.
@@ -23,7 +23,7 @@ namespace watxtract {
  * the image raster coordinate system and the focal plane coordinate system
  */
 template <class ImageModelPolicy>
-class WXSENSORMODEL_EXPORTS FrameModel final : public SensorModel {
+class EXSENSORMODEL_EXPORTS FrameModel final : public SensorModel {
 public:
   using PolicyType = ImageModelPolicy;
 
@@ -227,4 +227,4 @@ private:
  */
 using DigitalFrameModel = FrameModel<DigitalImageModel>;
 using FilmFrameModel = FrameModel<FilmImageModel>;
-} // namespace watxtract
+} // namespace earthxpert

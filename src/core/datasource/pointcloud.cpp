@@ -6,7 +6,7 @@
 
 #include <type_traits>
 
-using namespace watxtract;
+using namespace earthxpert;
 
 /**
  *  \brief Construct Pointcloud object.

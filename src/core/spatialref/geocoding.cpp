@@ -6,8 +6,8 @@
 
 #include <stdexcept>
 
-using watxtract::Geocoding;
-using watxtract::Point2d;
+using earthxpert::Geocoding;
+using earthxpert::Point2d;
 
 Geocoding::Geocoding(const double originX, const double originY, 
   const double pixelSizeX, const double pixelSizeY)

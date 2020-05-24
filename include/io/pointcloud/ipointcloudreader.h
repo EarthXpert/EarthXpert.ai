@@ -4,18 +4,18 @@
  */
 #pragma once
 
-#include "io/wxio.h"
+#include "io/exio.h"
 #include "core/datasource/pointcloud.h"
 #include "core/datasource/pointcloudheader.h"
 
 #include <memory>
 
-namespace watxtract {
+namespace earthxpert {
 /**
  *  The interface PointcloudReader specifies the behaviours for
  *  extracting an array of points in a Pointcloud object.
  */
-class WXIO_EXPORTS IPointcloudReader {
+class EXIO_EXPORTS IPointcloudReader {
 public:
   virtual ~IPointcloudReader() {}
 
@@ -52,7 +52,7 @@ public:
    *
    *  \return Return Pointcloud container object.
    */
-  virtual std::unique_ptr<Pointcloud> ReadPointcloud(double xOffset, double yOffset, 
+  virtual std::unique_ptr<Pointcloud> ReadPointcloud(double xOffset, double yOffset,
     double width, double height) = 0;
 
   /**
@@ -78,4 +78,4 @@ public:
    */
   virtual void ReadPointcloud(Pointcloud* const cloud) = 0;
 };
-} // namespace watxtract
+} // namespace earthxpert

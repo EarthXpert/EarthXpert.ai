@@ -1,1 +1,1 @@
-perhaps one package wxai.pyd that wraps all C++ modules.
+perhaps one package exai.pyd that wraps all C++ modules.

@@ -3,15 +3,15 @@
  * -----------------------------------------------------------------------------
  */
 #pragma once
-#include "sensormodel/wxsensormodel.h"
+#include "sensormodel/exsensormodel.h"
 
-namespace watxtract {
+namespace earthxpert {
 /**
  *  The class defines distortion parameters.
  *
  *  \detail
  */
-class WXSENSORMODEL_EXPORTS SatelliteDP {
+class EXSENSORMODEL_EXPORTS SatelliteDP {
 public:
   /**
    * Constructor
@@ -22,4 +22,4 @@ public:
 
 private:
 };
-} // namespace watxtract
+} // namespace earthxpert

@@ -12,12 +12,12 @@
 #include "marshaller/rationalmodelmarshaller.h"
 #include "rectification/epipolar/epipolargenerator.h"
 
-using namespace watxtract;
-using namespace watxtract::utils;
+using namespace earthxpert;
+using namespace earthxpert::utils;
 using FacEpiOpt = EpipolarModelFactory::EpiOpt;
 using SenType = ISensorModel::ModelType;
 
-namespace watxtract::epipolar {
+namespace earthxpert::epipolar {
 /**
  *  \brief Generate epipolar images for a pair of stereo image having sensor models.
  */

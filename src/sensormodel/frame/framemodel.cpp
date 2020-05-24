@@ -3,7 +3,7 @@
  * -----------------------------------------------------------------------------
  */
 #include "sensormodel/framemodel.h"
-#include "3rd_party/opencv/wxopencv.h"
+#include "3rd_party/opencv/exopencv.h"
 #include "core/math/constants.h"
 #include "core/math/rotation.h"
 
@@ -13,16 +13,16 @@
 #include <numeric>
 #include <stdexcept>
 
-using watxtract::DigitalImageModel;
-using watxtract::FilmImageModel;
-using watxtract::FrameCP;
-using watxtract::FrameEP;
-using watxtract::FrameIP;
-using watxtract::FrameModel;
-using watxtract::Point2d;
-using watxtract::Point3d;
-using watxtract::SpatialReferenceSystem;
-using namespace watxtract::math;
+using earthxpert::DigitalImageModel;
+using earthxpert::FilmImageModel;
+using earthxpert::FrameCP;
+using earthxpert::FrameEP;
+using earthxpert::FrameIP;
+using earthxpert::FrameModel;
+using earthxpert::Point2d;
+using earthxpert::Point3d;
+using earthxpert::SpatialReferenceSystem;
+using namespace earthxpert::math;
 
 /**
  *  \brief Construct a geometry model considering distortions from
@@ -70,7 +70,7 @@ FrameModel<ImageModelPolicy>::FrameModel(ImageModelPolicy &&imageModel,
 template <class ImageModelPolicy>
 FrameModel<ImageModelPolicy>::FrameModel(
   const FrameModel<ImageModelPolicy>& rhs) {
-  CopyFrom(rhs); 
+  CopyFrom(rhs);
 }
 
 template <class ImageModelPolicy>
@@ -190,7 +190,7 @@ std::pair<int, int> FrameModel<ImageModelPolicy>::GetImageSize() const noexcept 
 template <class ImageModelPolicy>
 void FrameModel<ImageModelPolicy>::CheckModel() const {
   constexpr auto tol = std::numeric_limits<double>::epsilon();
-  
+
   const auto f = mFrameIP->GetFocalLength();
   if (f < tol)
     throw std::invalid_argument("Focal length is too small.");
@@ -221,7 +221,7 @@ bool FrameModel<ImageModelPolicy>::EqualTo(const ISensorModel &rhs) const {
  *  position with respect to the ground coordinate system.
  *
  *  \param [in] sensor 2d position (x, y) in sensor focal plane coordinate
- * system 
+ * system
  *  \param [in/out] ground 3d ground position (X, Y, Z) in ground
  * coordinate system \return Returns true if the operation succeeds
  *  \return Return true if successful, otherwisr false.
@@ -283,10 +283,10 @@ bool FrameModel<ImageModelPolicy>::GroundToSensor(const Point3d &ground,
  * refraction, and/or earth curvature.
  *
  *  \param [in] sensorAct the measured position where the ray actually hits the
- * focal plane 
- *  \param [in] height the ground height above ellipsoid [m] 
- *  \param [in] sensorApp the ideal position where the ray wpould apparantly 
- * hit the focal plane if existing no distortions \return Return true if 
+ * focal plane
+ *  \param [in] height the ground height above ellipsoid [m]
+ *  \param [in] sensorApp the ideal position where the ray wpould apparantly
+ * hit the focal plane if existing no distortions \return Return true if
  * the operation succeeds
  *  \return Returns true if operation succeeds
  */
@@ -366,8 +366,8 @@ Point2d FrameModel<ImageModelPolicy>::SensorActualToApparantNP(
  *
  *  \param [in] sensorApp the ideal position where the ray wpould apparantly hit
  * the focal plane if existing no distortions \param [in] height the ground
- * height above ellipsoid [m] 
- *  \param [in] sensorAct the measured position where the ray actually hits 
+ * height above ellipsoid [m]
+ *  \param [in] sensorAct the measured position where the ray actually hits
  * the focal plane \return Return true if the operation succeeds
  *  \return Returns true if operation succeeds
  */
@@ -545,7 +545,7 @@ void FrameModel<ImageModelPolicy>::MoveFrom(
   mImageModel = std::move(rhs.mImageModel);
   mFrameIP = std::move(rhs.mFrameIP);
   mFrameEP = std::move(rhs.mFrameEP);
-  
+
   rhs.Clear();
 }
 

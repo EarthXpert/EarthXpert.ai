@@ -9,14 +9,14 @@
 #include "opencv2/ml.hpp"
 #include <array>
 
-namespace watxtract {
+namespace earthxpert {
 // class cv::ml::ANN_MLP;
 
 /**
  *  The class NetworkModel implements the multi-layer ANN
  *  model for various physical sensors.
  */
-class WXSENSORMODEL_EXPORTS NetworkModel final : public SensorModel {
+class EXSENSORMODEL_EXPORTS NetworkModel final : public SensorModel {
 public:
   ~NetworkModel() {}
 
@@ -90,4 +90,4 @@ private:
 
   bool EqualTo(const ISensorModel &rhs) const override;
 };
-} // namespace watxtract
+} // namespace earthxpert

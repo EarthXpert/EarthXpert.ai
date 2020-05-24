@@ -3,18 +3,18 @@
  * -----------------------------------------------------------------------------
  */
 #include "io/pointcloud/pointcloudreader.h"
-#include "core/exceptions/wxexcept.h"
+#include "core/exceptions/exexcept.h"
 
 #include <limits>
 
-using namespace watxtract;
+using namespace earthxpert;
 
 /**
  *  \brief constractor, open the las file for read
  *
  *  \param [in] lasFile file name
  */
-PointcloudReader::PointcloudReader(const std::string& lasFile) 
+PointcloudReader::PointcloudReader(const std::string& lasFile)
   : PointcloudReader(lasFile, {}) {
 }
 

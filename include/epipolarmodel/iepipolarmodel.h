@@ -4,18 +4,18 @@
  */
 #pragma once
 
-#include "3rd_party/opencv/wxopencv.h"
-#include "epipolarmodel/wxepipolarmodel.h"
+#include "3rd_party/opencv/exopencv.h"
+#include "epipolarmodel/exepipolarmodel.h"
 
 #include <vector>
 
-namespace watxtract {
+namespace earthxpert {
 /**
  *  The interface IEpipolarModel defines the geometric transform
  *  between the epipolar image and the associated image product
  *  used to generate it.
  */
-class WXEPIPOLARMODEL_EXPORTS IEpipolarModel {
+class EXEPIPOLARMODEL_EXPORTS IEpipolarModel {
 public:
   // algorithm for epipolar model
   enum EpipolarAlgo {
@@ -51,9 +51,9 @@ public:
    * positions on original image.
    *
    *  \param [in] epi List of 2d positions (x, y) in epipolar raster coordinate
-   * system 
+   * system
    *  \param [in] img List of 2d positions (x, y) in image raster
-   * coordinate system 
+   * coordinate system
    *  \param [in] pos Component position of stereo model
    *  \return Returns true if operation succeeds
    */
@@ -93,4 +93,4 @@ public:
    */
   virtual EpipolarAlgo GetEpipolarAlgorithm() const noexcept = 0;
 };
-} // namespace watxtract
+} // namespace earthxpert

@@ -6,7 +6,7 @@
 
 #include <stdexcept>
 
-namespace watxtract {
+namespace earthxpert {
   /**
    *  \brief Reports errors when doing epipolar transformation
    */
@@ -78,4 +78,4 @@ public:
     : exception(message) {
   }
 };
-} // namespace watxtract
+} // namespace earthxpert

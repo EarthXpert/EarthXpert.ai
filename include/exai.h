@@ -1,11 +1,7 @@
 /* -----------------------------------------------------------------------------
- *  Copyright (c) 2020.  All rights reserved.
+ *  Copyright (c) 2018.  All rights reserved.
  * -----------------------------------------------------------------------------
  */
 #pragma once
 
-#include "3rd_party/wx3rd_party.h"
-
-namespace watxtract {
-
-} // namespace watxtract
+#include "exdef.h"

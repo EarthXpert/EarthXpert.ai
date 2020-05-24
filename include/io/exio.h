@@ -4,14 +4,14 @@
  */
 #pragma once
 
-#ifdef WXCORE_API
+#ifdef EXIO_API
 #if (defined _WIN32 || defined WINCE || defined __CYGWIN__)
-#define WXCORE_EXPORTS __declspec(dllexport)
+#define EXIO_EXPORTS __declspec(dllexport)
 #elif defined __GNUC__ && __GNUC__ >= 4
-#define WXCORE_EXPORTS __attribute__((visibility("default")))
+#define EXIO_EXPORTS __attribute__((visibility("default")))
 #endif
 #endif
 
-#ifndef WXCORE_EXPORTS
-#define WXCORE_EXPORTS
+#ifndef EXIO_EXPORTS
+#define EXIO_EXPORTS
 #endif

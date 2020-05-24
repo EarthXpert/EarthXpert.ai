@@ -4,14 +4,14 @@
  */
 #pragma once
 
-#ifdef WXEPIPOLAR_API
+#ifdef EXCORE_API
 #if (defined _WIN32 || defined WINCE || defined __CYGWIN__)
-#define WXEPIPOLAR_EXPORTS __declspec(dllexport)
+#define EXCORE_EXPORTS __declspec(dllexport)
 #elif defined __GNUC__ && __GNUC__ >= 4
-#define WXEPIPOLAR_EXPORTS __attribute__((visibility("default")))
+#define EXCORE_EXPORTS __attribute__((visibility("default")))
 #endif
 #endif
 
-#ifndef WXEPIPOLAR_EXPORTS
-#define WXEPIPOLAR_EXPORTS
+#ifndef EXCORE_EXPORTS
+#define EXCORE_EXPORTS
 #endif

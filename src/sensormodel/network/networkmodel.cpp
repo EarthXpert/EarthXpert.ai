@@ -4,9 +4,9 @@
  */
 #include "sensormodel/networkmodel.h"
 
-using watxtract::ISensorModel;
-using watxtract::NetworkModel;
-using watxtract::SpatialReferenceSystem;
+using earthxpert::ISensorModel;
+using earthxpert::NetworkModel;
+using earthxpert::SpatialReferenceSystem;
 
 /**
  *  \brief Construct a multi-layer ANN model.

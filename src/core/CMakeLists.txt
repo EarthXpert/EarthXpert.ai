@@ -1,7 +1,7 @@
 project(core)
 
-add_definitions(-DWXCORE_API)
-watxtract_add_library(core "api"
+add_definitions(-DEXCORE_API)
+earthxpert_add_library(core "api"
   SRCS "datasource/cvraster.cpp"
        "datasource/gdalraster.cpp"
        "datasource/kindfillpolicy.cpp"
@@ -18,7 +18,7 @@ watxtract_add_library(core "api"
        "utils/stringutils.cpp"
        "utils/layout/rasterlayout.cpp"
        "utils/resample/rasterresample.cpp"
-  ITEMS wx3rd_party
+  ITEMS ex3rd_party
         ${GDAL_LIBRARY} ${OPENCV_LIBS})
 
-watxtract_install_target(core)
+earthxpert_install_target(core)

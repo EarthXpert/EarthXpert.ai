@@ -9,12 +9,12 @@
 #include <stdexcept>
 #include <type_traits>
 
-using watxtract::DigitalImageModel;
-using watxtract::FilmImageModel;
-using watxtract::DigitalImageModelImp;
-using watxtract::FilmImageModelImp;
-using watxtract::Point2d;
-using watxtract::Point3d;
+using earthxpert::DigitalImageModel;
+using earthxpert::FilmImageModel;
+using earthxpert::DigitalImageModelImp;
+using earthxpert::FilmImageModelImp;
+using earthxpert::Point2d;
+using earthxpert::Point3d;
 
 /**
  *  Constructor.
