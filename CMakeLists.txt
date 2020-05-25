@@ -41,6 +41,10 @@ if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
 
   set(CEREAL_INCLUDE_DIR "${EX_THIRD_PARTY}/cereal_1.2.2/include")
 
+  set(Ceres_DIR "${EX_THIRD_PARTY}/ceres_2.0.0/CMake")
+
+  set(Eigen3_DIR "${EX_THIRD_PARTY}/eigen_3.3.90/share/eigen3/cmake")
+
   set(GDAL_ROOT "${EX_THIRD_PARTY}/gdal_2.4.1")
   set(GDAL_BIN_DIR "${GDAL_ROOT}/bin/${CDEGREL}")
   set(GDAL_INCLUDE_DIR "${GDAL_ROOT}/include")
@@ -113,11 +117,6 @@ if(DEFINED CMAKE_DEBUG_POSTFIX)
   set(EARTHXPERT_DEBUG_POSTFIX "${CMAKE_DEBUG_POSTFIX}")
 endif()
 
-set(Boost_USE_STATIC_LIBS OFF) 
-set(Boost_USE_MULTITHREADED ON)  
-set(Boost_USE_STATIC_RUNTIME OFF) 
-find_package(Boost 1.71.0 COMPONENTS filesystem iostreams program_options python37) 
-
 find_package(OpenMP)
 if (OPENMP_FOUND)
   set (CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${OpenMP_C_FLAGS}")
@@ -125,6 +124,13 @@ if (OPENMP_FOUND)
   set (CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} ${OpenMP_EXE_LINKER_FLAGS}")
 endif()
 
+set(Boost_USE_STATIC_LIBS OFF) 
+set(Boost_USE_MULTITHREADED ON)  
+set(Boost_USE_STATIC_RUNTIME OFF) 
+find_package(Boost 1.71.0 COMPONENTS filesystem iostreams program_options python37) 
+
+find_package(Ceres REQUIRED)
+find_package(Eigen3 REQUIRED)
 find_package(GDAL REQUIRED)
 find_package(GTest REQUIRED)
 find_package(OpenCV REQUIRED)
@@ -149,6 +155,8 @@ endif()
 # section include
 include_directories(${Boost_INCLUDE_DIR}) 
 include_directories(${CEREAL_INCLUDE_DIR})
+include_directories(${CERES_INCLUDE_DIRS})
+include_directories(${EIGEN3_INCLUDE_DIR})
 include_directories(${GDAL_INCLUDE_DIR})
 include_directories(${GTEST_INCLUDE_DIRS})
 include_directories(${LASLIB_INCLUDE_DIR})

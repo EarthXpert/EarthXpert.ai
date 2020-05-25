@@ -1,4 +1,4 @@
-project(core)
+project(core CXX)
 
 add_definitions(-DEXCORE_API)
 earthxpert_add_library(core "api"

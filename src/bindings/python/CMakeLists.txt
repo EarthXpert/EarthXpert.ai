@@ -1,4 +1,4 @@
-project(expyext)
+project(expyext CXX)
 
 include_directories(${pybind11_INCLUDE_DIRS}) 
 include_directories(${PYTHON_INCLUDE_DIRS}) 
