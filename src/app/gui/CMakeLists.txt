@@ -12,6 +12,7 @@ watxtract_add_executable(wxgui "apps"
   ITEMS core)
 watxtract_add_executable(wxqt5_hw "apps"
   SRCS "qt5_hw.cpp"
+       "mainwindow.cpp"
   ITEMS Qt5::Widgets)
 
 watxtract_install_target(wxgui)
