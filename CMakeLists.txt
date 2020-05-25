@@ -50,6 +50,8 @@ if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
   set(GDAL_INCLUDE_DIR "${GDAL_ROOT}/include")
   set(GDAL_LIBRARY "${GDAL_ROOT}/lib/${CDEGREL}/gdal_i.lib")
 
+  set(glog_DIR "${EX_THIRD_PARTY}/glog_0.4.0/lib/cmake/glog")
+
   set(GTEST_ROOT "${EX_THIRD_PARTY}/gtest_1.8.1")
   set(GTEST_BIN_DIR "${GTEST_ROOT}/bin")
   set(GTEST_INCLUDE_DIR "${GTEST_ROOT}/include")
