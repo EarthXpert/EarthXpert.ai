@@ -7,11 +7,11 @@
 #include "core/utils/irasterresample.h"
 #include <string>
 
-namespace watxtract {
+namespace earthxpert {
 /**
  *  The class RasterResample implements behavior given a resampling kernel.
  */
-class WXCORE_EXPORTS RasterResample : public IRasterResample {
+class EXCORE_EXPORTS RasterResample : public IRasterResample {
 public:
   RasterResample(std::string algo);
 

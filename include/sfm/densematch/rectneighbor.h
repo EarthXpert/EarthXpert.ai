@@ -7,12 +7,12 @@
 #include "sfm/densematch/ineighborhood.h"
 #include <vector>
 
-namespace watxtract {
+namespace earthxpert {
 
 /**
  *  The interface RectNeighbor defines the rectangular neighborhood selection.
  */
-class WXSFM_EXPORTS RectNeighbor final : public INeighborhood {
+class EXSFM_EXPORTS RectNeighbor final : public INeighborhood {
 public:
   RectNeighbor(int width, int height);
   ~RectNeighbor() = default;
@@ -32,4 +32,4 @@ private:
 
   void GenerateIndices();
 };
-}
+} // namespace earthxpert

@@ -3,10 +3,10 @@
 #  -----------------------------------------------------------------------------
 
 import argparse
-import wxpyext as wp
+import expyext as epy
 
 def genRationalEpi(leftimg, leftmdl, rightimg, rightmdl, bands, sample, outdir, resample, memsize):
-  wp.generateRationalEpipolar(leftimg, leftmdl, rightimg, rightmdl, bands, sample, outdir, resample, memsize)
+  epy.generateRationalEpipolar(leftimg, leftmdl, rightimg, rightmdl, bands, sample, outdir, resample, memsize)
 
 '''
   The script rationalepipolar generates pseudo epipolar images 

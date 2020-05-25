@@ -7,7 +7,7 @@
 #include <cassert>
 #include <cmath>
 
-namespace watxtract::math {
+namespace earthxpert::math {
 /**
  * Convert Euler angles to a rotation matrix
  *
@@ -39,4 +39,4 @@ void EulerXYZToMatrix(const double *angles, cv::Mat1d &mat3x3) {
   mat3x3(2, 2) = co * cp;
 }
 
-} // namespace watxtract::math
+} // namespace earthxpert::math

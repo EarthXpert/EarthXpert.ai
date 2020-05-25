@@ -3,20 +3,20 @@
  * -----------------------------------------------------------------------------
  */
 #pragma once
-#include "sensormodel/wxsensormodel.h"
+#include "sensormodel/exsensormodel.h"
 
-namespace watxtract {
+namespace earthxpert {
 /**
  *  The class defines corrections to extrinsic parameters for exterior
  * orientation.
  *
  *  \detail
  */
-class WXSENSORMODEL_EXPORTS ScannerEPCorr {
+class EXSENSORMODEL_EXPORTS ScannerEPCorr {
 public:
   ScannerEPCorr();
   ~ScannerEPCorr() {}
 
 private:
 };
-} // namespace watxtract
+} // namespace earthxpert

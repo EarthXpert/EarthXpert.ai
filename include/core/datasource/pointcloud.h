@@ -5,17 +5,17 @@
 #pragma once
 
 #include "core/datasource/pointtypes.h"
-#include "core/exceptions/wxexcept.h"
+#include "core/exceptions/exexcept.h"
 
 #include <cassert>
 #include <type_traits>
 #include <vector>
 
-namespace watxtract {
+namespace earthxpert {
 /**
  *  The class Pointcloud stores an array of points in groups of fields.
  */
-class WXCORE_EXPORTS Pointcloud {
+class EXCORE_EXPORTS Pointcloud {
 public:
   Pointcloud(size_t pointCount, FieldGroup fieldGroup);
   Pointcloud(const Point3d& origin, std::vector<XYZF>&& xyz);
@@ -192,13 +192,13 @@ public:
    *  \brief subscript access via proxy
    *
    *  \param PointcloudTy const or non-const Pointcloud
-   *  \remark Use for occasional point access. 
+   *  \remark Use for occasional point access.
    */
   template <typename PointcloudTy>
   struct PointProxy {
     static_assert(std::is_same_v<Pointcloud, std::remove_cv_t<PointcloudTy>>, "Must be Pointcloud");
     using Pointcloud_Pointer = std::add_pointer_t<PointcloudTy>;
-    
+
     PointProxy(Pointcloud_Pointer pointCloud, const size_t index) : pc(pointCloud), i(index) {}
 
     template <typename PointTy>

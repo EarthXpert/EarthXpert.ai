@@ -4,7 +4,7 @@
  */
 #pragma once
 
-#include "core/wxcore.h"
+#include "core/excore.h"
 
-namespace watxtract::utils {
-} // namespace watxtract::utils
+namespace earthxpert::utils {
+} // namespace earthxpert::utils

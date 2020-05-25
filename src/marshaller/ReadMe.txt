@@ -4,4 +4,4 @@ input/output of specific files:
 
 2) epipolar model
 
-3) project file .wxp
+3) project file .exp

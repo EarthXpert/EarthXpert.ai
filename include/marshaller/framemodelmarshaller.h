@@ -5,12 +5,12 @@
 #pragma once
 
 #include "marshaller/isensormodelmarshaller.h"
-#include "marshaller/wxmarshaller.h"
+#include "marshaller/exmarshaller.h"
 #include "sensormodel/framemodel.h"
 #include <memory>
 #include <unordered_map>
 
-namespace watxtract {
+namespace earthxpert {
 class ISensorModel;
 
 struct EpData {
@@ -22,7 +22,7 @@ struct EpData {
 /**
  *  The class FrameModelMarshaller serialize and deserialize frame models.
  */
-class WXMARSHALLER_EXPORTS FrameModelMarshaller {
+class EXMARSHALLER_EXPORTS FrameModelMarshaller {
 public:
   ~FrameModelMarshaller() {}
 
@@ -67,4 +67,4 @@ private:
    */
   void ReadGpsImu(const std::string &modelFile);
 };
-} // namespace watxtract
+} // namespace earthxpert

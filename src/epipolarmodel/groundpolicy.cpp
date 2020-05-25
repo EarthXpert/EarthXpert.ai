@@ -7,12 +7,12 @@
 #include <cassert>
 #include <utility>
 
-using watxtract::EarthEllipsoid;
-using watxtract::GeographicGround;
-using watxtract::LocalGround;
-using watxtract::MapGround;
-using watxtract::Point2d;
-using watxtract::Point3d;
+using earthxpert::EarthEllipsoid;
+using earthxpert::GeographicGround;
+using earthxpert::LocalGround;
+using earthxpert::MapGround;
+using earthxpert::Point2d;
+using earthxpert::Point3d;
 
 /**
  *  Constructor.

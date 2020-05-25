@@ -9,13 +9,13 @@
 
 #include <memory>
 
-namespace watxtract {
+namespace earthxpert {
 
 /**
  *  The class EpipolarModelMarshaller serialize and deserialize the
  *  epipolar model and links to associated sensor models.
  */
-class WXMARSHALLER_EXPORTS EpipolarModelMarshaller
+class EXMARSHALLER_EXPORTS EpipolarModelMarshaller
     : public IEpipolarModelMarshaller {
 public:
   ~EpipolarModelMarshaller() {}
@@ -40,4 +40,4 @@ public:
 
 private:
 };
-} // namespace watxtract
+} // namespace earthxpert

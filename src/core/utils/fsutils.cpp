@@ -4,7 +4,7 @@
  */
 #include "core/utils/fsutils.h"
 
-namespace watxtract::utils {
+namespace earthxpert::utils {
 /**
  *  \brief insert prefix for filename component
  *
@@ -12,7 +12,7 @@ namespace watxtract::utils {
  *  \param [in] prefix string to be inserted
  *  \return Returns file path with prefix
  */
-std::string WXCORE_EXPORTS PathPrefixFilename(
+std::string EXCORE_EXPORTS PathPrefixFilename(
   const std::string& fileName, const std::string& prefix) {
   fs::path filePath(fileName);
   auto fn = prefix + filePath.filename().string();

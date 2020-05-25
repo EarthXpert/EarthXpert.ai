@@ -7,7 +7,7 @@
 #include "core/datasource/cvraster.h"
 #include "core/datasource/types.h"
 
-namespace watxtract {
+namespace earthxpert {
 /**
  *  \brief Defines filling behaviour according to both policy kind and the margin sieds.
  *

@@ -4,15 +4,15 @@
  */
 #pragma once
 
-#include "sensormodel/wxsensormodel.h"
+#include "sensormodel/exsensormodel.h"
 
-namespace watxtract {
+namespace earthxpert {
 /**
  *  The class defines correction parameters for external effects.
  *
  *  \detail
  */
-class WXSENSORMODEL_EXPORTS FrameCP {
+class EXSENSORMODEL_EXPORTS FrameCP {
 public:
   FrameCP();
   FrameCP(bool atRefract, double earthRadius);
@@ -37,4 +37,4 @@ private:
   bool mAtRefract{false};    // atmospheric refration
   double mEarthRadius{6378}; // earth radius [km]
 };
-} // namespace watxtract
+} // namespace earthxpert

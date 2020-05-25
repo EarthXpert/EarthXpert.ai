@@ -9,7 +9,7 @@
 #include <algorithm>
 #include <random>
 
-using namespace watxtract;
+using namespace earthxpert;
 
 static constexpr auto rngMax = static_cast<double>(std::mt19937::max());
 static constexpr auto rngMid = rngMax / 2;

@@ -4,28 +4,39 @@
  */
 #pragma once
 
-#include "sfm/wxsfm.h"
+#include "sfm/exsfm.h"
 #include "core/datasource/iraster.h"
 #include <utility>
 
-namespace watxtract {
+namespace earthxpert {
 
 /**
  *  The interface IDenseMatch defines the behaviours of dense matching algorithms.
  */
-class WXSFM_EXPORTS IDenseMatch {
+class EXSFM_EXPORTS IDenseMatch {
 public:
+  // match algorithm
+  enum MatchAlgo {
+    eSGM    // semi-global matching
+  };
+
+  // match dimension
+  enum MatchDim {
+    e1D,    // 1D along x direction
+    e2D     // 2D in both x and y directions
+  };
+
   enum MatchType {
-    eDEPTH,
-    eDISPARITY
+    eDEPTH,     // match depth
+    eDISPARITY  // match disparity
   };
 
   virtual ~IDenseMatch() = default;
 
   /**
-   *  \return Retruns x- and y-disparity maps.
+   *  \return Retruns a map representing the disparity or depth.
    */
-  virtual std::pair<std::unique_ptr<IRaster>, std::unique_ptr<IRaster>> Match() = 0;
+  virtual std::unique_ptr<IRaster> Match() = 0;
 
   virtual MatchType GetMatchType() const noexcept = 0;
 };

@@ -4,10 +4,10 @@
  */
 #pragma once
 
-#include "core/wxcore.h"
+#include "core/excore.h"
 #include "opencv2/core/mat.hpp"
 
-namespace watxtract::math {
+namespace earthxpert::math {
 /**
  * 2D rotation
  */
@@ -15,5 +15,5 @@ namespace watxtract::math {
 /**
  * 3D rotation
  */
-void WXCORE_EXPORTS EulerXYZToMatrix(const double *angles, cv::Mat1d &mat3x3);
-} // namespace watxtract::rotation
+void EXCORE_EXPORTS EulerXYZToMatrix(const double *angles, cv::Mat1d &mat3x3);
+} // namespace earthxpert::rotation

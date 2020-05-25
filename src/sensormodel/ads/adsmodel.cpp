@@ -3,19 +3,19 @@
  * -----------------------------------------------------------------------------
  */
 #include "sensormodel/adsmodel.h"
-#include "3rd_party/gdal/wxgdal.h"
+#include "3rd_party/gdal/exgdal.h"
 #include "sensormodel/scannerep.h"
 #include "sensormodel/scannerimagemodel.h"
 #include "sensormodel/scannerip.h"
 
-using watxtract::AdsModel;
-using watxtract::ISensorModel;
-using watxtract::Point2d;
-using watxtract::Point3d;
-using watxtract::ScannerEP;
-using watxtract::ScannerImageModel;
-using watxtract::ScannerIP;
-using watxtract::SpatialReferenceSystem;
+using earthxpert::AdsModel;
+using earthxpert::ISensorModel;
+using earthxpert::Point2d;
+using earthxpert::Point3d;
+using earthxpert::ScannerEP;
+using earthxpert::ScannerImageModel;
+using earthxpert::ScannerIP;
+using earthxpert::SpatialReferenceSystem;
 
 /**
  *  \brief Construct an aerial pushbroom geometry model.

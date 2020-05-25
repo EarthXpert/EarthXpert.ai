@@ -6,18 +6,24 @@
 
 #include "sfm/densematch/idensematch.h"
 
-namespace watxtract {
+namespace earthxpert {
 
 /**
- *  The class DenseMatch implements the template methods for dense matching algorithm.
+ *  The class DenseMatch implements the template methods for Semi-global matching algorithm.
  */
-class WXSFM_EXPORTS DenseMatch : public IDenseMatch {
+class EXSFM_EXPORTS DenseMatch : public IDenseMatch {
 public:
   virtual ~DenseMatch() = default;
 
 protected:
+  void SetPenalty(const int P1, const int P2) {
+    mP1 = P1;
+    mP2 = P2;
+  }
 
 private:
-
+  int mP1{};  // smooth condition: a low penalty for continuity
+  int mP2{};  //                   a larger penalty for dis-continuity
+  int mStride{ 1 }; // interval between two rigorously matched pixels
 };
-}
+} // namespace earthxpert

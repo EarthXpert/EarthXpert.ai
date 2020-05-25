@@ -6,13 +6,13 @@
 
 #include "sensormodel/isensormodel.h"
 
-namespace watxtract {
+namespace earthxpert {
 /**
  *  The class SensorModel implements the template methods having logic
  *  common to mulitple sensor systems. A concrete sensor model may override
  *  the template method for better perforamnce.
  */
-class WXSENSORMODEL_EXPORTS SensorModel : public ISensorModel {
+class EXSENSORMODEL_EXPORTS SensorModel : public ISensorModel {
 public:
   virtual ~SensorModel() {}
 
@@ -112,4 +112,4 @@ public:
 protected:
   virtual bool EqualTo(const ISensorModel &rhs) const = 0;
 };
-} // namespace watxtract
+} // namespace earthxpert

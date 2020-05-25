@@ -5,4 +5,4 @@
 #include "epipolarmodel/iepipolarmodel.h"
 #include "rectification/epipolar/epipolargenerator.h"
 
-using watxtract::EpipolarGenerator;
+using earthxpert::EpipolarGenerator;

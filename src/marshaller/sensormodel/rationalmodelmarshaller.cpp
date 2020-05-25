@@ -11,10 +11,10 @@
 #include <map>
 #include <stdexcept>
 
-using watxtract::ISensorModel;
-using watxtract::RationalModel;
-using watxtract::RationalModelMarshaller;
-using watxtract::utils::CompareI;
+using earthxpert::ISensorModel;
+using earthxpert::RationalModel;
+using earthxpert::RationalModelMarshaller;
+using earthxpert::utils::CompareI;
 
 // rpb entries
 static std::map<std::string, int> sRpbEntryMap = {

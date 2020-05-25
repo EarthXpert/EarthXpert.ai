@@ -4,19 +4,19 @@
  */
 #pragma once
 
-#include "core/wxcore.h"
+#include "core/excore.h"
 #include "core/datasource/types.h"
 
 #include "opencv2/core/hal/interface.h"
 #include <memory>
 #include <utility>
 
-namespace watxtract {
+namespace earthxpert {
 /**
- *  The interface IRaster defines a 2D pixel block, that provides 
+ *  The interface IRaster defines a 2D pixel block, that provides
  *  information about pixel value, size, data type, position and margin.
  */
-class WXCORE_EXPORTS IRaster {
+class EXCORE_EXPORTS IRaster {
 public:
   virtual ~IRaster() {}
 
@@ -49,7 +49,7 @@ public:
 
   /**
    *  Retrieve a pixel value for the given pixel position.
-   *  
+   *
    *  \param [in] col horizontal column position
    *  \param [in] row vertical row position
    *  \return Returns pointer to pixel
@@ -84,7 +84,7 @@ public:
   virtual MarginKind GetMarginKind() const noexcept = 0;
 
   /**
-   *  \return Returns a pointer to the array storing pixels values    
+   *  \return Returns a pointer to the array storing pixels values
    */
   virtual uchar* GetBuffer() const noexcept = 0;
 
@@ -118,4 +118,4 @@ public:
    */
   virtual int64 GetImagePixelOffset() const noexcept = 0;
 };
-} // namespace watxtract
+} // namespace earthxpert

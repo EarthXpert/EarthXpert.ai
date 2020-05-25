@@ -3,16 +3,16 @@
  * -----------------------------------------------------------------------------
  */
 #include "sensormodel/frameip.h"
-#include "3rd_party/opencv/wxopencv.h"
+#include "3rd_party/opencv/exopencv.h"
 
 #include <algorithm>
 #include <cmath>
 #include <limits>
 #include <numeric>
 
-using watxtract::DistortionGridF;
-using watxtract::FrameIP;
-using watxtract::Point2d;
+using earthxpert::DistortionGridF;
+using earthxpert::FrameIP;
+using earthxpert::Point2d;
 
 /**
  * Constructor
@@ -38,7 +38,7 @@ FrameIP::FrameIP(std::string camName, const double focalLength,
                  const std::array<double, 2> &ppa,
                  const std::array<double, NumRadCoef> &radialDist,
                  const std::array<double, NumDecCoef> &decentDist)
-    : FrameIP(std::move(camName), focalLength, ppa, 
+    : FrameIP(std::move(camName), focalLength, ppa,
               radialDist, decentDist, {0.0, 0.0}) {
 }
 
@@ -283,11 +283,11 @@ void FrameIP::CheckCamParms() const {
 void FrameIP::CheckDistortions() const {
   auto NotZero = [](const double val) -> bool { return (0.0 != val); };
 
-  mDistFlags.set(kRADDIST, std::any_of(std::cbegin(mRadialDist), 
+  mDistFlags.set(kRADDIST, std::any_of(std::cbegin(mRadialDist),
     std::cend(mRadialDist), NotZero));
-  mDistFlags.set(kDECDIST, std::any_of(std::cbegin(mDecentDist), 
+  mDistFlags.set(kDECDIST, std::any_of(std::cbegin(mDecentDist),
     std::cend(mDecentDist), NotZero));
-  mDistFlags.set(kLINDIST, std::any_of(std::cbegin(mLinearDist), 
+  mDistFlags.set(kLINDIST, std::any_of(std::cbegin(mLinearDist),
     std::cend(mLinearDist), NotZero));
   if (mGridDist)
     mDistFlags.set(kGRDDIST, mGridDist->HasGrid());

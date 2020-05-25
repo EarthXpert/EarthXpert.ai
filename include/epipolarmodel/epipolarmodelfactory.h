@@ -10,14 +10,14 @@
 
 #include <array>
 
-namespace watxtract {
+namespace earthxpert {
 using SenType = ISensorModel::ModelType;
 
 /**
  *  The class EpipolarModelFactory defines the behaviours for creating
  *  epipolar model from image products with sensor models.
  */
-class WXEPIPOLARMODEL_EXPORTS EpipolarModelFactory {
+class EXEPIPOLARMODEL_EXPORTS EpipolarModelFactory {
 public:
   // the epipolar images always have equal number of rows in height and
   // perhaps different columns in width. This flag specifies the option
@@ -52,7 +52,7 @@ public:
    *  \brief create epipolar model from 2+ stereo images.
    */
   std::unique_ptr<IEpipolarModel> CreateEpipolarModel(
-    const std::vector<std::shared_ptr<ISensorModel>> &sensorModels, 
+    const std::vector<std::shared_ptr<ISensorModel>> &sensorModels,
     int sample, double height=0);
 
   void SetEpipolarOption(const EpipolarOption epiOpt) { mEpiOpt = epiOpt; }
@@ -70,4 +70,4 @@ private:
   // cached
   SenType mSensorType{ SenType::eUNDEFINED };
 };
-} // namespace watxtract
+} // namespace earthxpert

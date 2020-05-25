@@ -9,7 +9,7 @@
 #include <cmath>
 #include <type_traits>
 
-using watxtract::DistortionGrid;
+using earthxpert::DistortionGrid;
 
 /**
  * Initializer constructor
@@ -272,5 +272,5 @@ void DistortionGrid<Ty>::MoveFrom(DistortionGrid<Ty> &&rhs) noexcept {
   mGrid = std::move(rhs.mGrid);
 }
 
-template class watxtract::DistortionGrid<float>;
-template class watxtract::DistortionGrid<double>;
+template class earthxpert::DistortionGrid<float>;
+template class earthxpert::DistortionGrid<double>;

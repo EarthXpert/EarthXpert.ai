@@ -13,6 +13,6 @@ if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
   set_tests_properties(boost_tests PROPERTIES ENVIRONMENT "${TESTS_BOOST_PATH}")
 endif()
 
-if(WATXTRACT_INSTALL_TESTS_3RDPARTY)
-  watxtract_install_test(boost_tests)
+if(EARTHXPERT_INSTALL_TESTS_3RDPARTY)
+  earthxpert_install_test(boost_tests)
 endif()

@@ -5,10 +5,10 @@
 #pragma once
 
 #include "epipolarmodel/iepipolarmodel.h"
-#include "rectification/epipolar/wxepipolar.h"
+#include "rectification/epipolar/exepipolar.h"
 #include <memory>
 
-namespace watxtract {
+namespace earthxpert {
 class IRasterReader;
 class IRasterResample;
 class IRasterWriter;
@@ -17,7 +17,7 @@ class IEpipolarModel;
 /**
  *  The class EpipolarGenerator creates epipolar images from raw images.
  */
-class WXEPIPOLAR_EXPORTS EpipolarGenerator {
+class EXEPIPOLAR_EXPORTS EpipolarGenerator {
 public:
   /**
    *  \brief
@@ -47,4 +47,4 @@ private:
 
   // layout helper
 };
-} // namespace watxtract
+} // namespace earthxpert

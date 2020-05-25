@@ -6,11 +6,11 @@
 #include "sensormodel/framemodel.h"
 #include "sensormodel/rationalmodel.h"
 
-using watxtract::DigitalFrameModel;
-using watxtract::FilmFrameModel;
-using watxtract::ISensorModel;
-using watxtract::RationalModel;
-using watxtract::SensorModelFactory;
+using earthxpert::DigitalFrameModel;
+using earthxpert::FilmFrameModel;
+using earthxpert::ISensorModel;
+using earthxpert::RationalModel;
+using earthxpert::SensorModelFactory;
 
 /**
  *  \brief

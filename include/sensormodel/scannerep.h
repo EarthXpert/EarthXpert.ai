@@ -3,16 +3,16 @@
  * -----------------------------------------------------------------------------
  */
 #pragma once
-#include "sensormodel/wxsensormodel.h"
+#include "sensormodel/exsensormodel.h"
 
-namespace watxtract {
+namespace earthxpert {
 /**
  *  The class defines extrinsic parameters for exterior orientation
  *  of pushbroom line scanner.
  *
  *  \detail
  */
-class WXSENSORMODEL_EXPORTS ScannerEP {
+class EXSENSORMODEL_EXPORTS ScannerEP {
 public:
   /**
    * Constructor
@@ -23,4 +23,4 @@ public:
 
 private:
 };
-} // namespace watxtract
+} // namespace earthxpert

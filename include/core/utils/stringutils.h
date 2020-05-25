@@ -4,10 +4,10 @@
  */
 #pragma once
 
-#include "core/wxcore.h"
+#include "core/excore.h"
 #include <string>
 
-namespace watxtract::utils {
+namespace earthxpert::utils {
 /**
  *  \brief compare two string case-insensitive
  *
@@ -15,5 +15,5 @@ namespace watxtract::utils {
  *  \param [in] str2 second string
  *  \return Returns true if two strings are equal case-insensitive
  */
-bool WXCORE_EXPORTS CompareI(const std::string& str1, const std::string& str2);
-} // namespace watxtract::utils
+bool EXCORE_EXPORTS CompareI(const std::string& str1, const std::string& str2);
+} // namespace earthxpert::utils

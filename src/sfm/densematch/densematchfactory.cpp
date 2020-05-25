@@ -6,7 +6,7 @@
 #include "sfm/densematch/depthmatch.h"
 #include "sfm/densematch/disparitymatch.h"
 
-using namespace watxtract;
+using namespace earthxpert;
 
 /**
  *  \brief

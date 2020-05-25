@@ -4,18 +4,18 @@
  */
 #pragma once
 
-#include "epipolarmodel/wxepipolarmodel.h"
-#include "3rd_party/opencv/wxopencv.h"
+#include "epipolarmodel/exepipolarmodel.h"
+#include "3rd_party/opencv/exopencv.h"
 
-namespace watxtract {
+namespace earthxpert {
 /**
  *  The class EpipolarRect defines similarity transform between ground
  * coordinate system of sensor model and raster coordinate system of epipolar
  * model.
  */
-class WXEPIPOLARMODEL_EXPORTS EpipolarRect {
+class EXEPIPOLARMODEL_EXPORTS EpipolarRect {
 public:
-  EpipolarRect(Point3d origin, double height, double xOffset, double yOffset, 
+  EpipolarRect(Point3d origin, double height, double xOffset, double yOffset,
     double scale, double rotation, int numCols, int numRows);
   EpipolarRect(const EpipolarRect &rhs) = default;
   EpipolarRect(EpipolarRect &&rhs) = default;
@@ -74,4 +74,4 @@ protected:
   double mCosRot{};
   double mSinRot{};
 };
-} // namespace watxtract
+} // namespace earthxpert

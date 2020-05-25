@@ -10,6 +10,6 @@
 namespace bfs = boost::filesystem;
 
 TEST(boost, filesystem) {
-  std::cerr << "[   WXAI   ] "
+  std::cerr << "[   EXAI   ] "
             << "not implemented" << std::endl;
 }

@@ -9,8 +9,8 @@
 
 #include <cmath>
 
-using namespace watxtract;
-using rfm = watxtract::RationalModel;
+using namespace earthxpert;
+using rfm = earthxpert::RationalModel;
 
 static std::unique_ptr<RationalModel> CreateRationalModel();
 

@@ -9,7 +9,7 @@
 
 #include <array>
 
-namespace watxtract {
+namespace earthxpert {
 /**
  *  The class RationalModel implements the replacement geometry
  *  model for various physical sensors.
@@ -44,7 +44,7 @@ namespace watxtract {
  *      snc 20 sample numerator coefficients given in sampNumCoef
  *      sdc 20 sample denominator coefficients given in sampDenCoef
  */
-class WXSENSORMODEL_EXPORTS RationalModel final : public SensorModel {
+class EXSENSORMODEL_EXPORTS RationalModel final : public SensorModel {
 public:
   // index of normalization factors
   enum NormalizationFactor {
@@ -356,4 +356,4 @@ private:
 
   bool mHasCorrection{false};
 };
-} // namespace watxtract
+} // namespace earthxpert

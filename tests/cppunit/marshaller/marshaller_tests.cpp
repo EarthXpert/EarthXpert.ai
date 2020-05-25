@@ -7,7 +7,7 @@
 
 #include <iostream>
 
-using namespace watxtract;
+using namespace earthxpert;
 
 TEST(marshaller, epipolarmodel) {
   RationalModelMarshaller rmarshaller;

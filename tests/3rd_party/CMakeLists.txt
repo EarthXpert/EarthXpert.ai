@@ -1,7 +1,7 @@
 project(tests_3rd_party)
 
 function(add_3rd_party_test name)
-  watxtract_add_test(${name} "tests_3rd_party" ${ARGN})
+  earthxpert_add_test(${name} "tests_3rd_party" ${ARGN})
 endfunction()
 
 add_subdirectory(boost)

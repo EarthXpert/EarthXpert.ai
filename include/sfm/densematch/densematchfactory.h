@@ -6,13 +6,13 @@
 
 #include "sfm/densematch/idensematch.h"
 
-namespace watxtract {
+namespace earthxpert {
 
 /**
  *  The class DenseMatchFactory defines the behaviours for creating
  *  dense matcher objects.
  */
-class WXSFM_EXPORTS DenseMatchFactory {
+class EXSFM_EXPORTS DenseMatchFactory {
 public:
   /**
    *  \brief
@@ -29,4 +29,4 @@ public:
    */
   static std::unique_ptr<IDenseMatch> CreateDisparityMatch();
 };
-} // namespace watxtract
+} // namespace earthxpert

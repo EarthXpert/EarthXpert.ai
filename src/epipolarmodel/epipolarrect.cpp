@@ -8,9 +8,9 @@
 #include <cmath>
 #include <limits>
 
-using watxtract::EpipolarRect;
-using watxtract::Point2d;
-using watxtract::Point3d;
+using earthxpert::EpipolarRect;
+using earthxpert::Point2d;
+using earthxpert::Point3d;
 
 /**
  *  Constructor.

@@ -9,12 +9,12 @@
 
 #include "gdal_priv.h"
 
-namespace watxtract {
+namespace earthxpert {
 /**
  *  The class Raster stores a 2D pixel block that is band interleaved.
  *  The pixel block may consist of the image itself and possibly the extra margin/border.
  */
-class WXCORE_EXPORTS GdalRaster final : public IRaster {
+class EXCORE_EXPORTS GdalRaster final : public IRaster {
 public:
   GdalRaster(int numCols, int numRows, GDALDataType dataType, int numBands,
     int colOffset, int rowOffset, int marginCols, int marginRows, MarginKind marginKind);
@@ -47,7 +47,7 @@ public:
   struct PixelProxy {
     static_assert(std::is_same_v<GdalRaster, std::remove_cv_t<GdalRasterTy>>, "Must be GdalRaster");
     using GdalRaster_Pointer = std::add_pointer_t<GdalRasterTy>;
-    
+
     PixelProxy(GdalRaster_Pointer gdalRaster, const int col, const int row) : raster(gdalRaster), c(col), r(row) {}
 
     operator uchar*() const {
@@ -70,7 +70,7 @@ public:
     const int64 offset = int64(mBpp) * (mImgPixelOff + int64(mBufNumCols) * int64(row) + int64(col));
     uchar* buffer = mBuffer.get() + offset;
     memcpy(buffer, pixel, mBpb);
-    
+
     for (int b = 1; b < mNumBands; ++b) {
       buffer += mBandNumBytes;
       pixel += mBpb;
@@ -210,8 +210,8 @@ public:
   int64 GetBandNumBytes() const noexcept { return mBandNumBytes; }
 
 private:
-  int mNumCols{};               // number of image columns 
-  int mNumRows{};               // number of image rows 
+  int mNumCols{};               // number of image columns
+  int mNumRows{};               // number of image rows
   GDALDataType mDataType{ GDT_Unknown };     // data type of each band
   int mNumBands{};              // number of bands/channels
   int mColOffset{};             // col offset of image
@@ -235,4 +235,4 @@ private:
 
   void ObtainBufferInfo();
 };
-} // namespace watxtract
+} // namespace earthxpert

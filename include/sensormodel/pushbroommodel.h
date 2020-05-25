@@ -14,12 +14,12 @@
 #include <array>
 #include <chrono>
 
-namespace watxtract {
+namespace earthxpert {
 /**
  *  The class PushBroomModel implements the physical geometry model
  *  for optical line-scanning/framelet sensors.
  */
-class WXSENSORMODEL_EXPORTS PushBroomModel final : public SensorModel {
+class EXSENSORMODEL_EXPORTS PushBroomModel final : public SensorModel {
 public:
   /**
    *  \brief Construct an aerial pushbroom geometry model.
@@ -146,4 +146,4 @@ private:
       mFusedScannerEP; // extrinsic parameters combining original extrinsic
                        // parameters and their corrections
 };
-} // namespace watxtract
+} // namespace earthxpert

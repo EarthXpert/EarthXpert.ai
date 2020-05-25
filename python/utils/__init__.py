@@ -2,4 +2,4 @@
 #   Copyright (c) 2020.  All rights reserved.
 #  -----------------------------------------------------------------------------
 
-import wxpyext as wp
+import expyext as epy

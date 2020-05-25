@@ -9,7 +9,7 @@
 #include <limits>
 #include <numeric>
 
-using watxtract::ScannerIP;
+using earthxpert::ScannerIP;
 
 /**
  * Constructor

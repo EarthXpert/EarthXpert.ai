@@ -6,20 +6,20 @@
 #include "core/datasource/cvraster.h"
 #include "core/datasource/gdalraster.h"
 #include "core/datasource/utils.h"
-#include "core/exceptions/wxexcept.h"
+#include "core/exceptions/exexcept.h"
 #include "core/spatialref/geocoding.h"
 #include "core/utils/typehelper.h"
 
 #include <numeric>
 
-using namespace watxtract;
+using namespace earthxpert;
 
 /**
  *  \brief Construct reader object.
  *
  *  \param [in] imageFile full path of the image file
  */
-RasterReader::RasterReader(const std::string& imageFile) 
+RasterReader::RasterReader(const std::string& imageFile)
   : RasterReader(imageFile, {}) {
 }
 
@@ -29,7 +29,7 @@ RasterReader::RasterReader(const std::string& imageFile)
  *  \param [in] imageFile full path of the image file
  *  \param [in] bands an array of 1-based band indices
  */
-RasterReader::RasterReader(const std::string& imageFile, const std::vector<int>& bands) 
+RasterReader::RasterReader(const std::string& imageFile, const std::vector<int>& bands)
   : mBands(bands) {
   auto dataset = GDALOpen(imageFile.c_str(), GA_ReadOnly);
   if (!dataset) {
@@ -45,7 +45,7 @@ RasterReader::RasterReader(const std::string& imageFile, const std::vector<int>&
  *
  *  \param [in] dataset an opened dataset for reading
  */
-RasterReader::RasterReader(GDALDataset* dataset) 
+RasterReader::RasterReader(GDALDataset* dataset)
   : RasterReader(dataset, {}) {
 }
 
@@ -55,7 +55,7 @@ RasterReader::RasterReader(GDALDataset* dataset)
  *  \param [in] dataset an opened dataset for reading
  *  \param [in] bands an array of 1-based band indices
  */
-RasterReader::RasterReader(GDALDataset* dataset, const std::vector<int>& bands) 
+RasterReader::RasterReader(GDALDataset* dataset, const std::vector<int>& bands)
   : mBands(bands) {
   assert(dataset);
   mDataset.reset(dataset);
@@ -101,7 +101,7 @@ std::unique_ptr<Geocoding> RasterReader::GetGeocoding() const {
  *  \param [in] numRows vertical height
  *  \return Returns number of bytes to accomadate the image data of raster object
  */
-int64 RasterReader::GetRasterBufferNumBytes(const int numCols, 
+int64 RasterReader::GetRasterBufferNumBytes(const int numCols,
   const int numRows) const noexcept {
   const auto bufNumCols = numCols + mMarginCols * 2;
   const auto bufNumRows = numRows + mMarginRows * 2;
@@ -125,13 +125,13 @@ std::unique_ptr<IRaster> RasterReader::ReadRaster(const int colOffset, const int
   std::unique_ptr<IRaster> raster;
 
   if (RasterType::eCVMAT == rasterType) {
-    auto cvRaster = new CvRaster(numCols, numRows, mCvDT, 
+    auto cvRaster = new CvRaster(numCols, numRows, mCvDT,
       colOffset, rowOffset, mMarginCols, mMarginRows, mMarginKind);
     raster.reset(cvRaster);
     ReadRaster(cvRaster);
   }
   else if (RasterType::eGDAL == rasterType) {
-    auto gdalRaster = new GdalRaster(numCols, numRows, mGdalDT, mReadNumBands, 
+    auto gdalRaster = new GdalRaster(numCols, numRows, mGdalDT, mReadNumBands,
       colOffset, rowOffset, mMarginCols, mMarginRows, mMarginKind);
     raster.reset(gdalRaster);
     ReadRaster(gdalRaster);
@@ -199,8 +199,8 @@ void RasterReader::ReadRaster(CvRaster* const raster) {
 
     auto readRow{ readBuffer };
     for (int r = 0; r < readNumRows; ++r) {
-      const auto err = mDataset->RasterIO(GF_Read, readColOff, readRowOff + r, 
-        readNumCols, 1, gdalBuffer.get(), readNumCols, 1, mGdalDT, 
+      const auto err = mDataset->RasterIO(GF_Read, readColOff, readRowOff + r,
+        readNumCols, 1, gdalBuffer.get(), readNumCols, 1, mGdalDT,
         mReadNumBands, mBands.data(), 0, 0, 0, nullptr);
       if (CE_None != err) {
         throw IOError("Failaure when reading by RasterIO");
@@ -240,7 +240,7 @@ void RasterReader::ReadRaster(GdalRaster* const raster) {
   const auto [readWin, readPixelOff] = ObtainReadWindow(raster);
   const auto [readColOff, readRowOff, readNumCols, readNumRows] = readWin;
   const int64 readBytesOff = raster->GetBytesPerBand() * readPixelOff;
-  
+
   auto readBuffer = raster->GetBuffer() + readBytesOff;
 
   for (auto b : mBands) {
@@ -248,7 +248,7 @@ void RasterReader::ReadRaster(GdalRaster* const raster) {
 
     auto readRow{ readBuffer };
     for (int r = 0; r < readNumRows; ++r) {
-      const auto err = band->RasterIO(GF_Read, readColOff, readRowOff + r, 
+      const auto err = band->RasterIO(GF_Read, readColOff, readRowOff + r,
         readNumCols, 1, readRow, readNumCols, 1, mGdalDT, 0, 0, nullptr);
       if (CE_None != err) {
         throw IOError("Failaure when reading by RasterIO");
@@ -271,7 +271,7 @@ void RasterReader::ReadRaster(GdalRaster* const raster) {
  *  \param [in] fillDim tells the dimensions of the four sides.
  */
 void RasterReader::FillMargins(CvRaster* const raster, MarginFillDim fillDim) {
-  watxtract::FillMargins(raster, fillDim);
+  earthxpert::FillMargins(raster, fillDim);
 }
 
 /**

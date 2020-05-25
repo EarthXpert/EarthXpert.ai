@@ -4,13 +4,13 @@
  */
 #pragma once
 
-#include "marshaller/wxmarshaller.h"
+#include "marshaller/exmarshaller.h"
 #include "sensormodel/distortiongrid.h"
 
 #include <istream>
 #include <ostream>
 
-namespace watxtract {
+namespace earthxpert {
 
 /**
  *  Marshall distortion grid files.
@@ -45,7 +45,7 @@ begin grid "Image deformation grid 1"
 end grid
 end gridgroup
  */
-class WXMARSHALLER_EXPORTS DistGridMarshaller {
+class EXMARSHALLER_EXPORTS DistGridMarshaller {
 public:
   static void Serialize(const std::string &gridFile,
                         DistortionGridF const *const distGrid);
@@ -55,4 +55,4 @@ public:
   static std::unique_ptr<DistortionGridF> Deserialize(const std::string &gridFile);
   static std::unique_ptr<DistortionGridF> Deserialize(std::istream &inStream);
 };
-} // namespace watxtract
+} // namespace earthxpert

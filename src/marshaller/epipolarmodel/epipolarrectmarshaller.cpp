@@ -7,8 +7,8 @@
 #include <cereal/types/array.hpp>
 #include <iostream>
 
-using watxtract::EpipolarRect;
-using watxtract::EpipolarRectMarshaller;
+using earthxpert::EpipolarRect;
+using earthxpert::EpipolarRectMarshaller;
 
 /**
  *  brief constructor construct marshaller for epirect
