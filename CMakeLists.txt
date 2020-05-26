@@ -41,10 +41,33 @@ if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
 
   set(CEREAL_INCLUDE_DIR "${EX_THIRD_PARTY}/cereal_1.2.2/include")
 
+  set(Ceres_ROOT "${EX_THIRD_PARTY}/ceres_2.0.0")
+  set(Ceres_DIR "${Ceres_ROOT}/CMake")
+  set(CERES_INCLUDE_DIRS "${Ceres_ROOT}/include")
+  set(CERES_LIBRARY_DIR "${Ceres_ROOT}/lib")
+  set(CERES_LIBRARY debug "${CERES_LIBRARY_DIR}/ceres-debug.lib"
+                    optimized "${CERES_LIBRARY_DIR}/ceres.lib")
+
+  set(CGAL_ROOT "${EX_THIRD_PARTY}/cgal_5.0.900")
+  set(CGAL_DIR "${CGAL_ROOT}/lib/cmake/CGAL")
+  set(CGAL_LIBRARIES_DIR "${CGAL_ROOT}/lib")
+  set(CGAL_LIBRARIES debug "${CGAL_LIBRARIES_DIR}/CGAL_Core-vc140-mt-gd-5.0-I-900.lib"
+                     debug "${CGAL_LIBRARIES_DIR}/CGAL_ImageIO-vc140-mt-gd-5.0-I-900.lib"
+                     debug "${CGAL_LIBRARIES_DIR}/CGAL_Qt5-vc140-mt-gd-5.0-I-900.lib"
+                     debug "${CGAL_LIBRARIES_DIR}/CGAL-vc140-mt-gd-5.0-I-900.lib"
+                     optimized "${CGAL_LIBRARIES_DIR}/CGAL_Core-vc140-mt-5.0-I-900.lib"
+                     optimized "${CGAL_LIBRARIES_DIR}/CGAL_ImageIO-vc140-mt-5.0-I-900.lib"
+                     optimized "${CGAL_LIBRARIES_DIR}/CGAL_Qt5-vc140-mt-5.0-I-900.lib"
+                     optimized "${CGAL_LIBRARIES_DIR}/CGAL-vc140-mt-5.0-I-900.lib")
+
+  set(Eigen3_DIR "${EX_THIRD_PARTY}/eigen_3.3.90/share/eigen3/cmake")
+
   set(GDAL_ROOT "${EX_THIRD_PARTY}/gdal_2.4.1")
   set(GDAL_BIN_DIR "${GDAL_ROOT}/bin/${CDEGREL}")
   set(GDAL_INCLUDE_DIR "${GDAL_ROOT}/include")
   set(GDAL_LIBRARY "${GDAL_ROOT}/lib/${CDEGREL}/gdal_i.lib")
+
+  set(glog_DIR "${EX_THIRD_PARTY}/glog_0.4.0/lib/cmake/glog")
 
   set(GTEST_ROOT "${EX_THIRD_PARTY}/gtest_1.8.1")
   set(GTEST_BIN_DIR "${GTEST_ROOT}/bin")
@@ -113,11 +136,6 @@ if(DEFINED CMAKE_DEBUG_POSTFIX)
   set(EARTHXPERT_DEBUG_POSTFIX "${CMAKE_DEBUG_POSTFIX}")
 endif()
 
-set(Boost_USE_STATIC_LIBS OFF) 
-set(Boost_USE_MULTITHREADED ON)  
-set(Boost_USE_STATIC_RUNTIME OFF) 
-find_package(Boost 1.71.0 COMPONENTS filesystem iostreams program_options python37) 
-
 find_package(OpenMP)
 if (OPENMP_FOUND)
   set (CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${OpenMP_C_FLAGS}")
@@ -125,6 +143,14 @@ if (OPENMP_FOUND)
   set (CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} ${OpenMP_EXE_LINKER_FLAGS}")
 endif()
 
+set(Boost_USE_STATIC_LIBS OFF) 
+set(Boost_USE_MULTITHREADED ON)  
+set(Boost_USE_STATIC_RUNTIME OFF) 
+find_package(Boost 1.71.0 COMPONENTS filesystem iostreams program_options python37) 
+
+find_package(Ceres REQUIRED)
+find_package(CGAL REQUIRED)
+find_package(Eigen3 REQUIRED)
 find_package(GDAL REQUIRED)
 find_package(GTest REQUIRED)
 find_package(OpenCV REQUIRED)
@@ -147,8 +173,22 @@ else()
 endif()
 
 # section include
+message(STATUS "Boost_INCLUDE_DIR: ${Boost_INCLUDE_DIR}")
+message(STATUS "CEREAL_INCLUDE_DIR: ${CEREAL_INCLUDE_DIR}")
+message(STATUS "CERES_INCLUDE_DIRS: ${CERES_INCLUDE_DIRS}")
+message(STATUS "CGAL_INCLUDE_DIRS: ${CGAL_INCLUDE_DIRS}")
+message(STATUS "EIGEN3_INCLUDE_DIR: ${EIGEN3_INCLUDE_DIR}")
+message(STATUS "GDAL_INCLUDE_DIR: ${GDAL_INCLUDE_DIR}")
+message(STATUS "GTEST_INCLUDE_DIRS: ${GTEST_INCLUDE_DIRS}")
+message(STATUS "LASLIB_INCLUDE_DIR: ${LASLIB_INCLUDE_DIR}")
+message(STATUS "OPENCV_INCLUDE_DIR: ${OPENCV_INCLUDE_DIR}")
+message(STATUS "SLTBENCH_INCLUDE_DIRS: ${SLTBENCH_INCLUDE_DIRS}")
+
 include_directories(${Boost_INCLUDE_DIR}) 
 include_directories(${CEREAL_INCLUDE_DIR})
+include_directories(${CERES_INCLUDE_DIRS})
+include_directories(${CGAL_INCLUDE_DIRS})
+include_directories(${EIGEN3_INCLUDE_DIR})
 include_directories(${GDAL_INCLUDE_DIR})
 include_directories(${GTEST_INCLUDE_DIRS})
 include_directories(${LASLIB_INCLUDE_DIR})

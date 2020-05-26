@@ -3,9 +3,12 @@
  * -----------------------------------------------------------------------------
  */
 #include "srcconfig.h"
+#include "3rd_party/boost/exboost.h"
+#include "3rd_party/gdal/exgdal.h"
 #include "core/utils/rasterlayout.h"
 
 #include <iostream>
+#include <boost/program_options.hpp>
 
 using earthxpert::RasterLayout;
 using earthxpert::RasterWindow;

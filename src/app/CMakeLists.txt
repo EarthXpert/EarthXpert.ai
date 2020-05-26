@@ -1,4 +1,4 @@
-project(app)
+project(app CXX)
 
+add_subdirectory(cli)
 add_subdirectory(gui)
-add_subdirectory(tools)
