@@ -86,9 +86,9 @@ public:
    *  \brief Reads a point range defined by the passed cloud object, populates
    *  the associated buffer.
    *
-   *  \param [in/out] cloud the container object to be populated with points.
+   *  \param [in/out] pc the container object to be populated with points.
    */
-  void ReadPointcloud(Pointcloud* const cloud) override;
+  void ReadPointcloud(Pointcloud* const pc) override;
 
 private:
   std::unique_ptr<LASreader> mLasReader{};
@@ -99,8 +99,8 @@ private:
 
   // cache
   const LASheader *mLasHeader{};
-  int64 mFilePointCount{};  // total number of point records in file
   FieldGroup mFileFieldGroup;
+  size_t mFilePointCount{};  // total number of point records in file
 
   void ObtainLasInfo();
 };

@@ -6,12 +6,12 @@
 
 #include "lasindex.hpp"
 #include "lasquadtree.hpp"
-#include <lasreader.hpp>
+#include "lasreader.hpp"
  //#include <experimental/filesystem>
 #include <memory>
 #include <sys/stat.h>
 
-using namespace earthxpert;
+using namespace earthxpert::thirdparty;
 
 /**
  *  \brief create a lax index file for storing quadtree of the

@@ -89,11 +89,10 @@ std::unique_ptr<Pointcloud> PointcloudReader::ReadPointcloud(
   }
 
   auto pc = std::make_unique<Pointcloud>(pointCount, mFieldGroup);
+  pc->SetOrigin(Point3d(mLasHeader->x_offset, mLasHeader->y_offset, mLasHeader->z_offset));
 
   mLasReader->seek(offset);
-  for (int64 i = 0; i < pointCount; ++i) {
-    mLasReader->read_point();
-  }
+  ReadPointcloud(pc.get());
 
   return pc;
 }
@@ -109,9 +108,17 @@ std::unique_ptr<Pointcloud> PointcloudReader::ReadPointcloud() {
  *  \brief Reads a point range defined by the passed cloud object, populates
  *  the associated buffer.
  *
- *  \param [in/out] cloud the container object to be populated with points.
+ *  \param [in/out] pc the container object to be populated with points.
  */
-void PointcloudReader::ReadPointcloud(Pointcloud* const cloud) {
+void PointcloudReader::ReadPointcloud(Pointcloud* const pc) {
+  size_t pointCount = std::min<size_t>(pc->GetPointCount(), 
+    mLasReader->npoints - mLasReader->p_count);
+
+  for (size_t i = 0; i < pointCount; ++i) {
+    // \todo sanity check 
+    mLasReader->read_point();
+    pc->SetPoint_Unchecked(i, mLasReader->point, mLasHeader);
+  }
 }
 
 /**
@@ -119,14 +126,71 @@ void PointcloudReader::ReadPointcloud(Pointcloud* const cloud) {
  */
 void PointcloudReader::ObtainLasInfo() {
   assert(mLasReader);
-  mLasHeader = &mLasReader->header;
+  mLasHeader = &(mLasReader->header);
 
-  mFilePointCount = mLasHeader->number_of_point_records;
+  // obtain fields
+  mFileFieldGroup.set(FieldGroup::kPOSXYZ);
+  mFileFieldGroup.set(FieldGroup::kPOSCLA);
+  mFileFieldGroup.set(FieldGroup::kPOSINT);
+
+  switch (mLasHeader->point_data_format) {
+  case 1:
+    mFileFieldGroup.set(FieldGroup::kPOSTIM);
+    break;
+  case 2:
+    mFileFieldGroup.set(FieldGroup::kPOSRGB);
+    break;
+  case 3:
+    mFileFieldGroup.set(FieldGroup::kPOSRGB);
+    mFileFieldGroup.set(FieldGroup::kPOSTIM);
+    break;
+  case 4:
+    mFileFieldGroup.set(FieldGroup::kPOSTIM);
+    break;
+  case 5:
+    mFileFieldGroup.set(FieldGroup::kPOSRGB);
+    mFileFieldGroup.set(FieldGroup::kPOSTIM);
+    break;
+  case 6:
+    mFileFieldGroup.set(FieldGroup::kPOSTIM);
+    break;
+  case 7:
+    mFileFieldGroup.set(FieldGroup::kPOSRGB);
+    mFileFieldGroup.set(FieldGroup::kPOSTIM);
+    break;
+  case 8:
+    mFileFieldGroup.set(FieldGroup::kPOSRGB);
+    mFileFieldGroup.set(FieldGroup::kPOSNIR);
+    mFileFieldGroup.set(FieldGroup::kPOSTIM);
+    break;
+  case 9:
+    mFileFieldGroup.set(FieldGroup::kPOSTIM);
+    break;
+  case 10:
+    mFileFieldGroup.set(FieldGroup::kPOSRGB);
+    mFileFieldGroup.set(FieldGroup::kPOSNIR);
+    mFileFieldGroup.set(FieldGroup::kPOSTIM);
+    break;
+  default:
+    break;
+  }
+
+  // turn off fields not used till now: intensity, time, nir 
+  mFileFieldGroup.reset(FieldGroup::kPOSINT);
+  mFileFieldGroup.reset(FieldGroup::kPOSNIR);
+  mFileFieldGroup.reset(FieldGroup::kPOSTIM);
 
   if (mFieldGroup.none()) {
     mFieldGroup = mFileFieldGroup;
   }
   else {
-
+    for (auto pos : FieldGroup::kPOS) {
+      if (mFieldGroup.test(pos) && !mFileFieldGroup.test(pos)) {
+        throw std::out_of_range("Requested fields are out of the range of available fields");
+      }
+    }
   }
+
+  mFilePointCount = mLasHeader->number_of_point_records;  // extended_number_of_point_records 
+  assert(mLasReader->npoints == mFilePointCount);
 }

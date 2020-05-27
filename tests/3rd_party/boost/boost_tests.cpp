@@ -10,6 +10,8 @@
 namespace bfs = boost::filesystem;
 
 TEST(boost, filesystem) {
-  std::cerr << "[   EXAI   ] "
-            << "not implemented" << std::endl;
+  bfs::path filePath("D:/Workspace/Results/output.txt");
+
+  ASSERT_FALSE(filePath.filename_is_dot());
+  ASSERT_TRUE(filePath.has_extension());
 }
