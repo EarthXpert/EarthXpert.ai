@@ -432,10 +432,11 @@ public:
   }
 
 private:
-  size_t mPointCount{};
+  size_t mPointCount{};     // actual number of points held
   FieldGroup mFieldGroup;   // available field groups
 
   Point3d mOrigin{};        // origin of 3D coordinate system where mPoints reside
+  //size_t mPointCapacity{};  // \todo max number of points to be able to hold
   std::vector<XYZF> mXYZ;   // XYZ coordinates
   std::vector<Classification> mCla; // feature classification: ground
   std::vector<Intensity> mIntensity;  // laser reflectance

@@ -63,6 +63,31 @@ struct FieldGroup : std::bitset<sizeof(size_t)> {
 
     return pos;
   }
+
+  /**
+   *  \brief examine if rhs contains all fields of current field group
+   * 
+   *  \param [in] rhs the other field group to compare with
+   *  \return Returns true if all fields are contained in rhs.
+   */
+  bool operator<=(const FieldGroup& rhs) const {
+    bool ret{ true };
+    for (auto pos : FieldGroup::kPOS) {
+      if (test(pos))
+        ret = ret && rhs.test(pos);
+    }
+    return ret;
+  }
+
+  /**
+   *  \brief examine if the current field group contains extra fields besides all fields of rhs
+   *
+   *  \param [in] rhs the other field group to compare with
+   *  \return Returns true if being superset of rhs.
+   */
+  bool operator>(const FieldGroup& rhs) const {
+    return !(operator<=(rhs));
+  }
 };
 
 /**
@@ -74,6 +99,16 @@ struct XYZ /*: public cv::Point3_<CoordTy>*/{
   CoordTy x{};  // x-coordinate
   CoordTy y{};  // y-coordinate
   CoordTy z{};  // z-coordinate
+
+  /**
+   *  \brief Convert to cv point type
+   *
+   *  \param CoordTy2 the type of cv point coordinates.
+   */
+  template <typename CoordTy2>
+  operator cv::Point3_<CoordTy2>() const {
+    return cv::Point3_<CoordTy2>(x, y, z);
+  }
 };
 
 /**
@@ -100,9 +135,9 @@ struct Intensity {
 template <typename ColorTy>
 struct RGB {
   static constexpr size_t kFieldGroup = FieldGroup::kBITRGB;
-  ColorTy r{};  // red
-  ColorTy g{};  // green
   ColorTy b{};  // blue
+  ColorTy g{};  // green
+  ColorTy r{};  // red
 };
 
 /**

@@ -97,13 +97,15 @@ public:
    *  starting from the current point, and populates the associated buffer.
    *
    *  \param [in/out] pc the container object to be populated with points.
+   *  \return Returns number of points actually read
    */
-  void ReadPointcloud(Pointcloud* const pc) override;
+  size_t ReadPointcloud(Pointcloud* const pc) override;
 
 private:
   std::unique_ptr<LASreader> mLasReader{};
   FieldGroup mFieldGroup{};
 
+  // \remark margin of point cloud seems not really meaningful. remove?
   float mMarginX{};
   float mMarginY{};
 

@@ -87,7 +87,8 @@ public:
    *  the associated buffer.
    *
    *  \param [in/out] cloud the container object to be populated with points.
+   *  \return Returns number of points actually read
    */
-  virtual void ReadPointcloud(Pointcloud* const cloud) = 0;
+  virtual size_t ReadPointcloud(Pointcloud* const cloud) = 0;
 };
 } // namespace earthxpert
