@@ -11,16 +11,28 @@
 #include <type_traits>
 #include <vector>
 
+class LASpoint;
+class LASquantizer;
+
 namespace earthxpert {
 /**
  *  The class Pointcloud stores an array of points in groups of fields.
+ *
+ *  \todo optimize performance
  */
 class EXCORE_EXPORTS Pointcloud {
 public:
+  enum PointcouldType {
+    eLIDAR,   // scanned by lidar instruments
+    ePHOTO    // matched and reconstructed from photos
+  };
+
   Pointcloud(size_t pointCount, FieldGroup fieldGroup);
   Pointcloud(const Point3d& origin, std::vector<XYZF>&& xyz);
   Pointcloud(const Point3d& origin, std::vector<XYZF>&& xyz,
     std::vector<Classification>&& cla);
+  Pointcloud(const Point3d& origin, std::vector<XYZF>&& xyz,
+    std::vector<Classification>&& cla, std::vector<RGB16>&& rgb);
   Pointcloud(const Pointcloud& rhs) = default;
   Pointcloud(Pointcloud&& rhs) noexcept = default;
   ~Pointcloud() = default;
@@ -34,15 +46,23 @@ public:
   /**
    *  \return Returns total number of points.
    */
-  auto GetPointCount() const {
+  auto GetPointCount() const noexcept {
     return mPointCount;
   }
 
   /**
    *  \return Returns field groups.
    */
-  auto GetFieldGroup() const {
+  auto GetFieldGroup() const noexcept {
     return mFieldGroup;
+  }
+
+  /**
+   *  \return Returns memory size in bytes.
+   */
+  size_t GetBufferNumBytes() const noexcept {
+    return (mXYZ.size() * sizeof(XYZF) + mCla.size() * sizeof(Classification) +
+      mIntensity.size() * sizeof(Intensity) + mRGB.size() * sizeof(RGB16));
   }
 
   /**
@@ -102,6 +122,52 @@ public:
   }
 
   /**
+   *  \brief set an array of intensity
+   *
+   *  \param [in] intensity an array of intensity
+   */
+  void SetIntensity(std::vector<Intensity>&& intensity) {
+    assert(mFieldGroup.test(FieldGroup::kPOSINT));
+    assert(mPointCount == intensity.size());
+    mIntensity = std::move(intensity);
+  }
+
+  /**
+   *  \brief set intensity at specified index
+   *
+   *  \param [in] i index of point
+   *  \param [in] intensity intensity
+   */
+  void SetIntensity(const size_t i, const Intensity intensity) {
+    assert(mFieldGroup.test(FieldGroup::kPOSINT));
+    assert(i < mPointCount);
+    mIntensity[i] = intensity;
+  }
+
+  /**
+   *  \brief set an array of RGB
+   *
+   *  \param [in] rgb an array of RGB
+   */
+  void SetRGB(std::vector<RGB16>&& rgb) {
+    assert(mFieldGroup.test(FieldGroup::kPOSRGB));
+    assert(mPointCount == rgb.size());
+    mRGB = std::move(rgb);
+  }
+
+  /**
+   *  \brief set RGB at specified index
+   *
+   *  \param [in] i index of point
+   *  \param [in] rgb RGB
+   */
+  void SetRGB(const size_t i, const RGB16 rgb) {
+    assert(mFieldGroup.test(FieldGroup::kPOSRGB));
+    assert(i < mPointCount);
+    mRGB[i] = rgb;
+  }
+
+  /**
    *  \return Returns origin.
    */
   const Point3d& GetOrigin() const noexcept {
@@ -154,15 +220,58 @@ public:
   }
 
   /**
+   *  \return Returns array of intensity.
+   */
+  const auto& GetIntensity() const noexcept {
+    return mIntensity;
+  }
+  auto& GetIntensity() noexcept {
+    return mIntensity;
+  }
+
+  /**
+   *  \param [in] i index of point
+   *  \return Returns intensity at specified index.
+   */
+  const auto& GetIntensity(const size_t i) const noexcept {
+    return mIntensity[i];
+  }
+  auto& GetIntensity(const size_t i) noexcept {
+    return mIntensity[i];
+  }
+
+  /**
+   *  \return Returns array of RGB.
+   */
+  const auto& GetRGB() const noexcept {
+    return mRGB;
+  }
+  auto& GetRGB() noexcept {
+    return mRGB;
+  }
+
+  /**
+   *  \param [in] i index of point
+   *  \return Returns RGB at specified index.
+   */
+  const auto& GetRGB(const size_t i) const noexcept {
+    return mRGB[i];
+  }
+  auto& GetRGB(const size_t i) noexcept {
+    return mRGB[i];
+  }
+
+  /**
    *  \brief Set fields to given point.
    *
-   *  \param PointTy the point type of WxPoint<>
+   *  \param PointTy the point type of WxPoint<>, being all or a partial of available fields
    *  \param [in] i index of point
+   *  \param [in] i point object of type PointTy
    */
   template <typename PointTy>
   void SetPoint(const size_t i, const PointTy& point) {
     if (mPointCount <= i) {
-      throw std::out_of_range("Pointcloud::GetPoint()");
+      throw std::out_of_range("Pointcloud::SetPoint()");
     }
     if (!VerifyPointFieldGroup(PointTy::kPointFieldGroup)) {
       throw std::invalid_argument("PointTy");
@@ -172,7 +281,22 @@ public:
   }
 
   /**
-   *  \param PointTy the point type of WxPoint<>
+   *  \brief Set fields to given point.
+   *
+   *  \param [in] i index of point
+   *  \param [in] point LASlib point
+   */
+  void SetPoint(const size_t i, const LASpoint& point, const LASquantizer* quantizer) {
+    if (mPointCount <= i) {
+      throw std::out_of_range("Pointcloud::SetPoint()");
+    }
+
+    SetPoint_Unchecked(i, point, quantizer);
+  }
+
+
+  /**
+   *  \param PointTy the point type of WxPoint<>, being all or a partial of available fields
    *  \param [in] i index of point
    *  \return Returns a point at given index.
    */
@@ -189,7 +313,7 @@ public:
   }
 
   /**
-   *  \brief subscript access via proxy
+   *  \brief subscript access via proxy to a point
    *
    *  \param PointcloudTy const or non-const Pointcloud
    *  \remark Use for occasional point access.
@@ -230,7 +354,7 @@ public:
   /**
    *  \brief verify if point cloud contains fields requested.
    *
-   *  \param [in] ptFieldGroup The field groups bit mask requested.
+   *  \param [in] pointFieldGroup The field groups bit mask requested.
    *  \return Returns true if point cloud contains all the requested field groups, otherwise false.
    */
   bool VerifyPointFieldGroup(const size_t pointFieldGroup) const {
@@ -263,8 +387,21 @@ public:
     if constexpr (std::is_base_of_v<Intensity, PointTy>) {
       mIntensity[i].i = point.i;
     }
+    if constexpr (std::is_base_of_v<RGB16, PointTy>) {
+      mRGB[i].r = point.r;
+      mRGB[i].g = point.g;
+      mRGB[i].b = point.b;
+    }
     // \todo add other field groups
   }
+
+  /**
+   *  \brief Set fields to given point.
+   *
+   *  \param [in] i index of point
+   *  \param [in] point LASlib point
+   */
+  void SetPoint_Unchecked(size_t i, const LASpoint& point, const LASquantizer* quantizer);
 
   /**
    *  \param [in] i index of point
@@ -284,21 +421,28 @@ public:
     if constexpr (std::is_base_of_v<Intensity, PointTy>) {
       point.i = mIntensity[i].i;
     }
+    if constexpr (std::is_base_of_v<RGB16, PointTy>) {
+      point.r = mRGB[i].r;
+      point.g = mRGB[i].g;
+      point.b = mRGB[i].b;
+    }
     // \todo add other field groups
 
     return point;
   }
 
 private:
-  size_t mPointCount{};
+  size_t mPointCount{};     // actual number of points held
   FieldGroup mFieldGroup;   // available field groups
 
   Point3d mOrigin{};        // origin of 3D coordinate system where mPoints reside
+  //size_t mPointCapacity{};  // \todo max number of points to be able to hold
   std::vector<XYZF> mXYZ;   // XYZ coordinates
   std::vector<Classification> mCla; // feature classification: ground
-  std::vector<Intensity> mIntensity;
+  std::vector<Intensity> mIntensity;  // laser reflectance
+  std::vector<RGB16> mRGB;    // color
+
   // uncomment when needed
-  //std::vector<RGB<uint32_t>> mRGB;
   //std::vector<GPSTime> mTime;
 };
 }

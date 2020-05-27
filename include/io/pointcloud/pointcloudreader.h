@@ -30,6 +30,11 @@ public:
   PointcloudReader &operator=(PointcloudReader &&) = delete;
 
   /**
+   *  \return Returns metadata tags
+   */
+  std::unique_ptr<VectorMetadata> GetMetadata() const override;
+
+  /**
    *  \brief Set the margin size.
    *
    *  \param [in] marginX the horizontal margin size
@@ -46,6 +51,11 @@ public:
    *  \return Return header information of the las file
    */
   PointcloudHeader* GetHeader() const override;
+
+  /**
+   *  \return Returns pointer to a coordinate system
+   */
+  std::unique_ptr<SpatialReferenceSystem> GetCoordinateSystem() const override;
 
   /**
    *  \return Returns total number of points of las file
@@ -83,24 +93,26 @@ public:
   std::unique_ptr<Pointcloud> ReadPointcloud() override;
 
   /**
-   *  \brief Reads a point range defined by the passed cloud object, populates
-   *  the associated buffer.
+   *  \brief Reads a point range defined by the passed cloud object, 
+   *  starting from the current point, and populates the associated buffer.
    *
-   *  \param [in/out] cloud the container object to be populated with points.
+   *  \param [in/out] pc the container object to be populated with points.
+   *  \return Returns number of points actually read
    */
-  void ReadPointcloud(Pointcloud* const cloud) override;
+  size_t ReadPointcloud(Pointcloud* const pc) override;
 
 private:
   std::unique_ptr<LASreader> mLasReader{};
   FieldGroup mFieldGroup{};
 
+  // \remark margin of point cloud seems not really meaningful. remove?
   float mMarginX{};
   float mMarginY{};
 
   // cache
   const LASheader *mLasHeader{};
-  int64 mFilePointCount{};  // total number of point records in file
   FieldGroup mFileFieldGroup;
+  size_t mFilePointCount{};  // total number of point records in file
 
   void ObtainLasInfo();
 };

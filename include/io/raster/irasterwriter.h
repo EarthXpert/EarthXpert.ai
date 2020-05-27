@@ -10,7 +10,7 @@
 namespace earthxpert {
 class Geocoding;
 class IRaster;
-class Metadata;
+class RasterMetadata;
 
 /**
  *  The interface IRasterWriter defines the behaviors for writing into
@@ -25,7 +25,7 @@ public:
    *
    *  \param [in] metaData the metadata tags
    */
-  virtual void SetMetadata(const Metadata* metaData) = 0;
+  virtual void SetMetadata(const RasterMetadata* metaData) = 0;
 
   /**
    *  \brief Inject the ground coordinate system where the image file operates

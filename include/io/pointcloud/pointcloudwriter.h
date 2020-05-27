@@ -15,7 +15,7 @@ namespace earthxpert {
  *  with LASlib as backend, and serialize points in a Pointcloud object
  *  having specific fields, such as XYZ, intensity, classification etc.
  *
- *  \remark update an existing file?
+ *  \todo update an existing file : public IPointcloudReader
  */
 class EXIO_EXPORTS PointcloudWriter final : public IPointcloudWriter {
 public:
@@ -32,6 +32,20 @@ public:
 
   PointcloudWriter& operator=(const PointcloudWriter&) = delete;
   PointcloudWriter& operator=(PointcloudWriter&&) = delete;
+
+  /**
+   *  \brief Inject metadata tags
+   *
+   *  \param [in] metaData the metadata tags
+   */
+  void SetMetadata(const VectorMetadata* metaData) override;
+
+  /**
+   *  \brief Inject the ground coordinate system where the image file operates
+   *
+   *  \param [in] spatialref the coordinate system
+   */
+  void SetCoordinateSystem(const SpatialReferenceSystem* srs) override;
 
   /**
    *  \brief Write an array of points into the opened file.

@@ -7,5 +7,5 @@
 #include "3rd_party/ex3rd_party.h"
 #include "ceres/ceres.h"
 
-namespace earthxpert {
-} // namespace earthxpert
+namespace earthxpert::thirdparty {
+} // namespace earthxpert::thirdparty

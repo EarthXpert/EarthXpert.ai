@@ -52,6 +52,14 @@ static void CheckPointcloud_PointF_Subscript(const Pointcloud& pc) {
     ASSERT_LE(point.y, 500.0f);
     ASSERT_GE(point.z, -50.0f);
     ASSERT_LE(point.z, 50.0f);
+
+    auto cvpoint = static_cast<Point3f>(point);
+    ASSERT_GE(cvpoint.x, -500.0f);
+    ASSERT_LE(cvpoint.x, 500.0f);
+    ASSERT_GE(cvpoint.y, -500.0f);
+    ASSERT_LE(cvpoint.y, 500.0f);
+    ASSERT_GE(cvpoint.z, -50.0f);
+    ASSERT_LE(cvpoint.z, 50.0f);
   }
 }
 

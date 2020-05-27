@@ -20,6 +20,7 @@ PointcloudWriter::PointcloudWriter(const std::string& lasFile)
  *  \brief Open/create the las file for write
  *
  *  \param [in] lasFile the file name to receive points
+ *  \param [in] format the file format: las, laz, bin, txt, etc.
  */
 PointcloudWriter::PointcloudWriter(const std::string& lasFile, const std::string format) {
   LASwriteOpener lasWriteOpener;
@@ -31,6 +32,23 @@ PointcloudWriter::PointcloudWriter(const std::string& lasFile, const std::string
     throw IOError("Cannot open las file for write");
 
   ObtainLasInfo();
+}
+
+/**
+ *  \brief Inject metadata tags
+ *
+ *  \param [in] metaData the metadata tags
+ */
+void PointcloudWriter::SetMetadata(const VectorMetadata* metaData) {
+
+}
+
+/**
+ *  \brief Inject the ground coordinate system where the image file operates
+ *
+ *  \param [in] spatialref the coordinate system
+ */
+void PointcloudWriter::SetCoordinateSystem(const SpatialReferenceSystem* srs) {
 }
 
 /**

@@ -8,7 +8,7 @@
 #include "gdal_priv.h"
 #include "ogr_spatialref.h"
 
-namespace earthxpert {
+namespace earthxpert {    // \todo ::thirdparty
 void EX3RDPARTY_EXPORTS GDALInitialize();
 EX3RDPARTY_EXPORTS GDALDataset *CreateRasterDataset(const std::string& imgFile,
   const std::string format, int numCols, int numRows,
@@ -29,4 +29,4 @@ inline bool operator!=(const SpatialReferenceSystem &lhs,
                        const SpatialReferenceSystem &rhs) {
   return !(operator==(lhs, rhs));
 }
-} // namespace earthxpert
+} // namespace earthxpert::thirdparty

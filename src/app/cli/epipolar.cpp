@@ -15,7 +15,7 @@
 using namespace earthxpert;
 using namespace earthxpert::epipolar;
 using SensorType = ISensorModel::ModelType;
-namespace po = boost::program_options;
+namespace bpo = boost::program_options;
 
 /**
  *  The console program epipolar generates epipolar or pseudo epipolar images
@@ -45,23 +45,23 @@ namespace po = boost::program_options;
  *    exepipolar.exe --sensorname="rational" --leftimg="D:/home/workspace/TestData/Imagery/Satellite/po_162796_pan/po_162796_pan_0000000.tif" --leftmdl="D:/home/workspace/TestData/Imagery/Satellite/po_162796_pan/po_162796_pan_0000000_rpc.txt" --rightimg="D:/home/workspace/TestData/Imagery/Satellite/po_162796_pan/po_162796_pan_0010000.tif" --rightmdl="D:/home/workspace/TestData/Imagery/Satellite/po_162796_pan/po_162796_pan_0010000_rpc.txt" --bands=1 --sample=1 --outdir="D:/home/workspace/build/windows/vs2019/tests/output/" --resample="cubic" --memsize=4000
  */
 int main(int argc, char** argv) {
-  po::options_description optDesc{ "Options" };
+  bpo::options_description optDesc{ "Options" };
   optDesc.add_options()
-    ("sensorname,t", po::value<std::string>()->required(), "sensor name: frame|rational")
-    ("prjdir,p", po::value<std::string>(), "project directory or file")
-    ("leftimg,i", po::value<std::string>()->required(), "left image file")
-    ("leftmdl,m", po::value<std::string>(), "left model file")
-    ("rightimg,j", po::value<std::string>()->required(), "right image file")
-    ("rightmdl,n", po::value<std::string>(), "right model file")
-    ("bands,b", po::value<std::vector<int>>()->multitoken(), "list of bands")
-    ("sample,s", po::value<int>()->default_value(1), "downsample factor")
-    ("outdir,o", po::value<std::string>()->required(), "output directory")
-    ("resample,r", po::value<std::string>()->default_value("cubic"), "resample algorithm: bilinear|cubic|gausian")
-    ("memsize,e", po::value<int>()->default_value(4000), "memory size in MB")
+    ("sensorname,t", bpo::value<std::string>()->required(), "sensor name: frame|rational")
+    ("prjdir,p", bpo::value<std::string>(), "project directory or file")
+    ("leftimg,i", bpo::value<std::string>()->required(), "left image file")
+    ("leftmdl,m", bpo::value<std::string>(), "left model file")
+    ("rightimg,j", bpo::value<std::string>()->required(), "right image file")
+    ("rightmdl,n", bpo::value<std::string>(), "right model file")
+    ("bands,b", bpo::value<std::vector<int>>()->multitoken(), "list of bands")
+    ("sample,s", bpo::value<int>()->default_value(1), "downsample factor")
+    ("outdir,o", bpo::value<std::string>()->required(), "output directory")
+    ("resample,r", bpo::value<std::string>()->default_value("cubic"), "resample algorithm: bilinear|cubic|gausian")
+    ("memsize,e", bpo::value<int>()->default_value(4000), "memory size in MB")
     ("help,h", "Usage help");
 
-  po::variables_map vm;
-  po::store(po::parse_command_line(argc, argv, optDesc), vm);
+  bpo::variables_map vm;
+  bpo::store(bpo::parse_command_line(argc, argv, optDesc), vm);
 
   if (vm.count("help")) {
     std::cout << optDesc << std::endl;
@@ -69,7 +69,7 @@ int main(int argc, char** argv) {
   }
 
   try {
-    po::notify(vm);
+    bpo::notify(vm);
   }
   catch (...) {
     std::cout << optDesc << std::endl;

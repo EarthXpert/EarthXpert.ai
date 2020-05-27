@@ -66,7 +66,7 @@ RasterReader::RasterReader(GDALDataset* dataset, const std::vector<int>& bands)
 /**
  *  \return Returns metadata tags
  */
-std::unique_ptr<Metadata> RasterReader::GetMetadata() const {
+std::unique_ptr<RasterMetadata> RasterReader::GetMetadata() const {
   return {};
 }
 

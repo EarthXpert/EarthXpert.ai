@@ -8,9 +8,16 @@
 
 namespace earthxpert {
 /**
- *  The class Metadata provides data of the tags describing the file- and
+ *  The class RasterMetadata provides data of the tags describing the file- and
  *  band-level information.
  */
-class EXCORE_EXPORTS Metadata {
+class EXCORE_EXPORTS RasterMetadata {
+};
+
+/**
+ *  The class VectorMetadata provides data of the tags describing the file- and
+ *  layer-level information.
+ */
+class EXCORE_EXPORTS VectorMetadata {
 };
 } // namespace earthxpert

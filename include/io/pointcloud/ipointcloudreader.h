@@ -5,6 +5,8 @@
 #pragma once
 
 #include "io/exio.h"
+#include "3rd_party/gdal/exgdal.h"
+#include "core/datasource/metadata.h"
 #include "core/datasource/pointcloud.h"
 #include "core/datasource/pointcloudheader.h"
 
@@ -18,6 +20,11 @@ namespace earthxpert {
 class EXIO_EXPORTS IPointcloudReader {
 public:
   virtual ~IPointcloudReader() {}
+
+  /**
+   *  \return Returns metadata tags
+   */
+  virtual std::unique_ptr<VectorMetadata> GetMetadata() const = 0;
 
   /**
    *  \brief Set the margin size.
@@ -36,6 +43,11 @@ public:
    *  \return Return header information of the las file
    */
   virtual PointcloudHeader* GetHeader() const = 0;
+
+  /**
+   *  \return Returns pointer to a coordinate system
+   */
+  virtual std::unique_ptr<SpatialReferenceSystem> GetCoordinateSystem() const = 0;
 
   /**
    *  \return Returns total number of points of las file
@@ -75,7 +87,8 @@ public:
    *  the associated buffer.
    *
    *  \param [in/out] cloud the container object to be populated with points.
+   *  \return Returns number of points actually read
    */
-  virtual void ReadPointcloud(Pointcloud* const cloud) = 0;
+  virtual size_t ReadPointcloud(Pointcloud* const cloud) = 0;
 };
 } // namespace earthxpert

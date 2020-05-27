@@ -6,5 +6,5 @@
 
 #include "3rd_party/ex3rd_party.h"
 
-namespace earthxpert {
-} // namespace earthxpert
+namespace earthxpert::thirdparty {
+} // namespace earthxpert::thirdparty

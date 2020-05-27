@@ -10,5 +10,5 @@
 #include "CGAL/Delaunay_triangulation_3.h"
 #include "CGAL/Straight_skeleton_2.h"
 
-namespace earthxpert {
+namespace earthxpert::thirdparty {
 } // namespace earthxpert

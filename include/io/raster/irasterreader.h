@@ -25,7 +25,7 @@ public:
   /**
    *  \return Returns metadata tags
    */
-  virtual std::unique_ptr<Metadata> GetMetadata() const = 0;
+  virtual std::unique_ptr<RasterMetadata> GetMetadata() const = 0;
 
   /**
    *  \return Returns width and height of image file [unit: pixels]
