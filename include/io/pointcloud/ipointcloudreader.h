@@ -86,9 +86,9 @@ public:
    *  \brief Reads a point range defined by the passed cloud object, populates
    *  the associated buffer.
    *
-   *  \param [in/out] cloud the container object to be populated with points.
+   *  \param [in/out] pointCloud the container object to be populated with points.
    *  \return Returns number of points actually read
    */
-  virtual size_t ReadPointcloud(Pointcloud* const cloud) = 0;
+  virtual size_t ReadPointcloud(Pointcloud* const pointCloud) = 0;
 };
 } // namespace earthxpert

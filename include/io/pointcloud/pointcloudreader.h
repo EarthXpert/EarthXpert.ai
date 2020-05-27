@@ -8,6 +8,7 @@
 
 #include "lasreader.hpp"
 #include <iostream>
+#include <mutex>
 #include <vector>
 
 namespace earthxpert {
@@ -96,10 +97,10 @@ public:
    *  \brief Reads a point range defined by the passed cloud object, 
    *  starting from the current point, and populates the associated buffer.
    *
-   *  \param [in/out] pc the container object to be populated with points.
+   *  \param [in/out] pointCloud the container object to be populated with points.
    *  \return Returns number of points actually read
    */
-  size_t ReadPointcloud(Pointcloud* const pc) override;
+  size_t ReadPointcloud(Pointcloud* const pointCloud) override;
 
 private:
   std::unique_ptr<LASreader> mLasReader{};
@@ -108,6 +109,8 @@ private:
   // \remark margin of point cloud seems not really meaningful. remove?
   float mMarginX{};
   float mMarginY{};
+
+  mutable std::mutex mMutex;
 
   // cache
   const LASheader *mLasHeader{};

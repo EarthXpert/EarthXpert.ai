@@ -170,6 +170,7 @@ void RasterReader::ReadRaster(IRaster* const raster) {
  *  \param [in/out] raster the raster object to be populated with the pixel block.
  */
 void RasterReader::ReadRaster(CvRaster* const raster) {
+  std::lock_guard<std::mutex> lock(mMutex);
   const int64 rowNumBytes = raster->GetRowNumBytes();
   const auto [readWin, readPixelOff] = ObtainReadWindow(raster);
   const auto [readColOff, readRowOff, readNumCols, readNumRows] = readWin;
@@ -235,6 +236,7 @@ void RasterReader::ReadRaster(CvRaster* const raster) {
  *  \param [in/out] raster the raster object to be populated with the pixel block.
  */
 void RasterReader::ReadRaster(GdalRaster* const raster) {
+  std::lock_guard<std::mutex> lock(mMutex);
   const int64 rowNumBytes = raster->GetRowNumBytes();
   const int64 bandNumBytes = raster->GetBandNumBytes();
   const auto [readWin, readPixelOff] = ObtainReadWindow(raster);

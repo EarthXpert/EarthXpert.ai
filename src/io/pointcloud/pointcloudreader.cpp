@@ -104,6 +104,7 @@ std::unique_ptr<Pointcloud> PointcloudReader::ReadPointcloud(
     throw std::out_of_range("ReadPointcloud");
   }
 
+  std::lock_guard<std::mutex> lock(mMutex);
   mLasReader->seek(offset);
 
   auto pc = std::make_unique<Pointcloud>(pointCount, mFieldGroup);
@@ -125,22 +126,24 @@ std::unique_ptr<Pointcloud> PointcloudReader::ReadPointcloud() {
  *  \brief Reads a point range defined by the passed cloud object,
  *  starting from the current point, and populates the associated buffer.
  *
- *  \param [in/out] pc the container object to be populated with points.
+ *  \param [in/out] pointCloud the container object to be populated with points.
  *  \return Returns number of points actually read
+ *
+ *  \remark thread unsafe: donot call from mulitple threads simutaneously
  */
-size_t PointcloudReader::ReadPointcloud(Pointcloud* const pc) {
-  if (pc->GetFieldGroup() > mFieldGroup) {
+size_t PointcloudReader::ReadPointcloud(Pointcloud* const pointCloud) {
+  if (pointCloud->GetFieldGroup() > mFieldGroup) {
     throw std::out_of_range("Requested fields are out of the range of read fields");
   }
 
-  pc->SetOrigin(Point3d(mLasHeader->x_offset, mLasHeader->y_offset, mLasHeader->z_offset));
+  pointCloud->SetOrigin(Point3d(mLasHeader->x_offset, mLasHeader->y_offset, mLasHeader->z_offset));
 
-  const size_t pointCount = std::min<size_t>(pc->GetPointCount(),
+  const size_t pointCount = std::min<size_t>(pointCloud->GetPointCount(),
     mLasReader->npoints - mLasReader->p_count);
   for (size_t i = 0; i < pointCount; ++i) {
     // \todo sanity check 
     mLasReader->read_point();
-    pc->SetPoint_Unchecked(i, mLasReader->point, mLasHeader);
+    pointCloud->SetPoint_Unchecked(i, mLasReader->point, mLasHeader);
   }
 
   return pointCount;
@@ -213,6 +216,6 @@ void PointcloudReader::ObtainLasInfo() {
       throw std::out_of_range("Requested fields are out of the range of file fields");
   }
 
-  mFilePointCount = mLasHeader->number_of_point_records;  // extended_number_of_point_records 
-  assert(mLasReader->npoints == mFilePointCount);
+  mFilePointCount = mLasReader->npoints;
+  assert(mLasHeader->number_of_point_records == mFilePointCount);  // extended_number_of_point_records 
 }

@@ -7,6 +7,7 @@
 
 #include "io/pointcloud/pointcloudreader.h"
 #include <array>
+#include <omp.h>
 
 using namespace earthxpert;
 
@@ -151,7 +152,7 @@ TEST(PointcloudReader, ReadPointcloud_LAS_XYZ_CHUNKS) {
   constexpr auto tol = 1.0e-6; // [um]
   constexpr size_t filePointCount{ 20680 };
   const size_t chunkNumPts = filePointCount / 3;
-  const std::array<size_t, 4> chunkNumPts4{ 
+  const std::array<size_t, 4> chunkNumPts4{
     chunkNumPts, chunkNumPts, chunkNumPts, filePointCount - chunkNumPts * 3 };
   const std::array<XYZF, 4> xyz4{ XYZF{539839.375f, 1385161.75f, 38.34f},
                                   XYZF{540413.8125f, 1384951.0f, 45.43f},
@@ -165,13 +166,37 @@ TEST(PointcloudReader, ReadPointcloud_LAS_XYZ_CHUNKS) {
 
   // \remark the 4th read has only 
   Pointcloud pc(chunkNumPts, FieldGroup{ 1 });
-  for (size_t i = 0, j = 0; i < filePointCount; i+= chunkNumPts, ++j) {
+  for (size_t i = 0, j = 0; i < filePointCount; i += chunkNumPts, ++j) {
     const auto readNumPts = reader.ReadPointcloud(&pc);
     ASSERT_EQ(chunkNumPts4[j], readNumPts);
-    
+
     const auto xyz = pc.GetXYZ(0);
     ASSERT_NEAR(xyz4[j].x, xyz.x, tol) << "difference > 1 um";
     ASSERT_NEAR(xyz4[j].y, xyz.y, tol) << "difference > 1 um";
     ASSERT_NEAR(xyz4[j].z, xyz.z, tol) << "difference > 1 um";
   }
+}
+
+/**
+ *  \brief PointcloudReader test cases OMP
+ *
+ *  TestCase 6: read chunks of points in .las
+ */
+TEST(PointcloudReader, ReadPointcloudOMP_LAS_XYZ_CHUNKS) {
+  constexpr auto tol = 1.0e-6; // [um]
+  constexpr size_t filePointCount{ 20680 };
+  const size_t chunkNumPts = filePointCount / 100;
+
+  const std::string lasFile(TestConfig::DataPath("PointClouds/points_small.las"));
+  PointcloudReader reader(lasFile, FieldGroup{ 1 });
+
+  ASSERT_EQ(filePointCount, reader.GetPointCount()) << "number of points";
+
+#pragma omp parallel for
+  for (int64 i = 0; i < filePointCount- chunkNumPts; i += chunkNumPts) {
+    auto pc = reader.ReadPointcloud(i, chunkNumPts);
+  }
+
+  auto pcLast = reader.ReadPointcloud(chunkNumPts*100, filePointCount-chunkNumPts*100);
+  ASSERT_EQ(pcLast->GetPointCount(), filePointCount - chunkNumPts * 100) << "number of points";
 }

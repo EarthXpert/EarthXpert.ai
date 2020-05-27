@@ -7,6 +7,7 @@
 #include "io/raster/irasterreader.h"
 #include "core/utils/rasterwindow.h"
 
+#include <mutex>
 #include <tuple>
 #include <vector>
 
@@ -174,6 +175,8 @@ private:
 
   void FillMargins(CvRaster* const raster, MarginFillDim fillDim);
   void FillMargins(GdalRaster* const raster, MarginFillDim fillDim);
+
+  mutable std::mutex mMutex;
 
   // cached information & metadata
   int mFileNumBands{};  // total number of bands of image file
