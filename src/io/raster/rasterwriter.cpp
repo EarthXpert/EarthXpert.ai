@@ -77,7 +77,7 @@ RasterWriter::RasterWriter(GDALDataset* dataset, const std::vector<int>& bands) 
  *
  *  \param [in] metaData the metadata tags
  */
-void RasterWriter::SetMetadata(const Metadata* metaData) {
+void RasterWriter::SetMetadata(const RasterMetadata* metaData) {
 
 }
 

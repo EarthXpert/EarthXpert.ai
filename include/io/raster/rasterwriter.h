@@ -54,7 +54,7 @@ public:
    *
    *  \param [in] metaData the metadata tags
    */
-  void SetMetadata(const Metadata* metaData) override;
+  void SetMetadata(const RasterMetadata* metaData) override;
 
   /**
    *  \brief Inject the ground coordinate system where the image file operates
@@ -88,7 +88,7 @@ public:
   /**
    *  \return Returns metadata tags
    */
-  std::unique_ptr<Metadata> GetMetadata() const override {
+  std::unique_ptr<RasterMetadata> GetMetadata() const override {
     return mReader->GetMetadata();
   }
 

@@ -58,6 +58,14 @@ public:
   }
 
   /**
+   *  \return Returns memory size in bytes.
+   */
+  size_t GetBufferNumBytes() const noexcept {
+    return (mXYZ.size() * sizeof(XYZF) + mCla.size() * sizeof(Classification) +
+      mIntensity.size() * sizeof(Intensity) + mRGB.size() * sizeof(RGB16));
+  }
+
+  /**
    *  \brief set origin
    *
    *  \param [in] origin origin point
@@ -256,8 +264,9 @@ public:
   /**
    *  \brief Set fields to given point.
    *
-   *  \param PointTy the point type of WxPoint<>
+   *  \param PointTy the point type of WxPoint<>, being all or a partial of available fields
    *  \param [in] i index of point
+   *  \param [in] i point object of type PointTy
    */
   template <typename PointTy>
   void SetPoint(const size_t i, const PointTy& point) {
@@ -287,7 +296,7 @@ public:
 
 
   /**
-   *  \param PointTy the point type of WxPoint<>
+   *  \param PointTy the point type of WxPoint<>, being all or a partial of available fields
    *  \param [in] i index of point
    *  \return Returns a point at given index.
    */
@@ -304,7 +313,7 @@ public:
   }
 
   /**
-   *  \brief subscript access via proxy
+   *  \brief subscript access via proxy to a point
    *
    *  \param PointcloudTy const or non-const Pointcloud
    *  \remark Use for occasional point access.

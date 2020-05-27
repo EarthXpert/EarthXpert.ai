@@ -53,7 +53,7 @@ public:
   /**
    *  \return Returns metadata tags
    */
-  std::unique_ptr<Metadata> GetMetadata() const;
+  std::unique_ptr<RasterMetadata> GetMetadata() const override;
 
   /**
    *  \return Returns width and height of image file [unit: pixels]

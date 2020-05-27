@@ -29,9 +29,16 @@ PointcloudReader::PointcloudReader(const std::string& lasFile,
   LASreadOpener lasReadOpener;
   mLasReader.reset(lasReadOpener.open(lasFile.c_str()));
   if (!mLasReader)
-    throw IOError("Cannot open .las file for read.");
+    throw IOError("Cannot open las file for read.");
 
   ObtainLasInfo();
+}
+
+/**
+ *  \return Returns metadata tags
+ */
+std::unique_ptr<VectorMetadata> PointcloudReader::GetMetadata() const {
+  return {};
 }
 
 /**
@@ -39,6 +46,8 @@ PointcloudReader::PointcloudReader(const std::string& lasFile,
  *
  *  \param [in] marginX the horizontal margin size
  *  \param [in] marginY the vertical margin size
+ *
+ *  \todo pending
  */
 void PointcloudReader::SetMargins(const float marginX, const float marginY) {
   mMarginX = marginX;
@@ -56,6 +65,13 @@ std::pair<float, float> PointcloudReader::GetMargins() const noexcept {
  *  \return Return header information of the las file
  */
 PointcloudHeader* PointcloudReader::GetHeader() const {
+  return nullptr;
+}
+
+/**
+ *  \return Returns pointer to the spatial coordinate system
+ */
+std::unique_ptr<SpatialReferenceSystem> PointcloudReader::GetCoordinateSystem() const {
   return nullptr;
 }
 
@@ -84,7 +100,7 @@ std::unique_ptr<Pointcloud> PointcloudReader::ReadPointcloud(
  */
 std::unique_ptr<Pointcloud> PointcloudReader::ReadPointcloud(
   const size_t offset, const size_t pointCount) {
-  if (offset+ pointCount > mFilePointCount) {
+  if (offset + pointCount > mFilePointCount) {
     throw std::out_of_range("ReadPointcloud");
   }
 
@@ -105,8 +121,8 @@ std::unique_ptr<Pointcloud> PointcloudReader::ReadPointcloud() {
 }
 
 /**
- *  \brief Reads a point range defined by the passed cloud object, populates
- *  the associated buffer.
+ *  \brief Reads a point range defined by the passed cloud object,
+ *  starting from the current point, and populates the associated buffer.
  *
  *  \param [in/out] pc the container object to be populated with points.
  */
