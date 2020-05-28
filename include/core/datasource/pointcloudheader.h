@@ -11,8 +11,8 @@
 
 namespace earthxpert {
 /**
- *  The class PointcloudHeader defines information given in the header section.
+ *  The struct PointcloudHeader defines information given in the header section.
  */
-class EXCORE_EXPORTS PointcloudHeader {
+struct EXCORE_EXPORTS PointcloudHeader {
 };
 }

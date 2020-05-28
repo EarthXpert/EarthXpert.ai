@@ -197,6 +197,7 @@ using PointT = WxPoint<GPSTime, XYZ<CoordTy>>;
 
 // typical usages
 using XYZF = XYZ<float>;
+using XYZD = XYZ<double>;
 using XYZI = XYZ<int32_t>;
 using RGB16 = RGB<uint16_t>;
 

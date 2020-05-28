@@ -98,6 +98,8 @@ TEST(pointcloud, Constructor_PointCount_FieldGroup) {
   ASSERT_EQ(100, pc.GetPointCount());
   ASSERT_TRUE(pc.GetFieldGroup().test(FieldGroup::kPOSXYZ));
   ASSERT_TRUE(pc.GetFieldGroup().test(FieldGroup::kPOSCLA));
+  ASSERT_FALSE(pc.GetFieldGroup().test(FieldGroup::kPOSINT));
+  ASSERT_FALSE(pc.GetFieldGroup().test(FieldGroup::kPOSRGB));
 
   Point3d origin{ 1000.0, 2000.0, 0.0 };
   pc.SetOrigin(origin);
