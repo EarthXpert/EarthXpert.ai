@@ -15,7 +15,7 @@ TEST(opencv, imgcodecs) {
   ASSERT_EQ(img.cols, 5000);
   ASSERT_EQ(img.rows, 5000);
 
-  const std::string imgFileT(TestConfig::OutputPath("image_small_t_GDAL.tif"));
+  const std::string imgFileT(TestConfig::OutputPath("image_small_t_CVGDAL.tif"));
   const auto ret = cv::imwrite(imgFileT, img);
   ASSERT_TRUE(ret);
 }
