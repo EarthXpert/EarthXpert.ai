@@ -10,9 +10,11 @@
 #include "core/datasource/utils.h"
 #include "core/utils/rasterlayout.h"
 #include "io/raster/rasterwriter.h"
+#include <filesystem>
 #include <omp.h>
 
 using namespace earthxpert;
+namespace fs = std::filesystem;
 
 /**
  *  \brief cv::Mat test cases
@@ -69,6 +71,8 @@ TEST(RasterWriter, CvRaster) {
 
     writer.WriteRaster(&raster);
   }
+
+  ASSERT_TRUE(fs::exists(fs::path(imgFileT)));
 }
 
 /**
@@ -116,6 +120,8 @@ TEST(RasterWriter, CvRasterOMP) {
 
     writer.WriteRaster(&raster);
   }
+
+  ASSERT_TRUE(fs::exists(fs::path(imgFileT)));
 }
 
 /**
@@ -172,6 +178,8 @@ TEST(RasterWriter, GdalRaster) {
 
     writer.WriteRaster(&raster);
   }
+
+  ASSERT_TRUE(fs::exists(fs::path(imgFileT)));
 }
 
 /**
@@ -218,4 +226,6 @@ TEST(RasterWriter, GdalRasterOMP) {
 
     writer.WriteRaster(&raster);
   }
+
+  ASSERT_TRUE(fs::exists(fs::path(imgFileT)));
 }

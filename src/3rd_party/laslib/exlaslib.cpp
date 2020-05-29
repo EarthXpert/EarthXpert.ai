@@ -11,22 +11,22 @@
 #include <memory>
 #include <sys/stat.h>
 
-using namespace earthxpert::thirdparty;
-
+namespace earthxpert::thirdparty {
 /**
  *  \brief create a lax index file for storing quadtree of the
  *   las file, return if the lax file already exist
  *
  *  \param [in] lasFile .LAS file name
+ *  \return Return name of LAX file
  */
-void CreateLAX(const std::string &lasFile) {
+std::string CreateLAX(const std::string &lasFile) {
   auto laxFile = lasFile;
   laxFile.replace(laxFile.end() - 4, laxFile.end(), ".lax");
 
   // if the lax file already exist, return
   struct stat buffer;
   if (!stat(laxFile.c_str(), &buffer))
-    return;
+    return laxFile;
 
   LASreadOpener lasReadOpener;
   std::unique_ptr<LASreader> lasReader(lasReadOpener.open(lasFile.c_str()));
@@ -44,4 +44,7 @@ void CreateLAX(const std::string &lasFile) {
   }
   lasIndex.complete();
   lasIndex.write(laxFile.c_str());
+
+  return laxFile;
+}
 }

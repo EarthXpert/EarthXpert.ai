@@ -6,6 +6,9 @@
 #include "testconfig.h"
 
 #include "opencv2/imgcodecs.hpp"
+#include <filesystem>
+
+namespace fs = std::filesystem;
 
 TEST(opencv, imgcodecs) {
   const std::string imgFile(TestConfig::DataPath("Imagery/image_small.tif"));
@@ -18,4 +21,5 @@ TEST(opencv, imgcodecs) {
   const std::string imgFileT(TestConfig::OutputPath("image_small_t_CVGDAL.tif"));
   const auto ret = cv::imwrite(imgFileT, img);
   ASSERT_TRUE(ret);
+  ASSERT_TRUE(fs::exists(fs::path(imgFileT)));
 }

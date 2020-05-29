@@ -134,14 +134,18 @@ std::unique_ptr<Pointcloud> PointcloudReader::ReadPointcloud() {
  *  \remark thread unsafe: donot call from mulitple threads simutaneously
  */
 size_t PointcloudReader::ReadPointcloud(Pointcloud* const pointCloud) {
+  assert(pointCloud);
   if (pointCloud->GetFieldGroup() > mFieldGroup) {
     throw std::out_of_range("Requested fields are out of the range of read fields");
+  }
+  if (0 == pointCloud->GetPointCount()) {
+    throw std::invalid_argument("ReadPointcloud: pointCloud is empty");
   }
 
   pointCloud->SetOrigin(Point3d(mLasHeader->x_offset, mLasHeader->y_offset, mLasHeader->z_offset));
 
-  const size_t pointCount = std::min<size_t>(pointCloud->GetPointCount(),
-    mLasReader->npoints - mLasReader->p_count);
+  const size_t pointCount = std::min<size_t>(pointCloud->GetPointCount(), // capacity
+    mLasReader->npoints - mLasReader->p_count);                           // available
   for (size_t i = 0; i < pointCount; ++i) {
     // \todo sanity check 
     mLasReader->read_point();
@@ -158,12 +162,18 @@ void PointcloudReader::ObtainLasInfo() {
   assert(mLasReader);
   mLasHeader = &(mLasReader->header);
 
-  // obtain fields
+  // common fields for all formats
   mFileFieldGroup.set(FieldGroup::kPOSXYZ);
   mFileFieldGroup.set(FieldGroup::kPOSCLA);
   mFileFieldGroup.set(FieldGroup::kPOSINT);
 
-  switch (mLasHeader->point_data_format) {
+  const int fmt = mLasHeader->point_data_format;
+  if (!PointDataTraits::IsValidFormat(fmt)) {
+    throw IOError("ObtainLasInfo");
+  }
+  assert(PointDataTraits::IsValidRecordLength(mLasHeader->point_data_record_length));
+
+  switch (fmt) {
   case PointDataTraits::kPDF1:
     mFileFieldGroup.set(FieldGroup::kPOSTIM);
     break;

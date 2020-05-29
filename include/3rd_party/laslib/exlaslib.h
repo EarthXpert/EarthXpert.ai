@@ -50,7 +50,7 @@ struct PointDataTraits {
   /**
    *  \return Returns true if valid, otherwise false.
    */
-  constexpr bool IsValidFormat(const int fmt) const noexcept {
+  static constexpr bool IsValidFormat(const int fmt) noexcept {
     return (kPDF0 <= fmt && fmt <= kPDF10);
   }
 
@@ -87,5 +87,5 @@ struct PointDataTraits {
   }
 };
  
-void EX3RDPARTY_EXPORTS CreateLAX(const std::string &lasFile);
+std::string EX3RDPARTY_EXPORTS CreateLAX(const std::string &lasFile);
 } // namespace earthxpert::thirdparty
