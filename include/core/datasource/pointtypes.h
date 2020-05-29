@@ -16,7 +16,7 @@
 
 namespace earthxpert {
 // field group
-struct FieldGroup : std::bitset<sizeof(size_t)> {
+struct FieldGroup : std::bitset<8> {
   // position
   static constexpr size_t kPOSXYZ = 0;
   static constexpr size_t kPOSCLA = 1;

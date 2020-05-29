@@ -3,11 +3,13 @@
  * -----------------------------------------------------------------------------
  */
 #include "io/pointcloud/pointcloudreader.h"
+#include "3rd_party/laslib/exlaslib.h"
 #include "core/exceptions/exexcept.h"
 
 #include <limits>
 
 using namespace earthxpert;
+using earthxpert::thirdparty::PointDataTraits;
 
 /**
  *  \brief constractor, open the las file for read
@@ -162,39 +164,39 @@ void PointcloudReader::ObtainLasInfo() {
   mFileFieldGroup.set(FieldGroup::kPOSINT);
 
   switch (mLasHeader->point_data_format) {
-  case 1:
+  case PointDataTraits::kPDF1:
     mFileFieldGroup.set(FieldGroup::kPOSTIM);
     break;
-  case 2:
+  case PointDataTraits::kPDF2:
     mFileFieldGroup.set(FieldGroup::kPOSRGB);
     break;
-  case 3:
-    mFileFieldGroup.set(FieldGroup::kPOSRGB);
-    mFileFieldGroup.set(FieldGroup::kPOSTIM);
-    break;
-  case 4:
-    mFileFieldGroup.set(FieldGroup::kPOSTIM);
-    break;
-  case 5:
+  case PointDataTraits::kPDF3:
     mFileFieldGroup.set(FieldGroup::kPOSRGB);
     mFileFieldGroup.set(FieldGroup::kPOSTIM);
     break;
-  case 6:
+  case PointDataTraits::kPDF4:
     mFileFieldGroup.set(FieldGroup::kPOSTIM);
     break;
-  case 7:
+  case PointDataTraits::kPDF5:
     mFileFieldGroup.set(FieldGroup::kPOSRGB);
     mFileFieldGroup.set(FieldGroup::kPOSTIM);
     break;
-  case 8:
+  case PointDataTraits::kPDF6:
+    mFileFieldGroup.set(FieldGroup::kPOSTIM);
+    break;
+  case PointDataTraits::kPDF7:
+    mFileFieldGroup.set(FieldGroup::kPOSRGB);
+    mFileFieldGroup.set(FieldGroup::kPOSTIM);
+    break;
+  case PointDataTraits::kPDF8:
     mFileFieldGroup.set(FieldGroup::kPOSRGB);
     mFileFieldGroup.set(FieldGroup::kPOSNIR);
     mFileFieldGroup.set(FieldGroup::kPOSTIM);
     break;
-  case 9:
+  case PointDataTraits::kPDF9:
     mFileFieldGroup.set(FieldGroup::kPOSTIM);
     break;
-  case 10:
+  case PointDataTraits::kPDF10:
     mFileFieldGroup.set(FieldGroup::kPOSRGB);
     mFileFieldGroup.set(FieldGroup::kPOSNIR);
     mFileFieldGroup.set(FieldGroup::kPOSTIM);
