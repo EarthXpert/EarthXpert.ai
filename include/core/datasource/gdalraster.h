@@ -17,8 +17,8 @@ namespace earthxpert {
 class EXCORE_EXPORTS GdalRaster final : public IRaster {
 public:
   GdalRaster(int numCols, int numRows, GDALDataType dataType, int numBands,
-    int colOffset, int rowOffset, int marginCols, int marginRows, MarginKind marginKind);
-  GdalRaster(int numCols, int numRows, GDALDataType dataType, int numBands);
+    int colOffset = 0, int rowOffset = 0, int marginCols = 0, int marginRows = 0,
+    MarginKind marginKind = MarginKind::eCONSTANT);
   GdalRaster(int numCols, int numRows, GDALDataType dataType, int numBands,
     int colOffset, int rowOffset, int marginCols, int marginRows, MarginKind marginKind, uchar* buffer);
   GdalRaster(int numCols, int numRows, GDALDataType dataType, int numBands, uchar* buffer);

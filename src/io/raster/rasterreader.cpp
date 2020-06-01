@@ -18,15 +18,6 @@ using namespace earthxpert;
  *  \brief Construct reader object.
  *
  *  \param [in] imageFile full path of the image file
- */
-RasterReader::RasterReader(const std::string& imageFile)
-  : RasterReader(imageFile, {}) {
-}
-
-/**
- *  \brief Construct reader object.
- *
- *  \param [in] imageFile full path of the image file
  *  \param [in] bands an array of 1-based band indices
  */
 RasterReader::RasterReader(const std::string& imageFile, const std::vector<int>& bands)
@@ -38,15 +29,6 @@ RasterReader::RasterReader(const std::string& imageFile, const std::vector<int>&
   mDataset.reset(static_cast<GDALDataset*>(dataset));
 
   ObtainDatasetInfo();
-}
-
-/**
- *  \brief Construct reader object.
- *
- *  \param [in] dataset an opened dataset for reading
- */
-RasterReader::RasterReader(GDALDataset* dataset)
-  : RasterReader(dataset, {}) {
 }
 
 /**

@@ -12,14 +12,6 @@
 using namespace earthxpert;
 
 /**
- *  \brief Construct wrtier object for existing image file.
- *
- *  \param [in] imageFile full path of the image file
- */
-RasterWriter::RasterWriter(const std::string& imageFile)
-  : RasterWriter(imageFile, {}) {}
-
-/**
  *  \brief Construct writer object for existing image file.
  *
  *  \param [in] imageFile full path of the image file
@@ -52,14 +44,6 @@ RasterWriter::RasterWriter(const std::string& imageFile, const std::string forma
   mReader = std::make_unique<RasterReader>(mDataset, std::vector<int>{});
   ObtainDatasetInfo();
 }
-
-/**
- *  \brief Construct writer object for existing image file.
- *
- *  \param [in] dataset an opened dataset for writing
- */
-RasterWriter::RasterWriter(GDALDataset* dataset)
-  : RasterWriter(dataset, {}) {}
 
 /**
  *  \brief Construct writer object for existing image file.

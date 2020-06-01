@@ -27,13 +27,10 @@ public:
    *
    *  \param [in] lasFile the file name to receive points
    */
-  PointcloudWriter(const std::string& lasFile, const LASquantizer& quantizer);
   PointcloudWriter(const std::string& lasFile, const FieldGroup fieldGroup,
-    const LASquantizer& quantizer);
+    const LASquantizer& quantizer, const std::string format = "LAS");
   PointcloudWriter(const std::string& lasFile, 
-    const LASquantizer& quantizer, const std::string format);
-  PointcloudWriter(const std::string& lasFile, const FieldGroup fieldGroup,
-    const LASquantizer& quantizer, const std::string format);
+    const LASquantizer& quantizer, const std::string format = "LAS");
   PointcloudWriter(const PointcloudWriter&) = delete;
   PointcloudWriter(PointcloudWriter&&) = delete;
   ~PointcloudWriter() = default;

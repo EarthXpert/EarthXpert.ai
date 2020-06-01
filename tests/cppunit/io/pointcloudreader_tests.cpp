@@ -195,10 +195,11 @@ TEST(PointcloudReader, ReadPointcloudOMP_LAS_XYZ_CHUNKS) {
   ASSERT_EQ(filePointCount, reader.GetPointCount()) << "number of points";
 
 #pragma omp parallel for
-  for (int64 i = 0; i < filePointCount- chunkNumPts; i += chunkNumPts) {
+  for (int64 i = 0; i < filePointCount - chunkNumPts; i += chunkNumPts) {
     auto pc = reader.ReadPointcloud(i, chunkNumPts);
   }
 
-  auto pcLast = reader.ReadPointcloud(chunkNumPts*100, chunkNumPts);
-  ASSERT_EQ(pcLast->GetPointCount(), filePointCount - chunkNumPts * 100) << "number of points";
+  const size_t lastNumPts = filePointCount - chunkNumPts * 100;
+  auto pcLast = reader.ReadPointcloud(chunkNumPts*100, lastNumPts);
+  ASSERT_EQ(pcLast->GetPointCount(), lastNumPts) << "#points of last chunk";
 }

@@ -23,8 +23,7 @@ namespace earthxpert {
  */
 class EXIO_EXPORTS PointcloudReader final : public IPointcloudReader {
 public:
-  PointcloudReader(const std::string& lasFile);
-  PointcloudReader(const std::string &lasFile, FieldGroup fieldGroup);
+  PointcloudReader(const std::string& lasFile, FieldGroup fieldGroup = {});
   PointcloudReader(const PointcloudReader &) = delete;
   PointcloudReader(PointcloudReader &&) = delete;
   ~PointcloudReader() = default;

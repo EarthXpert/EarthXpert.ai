@@ -16,15 +16,6 @@ using earthxpert::thirdparty::PointDataTraits;
  *  \brief constractor, open the las file for read
  *
  *  \param [in] lasFile file name
- */
-PointcloudReader::PointcloudReader(const std::string& lasFile)
-  : PointcloudReader(lasFile, {}) {
-}
-
-/**
- *  \brief constractor, open the las file for read
- *
- *  \param [in] lasFile file name
  *  \param [in] fieldGroup field group to read
  */
 PointcloudReader::PointcloudReader(const std::string& lasFile,
