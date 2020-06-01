@@ -6,7 +6,7 @@
 
 #include "core/datasource/ikindfillpolicy.h"
 #include "core/datasource/cvraster.h"
-#include "core/datasource/types.h"
+#include "core/datasource/rastertypes.h"
 
 #include <cstring>
 

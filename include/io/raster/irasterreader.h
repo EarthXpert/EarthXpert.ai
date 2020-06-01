@@ -69,6 +69,14 @@ public:
   virtual std::unique_ptr<Geocoding> GetGeocoding() const = 0;
 
   /**
+   *  \brief Reads the entire image.
+   *
+   *  \param [in] rasterType type of data structure
+   *  \return Returns pointer to raster object holding the entire image
+   */
+  virtual std::unique_ptr<IRaster> ReadRaster(RasterType rasterType = RasterType::eCVMAT) = 0;
+
+  /**
    *  \brief Reads a pixel block defined by offsets, size, internal
    *  margin size, and kind. the offsets are relative to the upper-left corner
    *  pixel whose coordinates are (0, 0).

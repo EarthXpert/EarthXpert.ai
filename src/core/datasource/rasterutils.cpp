@@ -11,43 +11,43 @@
 #include <numeric>
 
 namespace earthxpert {
-  // local details
-  namespace detail {
-    // Pixel data types of GDAL & CV
-    static std::map<GDALDataType, int> sDataTypesG2C = {
-      {GDT_Byte, CV_8U},
-      //{GDT_Int8, CV_8S},
-      {GDT_UInt16, CV_16U},
-      {GDT_Int16, CV_16S},
-      //{GDT_UInt32, CV_32U},
-      {GDT_Int32, CV_32S},
-      {GDT_Float32, CV_32F},
-      {GDT_Float64, CV_64F} };
+// local details
+namespace detail {
+  // Pixel data types of GDAL & CV
+  static const std::map<GDALDataType, int> sDataTypesG2C = {
+    {GDT_Byte, CV_8U},
+    //{GDT_Int8, CV_8S},
+    {GDT_UInt16, CV_16U},
+    {GDT_Int16, CV_16S},
+    //{GDT_UInt32, CV_32U},
+    {GDT_Int32, CV_32S},
+    {GDT_Float32, CV_32F},
+    {GDT_Float64, CV_64F} };
 
-    static std::map<int, GDALDataType> sDataTypesC2G = {
-      {CV_8U, GDT_Byte},
-      //{CV_8S, GDT_Byte},
-      {CV_16U, GDT_UInt16},
-      {CV_16S, GDT_Int16},
-      //{CV_32U, GDT_UInt32},
-      {CV_32S, GDT_Int32},
-      {CV_32F, GDT_Float32},
-      {CV_64F, GDT_Float64} };
+  static const std::map<int, GDALDataType> sDataTypesC2G = {
+    {CV_8U, GDT_Byte},
+    //{CV_8S, GDT_Byte},
+    {CV_16U, GDT_UInt16},
+    {CV_16S, GDT_Int16},
+    //{CV_32U, GDT_UInt32},
+    {CV_32S, GDT_Int32},
+    {CV_32F, GDT_Float32},
+    {CV_64F, GDT_Float64} };
 
-    /**
-     *  \brief Fill margins for given sides using the templated policy kind.
-     *
-     *  \param KindFillPolicy template parameter specifies the filling policy kind.
-     *  \param [in/out] raster the raster object whose margins will be filled.
-     *  \param [in] dim tells the dimensions of the four sides.
-     */
-    template<typename KindFillPolicy>
-    void FillMargin(CvRaster* const raster, const MarginFillDim dim) {
-      MarginFill<KindFillPolicy> marginFill(raster, dim);
+  /**
+   *  \brief Fill margins for given sides using the templated policy kind.
+   *
+   *  \param KindFillPolicy template parameter specifies the filling policy kind.
+   *  \param [in/out] raster the raster object whose margins will be filled.
+   *  \param [in] dim tells the dimensions of the four sides.
+   */
+  template<typename KindFillPolicy>
+  void FillMargin(CvRaster* const raster, const MarginFillDim dim) {
+    MarginFill<KindFillPolicy> marginFill(raster, dim);
 
-      marginFill.Run();
-    }
+    marginFill.Run();
   }
+}
 
 /**
  *  \brief Convert pixel type from GDAL to OpenCV

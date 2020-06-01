@@ -1,9 +1,12 @@
 project(tests_3rd_party_gtest CXX)
 
-add_3rd_party_test(gtest_tests)
+include_directories(${GTEST_INCLUDE_DIR})
+
+add_3rd_party_test(gtest_tests
+  ex3rd_party)
 
 if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
-  set(TESTS_GTEST_PATH "PATH=${GTEST_BIN_DIR};$ENV{PATH}")
+  set(TESTS_GTEST_PATH "PATH=$<TARGET_FILE_DIR:ex3rd_party>;${GTEST_BIN_DIR};$ENV{PATH}")
   string(REPLACE ";" "\\;" TESTS_GTEST_PATH "${TESTS_GTEST_PATH}")
   message(STATUS "Tests_Gtest_Path: ${TESTS_GTEST_PATH}")
   set_tests_properties(gtest_tests PROPERTIES ENVIRONMENT "${TESTS_GTEST_PATH}")

@@ -5,7 +5,7 @@
 #pragma once
 
 #include "core/excore.h"
-#include "core/datasource/types.h"
+#include "core/datasource/rastertypes.h"
 
 #include "opencv2/core/hal/interface.h"
 #include <memory>

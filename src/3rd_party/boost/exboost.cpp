@@ -5,9 +5,9 @@
 #include "3rd_party/boost/exboost.h"
 #include "boost/filesystem.hpp"
 
-using namespace earthxpert::thirdparty;
 namespace bfs = boost::filesystem;
 
+namespace earthxpert::thirdparty {
 /**
  *  \brief insert prefix for filename component
  *
@@ -21,4 +21,5 @@ std::string PathPrefixFilename(
   auto fn = prefix + filePath.filename().string();
 
   return fn;
+}
 }

@@ -4,6 +4,7 @@
  */
 #pragma once
 
+#include "core/excore.h"
 #include "core/datasource/pointtypes.h"
 #include "core/exceptions/exexcept.h"
 
@@ -19,6 +20,7 @@ namespace earthxpert {
  *  The class Pointcloud stores an array of points in groups of fields.
  *
  *  \todo optimize performance
+ *  \todo the container size is 1 if the corresponding field is equal for all points
  */
 class EXCORE_EXPORTS Pointcloud {
 public:
@@ -76,7 +78,8 @@ public:
   }
 
   /**
-   *  \brief set an array of XYZ coordinates
+   *  \brief set an array of XYZ coordinates whose values have been 
+   *  shifted w.r.t. the origin
    *
    *  \param [in] xyz an array of XYZ coordinates
    */
@@ -90,12 +93,34 @@ public:
    *  \brief set XYZ coordinates at specified index
    *
    *  \param [in] i index of point
-   *  \param [in] xyz XYZ coordinates
+   *  \param [in] xyz XYZ coordinates that have been shifted w.r.t. the origin
    */
   void SetXYZ(const size_t i, const XYZF xyz) {
+    SetXYZ(i, static_cast<Point3f>(xyz));
+  }
+  void SetXYZ(const size_t i, const Point3f xyz) {
     assert(mFieldGroup.test(FieldGroup::kPOSXYZ));
     assert(i < mPointCount);
-    mXYZ[i] = xyz;
+    mXYZ[i].x = xyz.x;
+    mXYZ[i].y = xyz.y;
+    mXYZ[i].z = xyz.z;
+  }
+
+  /**
+   *  \brief set XYZ coordinates at specified index
+   *
+   *  \param [in] i index of point
+   *  \param [in] xyz XYZ coordinates
+   */
+  void SetXYZ(const size_t i, const XYZD xyz) {
+    SetXYZ(i, static_cast<Point3d>(xyz));
+  }
+  void SetXYZ(const size_t i, const Point3d xyz) {
+    assert(mFieldGroup.test(FieldGroup::kPOSXYZ));
+    assert(i < mPointCount);
+    mXYZ[i].x = xyz.x - mOrigin.x;
+    mXYZ[i].y = xyz.x - mOrigin.y;
+    mXYZ[i].y = xyz.x - mOrigin.y;
   }
 
   /**
@@ -178,7 +203,7 @@ public:
   }
 
   /**
-   *  \return Returns the array of XYZ coordinates.
+   *  \return Returns the array of XYZ coordinates w.r.t. the origin.
    */
   const auto& GetXYZ() const noexcept {
     return mXYZ;
@@ -189,13 +214,24 @@ public:
 
   /**
    *  \param [in] i index of point
-   *  \return Returns XYZ coordinates at specified index.
+   *  \return Returns XYZ coordinates at specified index, whose values are w.r.t. the origin.
    */
   const auto& GetXYZ(const size_t i) const noexcept {
     return mXYZ[i];
   }
   auto& GetXYZ(const size_t i) noexcept {
     return mXYZ[i];
+  }
+
+  /**
+ *  \param [in] i index of point
+ *  \return Returns XYZ coordinates at specified index.
+ */
+  auto GetXYZD(const size_t i) noexcept {
+    return XYZD{ mXYZ[i].x + mOrigin.x, mXYZ[i].y + mOrigin.y, mXYZ[i].z + mOrigin.z };
+  }
+  auto GetPoint3d(const size_t i) noexcept {
+    return static_cast<Point3d>(GetXYZD(i));
   }
 
   /**
@@ -293,7 +329,6 @@ public:
 
     SetPoint_Unchecked(i, point, quantizer);
   }
-
 
   /**
    *  \param PointTy the point type of WxPoint<>, being all or a partial of available fields
@@ -396,12 +431,14 @@ public:
   }
 
   /**
-   *  \brief Set fields to given point.
+   *  \brief Set fields of given point.
    *
    *  \param [in] i index of point
    *  \param [in] point LASlib point
+   *  \param [in] quantizer scale and offset parameters
+   *  \param [in] offset flag indicating if offset is different
    */
-  void SetPoint_Unchecked(size_t i, const LASpoint& point, const LASquantizer* quantizer);
+  void SetPoint_Unchecked(size_t i, const LASpoint& point, bool offset = true);
 
   /**
    *  \param [in] i index of point
@@ -431,12 +468,22 @@ public:
     return point;
   }
 
+  /**
+   *  \brief Get fields to given point.
+   *
+   *  \param [in] i index of point
+   *  \param [in/out] point LASlib point
+   *  \param [in] offset flag indicating if offset is different
+   */
+  void GetPoint_Unchecked(size_t i, LASpoint& point, bool offset = true) const;
+
 private:
   size_t mPointCount{};     // actual number of points held
+  //size_t mPointCapacity{};  // \todo max number of points to be able to hold
   FieldGroup mFieldGroup;   // available field groups
 
   Point3d mOrigin{};        // origin of 3D coordinate system where mPoints reside
-  //size_t mPointCapacity{};  // \todo max number of points to be able to hold
+
   std::vector<XYZF> mXYZ;   // XYZ coordinates
   std::vector<Classification> mCla; // feature classification: ground
   std::vector<Intensity> mIntensity;  // laser reflectance

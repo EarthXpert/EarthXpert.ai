@@ -8,6 +8,9 @@
 #include "io/raster/rasterreader.h"
 #include "core/spatialref/geocoding.h"
 
+#include <mutex>
+#include <shared_mutex>
+
 namespace earthxpert {
 /**
  *  The class RasterWriter provides functios to write into an image file
@@ -122,6 +125,7 @@ public:
    */
   void SetMargins(const int marginCols, const int marginRows,
     const MarginKind marginKind) override {
+    std::unique_lock<std::shared_mutex> lock(mMutex);
     return mReader->SetMargins(marginCols, marginRows, marginKind);
   }
 
@@ -129,6 +133,7 @@ public:
    *  \return Returns margin size.
    */
   std::pair<int, int> GetMargins() const noexcept override {
+    std::shared_lock<std::shared_mutex> lock(mMutex);
     return mReader->GetMargins();
   }
 
@@ -136,6 +141,7 @@ public:
    *  \return Returns the margin kind.
    */
   MarginKind GetMarginKind() const noexcept override {
+    std::shared_lock<std::shared_mutex> lock(mMutex);
     return mReader->GetMarginKind();
   }
 
@@ -145,6 +151,7 @@ public:
    *  \return Returns pointer to a coordinate system
    */
   std::unique_ptr<SpatialReferenceSystem> GetCoordinateSystem() const override {
+    std::shared_lock<std::shared_mutex> lock(mMutex);
     return mReader->GetCoordinateSystem();
   }
 
@@ -152,7 +159,19 @@ public:
    *  \brief Fetch the geocoding information of the image file.
    */
   std::unique_ptr<Geocoding> GetGeocoding() const override {
+    std::shared_lock<std::shared_mutex> lock(mMutex);
     return mReader->GetGeocoding();
+  }
+
+  /**
+   *  \brief Reads the entire image.
+   *
+   *  \param [in] rasterType type of data structure
+   *  \return Returns pointer to raster object holding the entire image
+   */
+  std::unique_ptr<IRaster> ReadRaster(RasterType rasterType) override {
+    std::shared_lock<std::shared_mutex> lock(mMutex);
+    return mReader->ReadRaster(rasterType);
   }
 
   /**
@@ -168,6 +187,7 @@ public:
    */
   std::unique_ptr<IRaster> ReadRaster(const int colOffset, const int rowOffset,
     const int numCols, const int numRows, const RasterType rasterType) override {
+    std::shared_lock<std::shared_mutex> lock(mMutex);
     return mReader->ReadRaster(colOffset, rowOffset, numCols, numRows, rasterType);
   }
 
@@ -178,11 +198,14 @@ public:
    *  \param [in/out] raster the raster object to be populated with the pixel block.
    */
   void ReadRaster(IRaster* const raster) override {
+    std::shared_lock<std::shared_mutex> lock(mMutex);
     return mReader->ReadRaster(raster);
   }
 
 private:
   std::unique_ptr<RasterReader> mReader;  // pointer to reader implementation
+
+  mutable std::shared_mutex mMutex;
 
   // cached information
   GDALDataset* mDataset{ nullptr };  // non-owning pointer to GDALDataset object

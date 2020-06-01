@@ -17,7 +17,8 @@ class EXSFM_EXPORTS IDenseMatch {
 public:
   // match algorithm
   enum MatchAlgo {
-    eSGM    // semi-global matching
+    eSGM,   // semi-global matching in image space
+    eMVS    // semi-global matching in ground space
   };
 
   // match dimension

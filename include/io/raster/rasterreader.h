@@ -7,6 +7,7 @@
 #include "io/raster/irasterreader.h"
 #include "core/utils/rasterwindow.h"
 
+#include <mutex>
 #include <tuple>
 #include <vector>
 
@@ -134,6 +135,14 @@ public:
   int64 GetRasterBufferNumBytes(int numCols, int numRows) const noexcept;
 
   /**
+   *  \brief Reads the entire image.
+   *
+   *  \param [in] rasterType type of data structure
+   *  \return Returns pointer to raster object holding the entire image
+   */
+  std::unique_ptr<IRaster> ReadRaster(RasterType rasterType) override;
+
+  /**
    *  \brief Reads a pixel block defined by offsets, size, internal
    *  margin size, and kind. the offsets are relative to the upper-left corner
    *  pixel whose coordinates are (0, 0).
@@ -174,6 +183,8 @@ private:
 
   void FillMargins(CvRaster* const raster, MarginFillDim fillDim);
   void FillMargins(GdalRaster* const raster, MarginFillDim fillDim);
+
+  mutable std::mutex mMutex;
 
   // cached information & metadata
   int mFileNumBands{};  // total number of bands of image file

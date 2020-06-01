@@ -87,6 +87,7 @@ void RasterWriter::SetMetadata(const RasterMetadata* metaData) {
  *  \param [in] spatialref the coordinate system
  */
 void RasterWriter::SetCoordinateSystem(const SpatialReferenceSystem* srs) {
+  std::unique_lock<std::shared_mutex> lock(mMutex);
   char* wkt{nullptr};
   srs->exportToWkt(&wkt);
   mDataset->SetProjection(wkt);
@@ -99,6 +100,7 @@ void RasterWriter::SetCoordinateSystem(const SpatialReferenceSystem* srs) {
  *  \param [in] geocoding geocoding information
  */
 void RasterWriter::SetGeocoding(const Geocoding* geocoding) {
+  std::unique_lock<std::shared_mutex> lock(mMutex);
   if (geocoding) {
     double geoTransform[6] = { geocoding->mOriginX, geocoding->mPixelSizeX, 0,
                                geocoding->mOriginY, 0, geocoding->mPixelSizeY };
@@ -130,6 +132,7 @@ void RasterWriter::WriteRaster(IRaster* const raster) {
  *  \param [in] raster the OpenCV raster object to be written into image file on disk
  */
 void RasterWriter::WriteRaster(const CvRaster* raster) {
+  std::unique_lock<std::shared_mutex> lock(mMutex);
   const int64 rowNumBytes = raster->GetRowNumBytes();
   const auto [writeWin, writePixelOff] = ObtainWriteWindow(raster);
   const auto [writeColOff, writeRowOff, writeNumCols, writeNumRows] = writeWin;
@@ -191,6 +194,7 @@ void RasterWriter::WriteRaster(const CvRaster* raster) {
  *  \param [in] raster the GDAL raster object to be written into image file on disk
  */
 void RasterWriter::WriteRaster(const GdalRaster* raster) {
+  std::unique_lock<std::shared_mutex> lock(mMutex);
   const auto gdalDT = raster->GetDataType();
   if (gdalDT != mGdalDT) {
     throw std::invalid_argument("The data type of raster object is not compatible with image file");
