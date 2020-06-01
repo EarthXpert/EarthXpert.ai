@@ -6,10 +6,10 @@
 
 #include "io/exio.h"
 #include "core/datasource/pointcloud.h"
+#include "3rd_party//gdal/exgdal.h"
 
 namespace earthxpert {
 class VectorMetadata;
-class SpatialReferenceSystem;
 
 /**
  *  The interface IPointcloudWriter specifies the behaviours for
@@ -18,6 +18,11 @@ class SpatialReferenceSystem;
 class EXIO_EXPORTS IPointcloudWriter {
 public:
   virtual ~IPointcloudWriter() {}
+
+  /**
+   *  \return Returns fields group
+   */
+  virtual FieldGroup GetFieldGroup() const noexcept = 0;
 
   /**
    *  \brief Inject metadata tags
@@ -37,7 +42,19 @@ public:
    *  \brief Write an array of points into the opened file.
    *
    *  \param [in] pointCloud the Pointcloud object holding an array of points
+   *  \return Returns number of points written
    */
-  virtual void WritePointcloud(Pointcloud const *const pointCloud) = 0;
+  virtual size_t WritePointcloud(Pointcloud const *const pointCloud) = 0;
+
+  /**
+   *  \brief Write an array of points into the opened file.
+   *
+   *  \param [in] pointCloud the Pointcloud object holding an array of points
+   *  \param [in] start the index of start point
+   *  \param [in] numPoints number of points to write
+   *  \return Returns number of points written
+   */
+  virtual size_t WritePointcloud(Pointcloud const* const pointCloud,
+    size_t start, size_t numPoints) = 0;
 };
 } // namespace earthxpert

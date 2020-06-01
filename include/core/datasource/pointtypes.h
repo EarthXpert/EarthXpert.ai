@@ -10,7 +10,7 @@
 
 #include <array>
 #include <bitset>
-//#include <chrono>
+ //#include <chrono>
 #include <cstdint>
 #include <map>
 
@@ -18,28 +18,33 @@ namespace earthxpert {
 // field group
 struct FieldGroup : std::bitset<8> {
   // position
-  static constexpr size_t kPOSXYZ = 0;
+  static constexpr size_t kPOSXYZ = 0;    // kPDF0 ~ kPDF10
   static constexpr size_t kPOSCLA = 1;
   static constexpr size_t kPOSINT = 2;
-  static constexpr size_t kPOSRGB = 3;
-  static constexpr size_t kPOSNIR = 4;
-  static constexpr size_t kPOSTIM = 5;
+  static constexpr size_t kPOSTIM = 3;    // kPDF1, kPDF3, etc
+  static constexpr size_t kPOSRGB = 4;    // kPDF2, kPDF5, kPDF7, kPDF8, kPDF10
+  static constexpr size_t kPOSNIR = 5;    // kPDF8, kPDF10
   static constexpr std::array<size_t, 6> kPOS = {
-    kPOSXYZ, kPOSCLA, kPOSINT, kPOSRGB, kPOSNIR, kPOSTIM };
+    kPOSXYZ, kPOSCLA, kPOSINT, kPOSTIM, kPOSRGB, kPOSNIR };
 
   // bit mask
   static constexpr size_t kBITXYZ = exp2(kPOSXYZ);
   static constexpr size_t kBITCLA = exp2(kPOSCLA);
   static constexpr size_t kBITINT = exp2(kPOSINT);
+  static constexpr size_t kBITTIM = exp2(kPOSTIM);
   static constexpr size_t kBITRGB = exp2(kPOSRGB);
   static constexpr size_t kBITNIR = exp2(kPOSNIR);
-  static constexpr size_t kBITTIM = exp2(kPOSTIM);
   static constexpr std::array<size_t, 6> kBIT = {
-    kBITXYZ, kBITCLA, kBITINT, kBITRGB, kBITNIR, kBITTIM };
+    kBITXYZ, kBITCLA, kBITINT, kBITTIM, kBITRGB, kBITNIR };
 
   static inline const std::map<size_t, size_t> kPOSBIT = {
     {kPOSXYZ, kBITXYZ}, {kPOSCLA, kBITCLA}, {kPOSINT, kBITINT},
-    {kPOSNIR, kBITRGB}, {kPOSNIR, kBITNIR}, {kPOSTIM, kBITTIM} };
+    {kPOSTIM, kBITTIM}, {kPOSNIR, kBITRGB}, {kPOSNIR, kBITNIR} };
+
+  // Constructor
+  constexpr FieldGroup() noexcept : std::bitset<8>() {}
+  constexpr FieldGroup(size_t mask) noexcept : std::bitset<8>(mask) {}
+  constexpr FieldGroup(const FieldGroup& fg) noexcept = default;
 
   /**
    *  \param [in] pos The field group position.
@@ -54,7 +59,7 @@ struct FieldGroup : std::bitset<8> {
    *  \return Returns field group position.
    *  \todo validate bit mask
    */
-  constexpr size_t Bit2Pos(const size_t bit) {
+  constexpr size_t BitToPos(const size_t bit) {
     size_t pos{};
     size_t val{ bit };
     while (val >>= 1) {

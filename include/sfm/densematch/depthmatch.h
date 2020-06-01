@@ -17,7 +17,7 @@ namespace earthxpert {
  *  The algorithm computes the dpeth/elevation map directly in image space and
  *  is fullfilled simuteneously in ground space. The input images' geometry is
  *  represented by sensor models. A depth is considered valid iff the object point
- *  occured on N-view (N is 2+) and is validated.
+ *  occured on N-view (N >= 2) and is validated.
  *
  *  \param CostFunction defines the behaviour of calculating cost
  *  \param Neighborhood defines the behaviour of neighborhood selection

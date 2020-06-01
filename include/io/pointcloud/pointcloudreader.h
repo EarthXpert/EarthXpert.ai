@@ -18,6 +18,8 @@ namespace earthxpert {
  *  having specified fields, such as XYZ, intensity, classification etc.
  *  Each PointcloudReader instance is connected and thus bound to specific fields.
  *  Therefore a new instance is needed to read from different groups of available fields.
+ *
+ *  \todo filter, coordinate transform
  */
 class EXIO_EXPORTS PointcloudReader final : public IPointcloudReader {
 public:
@@ -29,6 +31,13 @@ public:
 
   PointcloudReader &operator=(const PointcloudReader &) = delete;
   PointcloudReader &operator=(PointcloudReader &&) = delete;
+
+  /**
+   *  \return Returns fields group
+   */
+  FieldGroup GetFieldGroup() const noexcept override {
+    return mFieldGroup;
+  }
 
   /**
    *  \return Returns metadata tags
@@ -49,11 +58,6 @@ public:
   std::pair<float, float> GetMargins() const noexcept override;
 
   /**
-   *  \return Return header information of the las file
-   */
-  PointcloudHeader* GetHeader() const override;
-
-  /**
    *  \return Returns pointer to a coordinate system
    */
   std::unique_ptr<SpatialReferenceSystem> GetCoordinateSystem() const override;
@@ -64,6 +68,30 @@ public:
   int64 GetPointCount() const noexcept override {
     return mFilePointCount;
   }
+
+  /**
+   *  \return Return all points in the las file
+   */
+  std::unique_ptr<Pointcloud> ReadPointcloud() override;
+
+  /**
+   *  \brief Reads point range defined by the start index, number of points.
+   *
+   *  \param [in] start the index of start point
+   *  \param [in] numPoints number of points to read
+   *
+   *  \return Return specified number of points
+   */
+  std::unique_ptr<Pointcloud> ReadPointcloud(size_t start, size_t numPoints) override;
+
+  /**
+   *  \brief Reads a point range defined by the passed cloud object, 
+   *  starting from the current point, and populates the associated buffer.
+   *
+   *  \param [in/out] pointCloud the container object to be populated with points.
+   *  \return Returns number of points actually read
+   */
+  size_t ReadPointcloud(Pointcloud* const pointCloud) override;
 
   /**
    *  \brief Reads point tile defined by tile, internal margin size.
@@ -79,41 +107,28 @@ public:
     double width, double height) override;
 
   /**
-   *  \brief Reads point range defined by the start index, number of points.
-   *
-   *  \param [in] offset the index of start point
-   *  \param [in] pointCount number of points
-   *
-   *  \return Return specified number of points
+   *  \return Returns LASreader object.
    */
-  std::unique_ptr<Pointcloud> ReadPointcloud(size_t offset, size_t pointCount) override;
-
-  /**
-   *  \return Return all points in the las file
-   */
-  std::unique_ptr<Pointcloud> ReadPointcloud() override;
-
-  /**
-   *  \brief Reads a point range defined by the passed cloud object, 
-   *  starting from the current point, and populates the associated buffer.
-   *
-   *  \param [in/out] pointCloud the container object to be populated with points.
-   *  \return Returns number of points actually read
-   */
-  size_t ReadPointcloud(Pointcloud* const pointCloud) override;
+  LASreader* GetLasReader() const noexcept {
+    return mReader.get();
+  }
 
 private:
-  std::unique_ptr<LASreader> mLasReader{};
-  FieldGroup mFieldGroup{};
+  std::unique_ptr<LASreader> mReader{};
+  FieldGroup mFieldGroup{};   // fields group to read
 
-  // \remark margin of point cloud seems not really meaningful. remove?
+  // \remark margin of point cloud seems not quite meaningful. remove?
   float mMarginX{};
   float mMarginY{};
 
   mutable std::mutex mMutex;
 
   // cache
-  const LASheader *mLasHeader{};
+  const LASheader *mHeader{};   // file format infomation
+  const LASindex* mIndex{};     // quadtree indexing
+  const LASfilter* mFilter{};   // 
+  const LAStransform* mTransform{};
+
   FieldGroup mFileFieldGroup;
   size_t mFilePointCount{};  // total number of point records in file
 

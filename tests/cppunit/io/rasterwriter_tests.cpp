@@ -17,6 +17,31 @@ using namespace earthxpert;
 namespace fs = std::filesystem;
 
 /**
+ *  \brief compare image contents including image dimension, pixel values, etc.
+ *
+ *  \param [in] imgFile the original image
+ *  \param [in] imgFileT the test image
+ *  \return Returns true if the original and the test images are exactly same.
+ */
+static bool IsImageEqual(const std::string& imgFile, const std::string& imgFileT) {
+  RasterReader reader(imgFile);
+  auto img = reader.ReadRaster(RasterType::eCVMAT);
+
+  RasterReader readerT(imgFileT);
+  auto imgT = readerT.ReadRaster(RasterType::eCVMAT);
+
+  const auto cvimg = dynamic_cast<CvRaster*>(img.get());
+  const auto cvimgT = dynamic_cast<CvRaster*>(imgT.get());
+
+  const auto& mat = cvimg->GetCvMat();
+  const auto& matT = cvimgT->GetCvMat();
+
+  // \todo
+
+  return true;
+}
+
+/**
  *  \brief cv::Mat test cases
  *
  *  TestCase 1: ortho of three bands in RGB with margins
@@ -72,7 +97,7 @@ TEST(RasterWriter, CvRaster) {
     writer.WriteRaster(&raster);
   }
 
-  ASSERT_TRUE(fs::exists(fs::path(imgFileT)));
+  ASSERT_TRUE(fs::exists(fs::path(imgFileT))) << imgFileT;
 }
 
 /**
@@ -121,7 +146,7 @@ TEST(RasterWriter, CvRasterOMP) {
     writer.WriteRaster(&raster);
   }
 
-  ASSERT_TRUE(fs::exists(fs::path(imgFileT)));
+  ASSERT_TRUE(fs::exists(fs::path(imgFileT))) << imgFileT;
 }
 
 /**
@@ -179,7 +204,7 @@ TEST(RasterWriter, GdalRaster) {
     writer.WriteRaster(&raster);
   }
 
-  ASSERT_TRUE(fs::exists(fs::path(imgFileT)));
+  ASSERT_TRUE(fs::exists(fs::path(imgFileT))) << imgFileT;
 }
 
 /**
@@ -227,5 +252,25 @@ TEST(RasterWriter, GdalRasterOMP) {
     writer.WriteRaster(&raster);
   }
 
-  ASSERT_TRUE(fs::exists(fs::path(imgFileT)));
+  ASSERT_TRUE(fs::exists(fs::path(imgFileT))) << imgFileT;
+}
+
+/**
+ *  \brief GDAL test cases
+ *
+ *  TestCase: compare output image files with original images
+ */
+TEST(RasterWriter, Equality) {
+  // TestCase 1
+  ASSERT_TRUE(IsImageEqual(TestConfig::DataPath("Imagery/image_small.tif"),
+    TestConfig::OutputPath("image_small_t_CvRaster.tif")));
+  // TestCase 2
+  ASSERT_TRUE(IsImageEqual(TestConfig::DataPath("Imagery/image_small.tif"),
+    TestConfig::OutputPath("image_small_t_CvRasterOMP.tif")));
+  // TestCase 3
+  ASSERT_TRUE(IsImageEqual(TestConfig::DataPath("Imagery/image_small.tif"),
+    TestConfig::OutputPath("image_small_t_GdalRaster.tif")));
+  // TestCase 4
+  ASSERT_TRUE(IsImageEqual(TestConfig::DataPath("Imagery/image_small.tif"),
+    TestConfig::OutputPath("image_small_t_GdalRasterOMP.tif")));
 }

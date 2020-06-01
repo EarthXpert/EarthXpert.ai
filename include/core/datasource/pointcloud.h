@@ -4,7 +4,8 @@
  */
 #pragma once
 
-#include "core/datasource/pointcloudheader.h"
+#include "core/excore.h"
+#include "core/datasource/pointtypes.h"
 #include "core/exceptions/exexcept.h"
 
 #include <cassert>
@@ -430,12 +431,14 @@ public:
   }
 
   /**
-   *  \brief Set fields to given point.
+   *  \brief Set fields of given point.
    *
    *  \param [in] i index of point
    *  \param [in] point LASlib point
+   *  \param [in] quantizer scale and offset parameters
+   *  \param [in] offset flag indicating if offset is different
    */
-  void SetPoint_Unchecked(size_t i, const LASpoint& point, const LASquantizer* quantizer);
+  void SetPoint_Unchecked(size_t i, const LASpoint& point, bool offset = true);
 
   /**
    *  \param [in] i index of point
@@ -465,8 +468,16 @@ public:
     return point;
   }
 
+  /**
+   *  \brief Get fields to given point.
+   *
+   *  \param [in] i index of point
+   *  \param [in/out] point LASlib point
+   *  \param [in] offset flag indicating if offset is different
+   */
+  void GetPoint_Unchecked(size_t i, LASpoint& point, bool offset = true) const;
+
 private:
-  PointcloudHeader mHeader;   // 
   size_t mPointCount{};     // actual number of points held
   //size_t mPointCapacity{};  // \todo max number of points to be able to hold
   FieldGroup mFieldGroup;   // available field groups

@@ -6,12 +6,33 @@
 
 #include "3rd_party/ex3rd_party.h"
 
-#include "LASlib/laszip.hpp"
+#include "lasquantizer.hpp"
+#include "laszip.hpp"
 #include <map>
 #include <string>
 #include <tuple>
 
 namespace earthxpert::thirdparty {
+/**
+ *  \brief normalization factors
+ *  \todo refactor 
+ */
+struct LasNormalFactors : LASquantizer {
+  double x_sf_inverse{};
+  double y_sf_inverse{};
+  double z_sf_inverse{};
+
+  LasNormalFactors& operator=(const LASquantizer& quantizer) {
+    auto thisQuantizer = static_cast<LASquantizer*>(this);
+    *thisQuantizer = quantizer;
+
+    x_sf_inverse = 1.0 / x_scale_factor;
+    y_sf_inverse = 1.0 / y_scale_factor;
+    z_sf_inverse = 1.0 / z_scale_factor;
+    return *this;
+  };
+};
+
 // .LAS point data traits
 struct PointDataTraits {
   // format

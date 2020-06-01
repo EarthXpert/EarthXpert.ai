@@ -4,6 +4,7 @@
  */
 #include "io/pointcloud/pointcloudreader.h"
 #include "3rd_party/laslib/exlaslib.h"
+#include "core/datasource/utils.h"
 #include "core/exceptions/exexcept.h"
 
 #include <limits>
@@ -29,8 +30,8 @@ PointcloudReader::PointcloudReader(const std::string& lasFile)
 PointcloudReader::PointcloudReader(const std::string& lasFile,
   const FieldGroup fieldGroup) : mFieldGroup(fieldGroup) {
   LASreadOpener lasReadOpener;
-  mLasReader.reset(lasReadOpener.open(lasFile.c_str()));
-  if (!mLasReader)
+  mReader.reset(lasReadOpener.open(lasFile.c_str()));
+  if (!mReader)
     throw IOError("Cannot open las file for read.");
 
   ObtainLasInfo();
@@ -64,17 +65,75 @@ std::pair<float, float> PointcloudReader::GetMargins() const noexcept {
 }
 
 /**
- *  \return Return header information of the las file
- */
-PointcloudHeader* PointcloudReader::GetHeader() const {
-  return nullptr;
-}
-
-/**
  *  \return Returns pointer to the spatial coordinate system
  */
 std::unique_ptr<SpatialReferenceSystem> PointcloudReader::GetCoordinateSystem() const {
   return nullptr;
+}
+
+/**
+ *  \return Return all points in the las file
+ */
+std::unique_ptr<Pointcloud> PointcloudReader::ReadPointcloud() {
+  return ReadPointcloud(0, mFilePointCount);
+}
+
+/**
+ *  \brief Reads point range defined by the start index, number of points.
+ *
+ *  \param [in] offstartset the index of start point
+ *  \param [in] numPoints number of points to read
+ *
+ *  \return Return specified number of points
+ */
+std::unique_ptr<Pointcloud> PointcloudReader::ReadPointcloud(
+  const size_t start, const size_t numPoints) {
+  if (start + numPoints > mFilePointCount) {
+    throw std::out_of_range("ReadPointcloud");
+  }
+
+  std::lock_guard<std::mutex> lock(mMutex);
+  mReader->seek(start);
+
+  auto pc = std::make_unique<Pointcloud>(numPoints, mFieldGroup);
+  const auto readNumPoints = ReadPointcloud(pc.get());
+  if (readNumPoints != numPoints) {
+    throw IOError("ReadPointcloud");
+  }
+  return pc;
+}
+
+/**
+ *  \brief Reads a point range defined by the passed cloud object,
+ *  starting from the current point, and populates the associated buffer.
+ *
+ *  \param [in/out] pointCloud the container object to be populated with points.
+ *                  The requested fields must be available from the dataset.
+ *  \return Returns number of points actually read
+ *
+ *  \remark thread unsafe: donot call from mulitple threads simutaneously
+ */
+size_t PointcloudReader::ReadPointcloud(Pointcloud* const pointCloud) {
+  assert(pointCloud);
+  if (pointCloud->GetFieldGroup() > mFieldGroup) {
+    throw std::out_of_range("Requested fields are out of the range of read fields");
+  }
+  if (0 == pointCloud->GetPointCount()) {
+    throw std::invalid_argument("ReadPointcloud: pointCloud is empty");
+  }
+
+  pointCloud->SetOrigin(Point3d(mHeader->x_offset, 
+    mHeader->y_offset, mHeader->z_offset));
+
+  const size_t readNumPoints = std::min<size_t>(pointCloud->GetPointCount(), // capacity
+    mReader->npoints - mReader->p_count);                           // available
+  for (size_t i = 0; i < readNumPoints; ++i) {
+    // \todo sanity check 
+    mReader->read_point();
+    pointCloud->SetPoint_Unchecked(i, mReader->point, false);
+  }
+
+  return readNumPoints;
 }
 
 /**
@@ -93,132 +152,27 @@ std::unique_ptr<Pointcloud> PointcloudReader::ReadPointcloud(
 }
 
 /**
- *  \brief Reads point range defined by the start index, number of points.
- *
- *  \param [in] offset the index of start point to read
- *  \param [in] pointCount number of points
- *
- *  \return Return specified number of points
- */
-std::unique_ptr<Pointcloud> PointcloudReader::ReadPointcloud(
-  const size_t offset, const size_t pointCount) {
-  if (offset + pointCount > mFilePointCount) {
-    throw std::out_of_range("ReadPointcloud");
-  }
-
-  std::lock_guard<std::mutex> lock(mMutex);
-  mLasReader->seek(offset);
-
-  auto pc = std::make_unique<Pointcloud>(pointCount, mFieldGroup);
-  const auto readNumPoints = ReadPointcloud(pc.get());
-  if (readNumPoints != pointCount) {
-    throw IOError("ReadPointcloud");
-  }
-  return pc;
-}
-
-/**
- *  \return Return all points in the las file
- */
-std::unique_ptr<Pointcloud> PointcloudReader::ReadPointcloud() {
-  return ReadPointcloud(0, mFilePointCount);
-}
-
-/**
- *  \brief Reads a point range defined by the passed cloud object,
- *  starting from the current point, and populates the associated buffer.
- *
- *  \param [in/out] pointCloud the container object to be populated with points.
- *  \return Returns number of points actually read
- *
- *  \remark thread unsafe: donot call from mulitple threads simutaneously
- */
-size_t PointcloudReader::ReadPointcloud(Pointcloud* const pointCloud) {
-  assert(pointCloud);
-  if (pointCloud->GetFieldGroup() > mFieldGroup) {
-    throw std::out_of_range("Requested fields are out of the range of read fields");
-  }
-  if (0 == pointCloud->GetPointCount()) {
-    throw std::invalid_argument("ReadPointcloud: pointCloud is empty");
-  }
-
-  pointCloud->SetOrigin(Point3d(mLasHeader->x_offset, mLasHeader->y_offset, mLasHeader->z_offset));
-
-  const size_t pointCount = std::min<size_t>(pointCloud->GetPointCount(), // capacity
-    mLasReader->npoints - mLasReader->p_count);                           // available
-  for (size_t i = 0; i < pointCount; ++i) {
-    // \todo sanity check 
-    mLasReader->read_point();
-    pointCloud->SetPoint_Unchecked(i, mLasReader->point, mLasHeader);
-  }
-
-  return pointCount;
-}
-
-/**
  *  \brief obtain dataset information.
  */
 void PointcloudReader::ObtainLasInfo() {
-  assert(mLasReader);
-  mLasHeader = &(mLasReader->header);
+  assert(mReader);
+  mHeader = &(mReader->header);
+  mIndex = mReader->get_index();
+  mFilter = mReader->get_filter();
+  mTransform = mReader->get_transform();
 
-  // common fields for all formats
-  mFileFieldGroup.set(FieldGroup::kPOSXYZ);
-  mFileFieldGroup.set(FieldGroup::kPOSCLA);
-  mFileFieldGroup.set(FieldGroup::kPOSINT);
-
-  const int fmt = mLasHeader->point_data_format;
+  const int fmt = mHeader->point_data_format;
   if (!PointDataTraits::IsValidFormat(fmt)) {
     throw IOError("ObtainLasInfo");
   }
-  assert(PointDataTraits::IsValidRecordLength(mLasHeader->point_data_record_length));
+  assert(PointDataTraits::IsValidRecordLength(mHeader->point_data_record_length));
 
-  switch (fmt) {
-  case PointDataTraits::kPDF1:
-    mFileFieldGroup.set(FieldGroup::kPOSTIM);
-    break;
-  case PointDataTraits::kPDF2:
-    mFileFieldGroup.set(FieldGroup::kPOSRGB);
-    break;
-  case PointDataTraits::kPDF3:
-    mFileFieldGroup.set(FieldGroup::kPOSRGB);
-    mFileFieldGroup.set(FieldGroup::kPOSTIM);
-    break;
-  case PointDataTraits::kPDF4:
-    mFileFieldGroup.set(FieldGroup::kPOSTIM);
-    break;
-  case PointDataTraits::kPDF5:
-    mFileFieldGroup.set(FieldGroup::kPOSRGB);
-    mFileFieldGroup.set(FieldGroup::kPOSTIM);
-    break;
-  case PointDataTraits::kPDF6:
-    mFileFieldGroup.set(FieldGroup::kPOSTIM);
-    break;
-  case PointDataTraits::kPDF7:
-    mFileFieldGroup.set(FieldGroup::kPOSRGB);
-    mFileFieldGroup.set(FieldGroup::kPOSTIM);
-    break;
-  case PointDataTraits::kPDF8:
-    mFileFieldGroup.set(FieldGroup::kPOSRGB);
-    mFileFieldGroup.set(FieldGroup::kPOSNIR);
-    mFileFieldGroup.set(FieldGroup::kPOSTIM);
-    break;
-  case PointDataTraits::kPDF9:
-    mFileFieldGroup.set(FieldGroup::kPOSTIM);
-    break;
-  case PointDataTraits::kPDF10:
-    mFileFieldGroup.set(FieldGroup::kPOSRGB);
-    mFileFieldGroup.set(FieldGroup::kPOSNIR);
-    mFileFieldGroup.set(FieldGroup::kPOSTIM);
-    break;
-  default:
-    break;
-  }
+  mFileFieldGroup = FormatToFieldGroup(fmt);
 
   // turn off fields not used till now: intensity, time, nir 
-  mFileFieldGroup.reset(FieldGroup::kPOSINT);
+  mFileFieldGroup.reset(FieldGroup::kPOSINT);   // comment out if using intenisty
+  mFileFieldGroup.reset(FieldGroup::kPOSTIM);   // comment out if using GpsTime
   mFileFieldGroup.reset(FieldGroup::kPOSNIR);
-  mFileFieldGroup.reset(FieldGroup::kPOSTIM);
 
   if (mFieldGroup.none()) {
     mFieldGroup = mFileFieldGroup;
@@ -228,6 +182,6 @@ void PointcloudReader::ObtainLasInfo() {
       throw std::out_of_range("Requested fields are out of the range of file fields");
   }
 
-  mFilePointCount = mLasReader->npoints;
-  assert(mLasHeader->number_of_point_records == mFilePointCount);  // extended_number_of_point_records 
+  mFilePointCount = mReader->npoints;
+  assert(mHeader->number_of_point_records == mFilePointCount);  // extended_number_of_point_records 
 }

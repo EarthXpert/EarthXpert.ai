@@ -109,6 +109,16 @@ int64 RasterReader::GetRasterBufferNumBytes(const int numCols,
 }
 
 /**
+ *  \brief Reads the entire image.
+ *
+ *  \param [in] rasterType type of data structure
+ *  \return Returns pointer to raster object holding the entire image
+ */
+std::unique_ptr<IRaster> RasterReader::ReadRaster(RasterType rasterType) {
+  return ReadRaster(0, 0, mFileNumCols, mFileNumRows, rasterType);
+}
+
+/**
  *  \brief Reads a pixel block defined by offsets, size, internal
  *  margin size, and kind. the offsets are relative to the upper-left corner
  *  pixel whose coordinates are (0, 0).
@@ -170,6 +180,7 @@ void RasterReader::ReadRaster(IRaster* const raster) {
  *  \param [in/out] raster the raster object to be populated with the pixel block.
  */
 void RasterReader::ReadRaster(CvRaster* const raster) {
+  assert(mDataset);
   std::lock_guard<std::mutex> lock(mMutex);
   const int64 rowNumBytes = raster->GetRowNumBytes();
   const auto [readWin, readPixelOff] = ObtainReadWindow(raster);
@@ -236,6 +247,7 @@ void RasterReader::ReadRaster(CvRaster* const raster) {
  *  \param [in/out] raster the raster object to be populated with the pixel block.
  */
 void RasterReader::ReadRaster(GdalRaster* const raster) {
+  assert(mDataset);
   std::lock_guard<std::mutex> lock(mMutex);
   const int64 rowNumBytes = raster->GetRowNumBytes();
   const int64 bandNumBytes = raster->GetBandNumBytes();

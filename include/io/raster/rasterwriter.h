@@ -164,6 +164,17 @@ public:
   }
 
   /**
+   *  \brief Reads the entire image.
+   *
+   *  \param [in] rasterType type of data structure
+   *  \return Returns pointer to raster object holding the entire image
+   */
+  std::unique_ptr<IRaster> ReadRaster(RasterType rasterType) override {
+    std::shared_lock<std::shared_mutex> lock(mMutex);
+    return mReader->ReadRaster(rasterType);
+  }
+
+  /**
    *  \brief Reads a pixel block defined by offsets, size, internal
    *  margin size, and kind. the offsets are relative to the upper-left corner
    *  pixel whose coordinates are (0, 0).

@@ -4,8 +4,9 @@
  */
 #include "core/datasource/pointcloud.h"
 
-#include "LASlib/laszip.hpp"
-#include "LASlib/laspoint.hpp"
+#include "laszip.hpp"
+#include "laspoint.hpp"
+#include <cmath>
 #include <type_traits>
 
 using namespace earthxpert;
@@ -100,6 +101,13 @@ bool Pointcloud::operator==(const Pointcloud& rhs) const {
   if (this != &rhs) {
     return false;
   }
+
+  if (mPointCount != rhs.GetPointCount() || mFieldGroup != rhs.GetFieldGroup()) {
+    return false;
+  }
+
+  // \todo
+
   return true;
 }
 
@@ -118,17 +126,26 @@ bool Pointcloud::operator!=(const Pointcloud& rhs) const {
  *
  *  \param [in] i index of point
  *  \param [in] point LASlib point
- *  \param [in] quantizer scale and offset parameters
+ *  \param [in] offset flag indicating if offset is different
  *
  *  \remark mOrigin must be equal to offsets given in quantizer
  */
 void Pointcloud::SetPoint_Unchecked(const size_t i, 
-  const LASpoint& point, const LASquantizer* quantizer) {
+  const LASpoint& point, const bool offset) {
   // \todo sanity check
   if (!mXYZ.empty()) {
-    mXYZ[i].x = static_cast<float>(point.X * quantizer->x_scale_factor);
-    mXYZ[i].y = static_cast<float>(point.Y * quantizer->y_scale_factor);
-    mXYZ[i].z = static_cast<float>(point.Z * quantizer->z_scale_factor);
+    auto quantizer = point.quantizer;
+
+    double x_offset{}, y_offset{}, z_offset{};
+    if (offset) {
+      x_offset = quantizer->x_offset - mOrigin.x;
+      y_offset = quantizer->y_offset - mOrigin.y;
+      z_offset = quantizer->z_offset - mOrigin.z;
+    }
+    
+    mXYZ[i].x = static_cast<float>(double(point.X) * quantizer->x_scale_factor + x_offset);
+    mXYZ[i].y = static_cast<float>(double(point.Y) * quantizer->y_scale_factor + y_offset);
+    mXYZ[i].z = static_cast<float>(double(point.Z) * quantizer->z_scale_factor + z_offset);
   }
   if (!mCla.empty()) {
     mCla[i].c = point.classification;
@@ -140,6 +157,46 @@ void Pointcloud::SetPoint_Unchecked(const size_t i,
     mRGB[i].r = point.rgb[0];
     mRGB[i].g = point.rgb[1];
     mRGB[i].b = point.rgb[2];
+  }
+  // \todo add other field groups
+}
+
+/**
+ *  \brief Get fields to given point.
+ *
+ *  \param [in] i index of point
+ *  \param [in/out] point LASlib point
+ *  \param [in] offset flag indicating if offset is different
+ *
+ *  \remark mOrigin must be equal to offsets given in quantizer
+ */
+void Pointcloud::GetPoint_Unchecked(const size_t i, 
+  LASpoint& point, const bool offset) const {
+  // \todo sanity check
+  if (!mXYZ.empty()) {
+    auto quantizer = point.quantizer;
+    
+    double x_offset{}, y_offset{}, z_offset{};
+    if (offset) {
+      x_offset = mOrigin.x - quantizer->x_offset;
+      y_offset = mOrigin.y - quantizer->y_offset;
+      z_offset = mOrigin.z - quantizer->z_offset;
+    }
+    
+    point.X = static_cast<int32_t>(std::lround((double(mXYZ[i].x) + x_offset) / quantizer->x_scale_factor));
+    point.Y = static_cast<int32_t>(std::lround((double(mXYZ[i].y) + y_offset) / quantizer->y_scale_factor));
+    point.Z = static_cast<int32_t>(std::lround((double(mXYZ[i].z) + z_offset) / quantizer->z_scale_factor));
+  }
+  if (!mCla.empty()) {
+    point.classification = mCla[i].c;
+  }
+  if (!mIntensity.empty()) {
+    point.intensity = mIntensity[i].i;
+  }
+  if (!mRGB.empty()) {
+    point.rgb[0] = mRGB[i].r;
+    point.rgb[1] = mRGB[i].g;
+    point.rgb[2] = mRGB[i].b;
   }
   // \todo add other field groups
 }

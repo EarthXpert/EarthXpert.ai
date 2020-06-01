@@ -5,7 +5,7 @@
 #pragma once
 
 #include "core/datasource/cvraster.h"
-#include "core/datasource/types.h"
+#include "core/datasource/rastertypes.h"
 
 namespace earthxpert {
 /**
