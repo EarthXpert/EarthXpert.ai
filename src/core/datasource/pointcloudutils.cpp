@@ -18,17 +18,17 @@ using fgt = FieldGroup;
 namespace detail {
   // // \todo lidar related fields, wave
   static const std::map<int, FieldGroup> kPDFFG = {
-    {pdt::kPDF0, {fgt::kBITXYZ | fgt::kBITCLA | fgt::kBITINT}},
-    {pdt::kPDF1, {fgt::kBITXYZ | fgt::kBITCLA | fgt::kBITINT | fgt::kBITTIM}},
-    {pdt::kPDF2, {fgt::kBITXYZ | fgt::kBITCLA | fgt::kBITINT | fgt::kBITRGB}},
-    {pdt::kPDF3, {fgt::kBITXYZ | fgt::kBITCLA | fgt::kBITINT | fgt::kBITTIM | fgt::kBITRGB}},
-    {pdt::kPDF4, {fgt::kBITXYZ | fgt::kBITCLA | fgt::kBITINT | fgt::kBITTIM}},   
-    {pdt::kPDF5, {fgt::kBITXYZ | fgt::kBITCLA | fgt::kBITINT | fgt::kBITTIM | fgt::kBITRGB}},
-    {pdt::kPDF6, {fgt::kBITXYZ | fgt::kBITCLA | fgt::kBITINT | fgt::kBITTIM}},
-    {pdt::kPDF7, {fgt::kBITXYZ | fgt::kBITCLA | fgt::kBITINT | fgt::kBITTIM | fgt::kBITRGB}},
-    {pdt::kPDF8, {fgt::kBITXYZ | fgt::kBITCLA | fgt::kBITINT | fgt::kBITTIM | fgt::kBITRGB | fgt::kBITNIR}},
-    {pdt::kPDF9, {fgt::kBITXYZ | fgt::kBITCLA | fgt::kBITINT | fgt::kBITTIM}},
-    {pdt::kPDF10, {fgt::kBITXYZ | fgt::kBITCLA | fgt::kBITINT | fgt::kBITTIM | fgt::kBITRGB | fgt::kBITNIR}}
+    {pdt::kPDF0, {fgt::kBITXCI}},
+    {pdt::kPDF1, {fgt::kBITXCI | fgt::kBITTIM}},
+    {pdt::kPDF2, {fgt::kBITXCI | fgt::kBITRGB}},
+    {pdt::kPDF3, {fgt::kBITXCI | fgt::kBITTIM | fgt::kBITRGB}},
+    {pdt::kPDF4, {fgt::kBITXCI | fgt::kBITTIM}},   
+    {pdt::kPDF5, {fgt::kBITXCI | fgt::kBITTIM | fgt::kBITRGB}},
+    {pdt::kPDF6, {fgt::kBITXCI | fgt::kBITTIM}},
+    {pdt::kPDF7, {fgt::kBITXCI | fgt::kBITTIM | fgt::kBITRGB}},
+    {pdt::kPDF8, {fgt::kBITXCI | fgt::kBITTIM | fgt::kBITRN}},
+    {pdt::kPDF9, {fgt::kBITXCI | fgt::kBITTIM}},
+    {pdt::kPDF10, {fgt::kBITXCI | fgt::kBITTIM | fgt::kBITRN}}
   };
 }
 
