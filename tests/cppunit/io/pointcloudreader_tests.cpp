@@ -10,6 +10,7 @@
 #include <omp.h>
 
 using namespace earthxpert;
+using fgt = FieldGroup;
 
 /**
  *  \brief PointcloudReader test cases, zero offsets in .las
@@ -21,7 +22,7 @@ TEST(PointcloudReader, ReadPointcloud_LAS_XYZ) {
   constexpr size_t filePointCount{ 20680 };
 
   const std::string lasFile(TestConfig::DataPath("PointClouds/points_small.las"));
-  PointcloudReader reader(lasFile, FieldGroup{1});
+  PointcloudReader reader(lasFile, { fgt::kBITXYZ });
 
   ASSERT_EQ(filePointCount, reader.GetPointCount()) << "number of points";
 
@@ -29,8 +30,8 @@ TEST(PointcloudReader, ReadPointcloud_LAS_XYZ) {
   ASSERT_EQ(filePointCount, pc->GetPointCount()) << "number of points";
 
   const auto fg = pc->GetFieldGroup();
-  ASSERT_TRUE(fg.test(FieldGroup::kPOSXYZ));
-  ASSERT_FALSE(fg.test(FieldGroup::kPOSCLA));
+  ASSERT_TRUE(fg.test(fgt::kPOSXYZ));
+  ASSERT_FALSE(fg.test(fgt::kPOSCLA));
 
   const auto origin = pc->GetOrigin();
   ASSERT_NEAR(0, origin.x, tol) << "difference > 1 um";
@@ -56,8 +57,8 @@ TEST(PointcloudReader, ReadPointcloud_LAS_XYZC) {
   ASSERT_EQ(filePointCount, pc->GetPointCount()) << "number of points";
 
   const auto fg = pc->GetFieldGroup();
-  ASSERT_TRUE(fg.test(FieldGroup::kPOSXYZ));
-  ASSERT_TRUE(fg.test(FieldGroup::kPOSCLA));
+  ASSERT_TRUE(fg.test(fgt::kPOSXYZ));
+  ASSERT_TRUE(fg.test(fgt::kPOSCLA));
 
   const auto origin = pc->GetOrigin();
   ASSERT_NEAR(424996.503, origin.x, tol) << "difference > 1 um";
@@ -75,7 +76,7 @@ TEST(PointcloudReader, ReadPointcloud_LAZ_XYZ) {
   constexpr size_t filePointCount{ 823560 };
 
   const std::string lasFile(TestConfig::DataPath("PointClouds/OMA_276_PC3.laz"));
-  PointcloudReader reader(lasFile, FieldGroup{1});
+  PointcloudReader reader(lasFile, {fgt::kBITXYZ});
 
   ASSERT_EQ(filePointCount, reader.GetPointCount()) << "number of points";
 
@@ -83,9 +84,9 @@ TEST(PointcloudReader, ReadPointcloud_LAZ_XYZ) {
   ASSERT_EQ(filePointCount, pc->GetPointCount()) << "number of points";
 
   const auto fg = pc->GetFieldGroup();
-  ASSERT_TRUE(fg.test(FieldGroup::kPOSXYZ));
-  ASSERT_FALSE(fg.test(FieldGroup::kPOSCLA));
-  ASSERT_FALSE(fg.test(FieldGroup::kPOSRGB));
+  ASSERT_TRUE(fg.test(fgt::kPOSXYZ));
+  ASSERT_FALSE(fg.test(fgt::kPOSCLA));
+  ASSERT_FALSE(fg.test(fgt::kPOSRGB));
 
   const auto origin = pc->GetOrigin();
   ASSERT_NEAR(0, origin.x, tol) << "difference > 1 um";
@@ -118,9 +119,9 @@ TEST(PointcloudReader, ReadPointcloud_LAZ_XYZCRGB) {
   ASSERT_EQ(filePointCount, pc->GetPointCount()) << "number of points";
 
   const auto fg = pc->GetFieldGroup();
-  ASSERT_TRUE(fg.test(FieldGroup::kPOSXYZ));
-  ASSERT_TRUE(fg.test(FieldGroup::kPOSCLA));
-  ASSERT_TRUE(fg.test(FieldGroup::kPOSRGB));
+  ASSERT_TRUE(fg.test(fgt::kPOSXYZ));
+  ASSERT_TRUE(fg.test(fgt::kPOSCLA));
+  ASSERT_TRUE(fg.test(fgt::kPOSRGB));
 
   const auto origin = pc->GetOrigin();
   ASSERT_NEAR(0, origin.x, tol) << "difference > 1 um";
@@ -163,11 +164,11 @@ TEST(PointcloudReader, ReadPointcloud_LAS_XYZC_CHUNKS) {
   ASSERT_EQ(chunkNumPts4[3], 1);
 
   const std::string lasFile(TestConfig::DataPath("PointClouds/points_small.las"));
-  PointcloudReader reader(lasFile, FieldGroup{ 3 });
+  PointcloudReader reader(lasFile, { fgt::kBITXC });
 
   ASSERT_EQ(filePointCount, reader.GetPointCount()) << "number of points";
 
-  Pointcloud pc(chunkNumPts, FieldGroup{ 1 });
+  Pointcloud pc(chunkNumPts, { fgt::kBITXYZ });
   for (size_t i = 0, j = 0; i < filePointCount; i += chunkNumPts, ++j) {
     const auto readNumPts = reader.ReadPointcloud(&pc);
     ASSERT_EQ(chunkNumPts4[j], readNumPts);
@@ -190,7 +191,7 @@ TEST(PointcloudReader, ReadPointcloudOMP_LAS_XYZ_CHUNKS) {
   const size_t chunkNumPts = filePointCount / 100;
 
   const std::string lasFile(TestConfig::DataPath("PointClouds/points_small.las"));
-  PointcloudReader reader(lasFile, FieldGroup{ 1 });
+  PointcloudReader reader(lasFile, { fgt::kBITXYZ });
 
   ASSERT_EQ(filePointCount, reader.GetPointCount()) << "number of points";
 

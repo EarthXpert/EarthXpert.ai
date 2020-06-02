@@ -10,10 +10,11 @@
 #include <filesystem>
 
 using namespace earthxpert;
+using fgt = FieldGroup;
 namespace fs = std::filesystem;
 
 static std::unique_ptr<Pointcloud> ReadPointcloud(
-  const std::string& pcFile, const FieldGroup fieldGroup) {
+  const std::string& pcFile, const fgt fieldGroup) {
   PointcloudReader reader(pcFile, fieldGroup);
 
   return reader.ReadPointcloud();
@@ -51,7 +52,7 @@ TEST(PointcloudWriter, WritePointcloud_LAS_XYZ) {
   constexpr size_t filePointCount{ 20680 };
 
   const std::string lasFile(TestConfig::DataPath("PointClouds/points_small.las"));
-  auto pc = ReadPointcloud(lasFile, FieldGroup{ 1 });
+  auto pc = ReadPointcloud(lasFile, { fgt::kBITXYZ });
 
   const auto fg = pc->GetFieldGroup();
   const auto origin = pc->GetOrigin();
@@ -78,7 +79,7 @@ TEST(PointcloudWriter, WritePointcloud_LAS_XYZ2) {
   constexpr size_t filePointCount{ 20680 };
 
   const std::string lasFile(TestConfig::DataPath("PointClouds/points_small.las"));
-  auto pc = ReadPointcloud(lasFile, FieldGroup{ 3 });
+  auto pc = ReadPointcloud(lasFile, { fgt::kBITXC });
 
   const auto fg = pc->GetFieldGroup();
   const auto point = pc->GetXYZD(0);  // first point
@@ -109,7 +110,7 @@ TEST(PointcloudWriter, WritePointcloud_LAS_XYZC_CHUNKS) {
   const size_t chunkNumPts = filePointCount / 3;
 
   const std::string lasFile(TestConfig::DataPath("PointClouds/points_small.las"));
-  PointcloudReader reader(lasFile, FieldGroup{ 3 });
+  PointcloudReader reader(lasFile, { fgt::kBITXC });
 
   const auto fg = reader.GetFieldGroup();
   auto lasReader = reader.GetLasReader();
@@ -168,7 +169,7 @@ TEST(PointcloudWriter, WritePointcloud_LAZ_XYZ) {
   constexpr size_t filePointCount{ 823560 };
 
   const std::string lasFile(TestConfig::DataPath("PointClouds/OMA_276_PC3.laz"));
-  auto pc = ReadPointcloud(lasFile, FieldGroup{ 1 });
+  auto pc = ReadPointcloud(lasFile, { fgt::kBITXYZ });
 
   const auto fg = pc->GetFieldGroup();
   const auto origin = pc->GetOrigin();

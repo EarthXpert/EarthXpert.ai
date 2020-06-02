@@ -44,7 +44,7 @@ PointcloudWriter::PointcloudWriter(const std::string& lasFile,
  */
 PointcloudWriter::PointcloudWriter(const std::string& lasFile,
   const LASquantizer& quantizer, const std::string format)
-  : PointcloudWriter(lasFile, FieldGroup{ 3 }, quantizer, format) {
+  : PointcloudWriter(lasFile, {FieldGroup::kBITXC}, quantizer, format) {
 }
 
 /**

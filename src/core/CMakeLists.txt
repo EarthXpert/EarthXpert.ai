@@ -18,6 +18,7 @@ earthxpert_add_library(core "api"
        "utils/paramhelper.cpp"
        "utils/stringutils.cpp"
        "utils/layout/rasterlayout.cpp"
+       "utils/layout/regionlayout.cpp"
        "utils/resample/rasterresample.cpp"
   ITEMS ex3rd_party
         ${GDAL_LIBRARY} ${OPENCV_LIBS})

@@ -95,14 +95,14 @@ public:
   /**
    *  \brief Reads point tile defined by tile, internal margin size.
    *
-   *  \param [in] xOffset x location of the bottom-left corner of the tile [unit: meter]
-   *  \param [in] yOffset y location of the bottom-left corner of the tile
+   *  \param [in] xmin x location of the lower-left corner of the tile [unit: meter]
+   *  \param [in] ymin y location of the lower-left corner of the tile
    *  \param [in] width the tile width [unit: meter]
    *  \param [in] height the tile height
    *
    *  \return Return Pointcloud container object.
    */
-  std::unique_ptr<Pointcloud> ReadPointcloud(double xOffset, double yOffset,
+  std::unique_ptr<Pointcloud> ReadPointcloud(double xmin, double ymin,
     double width, double height) override;
 
   /**
@@ -120,13 +120,14 @@ private:
   float mMarginX{};
   float mMarginY{};
 
-  mutable std::mutex mMutex;
+  mutable std::mutex mMutex;    // ranged reading
+  mutable std::mutex mMutexB;   // boxed reading
 
   // cache
   const LASheader *mHeader{};   // file format infomation
-  const LASindex* mIndex{};     // quadtree indexing
-  const LASfilter* mFilter{};   // 
-  const LAStransform* mTransform{};
+  //const LASindex* mIndex{};     // quadtree indexing
+  //const LASfilter* mFilter{};   // 
+  //const LAStransform* mTransform{};
 
   FieldGroup mFileFieldGroup;
   size_t mFilePointCount{};  // total number of point records in file

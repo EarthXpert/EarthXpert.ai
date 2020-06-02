@@ -7,7 +7,10 @@
 #include "core/datasource/utils.h"
 #include "core/exceptions/exexcept.h"
 
+#include "boost/format.hpp"
+#include "lasfilter.hpp"
 #include <limits>
+#include <sstream>
 
 using namespace earthxpert;
 using earthxpert::thirdparty::PointDataTraits;
@@ -130,16 +133,28 @@ size_t PointcloudReader::ReadPointcloud(Pointcloud* const pointCloud) {
 /**
  *  \brief Reads point tile defined by tile, internal margin size.
  *
- *  \param [in] xOffset x location of the bottom-left corner of the tile [unit: meter]
- *  \param [in] yOffset y location of the bottom-left corner of the tile
+ *  \param [in] xmin x location of the lower-left corner of the tile
+ *  \param [in] ymin y location of the lower-left corner of the tile
  *  \param [in] width the tile width [unit: meter]
  *  \param [in] height the tile height
  *
  *  \return Return Pointcloud container object.
  */
 std::unique_ptr<Pointcloud> PointcloudReader::ReadPointcloud(
-  const double xOffset, const double yOffset, const double width, const double height) {
-  return nullptr;
+  const double xmin, const double ymin, const double width, const double height) {
+  std::stringstream ss;
+  ss << boost::format("-keep_xy %1% %2% %3% %4%") % xmin % ymin % (xmin + width) % (ymin + height);
+  std::string str{ss.str()};
+
+  auto filter = std::make_unique<LASfilter>();
+  filter->parse(str.data());
+  
+  std::lock_guard<std::mutex> lock(mMutexB);
+  mReader->set_filter(filter.get());
+  auto pc = ReadPointcloud();
+  mReader->set_filter(nullptr);
+
+  return pc;
 }
 
 /**
@@ -148,9 +163,9 @@ std::unique_ptr<Pointcloud> PointcloudReader::ReadPointcloud(
 void PointcloudReader::ObtainLasInfo() {
   assert(mReader);
   mHeader = &(mReader->header);
-  mIndex = mReader->get_index();
-  mFilter = mReader->get_filter();
-  mTransform = mReader->get_transform();
+  //mIndex = mReader->get_index();
+  //mFilter = mReader->get_filter();
+  //mTransform = mReader->get_transform();
 
   const int fmt = mHeader->point_data_format;
   if (!PointDataTraits::IsValidFormat(fmt)) {
