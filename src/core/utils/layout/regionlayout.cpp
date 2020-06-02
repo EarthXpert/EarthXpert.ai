@@ -17,9 +17,24 @@ using namespace earthxpert;
  */
 template <typename Ty>
 RegionLayout<Ty>::RegionLayout(const Ty width, const Ty height,
-    const Ty tileWidth, const Ty tileHeight, const LayoutKind kind)
-  : mWidth(width), mHeight(height), mTileWidth(tileWidth),
-  mTileHeight(tileHeight), mLayoutkind(kind) {
+  const Ty tileWidth, const Ty tileHeight, const LayoutKind kind)
+  : RegionLayout(0, 0, width, height, tileWidth, tileHeight, kind) {
+}
+
+/**
+ *  \param [in] xmin      x coordinate at the lower-left corner of region
+ *  \param [in] ymin      y coordinate at the lower-left corner of region
+ *  \param [in] width     width of region
+ *  \param [in] height    height of region
+ *  \param [in] tileWidth width of tile
+ *  \param [in] tileHeight height of tile
+ */
+template <typename Ty>
+RegionLayout<Ty>::RegionLayout(const Ty xmin, const Ty ymin, 
+  const Ty width, const Ty height,
+  const Ty tileWidth, const Ty tileHeight, const LayoutKind kind)
+  : mXMin(xmin), mYMin(ymin), mWidth(width), mHeight(height), 
+  mTileWidth(tileWidth), mTileHeight(tileHeight), mLayoutkind(kind) {
   GenerateLayout();
 }
 
@@ -71,7 +86,7 @@ void RegionLayout<Ty>::GenerateLayout() {
       {
         double tileWidth = std::min(mTileWidth, mWidth - w);
 
-        mTiles.push_back(RegionTile{ w, h, tileWidth, tileHeight });
+        mTiles.push_back(RegionTile{ mXMin + w, mYMin + h, tileWidth, tileHeight });
       }
     }
   }
@@ -84,7 +99,7 @@ void RegionLayout<Ty>::GenerateLayout() {
       {
         double tileHeight = std::min(mTileHeight, mHeight - h);
 
-        mTiles.push_back(RegionTile{ w, h, tileWidth, tileHeight });
+        mTiles.push_back(RegionTile{ mXMin + w, mYMin + h, tileWidth, tileHeight });
       }
     }
   }

@@ -89,5 +89,14 @@ public:
    */
   virtual std::unique_ptr<Pointcloud> ReadPointcloud(double xmin, double ymin,
     double width, double height) = 0;
+
+  /**
+   *  \brief Reads point tile defined by tile, internal margin size.
+   *
+   *  \param [in] tile The horizontal extent of region to read
+   *
+   *  \return Return Pointcloud container object.
+   */
+  virtual std::unique_ptr<Pointcloud> ReadPointcloud(const RegionTileD& tile) = 0;
 };
 } // namespace earthxpert

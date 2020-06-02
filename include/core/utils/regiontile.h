@@ -11,7 +11,7 @@ namespace earthxpert {
  *  The structure RegionTile contains the offset and size information.
  */
 template <typename Ty>
-struct EXCORE_EXPORTS RegionTile {
+struct RegionTile {
   Ty xmin{};
   Ty ymin{};
   Ty width{};
@@ -34,4 +34,7 @@ struct EXCORE_EXPORTS RegionTile {
     height += marginHeight * 2;
   }
 };
+
+using RegionTileF = RegionTile<float>;
+using RegionTileD = RegionTile<double>;
 }

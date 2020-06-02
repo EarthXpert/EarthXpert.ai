@@ -15,10 +15,24 @@ using namespace earthxpert;
  *  \param [in] winNumCols width of window
  *  \param [in] winNumRows height of window
  */
-RasterLayout::RasterLayout(const int numCols, const int numRows, 
-  const int winNumCols, const int winNumRows, const LayoutKind kind) 
-  : mNumCols(numCols), mNumRows(numRows), mWinNumCols(winNumCols),
-  mWinNumRows(winNumRows), mLayoutkind(kind) {
+RasterLayout::RasterLayout(const int numCols, const int numRows,
+  const int winNumCols, const int winNumRows, const LayoutKind kind)
+  : RasterLayout(0, 0, numCols, numRows, winNumCols, winNumRows, kind) {
+}
+
+/**
+ *  \param [in] colOffset  column at top-left corner of image [unit: pixels]
+ *  \param [in] rowOffset  row at top-left corner of image
+ *  \param [in] numCols    width of image [unit: pixels]
+ *  \param [in] numRows    height of image
+ *  \param [in] winNumCols width of window
+ *  \param [in] winNumRows height of window
+ */
+RasterLayout::RasterLayout(const int colOffset, const int rowOffset, 
+  const int numCols, const int numRows,
+  const int winNumCols, const int winNumRows, const LayoutKind kind)
+  : mColOffset(colOffset), mRowOffset(rowOffset), mNumCols(numCols), mNumRows(numRows),
+  mWinNumCols(winNumCols), mWinNumRows(winNumRows), mLayoutkind(kind) {
   GenerateLayout();
 }
 
@@ -61,13 +75,13 @@ void RasterLayout::GenerateLayout() {
   if (LayoutKind::eHORIZONTAL == mLayoutkind) {
     for (int r = 0; r < mNumRows; r += mWinNumRows)
     {
-      int winNumRows = std::min(mWinNumRows, mNumRows - r);
+      const int winNumRows = std::min(mWinNumRows, mNumRows - r);
 
       for (int c = 0; c < mNumCols; c += mWinNumCols)
       {
-        int winNumCols = std::min(mWinNumCols, mNumCols - c);
+        const int winNumCols = std::min(mWinNumCols, mNumCols - c);
 
-        mWins.push_back(RasterWindow{ c, r, winNumCols, winNumRows });
+        mWins.push_back(RasterWindow{ mColOffset + c, mRowOffset + r, winNumCols, winNumRows });
       }
     }
   }
@@ -80,7 +94,7 @@ void RasterLayout::GenerateLayout() {
       {
         int winNumRows = std::min(mWinNumRows, mNumRows - r);
 
-        mWins.push_back(RasterWindow{ c, r, winNumCols, winNumRows });
+        mWins.push_back(RasterWindow{ mColOffset + c, mRowOffset + r, winNumCols, winNumRows });
       }
     }
   }

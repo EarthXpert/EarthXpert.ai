@@ -5,6 +5,7 @@
 #include "3rd_party/gtest/gtest_main.h"
 #include "testconfig.h"
 
+#include "core/utils/regionlayout.h"
 #include "io/pointcloud/pointcloudreader.h"
 #include <array>
 #include <omp.h>
@@ -188,7 +189,7 @@ TEST(PointcloudReader, ReadPointcloud_LAS_XYZC_CHUNKS) {
 TEST(PointcloudReader, ReadPointcloudOMP_LAS_XYZ_CHUNKS) {
   constexpr auto tol = 1.0e-6; // [um]
   constexpr size_t filePointCount{ 20680 };
-  const size_t chunkNumPts = filePointCount / 100;
+  const size_t chunkNumPts = filePointCount / 1024;
 
   const std::string lasFile(TestConfig::DataPath("PointClouds/points_small.las"));
   PointcloudReader reader(lasFile, { fgt::kBITXYZ });
@@ -203,4 +204,57 @@ TEST(PointcloudReader, ReadPointcloudOMP_LAS_XYZ_CHUNKS) {
   const size_t lastNumPts = filePointCount - chunkNumPts * 100;
   auto pcLast = reader.ReadPointcloud(chunkNumPts*100, lastNumPts);
   ASSERT_EQ(pcLast->GetPointCount(), lastNumPts) << "#points of last chunk";
+}
+
+/**
+ *  \brief PointcloudReader test cases
+ *
+ *  TestCase 7: read tiles of points in .las
+ */
+TEST(PointcloudReader, ReadPointcloud_LAS_XYZC_TILES) {
+  constexpr auto tol = 1.0e-6; // [um]
+  constexpr size_t filePointCount{ 20680 };
+  const std::array<size_t, 4> tileNumPts4{
+    0, 0, 0, 0 };
+  const std::array<XYZF, 4> xyz4{ XYZF{539839.375f, 1385161.75f, 38.34f},
+                                  XYZF{540413.8125f, 1384951.0f, 45.43f},
+                                  XYZF{540077.6875f, 1384611.0f, 44.43f},
+                                  XYZF{540987.25f, 1384298.125f, 44.05f} };
+
+  const std::string lasFile(TestConfig::DataPath("PointClouds/points_small.las"));
+  PointcloudReader reader(lasFile, { fgt::kBITXC });
+
+  ASSERT_EQ(filePointCount, reader.GetPointCount()) << "number of points";
+
+  auto header = reader.GetLasHeader();
+  const auto width = header->max_x - header->min_x;
+  const auto height = header->max_y - header->min_y;
+  const auto tileWidth = width * 0.5 + 0.1; // increase a little bit to ensure only two horizontal tiles
+  const auto tileHeight = height * 0.5 + 0.1;
+
+  RegionLayoutD layout(header->min_x, header->min_y, 
+    width, height, tileWidth, tileHeight);
+  auto& tiles = layout.GetRegionTiles();
+
+  ASSERT_EQ(4, tiles.size());
+
+  for (auto& tile : tiles) {
+    auto pc = reader.ReadPointcloud(tile);
+  }
+}
+
+/**
+ *  \brief PointcloudReader test cases OMP
+ *
+ *  TestCase 8: read tile of points in .las
+ */
+TEST(PointcloudReader, ReadPointcloudOMP_LAS_XYZ_TILES) {
+  constexpr auto tol = 1.0e-6; // [um]
+  constexpr size_t filePointCount{ 20680 };
+  const double tileSize = 0.0 / 32;
+
+  const std::string lasFile(TestConfig::DataPath("PointClouds/points_small.las"));
+  PointcloudReader reader(lasFile, { fgt::kBITXYZ });
+
+  ASSERT_EQ(filePointCount, reader.GetPointCount()) << "number of points";
 }

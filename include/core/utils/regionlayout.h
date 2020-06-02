@@ -5,33 +5,30 @@
 #pragma once
 
 #include "core/excore.h"
+#include "core/coretypes.h"
 #include "core/utils/regiontile.h"
 
 #include <cassert>
 #include <vector>
 
 namespace earthxpert {
+enum class LayoutKind;
+
 /**
  *  The class RegionLayout formulate the non-overlapping tiling of 2D
- *  rectangular area, including the bottom & the left edges,
- *  excluding the top & the right edges.
+ *  rectangular area in Cartician coordinate system, including 
+ *  the bottom & the left edges, excluding the top & the right edges.
  *
+ *  \param Ty value type of coordinates
  */
-template <typename Ty>
-class EXCORE_EXPORTS RegionLayout {
+template <typename Ty> class EXCORE_EXPORTS RegionLayout {
 public:
   using ValueType = Ty;
 
-  /**
-   *  \brief enum LayoutKind specifies the major direction of tile division.
-   */
-  enum class LayoutKind {
-    eHORIZONTAL,
-    eVERTICAL
-  };
-
   RegionLayout(Ty width, Ty height,
-    Ty tileWidth, Ty tileHeight, LayoutKind kind=LayoutKind::eHORIZONTAL);
+    Ty tileWidth, Ty tileHeight, LayoutKind kind = LayoutKind::eHORIZONTAL);
+  RegionLayout(Ty xmin, Ty ymin, Ty width, Ty height,
+    Ty tileWidth, Ty tileHeight, LayoutKind kind = LayoutKind::eHORIZONTAL);
   ~RegionLayout() {}
 
   int SetTileSize(Ty tileWidth, Ty tileHeight);
@@ -58,6 +55,8 @@ public:
   }
 
 private:
+  Ty mXMin{};          // x coordinate at the lower-left corner of region
+  Ty mYmin{};          // y coordinate at the lower-left corner of region
   Ty mWidth{};         // width of region
   Ty mHeight{};        // height of region
   Ty mTileWidth{};     // width of tile

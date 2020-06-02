@@ -7,6 +7,7 @@
 #include "core/excore.h"
 #include "core/datasource/pointtypes.h"
 #include "core/exceptions/exexcept.h"
+#include "core/utils/regiontile.h"
 
 #include <cassert>
 #include <type_traits>
@@ -476,6 +477,16 @@ public:
    *  \param [in] offset flag indicating if offset is different
    */
   void GetPoint_Unchecked(size_t i, LASpoint& point, bool offset = true) const;
+
+  /**
+   *  \brief it is tedious to track the modification of points and maintain their bounding box.
+   *
+   *  \return Returns 2D extent of region covered by points in XY
+   *
+   *  \remark This convenient function will always traverse all points to obtain the region extent.
+   *  Use it at caution to avoid perforamnce penaty.
+   */
+  RegionTileD CalcRegionTile() const noexcept;
 
 private:
   size_t mPointCount{};     // actual number of points held

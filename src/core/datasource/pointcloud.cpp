@@ -7,6 +7,7 @@
 #include "laszip.hpp"
 #include "laspoint.hpp"
 #include <cmath>
+#include <omp.h>
 #include <type_traits>
 
 using namespace earthxpert;
@@ -199,4 +200,22 @@ void Pointcloud::GetPoint_Unchecked(const size_t i,
     point.rgb[2] = mRGB[i].b;
   }
   // \todo add other field groups
+}
+
+/**
+ *  \brief it is tedious to track the modification of points and maintain their bounding box.
+ *
+ *  \return Returns 2D extent of region covered by points in XY
+ *  
+ *  \remark This convenient function will always traverse all points to obtain the region extent.
+ *  Use it at caution to avoid perforamnce penaty.
+ */
+RegionTileD Pointcloud::CalcRegionTile() const noexcept {
+  assert(mFieldGroup.test(FieldGroup::kPOSXYZ));
+#pragma omp parallel 
+  {
+
+  }
+
+  return {};
 }

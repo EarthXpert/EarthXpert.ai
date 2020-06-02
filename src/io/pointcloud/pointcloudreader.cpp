@@ -4,7 +4,7 @@
  */
 #include "io/pointcloud/pointcloudreader.h"
 #include "3rd_party/laslib/exlaslib.h"
-#include "core/datasource/utils.h"
+#include "core/datasource/pointcloudutils.h"
 #include "core/exceptions/exexcept.h"
 
 #include "boost/format.hpp"
@@ -155,6 +155,17 @@ std::unique_ptr<Pointcloud> PointcloudReader::ReadPointcloud(
   mReader->set_filter(nullptr);
 
   return pc;
+}
+
+/**
+ *  \brief Reads point tile defined by tile, internal margin size.
+ *
+ *  \param [in] tile The horizontal extent of region to read
+ *
+ *  \return Return Pointcloud container object.
+ */
+std::unique_ptr<Pointcloud> PointcloudReader::ReadPointcloud(const RegionTileD& tile) {
+  return ReadPointcloud(tile.xmin, tile.ymin, tile.width, tile.height);
 }
 
 /**

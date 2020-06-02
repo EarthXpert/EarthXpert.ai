@@ -5,7 +5,7 @@
 #include "io/raster/rasterreader.h"
 #include "core/datasource/cvraster.h"
 #include "core/datasource/gdalraster.h"
-#include "core/datasource/utils.h"
+#include "core/datasource/rasterutils.h"
 #include "core/exceptions/exexcept.h"
 #include "core/spatialref/geocoding.h"
 #include "core/utils/typehelper.h"

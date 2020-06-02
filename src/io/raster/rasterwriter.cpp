@@ -6,7 +6,7 @@
 #include "io/raster/rasterwriter.h"
 #include "core/datasource/cvraster.h"
 #include "core/datasource/gdalraster.h"
-#include "core/datasource/utils.h"
+#include "core/datasource/rasterutils.h"
 #include "core/exceptions/exexcept.h"
 
 using namespace earthxpert;

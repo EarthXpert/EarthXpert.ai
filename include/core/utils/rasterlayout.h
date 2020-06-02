@@ -5,27 +5,24 @@
 #pragma once
 
 #include "core/excore.h"
+#include "core/coretypes.h"
 #include "core/utils/rasterwindow.h"
 
 #include <cassert>
 #include <vector>
 
 namespace earthxpert {
+enum class LayoutKind;
 /**
- *  The class RasterLayout formulate the non-overlapping tiling of image.
+ *  The class RasterLayout formulate the non-overlapping tiling of image
+ *  in raster coodinate system.
  */
 class EXCORE_EXPORTS RasterLayout {
 public:
-  /**
-   *  \brief enum LayoutKind specifies the major direction of tile division.
-   */
-  enum class LayoutKind {
-    eHORIZONTAL,
-    eVERTICAL
-  };
-
   RasterLayout(int numCols, int numRows,
-    int winNumCols, int winNumRows, LayoutKind kind=LayoutKind::eHORIZONTAL);
+    int winNumCols, int winNumRows, LayoutKind kind = LayoutKind::eHORIZONTAL);
+  RasterLayout(int colOffset, int rowOffset, int numCols, int numRows,
+    int winNumCols, int winNumRows, LayoutKind kind = LayoutKind::eHORIZONTAL);
   ~RasterLayout() {}
 
   int SetWindowSize(int winNumCols, int winNumRows);
@@ -52,6 +49,8 @@ public:
   }
 
 private:
+  int mColOffset{};   // column at top-left corner of image
+  int mRowOffset{};   // row at top-left corner of image
   int mNumCols{};     // width of image [unit: pixels]
   int mNumRows{};     // height of image
   int mWinNumCols{};  // width of window

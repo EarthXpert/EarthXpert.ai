@@ -106,10 +106,26 @@ public:
     double width, double height) override;
 
   /**
+   *  \brief Reads point tile defined by tile, internal margin size.
+   *
+   *  \param [in] tile The horizontal extent of region to read
+   *
+   *  \return Return Pointcloud container object.
+   */
+  std::unique_ptr<Pointcloud> ReadPointcloud(const RegionTileD& tile) override;
+
+  /**
    *  \return Returns LASreader object.
    */
   LASreader* GetLasReader() const noexcept {
     return mReader.get();
+  }
+
+  /**
+   *  \return Returns LASreader object.
+   */
+  const LASheader* GetLasHeader() const noexcept {
+    return mHeader;
   }
 
 private:

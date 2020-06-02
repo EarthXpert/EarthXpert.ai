@@ -7,7 +7,7 @@
 
 #include "core/datasource/cvraster.h"
 #include "core/datasource/gdalraster.h"
-#include "core/datasource/utils.h"
+#include "core/datasource/rasterutils.h"
 #include "core/utils/rasterlayout.h"
 #include "io/raster/rasterwriter.h"
 #include <filesystem>
@@ -175,8 +175,10 @@ TEST(RasterWriter, GdalRaster) {
 
   const int winNumCols{ 2000 };
   const int winNumRows{ 2000 };
-  RasterLayout rasterLayout(fileNumCols, fileNumRows, winNumCols, winNumRows);
-  auto& rasterWins = rasterLayout.GetRasterWindows();
+  RasterLayout layout(fileNumCols, fileNumRows, winNumCols, winNumRows);
+  auto& rasterWins = layout.GetRasterWindows();
+
+  ASSERT_EQ(9, rasterWins.size());
 
   const std::string imgFileT(TestConfig::OutputPath("image_small_t_GdalRaster.tif"));
   RasterWriter writer(imgFileT, format, fileNumCols, fileNumRows, gdalDT, numBands);
@@ -235,6 +237,8 @@ TEST(RasterWriter, GdalRasterOMP) {
   const int winNumRows{ 200 };
   RasterLayout rasterLayout(fileNumCols, fileNumRows, winNumCols, winNumRows);
   auto& rasterWins = rasterLayout.GetRasterWindows();
+
+  ASSERT_EQ(625, rasterWins.size());
 
   const std::string imgFileT(TestConfig::OutputPath("image_small_t_GdalRasterOMP.tif"));
   RasterWriter writer(imgFileT, format, fileNumCols, fileNumRows, gdalDT, numBands);
