@@ -46,7 +46,7 @@ static bool IsImageEqual(const std::string& imgFile, const std::string& imgFileT
  *
  *  TestCase 1: ortho of three bands in RGB with margins
  */
-TEST(RasterWriter, CvRaster) {
+TEST(rasterwriter, CvRaster) {
   const std::string imgFile(TestConfig::DataPath("Imagery/image_small.tif"));
   RasterReader reader(imgFile);
 
@@ -105,7 +105,7 @@ TEST(RasterWriter, CvRaster) {
  *
  *  TestCase 2: ortho of three bands in RGB with margins
  */
-TEST(RasterWriter, CvRasterOMP) {
+TEST(rasterwriter, CvRasterOMP) {
   const std::string imgFile(TestConfig::DataPath("Imagery/image_small.tif"));
   RasterReader reader(imgFile);
 
@@ -154,7 +154,7 @@ TEST(RasterWriter, CvRasterOMP) {
  *
  *  TestCase 3: ortho of three bands in RGB with margins
  */
-TEST(RasterWriter, GdalRaster) {
+TEST(rasterwriter, GdalRaster) {
   const std::string imgFile(TestConfig::DataPath("Imagery/image_small.tif"));
   RasterReader reader(imgFile);
 
@@ -214,7 +214,7 @@ TEST(RasterWriter, GdalRaster) {
  *
  *  TestCase 4: ortho of three bands in RGB with margins
  */
-TEST(RasterWriter, GdalRasterOMP) {
+TEST(rasterwriter, GdalRasterOMP) {
   const std::string imgFile(TestConfig::DataPath("Imagery/image_small.tif"));
   RasterReader reader(imgFile);
 
@@ -264,7 +264,7 @@ TEST(RasterWriter, GdalRasterOMP) {
  *
  *  TestCase: compare output image files with original images
  */
-TEST(RasterWriter, Equality) {
+TEST(rasterwriter, Equality) {
   // TestCase 1
   ASSERT_TRUE(IsImageEqual(TestConfig::DataPath("Imagery/image_small.tif"),
     TestConfig::OutputPath("image_small_t_CvRaster.tif")));

@@ -7,6 +7,7 @@
 #include "laszip.hpp"
 #include "laspoint.hpp"
 #include <cmath>
+#include <limits>
 #include <omp.h>
 #include <type_traits>
 
@@ -28,23 +29,23 @@ Pointcloud::Pointcloud(const size_t pointCount, const FieldGroup fieldGroup)
   }
 
   for (auto pos : FieldGroup::kPOS) {
-    if (mFieldGroup.test(pos)) {
-      switch (pos) {
-      case FieldGroup::kPOSXYZ:
-        mXYZ.resize(mPointCount);
-        break;
-      case FieldGroup::kPOSCLA:
-        mCla.resize(mPointCount);
-        break;
-      case FieldGroup::kPOSINT:
-        mIntensity.resize(mPointCount);
-        break;
-      case FieldGroup::kPOSRGB:
-        mRGB.resize(mPointCount);
-        break;
-      default:
-        assert(false);
-      }
+    if (!mFieldGroup.test(pos)) continue;
+
+    switch (pos) {
+    case FieldGroup::kPOSXYZ:
+      mXYZ.resize(mPointCount);
+      break;
+    case FieldGroup::kPOSCLA:
+      mCla.resize(mPointCount);
+      break;
+    case FieldGroup::kPOSINT:
+      mIntensity.resize(mPointCount);
+      break;
+    case FieldGroup::kPOSRGB:
+      mRGB.resize(mPointCount);
+      break;
+    default:
+      assert(false);
     }
   }
 }
@@ -210,12 +211,52 @@ void Pointcloud::GetPoint_Unchecked(const size_t i,
  *  \remark This convenient function will always traverse all points to obtain the region extent.
  *  Use it at caution to avoid perforamnce penaty.
  */
-RegionTileD Pointcloud::CalcRegionTile() const noexcept {
+RegionTileD Pointcloud::CalcBoundingBox2D() const noexcept {
   assert(mFieldGroup.test(FieldGroup::kPOSXYZ));
+  if (0 == mPointCount) return {};
+
+  // calculate extents per threads
+  const int numThreads = omp_get_max_threads();
+  std::vector<float> minXs(numThreads, mXYZ[0].x);
+  std::vector<float> maxXs(numThreads, mXYZ[0].x);
+  std::vector<float> minYs(numThreads, mXYZ[0].y);
+  std::vector<float> maxYs(numThreads, mXYZ[0].y);
+
 #pragma omp parallel 
   {
+    float minX = std::numeric_limits<float>::max();
+    float maxX = -std::numeric_limits<float>::max();
+    float minY = std::numeric_limits<float>::max();
+    float maxY = -std::numeric_limits<float>::max();
 
+#pragma omp for
+    for (int64 i = 0; i < mPointCount; ++i) {
+      if (minX > mXYZ[i].x) minX = mXYZ[i].x;
+      if (maxX < mXYZ[i].x) maxX = mXYZ[i].x;
+      if (minY > mXYZ[i].y) minY = mXYZ[i].y;
+      if (maxY < mXYZ[i].y) maxY = mXYZ[i].y;
+    }
+
+    const int tId = omp_get_thread_num();
+    minXs[tId] = minX;
+    maxXs[tId] = maxX;
+    minYs[tId] = minY;
+    maxXs[tId] = maxX;
   }
 
-  return {};
+  // calculate extent of all points
+  float minX = minXs[0];
+  float maxX = maxXs[0];
+  float minY = minYs[0];
+  float maxY = maxYs[0];
+
+  for (int i = 1; i < numThreads; ++i) {
+    if (minX > minXs[i]) minX = minXs[i];
+    if (maxX < maxXs[i]) maxX = maxXs[i];
+    if (minY > minYs[i]) minY = minYs[i];
+    if (maxY < maxYs[i]) maxY = maxYs[i];
+  }
+
+  return { mOrigin.x + double(minX), mOrigin.y + double(minY), 
+    double(maxX) - double(minX), double(maxY) - double(minY) };
 }

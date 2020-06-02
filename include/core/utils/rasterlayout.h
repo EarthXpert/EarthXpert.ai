@@ -23,7 +23,12 @@ public:
     int winNumCols, int winNumRows, LayoutKind kind = LayoutKind::eHORIZONTAL);
   RasterLayout(int colOffset, int rowOffset, int numCols, int numRows,
     int winNumCols, int winNumRows, LayoutKind kind = LayoutKind::eHORIZONTAL);
-  ~RasterLayout() {}
+  RasterLayout(const RasterLayout& rhs) = default;
+  RasterLayout(RasterLayout&& rhs) noexcept = default;
+  ~RasterLayout() = default;
+
+  RasterLayout& operator=(const RasterLayout& rhs) = default;
+  RasterLayout& operator=(RasterLayout&& rhs) noexcept = default;
 
   int SetWindowSize(int winNumCols, int winNumRows);
   int SetNumWindows(int numWins);
@@ -36,7 +41,7 @@ public:
    *  \param [in] index 0-based position
    *  \return Returns const reference to the RasterWindow object at given position.
    */
-  const auto& GetRasterWindow(const int index) {
+  const auto& GetRasterWindow(const int index) const {
     assert(0 <= index && index < mWins.size());
     return mWins[index];
   }
@@ -58,6 +63,6 @@ private:
   LayoutKind mLayoutkind{LayoutKind::eHORIZONTAL};  // major direction
   std::vector<RasterWindow> mWins;  // array of raster windows formulating the layout
 
-  void GenerateLayout();
+  void LayoutWindows();
 };
 }

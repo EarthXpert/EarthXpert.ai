@@ -1,5 +1,5 @@
 /* -----------------------------------------------------------------------------
- *  Copyright (c) 2020.  All rights reserved.
+ *  Copyright (c) 2019.  All rights reserved.
  * -----------------------------------------------------------------------------
  */
 #pragma once
@@ -22,14 +22,21 @@ enum class LayoutKind;
  *  \param Ty value type of coordinates
  */
 template <typename Ty> class EXCORE_EXPORTS RegionLayout {
+  static_assert(std::is_arithmetic_v<Ty>, "Requires that template argument be integral or floating data type");
+
 public:
   using ValueType = Ty;
 
-  RegionLayout(Ty width, Ty height,
+  RegionLayout(Ty width, Ty height, Ty tileWidth, Ty tileHeight, 
+    LayoutKind kind = LayoutKind::eHORIZONTAL);
+  RegionLayout(Ty minX, Ty minY, Ty width, Ty height,
     Ty tileWidth, Ty tileHeight, LayoutKind kind = LayoutKind::eHORIZONTAL);
-  RegionLayout(Ty xmin, Ty ymin, Ty width, Ty height,
-    Ty tileWidth, Ty tileHeight, LayoutKind kind = LayoutKind::eHORIZONTAL);
-  ~RegionLayout() {}
+  RegionLayout(const RegionLayout& rhs) = default;
+  RegionLayout(RegionLayout&& rhs) noexcept = default;
+  ~RegionLayout() = default;
+
+  RegionLayout& operator=(const RegionLayout& rhs) = default;
+  RegionLayout& operator=(RegionLayout&& rhs) noexcept = default;
 
   int SetTileSize(Ty tileWidth, Ty tileHeight);
   int SetNumTiles(int numTiles);
@@ -42,7 +49,7 @@ public:
    *  \param [in] index 0-based position
    *  \return Returns const reference to the RegionTile object at given position.
    */
-  const auto& GetRegionTile(const int index) {
+  const auto& GetRegionTile(const int index) const {
     assert(0 <= index && index < mTiles.size());
     return mTiles[index];
   }
@@ -55,8 +62,8 @@ public:
   }
 
 private:
-  Ty mXMin{};          // x coordinate at the lower-left corner of region
-  Ty mYmin{};          // y coordinate at the lower-left corner of region
+  Ty mMinX{};          // x coordinate at the lower-left corner of region
+  Ty mMinY{};          // y coordinate at the lower-left corner of region
   Ty mWidth{};         // width of region
   Ty mHeight{};        // height of region
   Ty mTileWidth{};     // width of tile
@@ -64,9 +71,9 @@ private:
   LayoutKind mLayoutkind{LayoutKind::eHORIZONTAL};  // major direction
   std::vector<RegionTile<Ty>> mTiles;  // array of tiles formulating the layout
 
-  void GenerateLayout();
+  void LayoutTiles();
 };
 
 using RegionLayoutF = RegionLayout<float>;
 using RegionLayoutD = RegionLayout<double>;
-}
+} // namespace earthxpert

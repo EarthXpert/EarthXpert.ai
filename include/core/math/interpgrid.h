@@ -20,17 +20,17 @@ namespace earthxpert {
  * requested location falls outside the grid, it will extrapolate from
  * the nearest points.
  *
- * \param _Ty A fundamental data type of elements on the grid
+ * \param Ty A fundamental data type of elements on the grid
  * \remark The 2D coordinate system
  */
-template <typename _Ty> class EXCORE_EXPORTS InterpGrid {
-  static_assert(std::is_floating_point_v<_Ty>, "Requires that template argument be floating data type");
+template <typename Ty> class EXCORE_EXPORTS InterpGrid {
+  static_assert(std::is_floating_point_v<Ty>, "Requires that template argument be floating data type");
 
 public:
-  using ValueType = _Ty;
+  using ValueType = Ty;
 
-  InterpGrid(unsigned int dim, _Ty minX, _Ty minY, _Ty maxX, _Ty maxY, _Ty spcX,
-             _Ty spcY);
+  InterpGrid(unsigned int dim, Ty minX, Ty minY, Ty maxX, Ty maxY, Ty spcX,
+             Ty spcY);
   InterpGrid(const InterpGrid &rhs);
   InterpGrid(InterpGrid &&rhs) noexcept;
   ~InterpGrid() = default;
@@ -52,49 +52,49 @@ public:
    */
   void SetDimension(const unsigned int dim) { mDim = dim; }
 
-  void LayoutNodes(_Ty minX, _Ty minY, _Ty maxX, _Ty maxY, _Ty spcX,
-                       _Ty spcY);
+  void LayoutNodes(Ty minX, Ty minY, Ty maxX, Ty maxY, Ty spcX,
+                       Ty spcY);
 
   /**
    * Interpolate a value for the given X,Y position.
    */
-  void GetVal(cv::Point_<_Ty> point, _Ty *const val) const {
+  void GetVal(cv::Point_<Ty> point, Ty *const val) const {
     GetVal(point.x, point.y, val);
   }
-  void GetVal(_Ty X, _Ty Y, _Ty *const val) const;
+  void GetVal(Ty X, Ty Y, Ty *const val) const;
 
   // \return Return value of the 1st dimension
-  _Ty GetVal1(cv::Point_<_Ty> point) const {
+  Ty GetVal1(cv::Point_<Ty> point) const {
     return GetVal1(point.x, point.y);
   }
-  _Ty GetVal1(_Ty X, _Ty Y) const
+  Ty GetVal1(Ty X, Ty Y) const
   {
     assert(1 <= mDim);
-    _Ty val;
+    Ty val;
     GetVal(X, Y, &val);
     return val;
   }
 
   // \return Return values of the beginning two dimensions
-  std::pair<_Ty, _Ty> GetVal2(cv::Point_<_Ty> point) const {
+  std::pair<Ty, Ty> GetVal2(cv::Point_<Ty> point) const {
     return GetVal2(point.x, point.y);
   }
-  std::pair<_Ty, _Ty> GetVal2(_Ty X, _Ty Y) const
+  std::pair<Ty, Ty> GetVal2(Ty X, Ty Y) const
   {
     assert(2 <= mDim);
-    _Ty val[2];
+    Ty val[2];
     GetVal(X, Y, val);
     return {val[0], val[1]};
   }
 
   // \return Return values of the beginning three dimensions
-  Tuple3<_Ty> GetVal3(cv::Point_<_Ty> point) const {
+  Tuple3<Ty> GetVal3(cv::Point_<Ty> point) const {
     return GetVal3(point.x, point.y);
   }
-  Tuple3<_Ty> GetVal3(_Ty X, _Ty Y) const
+  Tuple3<Ty> GetVal3(Ty X, Ty Y) const
   {
     assert(3 <= mDim);
-    _Ty val[3];
+    Ty val[3];
     GetVal(X, Y, val);
     return { val[0], val[1], val[2] };
   }
@@ -113,7 +113,7 @@ public:
    * \return Returns {X-offset, Y-offset}
    * \remark The X grid index is computed as (X - offX) / spcX
    */
-  std::pair<_Ty, _Ty> GetOffsets() const noexcept {
+  std::pair<Ty, Ty> GetOffsets() const noexcept {
     return { mOffX, mOffY };
   }
 
@@ -123,12 +123,12 @@ public:
    *
    * \return Returns {X spacing, Y spacing}
    */
-  std::pair<_Ty, _Ty> GetSpacing(_Ty &spcX, _Ty &spcY) const noexcept {
+  std::pair<Ty, Ty> GetSpacing(Ty &spcX, Ty &spcY) const noexcept {
     return { mSpcX, mSpcY };
   }
 
-  void GetNodes(cv::Point_<_Ty> *const gridNodes) const;
-  void GetNodes(_Ty *const gridNodes) const;
+  void GetNodes(cv::Point_<Ty> *const gridNodes) const;
+  void GetNodes(Ty *const gridNodes) const;
 
   /**
    * Get a pointer to the array storing the values for the grid points.  They
@@ -137,9 +137,9 @@ public:
    *
    * return Pointer to data array
    */
-  _Ty *GetArray() noexcept { return mGrid.data(); }
+  Ty *GetArray() noexcept { return mGrid.data(); }
 
-  const _Ty *GetArray() const noexcept { return mGrid.data(); }
+  const Ty *GetArray() const noexcept { return mGrid.data(); }
 
   /**
    * Get the number of node points defining the grid.
@@ -165,26 +165,26 @@ public:
    * \return Returns size of the data array in bytes.
    */
   size_t GetSizeBytes() const {
-    return sizeof(_Ty) * mNumX * mNumY * mDim;
+    return sizeof(Ty) * mNumX * mNumY * mDim;
   }
 
 private:
   unsigned int mDim{1};   // Dimension of node points stored in the grid.
   unsigned int mNumX{0};  // Number of grid points in the X-dimension
   unsigned int mNumY{0};  // Number of grid points in the Y-dimension
-  _Ty mOffX{0};           // X coordinate offset
-  _Ty mOffY{0};           // Y coordinate offset
-  _Ty mSpcX{1};           // X coordinate spacing of grid points
-  _Ty mSpcY{1};           // Y coordinate spacing of grid points
-  std::vector<_Ty> mGrid; // Array of target coordinates for node points
+  Ty mOffX{0};           // X coordinate offset
+  Ty mOffY{0};           // Y coordinate offset
+  Ty mSpcX{1};           // X coordinate spacing of grid points
+  Ty mSpcY{1};           // Y coordinate spacing of grid points
+  std::vector<Ty> mGrid; // Array of target coordinates for node points
 
   void CopyFrom(const InterpGrid &rhs);
   void MoveFrom(InterpGrid &&rhs) noexcept;
   void Clear() noexcept;
 
   // cached temporaries for performance
-  _Ty mInvSpcX{1};
-  _Ty mInvSpcY{1};
+  Ty mInvSpcX{1};
+  Ty mInvSpcY{1};
 };
 
 using InterpGridF = InterpGrid<float>;

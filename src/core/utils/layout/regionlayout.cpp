@@ -7,7 +7,8 @@
 #include <algorithm>
 #include <stdexcept>
 
-using namespace earthxpert;
+using earthxpert::RegionLayout;
+using earthxpert::RegionTile;
 
 /**
  *  \param [in] width    width of region
@@ -22,20 +23,20 @@ RegionLayout<Ty>::RegionLayout(const Ty width, const Ty height,
 }
 
 /**
- *  \param [in] xmin      x coordinate at the lower-left corner of region
- *  \param [in] ymin      y coordinate at the lower-left corner of region
+ *  \param [in] minX      x coordinate at the lower-left corner of region
+ *  \param [in] minY      y coordinate at the lower-left corner of region
  *  \param [in] width     width of region
  *  \param [in] height    height of region
  *  \param [in] tileWidth width of tile
  *  \param [in] tileHeight height of tile
  */
 template <typename Ty>
-RegionLayout<Ty>::RegionLayout(const Ty xmin, const Ty ymin, 
+RegionLayout<Ty>::RegionLayout(const Ty minX, const Ty minY, 
   const Ty width, const Ty height,
   const Ty tileWidth, const Ty tileHeight, const LayoutKind kind)
-  : mXMin(xmin), mYMin(ymin), mWidth(width), mHeight(height), 
+  : mMinX(minX), mMinY(minY), mWidth(width), mHeight(height), 
   mTileWidth(tileWidth), mTileHeight(tileHeight), mLayoutkind(kind) {
-  GenerateLayout();
+  LayoutTiles();
 }
 
 /**
@@ -49,7 +50,7 @@ template <typename Ty>
 int RegionLayout<Ty>::SetTileSize(const Ty tileWidth, const Ty tileHeight) {
   mTileWidth = tileWidth;
   mTileHeight = tileHeight;
-  GenerateLayout();
+  LayoutTiles();
   return static_cast<int>(mTiles.size());
 }
 
@@ -70,7 +71,7 @@ int RegionLayout<Ty>::SetNumTiles(const int numTiles) {
  *  \brief Divides region extent into tiles.
  */
 template <typename Ty>
-void RegionLayout<Ty>::GenerateLayout() {
+void RegionLayout<Ty>::LayoutTiles() {
   if (mWidth < mTileWidth || mHeight < mTileHeight) {
     throw std::invalid_argument("Thw tile size should be less than or equal to the region size");
   }
@@ -78,28 +79,24 @@ void RegionLayout<Ty>::GenerateLayout() {
   if (0 == mTileHeight) mTileHeight = mHeight;
 
   if (LayoutKind::eHORIZONTAL == mLayoutkind) {
-    for (double h = 0; h < mHeight; h += mTileHeight)
-    {
+    for (double h = 0; h < mHeight; h += mTileHeight) {
       double tileHeight = std::min(mTileHeight, mHeight - h);
 
-      for (double w = 0; w < mWidth; w += mTileWidth)
-      {
+      for (double w = 0; w < mWidth; w += mTileWidth) {
         double tileWidth = std::min(mTileWidth, mWidth - w);
 
-        mTiles.push_back(RegionTile{ mXMin + w, mYMin + h, tileWidth, tileHeight });
+        mTiles.push_back(RegionTile<Ty>{ mMinX + w, mMinY + h, tileWidth, tileHeight });
       }
     }
   }
   else {
-    for (double w = 0; w < mWidth; w += mTileWidth)
-    {
+    for (double w = 0; w < mWidth; w += mTileWidth) {
       double tileWidth = std::min(mTileWidth, mWidth - w);
 
-      for (double h = 0; h < mHeight; h += mTileHeight)
-      {
+      for (double h = 0; h < mHeight; h += mTileHeight) {
         double tileHeight = std::min(mTileHeight, mHeight - h);
 
-        mTiles.push_back(RegionTile{ mXMin + w, mYMin + h, tileWidth, tileHeight });
+        mTiles.push_back(RegionTile<Ty>{ mMinX + w, mMinY + h, tileWidth, tileHeight });
       }
     }
   }

@@ -5,21 +5,25 @@
 #pragma once
 
 #include "core/excore.h"
+#include <type_traits>
 
 namespace earthxpert {
 /**
  *  The structure RegionTile contains the offset and size information.
+ *
+ *  \param Ty value type of coordinates
  */
-template <typename Ty>
-struct RegionTile {
-  Ty xmin{};
-  Ty ymin{};
+template <typename Ty> struct RegionTile {
+  static_assert(std::is_arithmetic_v<Ty>, "Requires that template argument be integral or floating data type");
+
+  Ty minX{};
+  Ty minY{};
   Ty width{};
   Ty height{};
 
-  void SetOffsets(const Ty xmin, const Ty ymin) {
-    this->xmin = xmin;
-    this->ymin = ymin;
+  void SetOffsets(const Ty minX, const Ty minY) {
+    this->minX = minX;
+    this->minY = minY;
   }
 
   void SetSize(const Ty width, const Ty height) {
@@ -28,8 +32,8 @@ struct RegionTile {
   }
 
   void SetMargins(const Ty marginWidth, const Ty marginHeight) {
-    xmin -= marginWidth;
-    ymin -= marginHeight;
+    minX -= marginWidth;
+    minY -= marginHeight;
     width  += marginWidth * 2;
     height += marginHeight * 2;
   }
@@ -37,4 +41,4 @@ struct RegionTile {
 
 using RegionTileF = RegionTile<float>;
 using RegionTileD = RegionTile<double>;
-}
+} // namespace earthxpert

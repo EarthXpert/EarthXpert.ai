@@ -229,7 +229,7 @@ public:
  *  \return Returns XYZ coordinates at specified index.
  */
   auto GetXYZD(const size_t i) noexcept {
-    return XYZD{ mXYZ[i].x + mOrigin.x, mXYZ[i].y + mOrigin.y, mXYZ[i].z + mOrigin.z };
+    return XYZD{ mOrigin.x + mXYZ[i].x, mOrigin.y + mXYZ[i].y, mOrigin.z + mXYZ[i].z };
   }
   auto GetPoint3d(const size_t i) noexcept {
     return static_cast<Point3d>(GetXYZD(i));
@@ -486,7 +486,7 @@ public:
    *  \remark This convenient function will always traverse all points to obtain the region extent.
    *  Use it at caution to avoid perforamnce penaty.
    */
-  RegionTileD CalcRegionTile() const noexcept;
+  RegionTileD CalcBoundingBox2D() const noexcept;
 
 private:
   size_t mPointCount{};     // actual number of points held

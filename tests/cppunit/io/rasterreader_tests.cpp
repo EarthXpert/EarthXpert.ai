@@ -17,7 +17,7 @@ using namespace earthxpert;
  *
  *  TestCase 1: ortho of three bands in RGB with no margins
  */
-TEST(RasterReader, ORTHOGF1MS_T1) {
+TEST(rasterreader, ORTHOGF1MS_T1) {
   const std::string imgFile(TestConfig::DataPath("Imagery/image_small.tif"));
   RasterReader reader(imgFile);
 
@@ -54,7 +54,7 @@ TEST(RasterReader, ORTHOGF1MS_T1) {
 /**
  *  TestCase 2: ortho of three bands in RGB with margins
  */
-TEST(RasterReader, ORTHOGF1MS_T2a) {
+TEST(rasterreader, ORTHOGF1MS_T2a) {
   const std::string imgFile(TestConfig::DataPath("Imagery/image_small.tif"));
   RasterReader reader(imgFile);
   reader.SetMargins(20, 20, MarginKind::eCONSTANT);
@@ -92,7 +92,7 @@ TEST(RasterReader, ORTHOGF1MS_T2a) {
 /**
  *  TestCase 2: aerial of three bands in RGB with margins
  */
-TEST(RasterReader, AERIALMS_T2b) {
+TEST(rasterreader, AERIALMS_T2b) {
   const std::string imgFile(TestConfig::DataPath("Imagery/Aerial/Graz25/images/Hi-RGB_02152.tif"));
   RasterReader reader(imgFile);
   reader.SetMargins(20, 20, MarginKind::eREFLECTION);
@@ -134,7 +134,7 @@ TEST(RasterReader, AERIALMS_T2b) {
 /**
  *  TestCase 3: ortho of 2nd band with no margins
  */
-TEST(RasterReader, ORTHOGF1MS_T3) {
+TEST(rasterreader, ORTHOGF1MS_T3) {
   const std::string imgFile(TestConfig::DataPath("Imagery/image_small.tif"));
   RasterReader reader(imgFile, {2});
 
@@ -167,7 +167,7 @@ TEST(RasterReader, ORTHOGF1MS_T3) {
  *
  *  TestCase 4: ortho of three bands in RGB with no margins
  */
-TEST(RasterReader, ORTHOGF1MS_T4) {
+TEST(rasterreader, ORTHOGF1MS_T4) {
   const std::string imgFile(TestConfig::DataPath("Imagery/image_small.tif"));
   RasterReader reader(imgFile);
 
@@ -212,7 +212,7 @@ TEST(RasterReader, ORTHOGF1MS_T4) {
 /**
  *  TestCase 5: margin kind filling behaviours
  */
-TEST(RasterReader, AERIALMS_T5) {
+TEST(rasterreader, AERIALMS_T5) {
   const std::string imgFile(TestConfig::DataPath("Imagery/Aerial/Graz25/images/Hi-RGB_02152.tif"));
   RasterReader reader(imgFile);
 
@@ -274,7 +274,7 @@ TEST(RasterReader, AERIALMS_T5) {
  *
  *  TestCase 6: ortho of three bands in RGB with margins
  */
-TEST(RasterReader, ORTHOGF1MS_T6) {
+TEST(rasterreader, ORTHOGF1MS_T6) {
   const std::string imgFile(TestConfig::DataPath("Imagery/image_small.tif"));
   RasterReader reader(imgFile);
   reader.SetMargins(20, 20, MarginKind::eREPLICATION);
@@ -329,7 +329,7 @@ TEST(RasterReader, ORTHOGF1MS_T6) {
 /**
  *  TestCase 7: ortho of 2nd band in RGB with no margins
  */
-TEST(RasterReader, ORTHOGF1MS_T7) {
+TEST(rasterreader, ORTHOGF1MS_T7) {
   const std::string imgFile(TestConfig::DataPath("Imagery/image_small.tif"));
   RasterReader reader(imgFile, { 2 });
 

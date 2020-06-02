@@ -199,4 +199,10 @@ TEST(pointcloud, Subscript) {
   }
 
   CheckPointcloud_CPointF_Subscript(pc);
+
+  auto bbox = pc.CalcBoundingBox2D();
+  ASSERT_GE(bbox.minX, 500.0);
+  ASSERT_GE(bbox.minY, 1500.0);
+  ASSERT_LE(bbox.width, 1000.0);
+  ASSERT_LE(bbox.height, 1000.0);
 }

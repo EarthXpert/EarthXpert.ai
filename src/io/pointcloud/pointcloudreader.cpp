@@ -165,7 +165,7 @@ std::unique_ptr<Pointcloud> PointcloudReader::ReadPointcloud(
  *  \return Return Pointcloud container object.
  */
 std::unique_ptr<Pointcloud> PointcloudReader::ReadPointcloud(const RegionTileD& tile) {
-  return ReadPointcloud(tile.xmin, tile.ymin, tile.width, tile.height);
+  return ReadPointcloud(tile.minX, tile.minY, tile.width, tile.height);
 }
 
 /**

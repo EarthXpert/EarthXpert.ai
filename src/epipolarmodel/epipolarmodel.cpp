@@ -216,8 +216,7 @@ std::optional<double> EpipolarModel<GroundPolicy>::ImageToRect(const Point2d &im
     ground.z += interpGrid->GetVal1(float(img.x), float(img.y));
 
   Point3d rect3{ 0, 0, 0 };
-  for (int i = 0; i < mMaxIters; ++i)
-  {
+  for (int i = 0; i < mMaxIters; ++i) {
     if (!sensorModel->ImageToGround(img, ground))
       return std::nullopt;
     
@@ -254,8 +253,7 @@ EpipolarModel<GroundPolicy>::BuildGridI2G(const IEpipolarModel::StereoPos pos,
   gridI2G->GetNodes(gridNodes.data());
 
   auto grid = gridI2G->GetArray();
-  for (size_t i = 0; i < numNodes; ++i)
-  {
+  for (size_t i = 0; i < numNodes; ++i) {
     Point2d rect;
     auto grdHgt = ImageToRect(gridNodes[i], rect, pos);
 
