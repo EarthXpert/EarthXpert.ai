@@ -69,6 +69,17 @@ public:
   virtual std::unique_ptr<Pointcloud> ReadPointcloud(size_t start, size_t numPoints) = 0;
 
   /**
+   *  \brief Reads a point range defined by the passed cloud object,
+   *  starting from the start index, and populates the associated buffer.
+   *
+   *  \param [in] start the index of start point
+   *  \param [in/out] pointCloud the container object to be populated with points.
+   *                  The requested fields must be available from the dataset.
+   *  \return Returns number of points actually read
+   */
+  virtual size_t ReadPointcloud(const size_t start, Pointcloud* const pointCloud) = 0;
+
+  /**
    *  \brief Reads a point range defined by the passed cloud object, populates
    *  the associated buffer.
    *
@@ -80,14 +91,23 @@ public:
   /**
    *  \brief Reads point tile defined by tile, internal margin size.
    *
-   *  \param [in] xOffset x location of the bottom-left corner of the tile [unit: meter]
-   *  \param [in] yOffset y location of the bottom-left corner of the tile
+   *  \param [in] xmin x location of the lower-left corner of the tile [unit: meter]
+   *  \param [in] ymin y location of the lower-left corner of the tile
    *  \param [in] width the tile width [unit: meter]
    *  \param [in] height the tile height
    *
    *  \return Return Pointcloud container object.
    */
-  virtual std::unique_ptr<Pointcloud> ReadPointcloud(double xOffset, double yOffset,
+  virtual std::unique_ptr<Pointcloud> ReadPointcloud(double xmin, double ymin,
     double width, double height) = 0;
+
+  /**
+   *  \brief Reads point tile defined by tile, internal margin size.
+   *
+   *  \param [in] tile The horizontal extent of region to read
+   *
+   *  \return Return Pointcloud container object.
+   */
+  virtual std::unique_ptr<Pointcloud> ReadPointcloud(const RegionTileD& tile) = 0;
 };
 } // namespace earthxpert

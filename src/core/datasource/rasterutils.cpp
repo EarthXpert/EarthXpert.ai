@@ -2,7 +2,7 @@
  *  Copyright (c) 2019.  All rights reserved.
  * -----------------------------------------------------------------------------
  */
-#include "core/datasource/utils.h"
+#include "core/datasource/rasterutils.h"
 #include "core/datasource/kindfillpolicy.h"
 #include "core/datasource/marginfill.h"
 #include "core/exceptions/exexcept.h"

@@ -7,6 +7,7 @@
 #include "core/excore.h"
 #include "core/datasource/pointtypes.h"
 #include "core/exceptions/exexcept.h"
+#include "core/utils/regiontile.h"
 
 #include <cassert>
 #include <type_traits>
@@ -29,7 +30,7 @@ public:
     ePHOTO    // matched and reconstructed from photos
   };
 
-  Pointcloud(size_t pointCount, FieldGroup fieldGroup);
+  Pointcloud(size_t pointCapacity, FieldGroup fieldGroup);
   Pointcloud(const Point3d& origin, std::vector<XYZF>&& xyz);
   Pointcloud(const Point3d& origin, std::vector<XYZF>&& xyz,
     std::vector<Classification>&& cla);
@@ -46,7 +47,24 @@ public:
   bool operator!=(const Pointcloud& rhs) const;
 
   /**
-   *  \return Returns total number of points.
+   *  \return Returns max number of points to hold.
+   */
+  auto GetPointCapacity() const noexcept {
+    return mPointCapacity;
+  }
+
+  /**
+   *  \breif Set actual number of points
+   */
+  void SetPointCount(const size_t pointCount) {
+    if (pointCount > mPointCapacity) {
+      throw std::invalid_argument("SetPointCount: pointCount");
+    }
+    mPointCount = pointCount;
+  }
+
+  /**
+   *  \return Returns total number of points actually held.
    */
   auto GetPointCount() const noexcept {
     return mPointCount;
@@ -85,7 +103,7 @@ public:
    */
   void SetXYZ(std::vector<XYZF>&& xyz) {
     assert(mFieldGroup.test(FieldGroup::kPOSXYZ));
-    assert(mPointCount == xyz.size());
+    assert(mPointCapacity == xyz.size());
     mXYZ = std::move(xyz);
   }
 
@@ -100,7 +118,7 @@ public:
   }
   void SetXYZ(const size_t i, const Point3f xyz) {
     assert(mFieldGroup.test(FieldGroup::kPOSXYZ));
-    assert(i < mPointCount);
+    assert(i < mPointCapacity);
     mXYZ[i].x = xyz.x;
     mXYZ[i].y = xyz.y;
     mXYZ[i].z = xyz.z;
@@ -117,7 +135,7 @@ public:
   }
   void SetXYZ(const size_t i, const Point3d xyz) {
     assert(mFieldGroup.test(FieldGroup::kPOSXYZ));
-    assert(i < mPointCount);
+    assert(i < mPointCapacity);
     mXYZ[i].x = xyz.x - mOrigin.x;
     mXYZ[i].y = xyz.x - mOrigin.y;
     mXYZ[i].y = xyz.x - mOrigin.y;
@@ -130,7 +148,7 @@ public:
    */
   void SetCla(std::vector<Classification>&& cla) {
     assert(mFieldGroup.test(FieldGroup::kPOSCLA));
-    assert(mPointCount == cla.size());
+    assert(mPointCapacity == cla.size());
     mCla = std::move(cla);
   }
 
@@ -142,7 +160,7 @@ public:
    */
   void SetCla(const size_t i, const Classification cla) {
     assert(mFieldGroup.test(FieldGroup::kPOSCLA));
-    assert(i < mPointCount);
+    assert(i < mPointCapacity);
     mCla[i] = cla;
   }
 
@@ -153,7 +171,7 @@ public:
    */
   void SetIntensity(std::vector<Intensity>&& intensity) {
     assert(mFieldGroup.test(FieldGroup::kPOSINT));
-    assert(mPointCount == intensity.size());
+    assert(mPointCapacity == intensity.size());
     mIntensity = std::move(intensity);
   }
 
@@ -165,7 +183,7 @@ public:
    */
   void SetIntensity(const size_t i, const Intensity intensity) {
     assert(mFieldGroup.test(FieldGroup::kPOSINT));
-    assert(i < mPointCount);
+    assert(i < mPointCapacity);
     mIntensity[i] = intensity;
   }
 
@@ -176,7 +194,7 @@ public:
    */
   void SetRGB(std::vector<RGB16>&& rgb) {
     assert(mFieldGroup.test(FieldGroup::kPOSRGB));
-    assert(mPointCount == rgb.size());
+    assert(mPointCapacity == rgb.size());
     mRGB = std::move(rgb);
   }
 
@@ -188,7 +206,7 @@ public:
    */
   void SetRGB(const size_t i, const RGB16 rgb) {
     assert(mFieldGroup.test(FieldGroup::kPOSRGB));
-    assert(i < mPointCount);
+    assert(i < mPointCapacity);
     mRGB[i] = rgb;
   }
 
@@ -228,7 +246,7 @@ public:
  *  \return Returns XYZ coordinates at specified index.
  */
   auto GetXYZD(const size_t i) noexcept {
-    return XYZD{ mXYZ[i].x + mOrigin.x, mXYZ[i].y + mOrigin.y, mXYZ[i].z + mOrigin.z };
+    return XYZD{ mOrigin.x + mXYZ[i].x, mOrigin.y + mXYZ[i].y, mOrigin.z + mXYZ[i].z };
   }
   auto GetPoint3d(const size_t i) noexcept {
     return static_cast<Point3d>(GetXYZD(i));
@@ -306,7 +324,7 @@ public:
    */
   template <typename PointTy>
   void SetPoint(const size_t i, const PointTy& point) {
-    if (mPointCount <= i) {
+    if (mPointCapacity <= i) {
       throw std::out_of_range("Pointcloud::SetPoint()");
     }
     if (!VerifyPointFieldGroup(PointTy::kPointFieldGroup)) {
@@ -323,7 +341,7 @@ public:
    *  \param [in] point LASlib point
    */
   void SetPoint(const size_t i, const LASpoint& point, const LASquantizer* quantizer) {
-    if (mPointCount <= i) {
+    if (mPointCapacity <= i) {
       throw std::out_of_range("Pointcloud::SetPoint()");
     }
 
@@ -337,7 +355,7 @@ public:
    */
   template <typename PointTy>
   PointTy GetPoint(const size_t i) const {
-    if (mPointCount <= i) {
+    if (mPointCapacity <= i) {
       throw std::out_of_range("Pointcloud::GetPoint()");
     }
     if (!VerifyPointFieldGroup(PointTy::kPointFieldGroup)) {
@@ -477,11 +495,19 @@ public:
    */
   void GetPoint_Unchecked(size_t i, LASpoint& point, bool offset = true) const;
 
-private:
-  size_t mPointCount{};     // actual number of points held
-  //size_t mPointCapacity{};  // \todo max number of points to be able to hold
-  FieldGroup mFieldGroup;   // available field groups
+  /**
+   *  \brief it is tedious to track the modification of points and maintain their bounding box.
+   *
+   *  \return Returns 2D extent of region covered by points in XY
+   *
+   *  \remark This convenient function will always traverse all points to obtain the region extent.
+   *  Use it at caution to avoid perforamnce penaty.
+   */
+  RegionTileD CalcBoundingBox2D() const noexcept;
 
+private:
+  size_t mPointCapacity{};  // max number of points to be able to hold
+  FieldGroup mFieldGroup;   // available field groups
   Point3d mOrigin{};        // origin of 3D coordinate system where mPoints reside
 
   std::vector<XYZF> mXYZ;   // XYZ coordinates
@@ -491,5 +517,8 @@ private:
 
   // uncomment when needed
   //std::vector<GPSTime> mTime;
+
+  // cache
+  size_t mPointCount{};     // actual number of points held, default to mPointCapacity
 };
 }

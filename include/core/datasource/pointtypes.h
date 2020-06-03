@@ -38,7 +38,9 @@ struct FieldGroup : std::bitset<8> {
     kBITXYZ, kBITCLA, kBITINT, kBITTIM, kBITRGB, kBITNIR };
 
   // often used bit masks
-  static constexpr size_t kBITXCI = kBITXYZ | kBITCLA | kBITINT;
+  static constexpr size_t kBITXC = kBITXYZ | kBITCLA;             // 3
+  static constexpr size_t kBITXCI = kBITXYZ | kBITCLA | kBITINT;  // 7
+  static constexpr size_t kBITXCR = kBITXYZ | kBITCLA | kBITRGB;  // 19
   static constexpr size_t kBITRN = kBITRGB | kPOSNIR;
 
   static inline const std::map<size_t, size_t> kPOSBIT = {

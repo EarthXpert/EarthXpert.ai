@@ -10,10 +10,11 @@
 #include <filesystem>
 
 using namespace earthxpert;
+using fgt = FieldGroup;
 namespace fs = std::filesystem;
 
 static std::unique_ptr<Pointcloud> ReadPointcloud(
-  const std::string& pcFile, const FieldGroup fieldGroup) {
+  const std::string& pcFile, const fgt fieldGroup) {
   PointcloudReader reader(pcFile, fieldGroup);
 
   return reader.ReadPointcloud();
@@ -47,11 +48,11 @@ static bool IsPointcloudEqual(const std::string& lasFile, const std::string& las
  *
  *  TestCase 1: XYZ fields, use origin of Pointcloud object as offset
  */
-TEST(PointcloudWriter, WritePointcloud_LAS_XYZ) {
+TEST(pointcloudwriter, WritePointcloud_LAS_XYZ) {
   constexpr size_t filePointCount{ 20680 };
 
   const std::string lasFile(TestConfig::DataPath("PointClouds/points_small.las"));
-  auto pc = ReadPointcloud(lasFile, FieldGroup{ 1 });
+  auto pc = ReadPointcloud(lasFile, { fgt::kBITXYZ });
 
   const auto fg = pc->GetFieldGroup();
   const auto origin = pc->GetOrigin();
@@ -74,11 +75,11 @@ TEST(PointcloudWriter, WritePointcloud_LAS_XYZ) {
  *
  *  TestCase 2: XYZ fields, use any point of Pointcloud as offset, 0.001 as scale factor
  */
-TEST(PointcloudWriter, WritePointcloud_LAS_XYZ2) {
+TEST(pointcloudwriter, WritePointcloud_LAS_XYZ2) {
   constexpr size_t filePointCount{ 20680 };
 
   const std::string lasFile(TestConfig::DataPath("PointClouds/points_small.las"));
-  auto pc = ReadPointcloud(lasFile, FieldGroup{ 3 });
+  auto pc = ReadPointcloud(lasFile, { fgt::kBITXC });
 
   const auto fg = pc->GetFieldGroup();
   const auto point = pc->GetXYZD(0);  // first point
@@ -104,12 +105,12 @@ TEST(PointcloudWriter, WritePointcloud_LAS_XYZ2) {
  *
  *  TestCase 6: write chunks of points in .las
  */
-TEST(PointcloudWriter, WritePointcloud_LAS_XYZC_CHUNKS) {
+TEST(pointcloudwriter, WritePointcloud_LAS_XYZC_CHUNKS) {
   constexpr size_t filePointCount{ 20680 };
   const size_t chunkNumPts = filePointCount / 3;
 
   const std::string lasFile(TestConfig::DataPath("PointClouds/points_small.las"));
-  PointcloudReader reader(lasFile, FieldGroup{ 3 });
+  PointcloudReader reader(lasFile, { fgt::kBITXC });
 
   const auto fg = reader.GetFieldGroup();
   auto lasReader = reader.GetLasReader();
@@ -133,7 +134,7 @@ TEST(PointcloudWriter, WritePointcloud_LAS_XYZC_CHUNKS) {
  *
  *  TestCase 4: write XYZC fields, non-zero offsets in .las
  */
-TEST(PointcloudWriter, WritePointcloud_LAS_XYZC) {
+TEST(pointcloudwriter, WritePointcloud_LAS_XYZC) {
   constexpr size_t filePointCount{ 478069 };
 
   const std::string lasFile(TestConfig::DataPath("PointClouds/guided_tour_c3d/DEM/DSM.las"));
@@ -164,11 +165,11 @@ TEST(PointcloudWriter, WritePointcloud_LAS_XYZC) {
  *
  *  TestCase 5: write XYZ fields in .las
  */
-TEST(PointcloudWriter, WritePointcloud_LAZ_XYZ) {
+TEST(pointcloudwriter, WritePointcloud_LAZ_XYZ) {
   constexpr size_t filePointCount{ 823560 };
 
   const std::string lasFile(TestConfig::DataPath("PointClouds/OMA_276_PC3.laz"));
-  auto pc = ReadPointcloud(lasFile, FieldGroup{ 1 });
+  auto pc = ReadPointcloud(lasFile, { fgt::kBITXYZ });
 
   const auto fg = pc->GetFieldGroup();
   const auto origin = pc->GetOrigin();
@@ -195,7 +196,7 @@ TEST(PointcloudWriter, WritePointcloud_LAZ_XYZ) {
  *
  *  TestCase 6: write XYZC & RGB fields in .laz
  */
-TEST(PointcloudWriter, WritePointcloud_LAZ_XYZCRGB) {
+TEST(pointcloudwriter, WritePointcloud_LAZ_XYZCRGB) {
   constexpr size_t filePointCount{ 823560 };
 
   const std::string lasFile(TestConfig::DataPath("PointClouds/OMA_276_PC3.laz"));
@@ -226,7 +227,7 @@ TEST(PointcloudWriter, WritePointcloud_LAZ_XYZCRGB) {
  *
  *  TestCase: compare output image files with original images
  */
-TEST(PointcloudWriter, Equality) {
+TEST(pointcloudwriter, Equality) {
   // TestCase 1
   ASSERT_TRUE(IsPointcloudEqual(TestConfig::DataPath("PointClouds/points_small.las"),
     TestConfig::OutputPath("points_small_t.las"))) << "points_small_t.las";

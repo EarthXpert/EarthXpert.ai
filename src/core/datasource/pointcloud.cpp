@@ -7,6 +7,8 @@
 #include "laszip.hpp"
 #include "laspoint.hpp"
 #include <cmath>
+#include <limits>
+#include <omp.h>
 #include <type_traits>
 
 using namespace earthxpert;
@@ -14,36 +16,37 @@ using namespace earthxpert;
 /**
  *  \brief Construct Pointcloud object.
  *
- *  \param [in] pointCount number of points in cloud
+ *  \param [in] pointCapacity number of points to be held in cloud
  *  \param [in] fieldGroup pointa contain which field groups
  */
-Pointcloud::Pointcloud(const size_t pointCount, const FieldGroup fieldGroup)
-  : mPointCount(pointCount), mFieldGroup(fieldGroup) {
-  if (0 == mPointCount) {
-    throw std::invalid_argument("pointCount");
+Pointcloud::Pointcloud(const size_t pointCapacity, const FieldGroup fieldGroup)
+  : mPointCapacity(pointCapacity), mFieldGroup(fieldGroup) {
+  if (0 == mPointCapacity) {
+    throw std::invalid_argument("pointCapacity");
   }
   if (mFieldGroup.none()) {
     throw std::invalid_argument("fieldGroup");
   }
+  mPointCount = mPointCapacity; // default to be capacity
 
   for (auto pos : FieldGroup::kPOS) {
-    if (mFieldGroup.test(pos)) {
-      switch (pos) {
-      case FieldGroup::kPOSXYZ:
-        mXYZ.resize(mPointCount);
-        break;
-      case FieldGroup::kPOSCLA:
-        mCla.resize(mPointCount);
-        break;
-      case FieldGroup::kPOSINT:
-        mIntensity.resize(mPointCount);
-        break;
-      case FieldGroup::kPOSRGB:
-        mRGB.resize(mPointCount);
-        break;
-      default:
-        assert(false);
-      }
+    if (!mFieldGroup.test(pos)) continue;
+
+    switch (pos) {
+    case FieldGroup::kPOSXYZ:
+      mXYZ.resize(mPointCapacity);
+      break;
+    case FieldGroup::kPOSCLA:
+      mCla.resize(mPointCapacity);
+      break;
+    case FieldGroup::kPOSINT:
+      mIntensity.resize(mPointCapacity);
+      break;
+    case FieldGroup::kPOSRGB:
+      mRGB.resize(mPointCapacity);
+      break;
+    default:
+      assert(false);
     }
   }
 }
@@ -57,7 +60,7 @@ Pointcloud::Pointcloud(const size_t pointCount, const FieldGroup fieldGroup)
 Pointcloud::Pointcloud(const Point3d& origin, std::vector<XYZF>&& xyz)
   : mOrigin(origin), mXYZ(std::move(xyz)) {
   mFieldGroup.set(FieldGroup::kPOSXYZ);
-  mPointCount = mXYZ.size();
+  mPointCount = mPointCapacity = mXYZ.size();
 }
 
 /**
@@ -72,7 +75,7 @@ Pointcloud::Pointcloud(const Point3d& origin, std::vector<XYZF>&& xyz,
   : Pointcloud(origin, std::move(xyz)) {
   mCla = std::move(cla);
   mFieldGroup.set(FieldGroup::kPOSCLA);
-  assert(mCla.size() == mPointCount);
+  assert(mCla.size() == mPointCapacity);
 }
 
 /**
@@ -87,7 +90,7 @@ Pointcloud::Pointcloud(const Point3d& origin, std::vector<XYZF>&& xyz,
   : Pointcloud(origin, std::move(xyz), std::move(cla)) {
   mRGB = std::move(rgb);
   mFieldGroup.set(FieldGroup::kPOSRGB);
-  assert(mRGB.size() == mPointCount);
+  assert(mRGB.size() == mPointCapacity);
 }
 
 /**
@@ -199,4 +202,62 @@ void Pointcloud::GetPoint_Unchecked(const size_t i,
     point.rgb[2] = mRGB[i].b;
   }
   // \todo add other field groups
+}
+
+/**
+ *  \brief it is tedious to track the modification of points and maintain their bounding box.
+ *
+ *  \return Returns 2D extent of region covered by points in XY
+ *  
+ *  \remark This convenient function will always traverse all points to obtain the region extent.
+ *  Use it at caution to avoid perforamnce penaty.
+ */
+RegionTileD Pointcloud::CalcBoundingBox2D() const noexcept {
+  assert(mFieldGroup.test(FieldGroup::kPOSXYZ));
+  if (0 == mPointCount) return {};
+
+  // calculate extents per threads
+  const int numThreads = omp_get_max_threads();
+  std::vector<float> minXs(numThreads, mXYZ[0].x);
+  std::vector<float> maxXs(numThreads, mXYZ[0].x);
+  std::vector<float> minYs(numThreads, mXYZ[0].y);
+  std::vector<float> maxYs(numThreads, mXYZ[0].y);
+
+#pragma omp parallel if (100000 < mPointCount)
+  {
+    float minX = std::numeric_limits<float>::max();
+    float maxX = -std::numeric_limits<float>::max();
+    float minY = std::numeric_limits<float>::max();
+    float maxY = -std::numeric_limits<float>::max();
+
+#pragma omp for
+    for (int64 i = 0; i < mPointCount; ++i) {
+      if (minX > mXYZ[i].x) minX = mXYZ[i].x;
+      if (maxX < mXYZ[i].x) maxX = mXYZ[i].x;
+      if (minY > mXYZ[i].y) minY = mXYZ[i].y;
+      if (maxY < mXYZ[i].y) maxY = mXYZ[i].y;
+    }
+
+    const int tId = omp_get_thread_num();
+    minXs[tId] = minX;
+    maxXs[tId] = maxX;
+    minYs[tId] = minY;
+    maxXs[tId] = maxX;
+  }
+
+  // calculate extent of all points
+  float minX = minXs[0];
+  float maxX = maxXs[0];
+  float minY = minYs[0];
+  float maxY = maxYs[0];
+
+  for (int i = 1; i < numThreads; ++i) {
+    if (minX > minXs[i]) minX = minXs[i];
+    if (maxX < maxXs[i]) maxX = maxXs[i];
+    if (minY > minYs[i]) minY = minYs[i];
+    if (maxY < maxYs[i]) maxY = maxYs[i];
+  }
+
+  return { mOrigin.x + double(minX), mOrigin.y + double(minY), 
+    double(maxX) - double(minX), double(maxY) - double(minY) };
 }

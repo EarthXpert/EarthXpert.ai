@@ -2,7 +2,7 @@
  *  Copyright (c) 2019.  All rights reserved.
  * -----------------------------------------------------------------------------
  */
-#include "core/datasource/utils.h"
+#include "core/datasource/pointcloudutils.h"
 #include "3rd_party/laslib/exlaslib.h"
 #include "core/datasource/pointtypes.h"
 #include "core/exceptions/exexcept.h"

@@ -7,7 +7,7 @@
 
 #include "core/datasource/cvraster.h"
 #include "core/datasource/gdalraster.h"
-#include "core/datasource/utils.h"
+#include "core/datasource/rasterutils.h"
 #include "core/utils/rasterlayout.h"
 #include "io/raster/rasterwriter.h"
 #include <filesystem>
@@ -46,7 +46,7 @@ static bool IsImageEqual(const std::string& imgFile, const std::string& imgFileT
  *
  *  TestCase 1: ortho of three bands in RGB with margins
  */
-TEST(RasterWriter, CvRaster) {
+TEST(rasterwriter, CvRaster) {
   const std::string imgFile(TestConfig::DataPath("Imagery/image_small.tif"));
   RasterReader reader(imgFile);
 
@@ -105,7 +105,7 @@ TEST(RasterWriter, CvRaster) {
  *
  *  TestCase 2: ortho of three bands in RGB with margins
  */
-TEST(RasterWriter, CvRasterOMP) {
+TEST(rasterwriter, CvRasterOMP) {
   const std::string imgFile(TestConfig::DataPath("Imagery/image_small.tif"));
   RasterReader reader(imgFile);
 
@@ -154,7 +154,7 @@ TEST(RasterWriter, CvRasterOMP) {
  *
  *  TestCase 3: ortho of three bands in RGB with margins
  */
-TEST(RasterWriter, GdalRaster) {
+TEST(rasterwriter, GdalRaster) {
   const std::string imgFile(TestConfig::DataPath("Imagery/image_small.tif"));
   RasterReader reader(imgFile);
 
@@ -175,8 +175,10 @@ TEST(RasterWriter, GdalRaster) {
 
   const int winNumCols{ 2000 };
   const int winNumRows{ 2000 };
-  RasterLayout rasterLayout(fileNumCols, fileNumRows, winNumCols, winNumRows);
-  auto& rasterWins = rasterLayout.GetRasterWindows();
+  RasterLayout layout(fileNumCols, fileNumRows, winNumCols, winNumRows);
+  auto& rasterWins = layout.GetRasterWindows();
+
+  ASSERT_EQ(9, rasterWins.size());
 
   const std::string imgFileT(TestConfig::OutputPath("image_small_t_GdalRaster.tif"));
   RasterWriter writer(imgFileT, format, fileNumCols, fileNumRows, gdalDT, numBands);
@@ -212,7 +214,7 @@ TEST(RasterWriter, GdalRaster) {
  *
  *  TestCase 4: ortho of three bands in RGB with margins
  */
-TEST(RasterWriter, GdalRasterOMP) {
+TEST(rasterwriter, GdalRasterOMP) {
   const std::string imgFile(TestConfig::DataPath("Imagery/image_small.tif"));
   RasterReader reader(imgFile);
 
@@ -235,6 +237,8 @@ TEST(RasterWriter, GdalRasterOMP) {
   const int winNumRows{ 200 };
   RasterLayout rasterLayout(fileNumCols, fileNumRows, winNumCols, winNumRows);
   auto& rasterWins = rasterLayout.GetRasterWindows();
+
+  ASSERT_EQ(625, rasterWins.size());
 
   const std::string imgFileT(TestConfig::OutputPath("image_small_t_GdalRasterOMP.tif"));
   RasterWriter writer(imgFileT, format, fileNumCols, fileNumRows, gdalDT, numBands);
@@ -260,17 +264,17 @@ TEST(RasterWriter, GdalRasterOMP) {
  *
  *  TestCase: compare output image files with original images
  */
-TEST(RasterWriter, Equality) {
+TEST(rasterwriter, Equality) {
   // TestCase 1
   ASSERT_TRUE(IsImageEqual(TestConfig::DataPath("Imagery/image_small.tif"),
-    TestConfig::OutputPath("image_small_t_CvRaster.tif")));
+    TestConfig::OutputPath("image_small_t_CvRaster.tif"))) << "image_small_t_CvRaster";
   // TestCase 2
   ASSERT_TRUE(IsImageEqual(TestConfig::DataPath("Imagery/image_small.tif"),
-    TestConfig::OutputPath("image_small_t_CvRasterOMP.tif")));
+    TestConfig::OutputPath("image_small_t_CvRasterOMP.tif"))) << "image_small_t_CvRasterOMP";
   // TestCase 3
   ASSERT_TRUE(IsImageEqual(TestConfig::DataPath("Imagery/image_small.tif"),
-    TestConfig::OutputPath("image_small_t_GdalRaster.tif")));
+    TestConfig::OutputPath("image_small_t_GdalRaster.tif"))) << "image_small_t_GdalRaster";
   // TestCase 4
   ASSERT_TRUE(IsImageEqual(TestConfig::DataPath("Imagery/image_small.tif"),
-    TestConfig::OutputPath("image_small_t_GdalRasterOMP.tif")));
+    TestConfig::OutputPath("image_small_t_GdalRasterOMP.tif"))) << "image_small_t_GdalRasterOMP";
 }

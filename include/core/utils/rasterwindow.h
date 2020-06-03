@@ -32,5 +32,17 @@ struct EXCORE_EXPORTS RasterWindow {
     numCols += marginCols * 2;
     numRows += marginRows * 2;
   }
+
+  /**
+   *  \param [in] rhs Object to test
+   *  \return Return true if containing the other object improperly, false otherwise.
+   */
+  bool ImproperContain(const RasterWindow& rhs) const {
+    if (colOffset > rhs.colOffset) return false;
+    if (rowOffset > rhs.rowOffset) return false;
+    if (colOffset + numCols < rhs.colOffset + rhs.numCols) return false;
+    if (rowOffset + numRows < rhs.rowOffset + rhs.numRows) return false;
+    return true;
+  }
 };
 }

@@ -4,45 +4,11 @@
  */
 #include "io/pointcloud/pointcloudwriter.h"
 #include "3rd_party/laslib/exlaslib.h"
-#include "core/datasource/utils.h"
+#include "core/datasource/pointcloudutils.h"
 #include "core/exceptions/exexcept.h"
 
 using namespace earthxpert;
 using pdt = earthxpert::thirdparty::PointDataTraits;
-
-/**
- *  \brief Open/create the las file for write, default to XYZ field.
- *
- *  \param [in] lasFile the file name to receive points
- *  \param [in] quantizer the scale and offset parameters
- */
-PointcloudWriter::PointcloudWriter(const std::string& lasFile, const LASquantizer& quantizer)
-  : PointcloudWriter(lasFile, FieldGroup{1}, quantizer, "LAS") {
-}
-
-/**
- *  \brief Open/create the las file for write
- *
- *  \param [in] lasFile the file name to receive points
- *  \param [in] fieldGroup field group to write
- *  \param [in] quantizer the scale and offset parameters
- */
-PointcloudWriter::PointcloudWriter(const std::string& lasFile,
-  const FieldGroup fieldGroup, const LASquantizer& quantizer)
-  : PointcloudWriter(lasFile, fieldGroup, quantizer, "LAS") {
-}
-
-/**
- *  \brief Open/create the las file for write
- *
- *  \param [in] lasFile the file name to receive points
- *  \param [in] quantizer the scale and offset parameters
- *  \param [in] format the file format: las, laz, bin, txt, etc.
- */
-PointcloudWriter::PointcloudWriter(const std::string& lasFile,
-  const LASquantizer& quantizer, const std::string format)
-  : PointcloudWriter(lasFile, FieldGroup{ 1 }, quantizer, format) {
-}
 
 /**
  *  \brief Open/create the las file for write
@@ -67,6 +33,18 @@ PointcloudWriter::PointcloudWriter(const std::string& lasFile,
     throw IOError("Cannot open las file for write");
 
   ObtainLasInfo();
+}
+
+/**
+ *  \brief Open/create the las file for write, default to XYZC fields
+ *
+ *  \param [in] lasFile the file name to receive points
+ *  \param [in] quantizer the scale and offset parameters
+ *  \param [in] format the file format: las, laz, bin, txt, etc.
+ */
+PointcloudWriter::PointcloudWriter(const std::string& lasFile,
+  const LASquantizer& quantizer, const std::string format)
+  : PointcloudWriter(lasFile, {FieldGroup::kBITXC}, quantizer, format) {
 }
 
 /**

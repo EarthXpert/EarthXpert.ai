@@ -5,23 +5,28 @@
 #include "3rd_party/gtest/gtest_main.h"
 #include "testconfig.h"
 
+#include "core/utils/regionlayout.h"
 #include "io/pointcloud/pointcloudreader.h"
+#include "boost/format.hpp"
 #include <array>
+#include <iostream>
 #include <omp.h>
 
 using namespace earthxpert;
+using earthxpert::RegionLayoutD;
+using fgt = FieldGroup;
 
 /**
  *  \brief PointcloudReader test cases, zero offsets in .las
  *
  *  TestCase 1: read XYZ fields in .las
  */
-TEST(PointcloudReader, ReadPointcloud_LAS_XYZ) {
+TEST(pointcloudreader, ReadPointcloud_LAS_XYZ) {
   constexpr auto tol = 1.0e-6; // [um]
   constexpr size_t filePointCount{ 20680 };
 
   const std::string lasFile(TestConfig::DataPath("PointClouds/points_small.las"));
-  PointcloudReader reader(lasFile, FieldGroup{1});
+  PointcloudReader reader(lasFile, { fgt::kBITXYZ });
 
   ASSERT_EQ(filePointCount, reader.GetPointCount()) << "number of points";
 
@@ -29,13 +34,19 @@ TEST(PointcloudReader, ReadPointcloud_LAS_XYZ) {
   ASSERT_EQ(filePointCount, pc->GetPointCount()) << "number of points";
 
   const auto fg = pc->GetFieldGroup();
-  ASSERT_TRUE(fg.test(FieldGroup::kPOSXYZ));
-  ASSERT_FALSE(fg.test(FieldGroup::kPOSCLA));
+  ASSERT_TRUE(fg.test(fgt::kPOSXYZ));
+  ASSERT_FALSE(fg.test(fgt::kPOSCLA));
 
   const auto origin = pc->GetOrigin();
   ASSERT_NEAR(0, origin.x, tol) << "difference > 1 um";
   ASSERT_NEAR(0, origin.y, tol) << "difference > 1 um";
   ASSERT_NEAR(0, origin.z, tol) << "difference > 1 um";
+
+  const auto bbox = pc->CalcBoundingBox2D();
+  ASSERT_NEAR(539836, bbox.minX, tol) << "difference > 1 um";
+  ASSERT_NEAR(1384288.75, bbox.minY, tol) << "difference > 1 um";
+  ASSERT_NEAR(1205, bbox.width, tol) << "difference > 1 um";
+  ASSERT_NEAR(873, bbox.height, tol) << "difference > 1 um";
 }
 
 /**
@@ -43,7 +54,7 @@ TEST(PointcloudReader, ReadPointcloud_LAS_XYZ) {
  *
  *  TestCase 2: read XYZC fields
  */
-TEST(PointcloudReader, ReadPointcloud_LAS_XYZC) {
+TEST(pointcloudreader, ReadPointcloud_LAS_XYZC) {
   constexpr auto tol = 1.0e-6; // [um]
   constexpr size_t filePointCount{ 478069 };
 
@@ -56,13 +67,19 @@ TEST(PointcloudReader, ReadPointcloud_LAS_XYZC) {
   ASSERT_EQ(filePointCount, pc->GetPointCount()) << "number of points";
 
   const auto fg = pc->GetFieldGroup();
-  ASSERT_TRUE(fg.test(FieldGroup::kPOSXYZ));
-  ASSERT_TRUE(fg.test(FieldGroup::kPOSCLA));
+  ASSERT_TRUE(fg.test(fgt::kPOSXYZ));
+  ASSERT_TRUE(fg.test(fgt::kPOSCLA));
 
   const auto origin = pc->GetOrigin();
   ASSERT_NEAR(424996.503, origin.x, tol) << "difference > 1 um";
   ASSERT_NEAR(5132320.247, origin.y, tol) << "difference > 1 um";
   ASSERT_NEAR(0, origin.z, tol) << "difference > 1 um";
+
+  const auto bbox = pc->CalcBoundingBox2D();
+  ASSERT_NEAR(424854.93700573733, bbox.minX, tol) << "difference > 1 um";
+  ASSERT_NEAR(5132303.1900007939, bbox.minY, tol) << "difference > 1 um";
+  ASSERT_NEAR(292.94400024414062, bbox.width, tol) << "difference > 1 um";
+  ASSERT_NEAR(17.056999206542969, bbox.height, tol) << "difference > 1 um";
 }
 
 /**
@@ -70,12 +87,12 @@ TEST(PointcloudReader, ReadPointcloud_LAS_XYZC) {
  *
  *  TestCase 3: read XYZ fields in .laz
  */
-TEST(PointcloudReader, ReadPointcloud_LAZ_XYZ) {
+TEST(pointcloudreader, ReadPointcloud_LAZ_XYZ) {
   constexpr auto tol = 1.0e-6; // [um]
   constexpr size_t filePointCount{ 823560 };
 
   const std::string lasFile(TestConfig::DataPath("PointClouds/OMA_276_PC3.laz"));
-  PointcloudReader reader(lasFile, FieldGroup{1});
+  PointcloudReader reader(lasFile, {fgt::kBITXYZ});
 
   ASSERT_EQ(filePointCount, reader.GetPointCount()) << "number of points";
 
@@ -83,9 +100,9 @@ TEST(PointcloudReader, ReadPointcloud_LAZ_XYZ) {
   ASSERT_EQ(filePointCount, pc->GetPointCount()) << "number of points";
 
   const auto fg = pc->GetFieldGroup();
-  ASSERT_TRUE(fg.test(FieldGroup::kPOSXYZ));
-  ASSERT_FALSE(fg.test(FieldGroup::kPOSCLA));
-  ASSERT_FALSE(fg.test(FieldGroup::kPOSRGB));
+  ASSERT_TRUE(fg.test(fgt::kPOSXYZ));
+  ASSERT_FALSE(fg.test(fgt::kPOSCLA));
+  ASSERT_FALSE(fg.test(fgt::kPOSRGB));
 
   const auto origin = pc->GetOrigin();
   ASSERT_NEAR(0, origin.x, tol) << "difference > 1 um";
@@ -98,6 +115,12 @@ TEST(PointcloudReader, ReadPointcloud_LAZ_XYZ) {
   ASSERT_NEAR(-11.8599997, xyz.x, tol) << "difference > 1 um";
   ASSERT_NEAR( 99.4300003, xyz.y, tol) << "difference > 1 um";
   ASSERT_NEAR( 11.9899998, xyz.z, tol) << "difference > 1 um";
+
+  const auto bbox = pc->CalcBoundingBox2D();
+  ASSERT_NEAR(-244.16000366210938, bbox.minX, tol) << "difference > 1 um";
+  ASSERT_NEAR(-320.20001220703125, bbox.minY, tol) << "difference > 1 um";
+  ASSERT_NEAR(512, bbox.width, tol) << "difference > 1 um";
+  ASSERT_NEAR(0.850006103515625, bbox.height, tol) << "difference > 1 um";
 }
 
 /**
@@ -105,7 +128,7 @@ TEST(PointcloudReader, ReadPointcloud_LAZ_XYZ) {
  *
  *  TestCase 4: read XYZC & RGB fields in .laz
  */
-TEST(PointcloudReader, ReadPointcloud_LAZ_XYZCRGB) {
+TEST(pointcloudreader, ReadPointcloud_LAZ_XYZCRGB) {
   constexpr auto tol = 1.0e-6; // [um]
   constexpr size_t filePointCount{ 823560 };
 
@@ -118,9 +141,9 @@ TEST(PointcloudReader, ReadPointcloud_LAZ_XYZCRGB) {
   ASSERT_EQ(filePointCount, pc->GetPointCount()) << "number of points";
 
   const auto fg = pc->GetFieldGroup();
-  ASSERT_TRUE(fg.test(FieldGroup::kPOSXYZ));
-  ASSERT_TRUE(fg.test(FieldGroup::kPOSCLA));
-  ASSERT_TRUE(fg.test(FieldGroup::kPOSRGB));
+  ASSERT_TRUE(fg.test(fgt::kPOSXYZ));
+  ASSERT_TRUE(fg.test(fgt::kPOSCLA));
+  ASSERT_TRUE(fg.test(fgt::kPOSRGB));
 
   const auto origin = pc->GetOrigin();
   ASSERT_NEAR(0, origin.x, tol) << "difference > 1 um";
@@ -148,7 +171,7 @@ TEST(PointcloudReader, ReadPointcloud_LAZ_XYZCRGB) {
  *
  *  TestCase 5: read chunks of points in .las
  */
-TEST(PointcloudReader, ReadPointcloud_LAS_XYZC_CHUNKS) {
+TEST(pointcloudreader, ReadPointcloud_LAS_XYZC_CHUNKS) {
   constexpr auto tol = 1.0e-6; // [um]
   constexpr size_t filePointCount{ 20680 };
   const size_t chunkNumPts = filePointCount / 3;
@@ -163,11 +186,11 @@ TEST(PointcloudReader, ReadPointcloud_LAS_XYZC_CHUNKS) {
   ASSERT_EQ(chunkNumPts4[3], 1);
 
   const std::string lasFile(TestConfig::DataPath("PointClouds/points_small.las"));
-  PointcloudReader reader(lasFile, FieldGroup{ 3 });
+  PointcloudReader reader(lasFile, { fgt::kBITXC });
 
   ASSERT_EQ(filePointCount, reader.GetPointCount()) << "number of points";
 
-  Pointcloud pc(chunkNumPts, FieldGroup{ 1 });
+  Pointcloud pc(chunkNumPts, { fgt::kBITXYZ });
   for (size_t i = 0, j = 0; i < filePointCount; i += chunkNumPts, ++j) {
     const auto readNumPts = reader.ReadPointcloud(&pc);
     ASSERT_EQ(chunkNumPts4[j], readNumPts);
@@ -184,21 +207,119 @@ TEST(PointcloudReader, ReadPointcloud_LAS_XYZC_CHUNKS) {
  *
  *  TestCase 6: read chunks of points in .las
  */
-TEST(PointcloudReader, ReadPointcloudOMP_LAS_XYZ_CHUNKS) {
+TEST(pointcloudreader, ReadPointcloudOMP_LAS_XYZ_CHUNKS) {
   constexpr auto tol = 1.0e-6; // [um]
   constexpr size_t filePointCount{ 20680 };
-  const size_t chunkNumPts = filePointCount / 100;
+  const size_t chunkNumPts{ 21 };
+  const size_t numChunks{ filePointCount / chunkNumPts };
 
   const std::string lasFile(TestConfig::DataPath("PointClouds/points_small.las"));
-  PointcloudReader reader(lasFile, FieldGroup{ 1 });
+  PointcloudReader reader(lasFile, { fgt::kBITXYZ });
 
   ASSERT_EQ(filePointCount, reader.GetPointCount()) << "number of points";
 
-#pragma omp parallel for
-  for (int64 i = 0; i < filePointCount- chunkNumPts; i += chunkNumPts) {
-    auto pc = reader.ReadPointcloud(i, chunkNumPts);
+#pragma omp parallel 
+  {
+    Pointcloud pc(chunkNumPts, { fgt::kBITXYZ });
+
+    #pragma omp for
+      for (int64 i = 0; i < filePointCount - chunkNumPts; i += chunkNumPts) {
+        reader.ReadPointcloud(i, &pc);
+        //ASSERT_EQ(pc.GetPointCount(), chunkNumPts) << "#points of last chunk";  // fatal error C1001: Internal compiler error
+      }
   }
 
-  auto pcLast = reader.ReadPointcloud(chunkNumPts*100, chunkNumPts);
-  ASSERT_EQ(pcLast->GetPointCount(), filePointCount - chunkNumPts * 100) << "number of points";
+  auto pcLast = reader.ReadPointcloud(chunkNumPts * numChunks, 16);
+  ASSERT_EQ(pcLast->GetPointCount(), 16) << "#points of last chunk";
+}
+
+/**
+ *  \brief PointcloudReader test cases
+ *
+ *  TestCase 7: read tiles of points in .las
+ */
+TEST(pointcloudreader, ReadPointcloud_LAS_XYZC_TILES) {
+  constexpr auto tol = 1.0e-6; // [um]
+  constexpr size_t filePointCount{ 20680 };
+  const std::array<size_t, 4> tileNumPts4{
+    6680, 4257, 6390, 3249 };
+  const std::array<XYZF, 4> xyz4{ XYZF{539841.125f, 1384727.0f, 42.07f},
+                                  XYZF{540472.625f, 1384715.5f, 46.25f},
+                                  XYZF{539859.5625f, 1385157.5f, 38.87f},
+                                  XYZF{540459.75f, 1384731.125f, 45.82f} };
+
+  const std::string lasFile(TestConfig::DataPath("PointClouds/points_small.las"));
+  PointcloudReader reader(lasFile, { fgt::kBITXC });
+
+  ASSERT_EQ(filePointCount, reader.GetPointCount()) << "number of points";
+
+  auto header = reader.GetLasHeader();
+  const auto width = header->max_x - header->min_x;
+  const auto height = header->max_y - header->min_y;
+  const auto tileWidth = width * 0.5 + 1.0e-6; // increase a little bit to ensure only two horizontal tiles
+  const auto tileHeight = height * 0.5 + 1.0e-6;
+  
+  RegionLayoutD layout(header->min_x, header->min_y, width, height, tileWidth, tileHeight);
+  auto& tiles = layout.GetRegionTiles();
+
+  ASSERT_EQ(4, tiles.size()) << "number of tiles";
+
+  int j{};
+  for (int64 i = 0; i < tiles.size(); ++i) {
+    auto& tile = tiles[i];
+    auto pc = reader.ReadPointcloud(tile);
+
+    ASSERT_EQ(tileNumPts4[i], pc->GetPointCount()) << "#points";
+
+    const auto xyz = pc->GetXYZ(0);
+    ASSERT_NEAR(xyz4[i].x, xyz.x, tol) << "difference > 1 um";
+    ASSERT_NEAR(xyz4[i].y, xyz.y, tol) << "difference > 1 um";
+    ASSERT_NEAR(xyz4[i].z, xyz.z, tol) << "difference > 1 um";
+
+    const auto tile2 = pc->CalcBoundingBox2D();
+    if (!tile.ImproperContain(tile2)) {
+      ++j;
+    }
+  }
+  ASSERT_EQ(2, j) << "#tiles";
+}
+
+/**
+ *  \brief PointcloudReader test cases OMP
+ *
+ *  TestCase 8: read tile of points in .las
+ */
+TEST(pointcloudreader, ReadPointcloudOMP_LAS_XYZ_TILES) {
+  constexpr auto tol = 1.0e-6; // [um]
+  constexpr size_t filePointCount{ 20680 };
+
+  const std::string lasFile(TestConfig::DataPath("PointClouds/points_small.las"));
+  PointcloudReader reader(lasFile, { fgt::kBITXYZ });
+
+  ASSERT_EQ(filePointCount, reader.GetPointCount()) << "number of points";
+
+  auto header = reader.GetLasHeader();
+  const auto width = header->max_x - header->min_x;
+  const auto height = header->max_y - header->min_y;
+  const auto tileWidth = width / 25.0 + 1.0e-6; // increase a little bit to ensure only two horizontal tiles
+  const auto tileHeight = height / 25.0 + 1.0e-6;
+
+  RegionLayoutD layout(header->min_x, header->min_y, width, height, tileWidth, tileHeight);
+  auto& tiles = layout.GetRegionTiles();
+
+  ASSERT_EQ(625, tiles.size()) << "number of tiles";
+
+  int j{};
+#pragma omp parallel for reduction(+ : j)   // \todo fatal error C1001: Internal compiler error
+  for (int64 i = 0; i < tiles.size(); ++i) {
+    auto& tile = tiles[i];
+    auto pc = reader.ReadPointcloud(tile);
+
+    const auto tile2 = pc->CalcBoundingBox2D();
+    if (!tile.ImproperContain(tile2)) {
+      //std::cerr << boost::format("tile extent: %1%\n") % i;
+      ++j;
+    }
+  }
+  ASSERT_EQ(277, j) << "#tiles";
 }

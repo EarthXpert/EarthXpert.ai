@@ -5,7 +5,7 @@
 #include "io/raster/rasterreader.h"
 #include "core/datasource/cvraster.h"
 #include "core/datasource/gdalraster.h"
-#include "core/datasource/utils.h"
+#include "core/datasource/rasterutils.h"
 #include "core/exceptions/exexcept.h"
 #include "core/spatialref/geocoding.h"
 #include "core/utils/typehelper.h"
@@ -13,15 +13,6 @@
 #include <numeric>
 
 using namespace earthxpert;
-
-/**
- *  \brief Construct reader object.
- *
- *  \param [in] imageFile full path of the image file
- */
-RasterReader::RasterReader(const std::string& imageFile)
-  : RasterReader(imageFile, {}) {
-}
 
 /**
  *  \brief Construct reader object.
@@ -38,15 +29,6 @@ RasterReader::RasterReader(const std::string& imageFile, const std::vector<int>&
   mDataset.reset(static_cast<GDALDataset*>(dataset));
 
   ObtainDatasetInfo();
-}
-
-/**
- *  \brief Construct reader object.
- *
- *  \param [in] dataset an opened dataset for reading
- */
-RasterReader::RasterReader(GDALDataset* dataset)
-  : RasterReader(dataset, {}) {
 }
 
 /**

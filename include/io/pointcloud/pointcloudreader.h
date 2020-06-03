@@ -23,8 +23,7 @@ namespace earthxpert {
  */
 class EXIO_EXPORTS PointcloudReader final : public IPointcloudReader {
 public:
-  PointcloudReader(const std::string& lasFile);
-  PointcloudReader(const std::string &lasFile, FieldGroup fieldGroup);
+  PointcloudReader(const std::string& lasFile, FieldGroup fieldGroup = {});
   PointcloudReader(const PointcloudReader &) = delete;
   PointcloudReader(PointcloudReader &&) = delete;
   ~PointcloudReader() = default;
@@ -85,6 +84,17 @@ public:
   std::unique_ptr<Pointcloud> ReadPointcloud(size_t start, size_t numPoints) override;
 
   /**
+   *  \brief Reads a point range defined by the passed cloud object,
+   *  starting from the start index, and populates the associated buffer.
+   *
+   *  \param [in] start the index of start point
+   *  \param [in/out] pointCloud the container object to be populated with points.
+   *                  The requested fields must be available from the dataset.
+   *  \return Returns number of points actually read
+   */
+  size_t ReadPointcloud(const size_t start, Pointcloud* const pointCloud) override;
+
+  /**
    *  \brief Reads a point range defined by the passed cloud object, 
    *  starting from the current point, and populates the associated buffer.
    *
@@ -96,21 +106,37 @@ public:
   /**
    *  \brief Reads point tile defined by tile, internal margin size.
    *
-   *  \param [in] xOffset x location of the bottom-left corner of the tile [unit: meter]
-   *  \param [in] yOffset y location of the bottom-left corner of the tile
+   *  \param [in] xmin x location of the lower-left corner of the tile [unit: meter]
+   *  \param [in] ymin y location of the lower-left corner of the tile
    *  \param [in] width the tile width [unit: meter]
    *  \param [in] height the tile height
    *
    *  \return Return Pointcloud container object.
    */
-  std::unique_ptr<Pointcloud> ReadPointcloud(double xOffset, double yOffset,
+  std::unique_ptr<Pointcloud> ReadPointcloud(double xmin, double ymin,
     double width, double height) override;
+
+  /**
+   *  \brief Reads point tile defined by tile, internal margin size.
+   *
+   *  \param [in] tile The horizontal extent of region to read
+   *
+   *  \return Return Pointcloud container object.
+   */
+  std::unique_ptr<Pointcloud> ReadPointcloud(const RegionTileD& tile) override;
 
   /**
    *  \return Returns LASreader object.
    */
   LASreader* GetLasReader() const noexcept {
     return mReader.get();
+  }
+
+  /**
+   *  \return Returns LASreader object.
+   */
+  const LASheader* GetLasHeader() const noexcept {
+    return mHeader;
   }
 
 private:
@@ -121,13 +147,13 @@ private:
   float mMarginX{};
   float mMarginY{};
 
-  mutable std::mutex mMutex;
+  mutable std::mutex mMutex;    // ranged reading
 
   // cache
   const LASheader *mHeader{};   // file format infomation
-  const LASindex* mIndex{};     // quadtree indexing
-  const LASfilter* mFilter{};   // 
-  const LAStransform* mTransform{};
+  //const LASindex* mIndex{};     // quadtree indexing
+  //const LASfilter* mFilter{};   // 
+  //const LAStransform* mTransform{};
 
   FieldGroup mFileFieldGroup;
   size_t mFilePointCount{};  // total number of point records in file

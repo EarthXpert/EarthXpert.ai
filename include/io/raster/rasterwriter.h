@@ -23,12 +23,10 @@ namespace earthxpert {
  */
 class EXIO_EXPORTS RasterWriter final : public IRasterWriter, public IRasterReader {
 public:
-  RasterWriter(const std::string& imageFile);
-  RasterWriter(const std::string& imageFile, const std::vector<int>& bands);
+  RasterWriter(const std::string& imageFile, const std::vector<int>& bands = {});
   RasterWriter(const std::string& imageFile, const std::string format,
     int numCols, int numRows, GDALDataType dataType, int numBands);
-  RasterWriter(GDALDataset* dataset);
-  RasterWriter(GDALDataset* dataset, const std::vector<int>& bands);
+  RasterWriter(GDALDataset* dataset, const std::vector<int>& bands = {});
   RasterWriter(const RasterWriter&) = delete;
   RasterWriter(RasterWriter&&) = delete;
   ~RasterWriter() = default;

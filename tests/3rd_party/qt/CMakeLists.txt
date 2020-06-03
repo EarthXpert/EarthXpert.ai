@@ -12,7 +12,8 @@ add_3rd_party_test(qt_tests
   Qt5::Widgets)
 
 if(WIN32)
-  set(TESTS_QT_PATH "PATH=$<TARGET_FILE_DIR:ex3rd_party>;${GTEST_BIN_DIR};$ENV{PATH}")
+  set(TESTS_QT_PATH "PATH=$<TARGET_FILE_DIR:ex3rd_party>;\
+${GTEST_BIN_DIR};${TESTS_BIN_DIR};$ENV{PATH}")
   string(REPLACE ";" "\\;" TESTS_QT_PATH "${TESTS_QT_PATH}")
   #message(STATUS "Tests_Qt_Path: ${TESTS_QT_PATH}")
   set_tests_properties(qt_tests PROPERTIES ENVIRONMENT "${TESTS_QT_PATH}")

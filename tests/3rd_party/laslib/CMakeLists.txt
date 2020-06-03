@@ -7,7 +7,8 @@ add_3rd_party_test(laslib_tests
   ${LASLIB_LIBRARY})
 
 if(WIN32)
-  set(TESTS_LASLIB_PATH "PATH=$<TARGET_FILE_DIR:ex3rd_party>;${GTEST_BIN_DIR};${LASLIB_BIN_DIR};$ENV{PATH}")
+  set(TESTS_LASLIB_PATH "PATH=$<TARGET_FILE_DIR:ex3rd_party>;\
+${GTEST_BIN_DIR};${LASLIB_BIN_DIR};${TESTS_BIN_DIR};$ENV{PATH}")
   string(REPLACE ";" "\\;" TESTS_LASLIB_PATH "${TESTS_LASLIB_PATH}")
   #message(STATUS "Tests_Laslib_Path: ${TESTS_LASLIB_PATH}")
   set_tests_properties(laslib_tests PROPERTIES ENVIRONMENT "${TESTS_LASLIB_PATH}")

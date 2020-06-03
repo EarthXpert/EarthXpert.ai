@@ -70,7 +70,7 @@ InterpGrid<Ty> &InterpGrid<Ty>::operator=(const InterpGrid<Ty> &rhs) {
  * Move assignment operator
  *
  * \param [in] rhs Object to move from
- * \return A reference to the newly modified object
+ * \return Returns a reference to the newly modified object
  */
 template <typename Ty>
 InterpGrid<Ty> &InterpGrid<Ty>::operator=(InterpGrid<Ty> &&rhs) noexcept {
@@ -84,7 +84,7 @@ InterpGrid<Ty> &InterpGrid<Ty>::operator=(InterpGrid<Ty> &&rhs) noexcept {
  * Equality operator
  *
  * \param [in] rhs Object to compare with
- * \return true if same object or equal, false otherwise.
+ * \return Returns true if same object or equal, false otherwise.
  */
 template <typename Ty>
 bool InterpGrid<Ty>::operator==(const InterpGrid<Ty> &rhs) const {
@@ -111,7 +111,7 @@ bool InterpGrid<Ty>::operator==(const InterpGrid<Ty> &rhs) const {
  * Test inequality.
  *
  * \param [in] rhs Object to compare with
- * \return true if not equal.
+ * \return Returns true if not equal.
  */
 template <typename Ty>
 bool InterpGrid<Ty>::operator!=(const InterpGrid<Ty> &rhs) const {

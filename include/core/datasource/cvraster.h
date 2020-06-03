@@ -16,8 +16,8 @@ namespace earthxpert {
 class EXCORE_EXPORTS CvRaster final : public IRaster {
 public:
   CvRaster(int numCols, int numRows, int dataType,
-    int colOffset, int rowOffset, int marginCols, int marginRows, MarginKind marginKind);
-  CvRaster(int numCols, int numRows, int dataType);
+    int colOffset = 0, int rowOffset = 0, int marginCols = 0, int marginRows = 0, 
+    MarginKind marginKind = MarginKind::eCONSTANT);
   CvRaster(int numCols, int numRows, int dataType,
     int colOffset, int rowOffset, int marginCols, int marginRows, MarginKind marginKind, uchar* buffer);
   CvRaster(int numCols, int numRows, int dataType, uchar* buffer);

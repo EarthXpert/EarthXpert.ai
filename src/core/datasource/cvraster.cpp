@@ -28,18 +28,6 @@ CvRaster::CvRaster(const int numCols, const int numRows, const int dataType,
 }
 
 /**
- *  \brief Construct raster object by allocating & owing a memory buffer.
- *
- *  \param [in] numCols image width [unit: pixels]
- *  \param [in] numRows image height
- *  \param [in] numBands number of bands/channels
- *  \param [in] dataType data type of elements in a band
- */
-CvRaster::CvRaster(const int numCols, const int numRows, const int dataType)
-  : CvRaster(numCols, numRows, dataType, 0, 0, 0, 0, MarginKind::eCONSTANT) {
-}
-
-/**
  *  \brief Construct raster object by passing an existing memory buffer.
  * The caller is resposible for the management of the passed buffer.
  *

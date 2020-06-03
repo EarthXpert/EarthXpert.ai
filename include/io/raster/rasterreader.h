@@ -24,10 +24,8 @@ class GdalRaster;
  */
 class EXIO_EXPORTS RasterReader final : public IRasterReader {
 public:
-  RasterReader(const std::string& imageFile);
-  RasterReader(const std::string& imageFile, const std::vector<int>& bands);
-  RasterReader(GDALDataset* dataset);
-  RasterReader(GDALDataset* dataset, const std::vector<int>& bands);
+  RasterReader(const std::string& imageFile, const std::vector<int>& bands = {});
+  RasterReader(GDALDataset* dataset, const std::vector<int>& bands = {});
   RasterReader(const RasterReader&) = delete;
   RasterReader(RasterReader&&) = delete;
   ~RasterReader() = default;

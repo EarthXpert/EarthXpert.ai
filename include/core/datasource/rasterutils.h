@@ -7,7 +7,6 @@
 #include "core/excore.h"
 #include "core/datasource/cvraster.h"
 #include "core/datasource/gdalraster.h"
-#include "core/datasource/pointtypes.h"
 #include "core/datasource/rastertypes.h"
 
 #include "gdal_priv.h"
@@ -15,11 +14,6 @@
 #include <vector>
 
 namespace earthxpert {
-// point cloud
-FieldGroup EXCORE_EXPORTS FormatToFieldGroup(int fmt) noexcept;
-int EXCORE_EXPORTS FieldGroupToFormat(FieldGroup fieldGroup) noexcept;
-
-// raster
 int EXCORE_EXPORTS ConvertPixelType(GDALDataType gdalType, int numBands);
 std::pair<GDALDataType, int> EXCORE_EXPORTS ConvertPixelType(int cvType);
 

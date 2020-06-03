@@ -44,8 +44,7 @@ std::unique_ptr<IEpipolarModel> EpipolarModelFactory::CreateEpipolarModel(
   if (mSensorType != rightModel->GetModelType())
     throw std::exception("The stereo pair should be of the same sensor type.");
 
-  switch (mSensorType)
-  {
+  switch (mSensorType) {
   case SenType::eFRAME:
     return CreateFrameEpiModel(leftModel, rightModel, sample, height);
   case SenType::eRATIONAL:
