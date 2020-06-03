@@ -12,6 +12,8 @@ set EX_LASTOOLS_DIR=%EX_WORKSPACE_DIR%/3rd_party\windows\lastools_19.05.07\bin\r
 
 cd %EX_WORKING_DIR%
 
+REM D:\home\workspace\3rd_party\windows\lastools_19.05.07\bin\release\lasinfo64.exe
+
 pointcloudwriter_tests.exe
 REM %EX_LASTOOLS_DIR%/lasinfo64.exe %EX_TESTDATA_LAS_DIR%/points_small.las
 REM %EX_LASTOOLS_DIR%/lasinfo64.exe %EX_TEST_OUT_DIR%/points_small_t.las

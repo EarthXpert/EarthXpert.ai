@@ -125,6 +125,10 @@ void PointcloudWriter::InitHeader() {
 
   auto quantizer = static_cast<LASquantizer*>(&mHeader);
   *quantizer = mQuantizer;
+
+  strcpy(mHeader.generating_software, "EXAI");
+
+  // \todo vlr
 }
 
 /**
