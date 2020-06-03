@@ -79,22 +79,22 @@ void RegionLayout<Ty>::LayoutTiles() {
   if (0 == mTileHeight) mTileHeight = mHeight;
 
   if (LayoutKind::eHORIZONTAL == mLayoutkind) {
-    for (double h = 0; h < mHeight; h += mTileHeight) {
-      double tileHeight = std::min(mTileHeight, mHeight - h);
+    for (Ty h = 0; h < mHeight; h += mTileHeight) {
+      Ty tileHeight = std::min<Ty>(mTileHeight, mHeight - h);
 
-      for (double w = 0; w < mWidth; w += mTileWidth) {
-        double tileWidth = std::min(mTileWidth, mWidth - w);
+      for (Ty w = 0; w < mWidth; w += mTileWidth) {
+        Ty tileWidth = std::min<Ty>(mTileWidth, mWidth - w);
 
         mTiles.push_back(RegionTile<Ty>{ mMinX + w, mMinY + h, tileWidth, tileHeight });
       }
     }
   }
   else {
-    for (double w = 0; w < mWidth; w += mTileWidth) {
-      double tileWidth = std::min(mTileWidth, mWidth - w);
+    for (Ty w = 0; w < mWidth; w += mTileWidth) {
+      Ty tileWidth = std::min<Ty>(mTileWidth, mWidth - w);
 
-      for (double h = 0; h < mHeight; h += mTileHeight) {
-        double tileHeight = std::min(mTileHeight, mHeight - h);
+      for (Ty h = 0; h < mHeight; h += mTileHeight) {
+        Ty tileHeight = std::min<Ty>(mTileHeight, mHeight - h);
 
         mTiles.push_back(RegionTile<Ty>{ mMinX + w, mMinY + h, tileWidth, tileHeight });
       }
@@ -102,5 +102,5 @@ void RegionLayout<Ty>::LayoutTiles() {
   }
 }
 
-template<> class earthxpert::RegionLayout<float>;
-template<> class earthxpert::RegionLayout<double>;
+template class earthxpert::RegionLayout<float>;
+template class earthxpert::RegionLayout<double>;

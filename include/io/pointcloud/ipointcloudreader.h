@@ -69,6 +69,17 @@ public:
   virtual std::unique_ptr<Pointcloud> ReadPointcloud(size_t start, size_t numPoints) = 0;
 
   /**
+   *  \brief Reads a point range defined by the passed cloud object,
+   *  starting from the start index, and populates the associated buffer.
+   *
+   *  \param [in] start the index of start point
+   *  \param [in/out] pointCloud the container object to be populated with points.
+   *                  The requested fields must be available from the dataset.
+   *  \return Returns number of points actually read
+   */
+  virtual size_t ReadPointcloud(const size_t start, Pointcloud* const pointCloud) = 0;
+
+  /**
    *  \brief Reads a point range defined by the passed cloud object, populates
    *  the associated buffer.
    *

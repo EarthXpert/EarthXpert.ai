@@ -267,14 +267,14 @@ TEST(rasterwriter, GdalRasterOMP) {
 TEST(rasterwriter, Equality) {
   // TestCase 1
   ASSERT_TRUE(IsImageEqual(TestConfig::DataPath("Imagery/image_small.tif"),
-    TestConfig::OutputPath("image_small_t_CvRaster.tif")));
+    TestConfig::OutputPath("image_small_t_CvRaster.tif"))) << "image_small_t_CvRaster";
   // TestCase 2
   ASSERT_TRUE(IsImageEqual(TestConfig::DataPath("Imagery/image_small.tif"),
-    TestConfig::OutputPath("image_small_t_CvRasterOMP.tif")));
+    TestConfig::OutputPath("image_small_t_CvRasterOMP.tif"))) << "image_small_t_CvRasterOMP";
   // TestCase 3
   ASSERT_TRUE(IsImageEqual(TestConfig::DataPath("Imagery/image_small.tif"),
-    TestConfig::OutputPath("image_small_t_GdalRaster.tif")));
+    TestConfig::OutputPath("image_small_t_GdalRaster.tif"))) << "image_small_t_GdalRaster";
   // TestCase 4
   ASSERT_TRUE(IsImageEqual(TestConfig::DataPath("Imagery/image_small.tif"),
-    TestConfig::OutputPath("image_small_t_GdalRasterOMP.tif")));
+    TestConfig::OutputPath("image_small_t_GdalRasterOMP.tif"))) << "image_small_t_GdalRasterOMP";
 }

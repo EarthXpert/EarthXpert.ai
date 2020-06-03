@@ -16,33 +16,34 @@ using namespace earthxpert;
 /**
  *  \brief Construct Pointcloud object.
  *
- *  \param [in] pointCount number of points in cloud
+ *  \param [in] pointCapacity number of points to be held in cloud
  *  \param [in] fieldGroup pointa contain which field groups
  */
-Pointcloud::Pointcloud(const size_t pointCount, const FieldGroup fieldGroup)
-  : mPointCount(pointCount), mFieldGroup(fieldGroup) {
-  if (0 == mPointCount) {
-    throw std::invalid_argument("pointCount");
+Pointcloud::Pointcloud(const size_t pointCapacity, const FieldGroup fieldGroup)
+  : mPointCapacity(pointCapacity), mFieldGroup(fieldGroup) {
+  if (0 == mPointCapacity) {
+    throw std::invalid_argument("pointCapacity");
   }
   if (mFieldGroup.none()) {
     throw std::invalid_argument("fieldGroup");
   }
+  mPointCount = mPointCapacity; // default to be capacity
 
   for (auto pos : FieldGroup::kPOS) {
     if (!mFieldGroup.test(pos)) continue;
 
     switch (pos) {
     case FieldGroup::kPOSXYZ:
-      mXYZ.resize(mPointCount);
+      mXYZ.resize(mPointCapacity);
       break;
     case FieldGroup::kPOSCLA:
-      mCla.resize(mPointCount);
+      mCla.resize(mPointCapacity);
       break;
     case FieldGroup::kPOSINT:
-      mIntensity.resize(mPointCount);
+      mIntensity.resize(mPointCapacity);
       break;
     case FieldGroup::kPOSRGB:
-      mRGB.resize(mPointCount);
+      mRGB.resize(mPointCapacity);
       break;
     default:
       assert(false);
@@ -59,7 +60,7 @@ Pointcloud::Pointcloud(const size_t pointCount, const FieldGroup fieldGroup)
 Pointcloud::Pointcloud(const Point3d& origin, std::vector<XYZF>&& xyz)
   : mOrigin(origin), mXYZ(std::move(xyz)) {
   mFieldGroup.set(FieldGroup::kPOSXYZ);
-  mPointCount = mXYZ.size();
+  mPointCount = mPointCapacity = mXYZ.size();
 }
 
 /**
@@ -74,7 +75,7 @@ Pointcloud::Pointcloud(const Point3d& origin, std::vector<XYZF>&& xyz,
   : Pointcloud(origin, std::move(xyz)) {
   mCla = std::move(cla);
   mFieldGroup.set(FieldGroup::kPOSCLA);
-  assert(mCla.size() == mPointCount);
+  assert(mCla.size() == mPointCapacity);
 }
 
 /**
@@ -89,7 +90,7 @@ Pointcloud::Pointcloud(const Point3d& origin, std::vector<XYZF>&& xyz,
   : Pointcloud(origin, std::move(xyz), std::move(cla)) {
   mRGB = std::move(rgb);
   mFieldGroup.set(FieldGroup::kPOSRGB);
-  assert(mRGB.size() == mPointCount);
+  assert(mRGB.size() == mPointCapacity);
 }
 
 /**
@@ -222,7 +223,7 @@ RegionTileD Pointcloud::CalcBoundingBox2D() const noexcept {
   std::vector<float> minYs(numThreads, mXYZ[0].y);
   std::vector<float> maxYs(numThreads, mXYZ[0].y);
 
-#pragma omp parallel 
+#pragma omp parallel if (100000 < mPointCount)
   {
     float minX = std::numeric_limits<float>::max();
     float maxX = -std::numeric_limits<float>::max();
