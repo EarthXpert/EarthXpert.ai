@@ -3,6 +3,8 @@
  * -----------------------------------------------------------------------------
  */
 #include "epipolarmodel/groundpolicy.h"
+#include "core/exceptions/exexcept.h"
+#include "core/utils/unitutils.h"
 
 #include <cassert>
 #include <utility>
@@ -21,28 +23,33 @@ using earthxpert::Point3d;
  *
  *  \param [in] 
  */
-GeographicGround::GeographicGround(std::unique_ptr<EarthEllipsoid>&& earthEllip)
+template <int AngleUnit>
+GeographicGround<AngleUnit>::GeographicGround(std::unique_ptr<EarthEllipsoid>&& earthEllip)
     : mEarthEllip(std::move(earthEllip)) {
   if (!mEarthEllip)
-    throw;
+    throw std::invalid_argument("GeographicGround: earthEllip");
 }
 
-GeographicGround::GeographicGround(const GeographicGround &rhs) {
+template <int AngleUnit>
+GeographicGround<AngleUnit>::GeographicGround(const GeographicGround &rhs) {
   CopyFrom(rhs);
 }
 
-GeographicGround &GeographicGround::operator=(const GeographicGround &rhs) {
+template <int AngleUnit>
+GeographicGround<AngleUnit>& GeographicGround<AngleUnit>::operator=(const GeographicGround<AngleUnit>&rhs) {
   if (this != &rhs) {
     CopyFrom(rhs);
   }
   return *this;
 }
 
-bool GeographicGround::operator==(const GeographicGround &rhs) const {
+template <int AngleUnit>
+bool GeographicGround<AngleUnit>::operator==(const GeographicGround<AngleUnit>&rhs) const {
   return *mEarthEllip.get() == *(rhs.mEarthEllip.get());
 }
 
-bool GeographicGround::operator!=(const GeographicGround &rhs) const {
+template <int AngleUnit>
+bool GeographicGround<AngleUnit>::operator!=(const GeographicGround<AngleUnit>&rhs) const {
   return !(operator==(rhs));
 }
 
@@ -53,8 +60,17 @@ bool GeographicGround::operator!=(const GeographicGround &rhs) const {
  *  \param [in] rect 3d position in LSR coordinate system
  *  \return Return 3d position in geographic coordinate system
  */
-Point3d GeographicGround::RectToGround(const Point3d &rect) const {
-  return mEarthEllip->LSRToLPH(rect);
+template <int AngleUnit>
+Point3d GeographicGround<AngleUnit>::RectToGround(const Point3d &rect) const {
+  if constexpr (kAU_DEGREE == AngleUnit) {
+    return Rad2Deg(mEarthEllip->LSRToLPH(rect));
+  }
+  else if constexpr (kAU_GON == AngleUnit) {
+    return Rad2Gon(mEarthEllip->LSRToLPH(rect));
+  }
+  else {
+    return mEarthEllip->LSRToLPH(rect);
+  }
 }
 
 /**
@@ -64,16 +80,30 @@ Point3d GeographicGround::RectToGround(const Point3d &rect) const {
  *  \param [in] ground 3d position in geographic coordinate system
  *  \return Return 3d position in LSR coordinate system
  */
-Point3d GeographicGround::GroundToRect(const Point3d &ground) const {
-  return mEarthEllip->LPHToLSR(ground);
+template <int AngleUnit>
+Point3d GeographicGround<AngleUnit>::GroundToRect(const Point3d &ground) const {
+  if constexpr (kAU_DEGREE == AngleUnit) {
+    return mEarthEllip->LSRToLPH(Deg2Rad(ground));
+  }
+  else if constexpr (kAU_GON == AngleUnit) {
+    return mEarthEllip->LSRToLPH(Gon2Rad(ground));
+  }
+  else {
+    return mEarthEllip->LPHToLSR(ground);
+  }
 }
 
 /**
  *  \brief helper of copy constructor & assignment.
  */
-void GeographicGround::CopyFrom(const GeographicGround &rhs) {
+template <int AngleUnit>
+void GeographicGround<AngleUnit>::CopyFrom(const GeographicGround &rhs) {
   mEarthEllip = rhs.mEarthEllip->Clone();
 }
+
+template class earthxpert::GeographicGround<earthxpert::kAU_DEGREE>;
+template class earthxpert::GeographicGround<earthxpert::kAU_GON>;
+template class earthxpert::GeographicGround<earthxpert::kAU_RADIAN>;
 
 /**
  *  Constructor.

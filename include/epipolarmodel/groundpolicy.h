@@ -8,10 +8,18 @@
 #include "core/spatialref/earthellipsoid.h"
 
 namespace earthxpert {
+// angle unit
+constexpr int kAU_DEGREE = 0;
+constexpr int kAU_GON = 1;
+constexpr int kAU_RADIAN = 2;
+
 /**
  *  The class GeographicGround offers the ground transformation
  *  between the geographic and LSR coordinates.
+ *
+ *  \param AngleUnit angle unit of horizontal coordinates in ground: degree, gon, radian
  */
+template <int AngleUnit>
 class EXEPIPOLARMODEL_EXPORTS GeographicGround final : public IGroundPolicy {
 public:
   /**
@@ -60,6 +68,10 @@ private:
 
   void CopyFrom(const GeographicGround &rhs);
 };
+
+using GeographicGroundDeg = GeographicGround<kAU_DEGREE>;
+using GeographicGroundGon = GeographicGround<kAU_GON>;
+using GeographicGroundRad = GeographicGround<kAU_RADIAN>;
 
 /**
  *  The class LocalGround offers the ground transformation

@@ -12,7 +12,7 @@
 #include <execution>
 #include <omp.h>
 
-using earthxpert::GeographicGround;
+using earthxpert::GeographicGroundDeg;
 using earthxpert::LocalGround;
 using earthxpert::MapGround;
 using earthxpert::EpipolarModel;
@@ -266,6 +266,6 @@ EpipolarModel<GroundPolicy>::BuildGridI2G(const IEpipolarModel::StereoPos pos,
   return gridI2G;
 }
 
-template class EpipolarModel<GeographicGround>;
+template class EpipolarModel<GeographicGroundDeg>;
 template class EpipolarModel<LocalGround>; 
 template class EpipolarModel<MapGround>;
