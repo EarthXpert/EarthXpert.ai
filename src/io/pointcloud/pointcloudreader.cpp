@@ -25,8 +25,8 @@ using earthxpert::thirdparty::PointDataTraits;
  */
 PointcloudReader::PointcloudReader(const std::string& lasFile,
   const FieldGroup fieldGroup) : mFieldGroup(fieldGroup) {
-  LASreadOpener lasReadOpener;
-  mReader.reset(lasReadOpener.open(lasFile.c_str()));
+  LASreadOpener readOpener;
+  mReader.reset(readOpener.open(lasFile.c_str()));
   if (!mReader)
     throw IOError("Cannot open las file for read.");
 

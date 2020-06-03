@@ -2,10 +2,10 @@ project(tests_cppunit_io CXX)
 
 add_cppunit_test(pointcloudreader_tests 
   ex3rd_party core dataio 
-  ${LASLIB_LIBRARY})
+  ${GDAL_LIBRARY} ${LASLIB_LIBRARY})
 add_cppunit_test(pointcloudwriter_tests 
   ex3rd_party core dataio 
-  ${LASLIB_LIBRARY})
+  ${GDAL_LIBRARY} ${LASLIB_LIBRARY})
 add_cppunit_test(rasterreader_tests 
   ex3rd_party core dataio 
   ${GDAL_LIBRARY} ${OPENCV_LIBS})
