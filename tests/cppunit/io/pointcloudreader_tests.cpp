@@ -277,7 +277,7 @@ TEST(pointcloudreader, ReadPointcloud_LAS_XYZC_TILES) {
     ASSERT_NEAR(xyz4[i].z, xyz.z, tol) << "difference > 1 um";
 
     const auto tile2 = pc->ObtainBoundingBox2D();
-    if (!tile.ImproperContain(tile2)) {
+    if (!(tile >= tile2)) {
       ++j;
     }
   }
@@ -316,7 +316,7 @@ TEST(pointcloudreader, ReadPointcloudOMP_LAS_XYZ_TILES) {
     auto pc = reader.ReadPointcloud(tile);
 
     const auto tile2 = pc->ObtainBoundingBox2D();
-    if (!tile.ImproperContain(tile2)) {
+    if (!(tile >= tile2)) {
       //std::cerr << boost::format("tile extent: %1%\n") % i;
       ++j;
     }

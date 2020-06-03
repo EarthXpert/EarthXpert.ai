@@ -21,6 +21,10 @@ template <typename Ty> struct RegionTile {
   Ty width{};
   Ty height{};
 
+  bool operator>=(const RegionTile<Ty>& rhs) const {
+    return ImproperContain(rhs);
+  }
+
   void SetMinXY(const Ty minX, const Ty minY) {
     this->minX = minX;
     this->minY = minY;
