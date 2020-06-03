@@ -3,13 +3,13 @@
 
 #include "core/datasource/vectorutils.h"
 #include "core/utils/regionlayout.h"
-#include "io/vector/vectorreader.h"
+#include "io/vector/vectorwriter.h"
 #include <filesystem>
 #include <omp.h>
 
 using namespace earthxpert;
 namespace fs = std::filesystem;
 
-TEST(vectorreader, DUMMY) {
+TEST(vectorwriter, DUMMY) {
   std::cout << "[   EXAI   ]" << std::endl;
 }
