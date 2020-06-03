@@ -6,9 +6,12 @@
 
 #include "3rd_party/ex3rd_party.h"
 
+#include "lasdefinitions.hpp"
 #include "lasquantizer.hpp"
 #include "laszip.hpp"
+#include "lasutility.hpp"
 #include <map>
+#include <memory>
 #include <string>
 #include <tuple>
 
@@ -108,5 +111,6 @@ struct PointDataTraits {
   }
 };
  
-std::string EX3RDPARTY_EXPORTS CreateLAX(const std::string &lasFile);
+std::string EX3RDPARTY_EXPORTS CreateLAX(const std::string& lasFile);
+std::unique_ptr<LASsummary> EX3RDPARTY_EXPORTS ObtainLasSummary(const std::string& lasFile);
 } // namespace earthxpert::thirdparty

@@ -9,6 +9,7 @@ earthxpert_add_library(core "api"
        "datasource/pointcloud.cpp"
        "datasource/pointcloudutils.cpp"
        "datasource/rasterutils.cpp"
+       "datasource/vectorutils.cpp"
        "math/interpcube.cpp"
        "math/interpgrid.cpp"
        "math/graphics/rotation.cpp"
@@ -21,6 +22,7 @@ earthxpert_add_library(core "api"
        "utils/layout/regionlayout.cpp"
        "utils/resample/rasterresample.cpp"
   ITEMS ex3rd_party
-        ${GDAL_LIBRARY} ${OPENCV_LIBS})
+        Boost::boost Boost::filesystem Boost::iostreams
+        ${CERES_LIBRARY} ${CGAL_LIBRARIES} ${GDAL_LIBRARY} ${LASLIB_LIBRARY} ${OPENCV_LIBS})
 
 earthxpert_install_target(core)

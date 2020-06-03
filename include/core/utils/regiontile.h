@@ -16,12 +16,12 @@ namespace earthxpert {
 template <typename Ty> struct RegionTile {
   static_assert(std::is_arithmetic_v<Ty>, "Requires that template argument be integral or floating data type");
 
-  Ty minX{};
-  Ty minY{};
+  Ty minX{};    // x coordinate of lower-left corner
+  Ty minY{};    // y coordinate of lower-left corner
   Ty width{};
   Ty height{};
 
-  void SetOffsets(const Ty minX, const Ty minY) {
+  void SetMinXY(const Ty minX, const Ty minY) {
     this->minX = minX;
     this->minY = minY;
   }

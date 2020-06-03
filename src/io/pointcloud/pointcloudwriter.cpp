@@ -24,11 +24,11 @@ PointcloudWriter::PointcloudWriter(const std::string& lasFile,
   : mFieldGroup(fieldGroup), mQuantizer(quantizer) {
   InitHeader();
 
-  LASwriteOpener lasWriteOpener;
-  lasWriteOpener.set_file_name(lasFile.c_str());
-  lasWriteOpener.set_format(format.c_str());
+  LASwriteOpener writeOpener;
+  writeOpener.set_file_name(lasFile.c_str());
+  writeOpener.set_format(format.c_str());
 
-  mWriter.reset(lasWriteOpener.open(&mHeader));
+  mWriter.reset(writeOpener.open(&mHeader));
   if (!mWriter)
     throw IOError("Cannot open las file for write");
 
@@ -125,6 +125,10 @@ void PointcloudWriter::InitHeader() {
 
   auto quantizer = static_cast<LASquantizer*>(&mHeader);
   *quantizer = mQuantizer;
+
+  strcpy(mHeader.generating_software, "EXAI");
+
+  // \todo vlr
 }
 
 /**

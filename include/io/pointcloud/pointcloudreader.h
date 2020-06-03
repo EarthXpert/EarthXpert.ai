@@ -5,6 +5,7 @@
 #pragma once
 
 #include "io/pointcloud/ipointcloudreader.h"
+#include "core/utils/regiontile.h"
 
 #include "lasreader.hpp"
 #include <iostream>
@@ -106,14 +107,14 @@ public:
   /**
    *  \brief Reads point tile defined by tile, internal margin size.
    *
-   *  \param [in] xmin x location of the lower-left corner of the tile [unit: meter]
-   *  \param [in] ymin y location of the lower-left corner of the tile
+   *  \param [in] minX x location of the lower-left corner of the tile [unit: meter]
+   *  \param [in] minY y location of the lower-left corner of the tile
    *  \param [in] width the tile width [unit: meter]
    *  \param [in] height the tile height
    *
    *  \return Return Pointcloud container object.
    */
-  std::unique_ptr<Pointcloud> ReadPointcloud(double xmin, double ymin,
+  std::unique_ptr<Pointcloud> ReadPointcloud(double minX, double minY,
     double width, double height) override;
 
   /**
@@ -157,6 +158,7 @@ private:
 
   FieldGroup mFileFieldGroup;
   size_t mFilePointCount{};  // total number of point records in file
+  RegionTileD mFileBBox2D;   // 2D bounding box of all points in file
 
   void ObtainLasInfo();
 };

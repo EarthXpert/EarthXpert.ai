@@ -42,7 +42,7 @@ TEST(pointcloudreader, ReadPointcloud_LAS_XYZ) {
   ASSERT_NEAR(0, origin.y, tol) << "difference > 1 um";
   ASSERT_NEAR(0, origin.z, tol) << "difference > 1 um";
 
-  const auto bbox = pc->CalcBoundingBox2D();
+  const auto bbox = pc->ObtainBoundingBox2D();
   ASSERT_NEAR(539836, bbox.minX, tol) << "difference > 1 um";
   ASSERT_NEAR(1384288.75, bbox.minY, tol) << "difference > 1 um";
   ASSERT_NEAR(1205, bbox.width, tol) << "difference > 1 um";
@@ -75,7 +75,7 @@ TEST(pointcloudreader, ReadPointcloud_LAS_XYZC) {
   ASSERT_NEAR(5132320.247, origin.y, tol) << "difference > 1 um";
   ASSERT_NEAR(0, origin.z, tol) << "difference > 1 um";
 
-  const auto bbox = pc->CalcBoundingBox2D();
+  const auto bbox = pc->ObtainBoundingBox2D();
   ASSERT_NEAR(424854.93700573733, bbox.minX, tol) << "difference > 1 um";
   ASSERT_NEAR(5132303.1900007939, bbox.minY, tol) << "difference > 1 um";
   ASSERT_NEAR(292.94400024414062, bbox.width, tol) << "difference > 1 um";
@@ -116,7 +116,7 @@ TEST(pointcloudreader, ReadPointcloud_LAZ_XYZ) {
   ASSERT_NEAR( 99.4300003, xyz.y, tol) << "difference > 1 um";
   ASSERT_NEAR( 11.9899998, xyz.z, tol) << "difference > 1 um";
 
-  const auto bbox = pc->CalcBoundingBox2D();
+  const auto bbox = pc->ObtainBoundingBox2D();
   ASSERT_NEAR(-244.16000366210938, bbox.minX, tol) << "difference > 1 um";
   ASSERT_NEAR(-320.20001220703125, bbox.minY, tol) << "difference > 1 um";
   ASSERT_NEAR(512, bbox.width, tol) << "difference > 1 um";
@@ -276,7 +276,7 @@ TEST(pointcloudreader, ReadPointcloud_LAS_XYZC_TILES) {
     ASSERT_NEAR(xyz4[i].y, xyz.y, tol) << "difference > 1 um";
     ASSERT_NEAR(xyz4[i].z, xyz.z, tol) << "difference > 1 um";
 
-    const auto tile2 = pc->CalcBoundingBox2D();
+    const auto tile2 = pc->ObtainBoundingBox2D();
     if (!tile.ImproperContain(tile2)) {
       ++j;
     }
@@ -315,7 +315,7 @@ TEST(pointcloudreader, ReadPointcloudOMP_LAS_XYZ_TILES) {
     auto& tile = tiles[i];
     auto pc = reader.ReadPointcloud(tile);
 
-    const auto tile2 = pc->CalcBoundingBox2D();
+    const auto tile2 = pc->ObtainBoundingBox2D();
     if (!tile.ImproperContain(tile2)) {
       //std::cerr << boost::format("tile extent: %1%\n") % i;
       ++j;

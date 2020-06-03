@@ -28,23 +28,48 @@ std::string CreateLAX(const std::string &lasFile) {
   if (!stat(laxFile.c_str(), &buffer))
     return laxFile;
 
-  LASreadOpener lasReadOpener;
-  std::unique_ptr<LASreader> lasReader(lasReadOpener.open(lasFile.c_str()));
+  LASreadOpener readOpener;
+  std::unique_ptr<LASreader> reader(readOpener.open(lasFile.c_str()));
+  if (!reader) {
+    throw std::exception("CreateLAX: failed to open las file");
+  }
 
-  const auto& header{lasReader->header};
-  LASquadtree *lasQuadtree = new LASquadtree;
-  lasQuadtree->setup(header.min_x, header.max_x, header.min_y, header.max_y);
+  const auto& header{reader->header};
+  LASquadtree *quadtree = new LASquadtree;
+  quadtree->setup(header.min_x, header.max_x, header.min_y, header.max_y);
 
   LASindex lasIndex;
-  lasIndex.prepare(lasQuadtree);
+  lasIndex.prepare(quadtree);
 
-  while (lasReader->read_point()) {
-    lasIndex.add(lasReader->point.get_x(), lasReader->point.get_y(),
-      (U32)(lasReader->p_count - 1));
+  while (reader->read_point()) {
+    lasIndex.add(reader->point.get_x(), reader->point.get_y(),
+      (U32)(reader->p_count - 1));
   }
   lasIndex.complete();
   lasIndex.write(laxFile.c_str());
 
   return laxFile;
+}
+
+/**
+ *  \brief traverse points to obtain summarized information
+ *
+ *  \param [in] lasFile .LAS file name
+ *  \return Return LASsummary object
+ */
+std::unique_ptr<LASsummary> ObtainLasSummary(const std::string& lasFile) {
+  LASreadOpener readOpener;
+  std::unique_ptr<LASreader> reader(readOpener.open(lasFile.c_str()));
+  if (!reader) {
+    throw std::exception("CreateLAX: failed to open las file");
+  }
+
+  auto summary = std::make_unique<LASsummary>();
+
+  while (reader->read_point()) {
+    summary->add(&reader->point);
+  }
+
+  return summary;
 }
 }

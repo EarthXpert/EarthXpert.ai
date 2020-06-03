@@ -7,16 +7,24 @@
 #include <cmath>
 
 namespace earthxpert {
-// TODO units
+// \todo units
 constexpr double kDEG2RAD = M_PI / 180.0;
 constexpr double kRAD2DEG = 180.0 / M_PI;
+constexpr double kGON2RAD = M_PI / 200.0;
+constexpr double kRAD2GON = 200.0 / M_PI;
 
 constexpr inline double Deg2Rad(const double deg) {
   return deg * kDEG2RAD;
 }
-
 constexpr inline double Rad2Deg(const double rad) {
   return rad * kRAD2DEG;
+}
+
+constexpr inline double Gon2Rad(const double gon) {
+  return gon * kGON2RAD;
+}
+constexpr inline double Rad2Gon(const double rad) {
+  return rad * kRAD2GON;
 }
 
 constexpr double kWGS84_A = 6378137.0;  // equatorial radius [unit: meter]

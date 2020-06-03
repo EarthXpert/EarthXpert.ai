@@ -6,6 +6,8 @@ earthxpert_add_library(dataio "api"
        "pointcloud/pointcloudwriter.cpp"
        "raster/rasterreader.cpp"
        "raster/rasterwriter.cpp"
+       "vector/vectorreader.cpp"
+       "vector/vectorwriter.cpp"
   ITEMS ex3rd_party core 
         ${GDAL_LIBRARY} ${LASLIB_LIBRARY} ${OPENCV_LIBS})
 

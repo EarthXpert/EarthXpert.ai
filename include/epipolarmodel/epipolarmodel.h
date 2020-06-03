@@ -149,7 +149,7 @@ private:
   std::unique_ptr<InterpGridF> BuildGridI2G(StereoPos pos, int numCols, int numRows) const;
 };
 
-using GeoEpipolarModel = EpipolarModel<GeographicGround>;
+using GeoEpipolarModel = EpipolarModel<GeographicGroundDeg>;
 using LocalEpipolarModel = EpipolarModel<LocalGround>;
 using MapEpipolarModel = EpipolarModel<MapGround>;
 } // namespace earthxpert
