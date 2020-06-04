@@ -8,7 +8,6 @@
 #include "io/raster/rasterreader.h"
 #include "core/spatialref/geocoding.h"
 
-#include <mutex>
 #include <shared_mutex>
 
 namespace earthxpert {
@@ -26,7 +25,6 @@ public:
   RasterWriter(const std::string& imageFile, const std::vector<int>& bands = {});
   RasterWriter(const std::string& imageFile, const std::string format,
     int numCols, int numRows, GDALDataType dataType, int numBands);
-  RasterWriter(GDALDataset* dataset, const std::vector<int>& bands = {});
   RasterWriter(const RasterWriter&) = delete;
   RasterWriter(RasterWriter&&) = delete;
   ~RasterWriter() = default;
@@ -90,6 +88,7 @@ public:
    *  \return Returns metadata tags
    */
   std::unique_ptr<RasterMetadata> GetMetadata() const override {
+    std::shared_lock<std::shared_mutex> lock(mMutex);
     return mReader->GetMetadata();
   }
 
@@ -201,8 +200,9 @@ public:
   }
 
 private:
-  std::unique_ptr<RasterReader> mReader;  // pointer to reader implementation
+  RasterWriter(GDALDataset* dataset, const std::vector<int>& bands = {});
 
+  std::unique_ptr<RasterReader> mReader;  // pointer to reader implementation
   mutable std::shared_mutex mMutex;
 
   // cached information

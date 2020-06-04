@@ -23,8 +23,7 @@ RasterWriter::RasterWriter(const std::string& imageFile, const std::vector<int>&
     throw IOError("GDAL failed to open image file for write acess.");
   }
 
-  mReader = std::make_unique<RasterReader>(mDataset, bands);
-  ObtainDatasetInfo();
+  RasterWriter(mDataset, bands);
 }
 
 /**
@@ -41,8 +40,7 @@ RasterWriter::RasterWriter(const std::string& imageFile, const std::string forma
   int numCols, int numRows, GDALDataType dataType, int numBands) {
   mDataset = CreateRasterDataset(imageFile, format, numCols, numRows, dataType, numBands);
 
-  mReader = std::make_unique<RasterReader>(mDataset, std::vector<int>{});
-  ObtainDatasetInfo();
+  RasterWriter(mDataset, std::vector<int>{});
 }
 
 /**
@@ -62,7 +60,7 @@ RasterWriter::RasterWriter(GDALDataset* dataset, const std::vector<int>& bands) 
  *  \param [in] metaData the metadata tags
  */
 void RasterWriter::SetMetadata(const RasterMetadata* metaData) {
-
+  std::unique_lock<std::shared_mutex> lock(mMutex);
 }
 
 /**

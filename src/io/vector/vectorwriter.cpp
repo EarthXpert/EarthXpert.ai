@@ -50,6 +50,7 @@ VectorWriter::VectorWriter(GDALDataset* dataset, const std::vector<int>& layers)
  *  \param [in] metaData the metadata tags
  */
 void VectorWriter::SetMetadata(const VectorMetadata* metaData) {
+  std::unique_lock<std::shared_mutex> lock(mMutex);
 }
 
 /**

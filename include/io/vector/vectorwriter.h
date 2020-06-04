@@ -7,7 +7,6 @@
 #include "io/vector/ivectorwriter.h"
 #include "io/vector/vectorreader.h"
 
-#include <mutex>
 #include <shared_mutex>
 
 namespace earthxpert {
@@ -79,6 +78,7 @@ public:
    *  \return Returns metadata tags
    */
   std::unique_ptr<VectorMetadata> GetMetadata() const override {
+    std::shared_lock<std::shared_mutex> lock(mMutex);
     return mReader->GetMetadata();
   }
 
@@ -95,6 +95,7 @@ public:
    *  \return Returns pointer to a coordinate system
    */
   std::unique_ptr<SpatialReferenceSystem> GetCoordinateSystem() const override {
+    std::shared_lock<std::shared_mutex> lock(mMutex);
     return mReader->GetCoordinateSystem();
   }
 
@@ -105,6 +106,7 @@ public:
    *  \return Returns pointer to layer object holding the entire vector
    */
   std::unique_ptr<ILayer> ReadLayer(LayerType layerType = LayerType::ePOINT) override {
+    std::shared_lock<std::shared_mutex> lock(mMutex);
     return mReader->ReadLayer(layerType);
   }
 
@@ -120,6 +122,7 @@ public:
    */
   std::unique_ptr<ILayer> ReadLayer(double minX, double minY,
     double width, double height, LayerType layerType = LayerType::ePOINT) override {
+    std::shared_lock<std::shared_mutex> lock(mMutex);
     return mReader->ReadLayer(minX, minY, width, height, layerType);
   }
 
@@ -130,6 +133,7 @@ public:
    *  \param [in/out] layer the layer object to be populated with the vector block.
    */
   void ReadLayer(ILayer* const layer) override {
+    std::shared_lock<std::shared_mutex> lock(mMutex);
     mReader->ReadLayer(layer);
   }
 

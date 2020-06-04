@@ -182,7 +182,7 @@ private:
   void FillMargins(CvRaster* const raster, MarginFillDim fillDim);
   void FillMargins(GdalRaster* const raster, MarginFillDim fillDim);
 
-  mutable std::mutex mMutex;
+  mutable std::mutex mMutex;  // GDAL RasterIO seems thread unsafe
 
   // cached information & metadata
   int mFileNumBands{};  // total number of bands of image file

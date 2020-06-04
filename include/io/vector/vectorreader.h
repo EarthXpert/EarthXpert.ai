@@ -102,7 +102,7 @@ private:
   GDALDatasetUniquePtr mDataset;  // pointer to GDALDataset object
   std::vector<int> mLayers;  // list of layers to read from
 
-  mutable std::mutex mMutex;
+  mutable std::mutex mMutex;  // OGR thread unsafe?
 
   // cached information & metadata
 

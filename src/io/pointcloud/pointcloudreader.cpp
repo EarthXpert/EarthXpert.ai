@@ -173,7 +173,7 @@ std::unique_ptr<Pointcloud> PointcloudReader::ReadPointcloud(
  */
 std::unique_ptr<Pointcloud> 
 PointcloudReader::ReadPointcloud(const RegionTileD& tile) {
-  // faster: direct reading if covering the entire file
+  // fast: direct reading if covering the entire file
   if (tile >= mFileBBox2D) {
     return ReadPointcloud();
   }

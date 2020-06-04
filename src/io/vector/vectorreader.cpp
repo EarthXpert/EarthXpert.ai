@@ -5,9 +5,9 @@
 #include "io/vector/vectorreader.h"
 #include "core/datasource/vectorutils.h"
 #include "core/exceptions/exexcept.h"
-#include "core/spatialref/geocoding.h"
 #include "core/utils/typehelper.h"
 
+#include <cassert>
 #include <numeric>
 
 using namespace earthxpert;
