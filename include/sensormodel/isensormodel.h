@@ -32,7 +32,7 @@ namespace earthxpert {
  */
 class EXSENSORMODEL_EXPORTS ISensorModel {
 public:
-  virtual ~ISensorModel() {}
+  virtual ~ISensorModel() = default;
 
   enum class ModelType {
     eUNDEFINED = -1,

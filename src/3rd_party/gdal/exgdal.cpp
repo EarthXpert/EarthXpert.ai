@@ -40,4 +40,8 @@ GDALDataset *CreateRasterDataset(const std::string& imgFile,
 
   return driver->Create(imgFile.c_str(), numCols, numRows, numBands, dataType, nullptr);
 }
+
+namespace thirdparty {
+
+}
 } // namespace earthxpert

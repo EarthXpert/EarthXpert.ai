@@ -29,4 +29,8 @@ inline bool operator!=(const SpatialReferenceSystem &lhs,
                        const SpatialReferenceSystem &rhs) {
   return !(operator==(lhs, rhs));
 }
+
+namespace thirdparty {
+
+}
 } // namespace earthxpert::thirdparty

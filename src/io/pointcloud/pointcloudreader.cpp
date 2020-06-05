@@ -7,14 +7,12 @@
 #include "core/datasource/pointcloudutils.h"
 #include "core/exceptions/exexcept.h"
 
-#include "boost/format.hpp"
-#include "lasfilter.hpp"
 #include <limits>
 #include <omp.h>
 #include <optional>
-#include <sstream>
 
 using namespace earthxpert;
+using earthxpert::thirdparty::CreateLasFilter;
 using earthxpert::thirdparty::PointDataTraits;
 
 /**
@@ -122,8 +120,6 @@ size_t PointcloudReader::ReadPointcloud(const size_t start, Pointcloud* const po
  *  \param [in] height the tile height
  *
  *  \return Return Pointcloud container object.
- *
- *  \todo reduce memory usage
  */
 std::unique_ptr<Pointcloud> PointcloudReader::ReadPointcloud(
   const double minX, const double minY, const double width, const double height) {
@@ -145,13 +141,7 @@ PointcloudReader::ReadPointcloud(const RegionTileD& tile) {
   }
 
   // slower: filtered reading
-  std::stringstream ss;
-  ss << boost::format("-keep_xy %1% %2% %3% %4%") \
-    % tile.minX % tile.minY % (tile.minX + tile.width) % (tile.minY + tile.height);
-  std::string str{ ss.str() };
-
-  auto filter = std::make_unique<LASfilter>();
-  filter->parse(str.data());
+  auto filter = CreateLasFilter(tile.minX, tile.minY, tile.width, tile.height);
 
   std::lock_guard<std::mutex> lock(mMutex);
   mReader->set_filter(filter.get());

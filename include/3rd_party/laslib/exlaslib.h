@@ -7,6 +7,7 @@
 #include "3rd_party/ex3rd_party.h"
 
 #include "lasdefinitions.hpp"
+#include "lasfilter.hpp"
 #include "lasquantizer.hpp"
 #include "laszip.hpp"
 #include "lasutility.hpp"
@@ -110,7 +111,9 @@ struct PointDataTraits {
     return -1;
   }
 };
- 
+
+std::unique_ptr<LASfilter> EX3RDPARTY_EXPORTS CreateLasFilter(
+   double minX, double minY, double width, double height);
 std::string EX3RDPARTY_EXPORTS CreateLAX(const std::string& lasFile);
 std::unique_ptr<LASsummary> EX3RDPARTY_EXPORTS ObtainLasSummary(const std::string& lasFile);
 } // namespace earthxpert::thirdparty
