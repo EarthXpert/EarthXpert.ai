@@ -121,7 +121,7 @@ TEST(pointcloudwriter, WritePointcloud_LAS_XYZC_CHUNKS) {
 
   Pointcloud pc(chunkNumPts, fg);
   for (size_t i = 0; i < filePointCount; i += chunkNumPts) {
-    const auto readNumPts = reader.ReadPointcloud(&pc);
+    const auto readNumPts = reader.ReadPointcloud(i, &pc);
     const auto writeNumPts = writer.WritePointcloud(&pc, 0, readNumPts);
     ASSERT_EQ(readNumPts, writeNumPts);
   }

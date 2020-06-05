@@ -192,7 +192,7 @@ TEST(pointcloudreader, ReadPointcloud_LAS_XYZC_CHUNKS) {
 
   Pointcloud pc(chunkNumPts, { fgt::kBITXYZ });
   for (size_t i = 0, j = 0; i < filePointCount; i += chunkNumPts, ++j) {
-    const auto readNumPts = reader.ReadPointcloud(&pc);
+    const auto readNumPts = reader.ReadPointcloud(i, &pc);
     ASSERT_EQ(chunkNumPts4[j], readNumPts);
 
     const auto xyz = pc.GetXYZ(0);

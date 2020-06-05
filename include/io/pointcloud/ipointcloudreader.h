@@ -80,15 +80,6 @@ public:
   virtual size_t ReadPointcloud(const size_t start, Pointcloud* const pointCloud) = 0;
 
   /**
-   *  \brief Reads a point range defined by the passed cloud object, populates
-   *  the associated buffer.
-   *
-   *  \param [in/out] pointCloud the container object to be populated with points.
-   *  \return Returns number of points actually read
-   */
-  virtual size_t ReadPointcloud(Pointcloud* const pointCloud) = 0;
-
-  /**
    *  \brief Reads point tile defined by tile, internal margin size.
    *
    *  \param [in] xmin x location of the lower-left corner of the tile [unit: meter]

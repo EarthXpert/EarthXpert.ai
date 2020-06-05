@@ -96,15 +96,6 @@ public:
   size_t ReadPointcloud(const size_t start, Pointcloud* const pointCloud) override;
 
   /**
-   *  \brief Reads a point range defined by the passed cloud object, 
-   *  starting from the current point, and populates the associated buffer.
-   *
-   *  \param [in/out] pointCloud the container object to be populated with points.
-   *  \return Returns number of points actually read
-   */
-  size_t ReadPointcloud(Pointcloud* const pointCloud) override;
-
-  /**
    *  \brief Reads point tile defined by tile, internal margin size.
    *
    *  \param [in] minX x location of the lower-left corner of the tile [unit: meter]
@@ -149,6 +140,15 @@ private:
   float mMarginY{};
 
   mutable std::mutex mMutex;    // ranged reading
+
+  /**
+   *  \brief Reads a point range defined by the passed cloud object,
+   *  starting from the current point, and populates the associated buffer.
+   *
+   *  \param [in/out] pointCloud the container object to be populated with points.
+   *  \return Returns number of points actually read
+   */
+  size_t ReadPointcloud(Pointcloud* const pointCloud);
 
   // cache
   const LASheader *mHeader{};   // file format infomation
