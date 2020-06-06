@@ -20,7 +20,7 @@ public:
     return cost;
   }
 
-  LossType GetLossType() const noexcept {
+  LossType GetLossType() const noexcept override {
     return eIDENTITY;
   }
 };

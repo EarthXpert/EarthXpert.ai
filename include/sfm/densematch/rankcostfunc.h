@@ -18,12 +18,12 @@ class EXSFM_EXPORTS RankCostFunc final : public CostFunc<LossFunc>{
 public:
   ~RankCostFunc() = default;
 
-  CostType GetCostType() const noexcept {
+  CostType GetCostType() const noexcept override {
     return eRANK;
   }
 
 private:
-  double CalcCostImpl() const {
+  double CalcCostImpl() const override {
     return 0;
   }
 };

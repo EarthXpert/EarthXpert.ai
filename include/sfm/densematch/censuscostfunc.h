@@ -17,12 +17,12 @@ class EXSFM_EXPORTS CensusCostFunc final : public CostFunc<LossFunc> {
 public:
   ~CensusCostFunc() = default;
 
-  CostType GetCostType() const noexcept {
+  CostType GetCostType() const noexcept override {
     return eCENSUS;
   }
 
 private:
-  double CalcCostImpl() const {
+  double CalcCostImpl() const override {
     return 0;
   }
 };

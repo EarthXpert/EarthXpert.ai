@@ -9,7 +9,6 @@
 #include <cassert>
 
 namespace earthxpert {
-
 /**
  *  The class NormalizeLossFunc defines the math methods used to convert/activate
  *  cost/difference value to loss value.
@@ -33,7 +32,7 @@ public:
     return (cost - mOffset) * mInvScale;
   }
 
-  LossType GetLossType() const noexcept {
+  LossType GetLossType() const noexcept override {
     return eNORMALIZE;
   }
 
@@ -43,4 +42,5 @@ private:
 
   // cache
   double mInvScale{1.0};
+};
 }

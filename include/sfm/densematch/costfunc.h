@@ -12,7 +12,6 @@
 #include <type_traits>
 
 namespace earthxpert {
-
 /**
  *  The base class CostFunc implements the template methods used to calculate 
  *  cost/difference given a pixel location on one image and its disparity or depth.

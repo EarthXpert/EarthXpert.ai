@@ -6,7 +6,7 @@
 
 #include "sfm/densematch/ilossfunc.h"
 
-#include <cmath>
+//#include <cmath>
 
 namespace earthxpert {
 // sigmoid type
@@ -20,7 +20,7 @@ constexpr int kST_LOGISTIC = 1;
  *  \param sigmoidType type of the S-shape
  */
 template <int sigmoidType = kST_LOGISTIC>
-class EXSFM_EXPORTS SigmoidLossFunc final : public ILossFunc{
+class EXSFM_EXPORTS SigmoidLossFunc final : public ILossFunc {
   static_assert(kST_ARCTAN <= sigmoidType && sigmoidType <= kST_LOGISTIC, "sigmoidType");
 
 public:
@@ -31,7 +31,7 @@ public:
       return atan(cost);
     }
     else {  //if constexpr (eST_LOGISTIC == sigmoidType)
-      return 1.0 / (1.0 + exp(-cost);
+      return 1.0 / (1.0 + exp(-cost));
     }
   }
 

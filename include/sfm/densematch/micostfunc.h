@@ -17,12 +17,12 @@ class EXSFM_EXPORTS MICostFunc final : public CostFunc<LossFunc> {
 public:
   ~MICostFunc() = default;
 
-  CostType GetCostType() const noexcept {
+  CostType GetCostType() const noexcept override {
     return eMI;
   }
 
 private:
-  double CalcCostImpl() const {
+  double CalcCostImpl() const override {
     return 0;
   }
 };
