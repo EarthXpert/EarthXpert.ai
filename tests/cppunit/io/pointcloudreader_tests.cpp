@@ -5,7 +5,7 @@
 #include "3rd_party/gtest/gtest_main.h"
 #include "testconfig.h"
 
-#include "core/utils/regionlayout.h"
+#include "core/utils/spatiallayout.h"
 #include "io/pointcloud/pointcloudreader.h"
 #include "boost/format.hpp"
 #include <array>
@@ -260,7 +260,7 @@ TEST(pointcloudreader, ReadPointcloud_LAS_XYZC_TILES) {
   const auto tileHeight = height * 0.5 + 1.0e-6;
   
   RegionLayoutD layout(header->min_x, header->min_y, width, height, tileWidth, tileHeight);
-  auto& tiles = layout.GetRegionTiles();
+  auto& tiles = layout.GetSpatialTiles();
 
   ASSERT_EQ(4, tiles.size()) << "number of tiles";
 
@@ -305,7 +305,7 @@ TEST(pointcloudreader, ReadPointcloudOMP_LAS_XYZ_TILES) {
   const auto tileHeight = height / 25.0 + 1.0e-6;
 
   RegionLayoutD layout(header->min_x, header->min_y, width, height, tileWidth, tileHeight);
-  auto& tiles = layout.GetRegionTiles();
+  auto& tiles = layout.GetSpatialTiles();
 
   ASSERT_EQ(625, tiles.size()) << "number of tiles";
 

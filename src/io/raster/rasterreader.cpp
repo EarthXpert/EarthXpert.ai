@@ -26,9 +26,8 @@ RasterReader::RasterReader(const std::string& imageFile, const std::vector<int>&
   if (!dataset) {
     throw IOError("GDAL failed to open image file for read access.");
   }
-  mDataset.reset(static_cast<GDALDataset*>(dataset));
 
-  ObtainDatasetInfo();
+  Initialize(static_cast<GDALDataset*>(dataset));
 }
 
 /**
@@ -40,8 +39,16 @@ RasterReader::RasterReader(const std::string& imageFile, const std::vector<int>&
 RasterReader::RasterReader(GDALDataset* dataset, const std::vector<int>& bands)
   : mBands(bands) {
   assert(dataset);
-  mDataset.reset(dataset);
+  Initialize(dataset);
+}
 
+/**
+ *  \brief Initialize reader object.
+ *
+ *  \param [in] dataset an opened dataset for reading
+ */
+void RasterReader::Initialize(GDALDataset* dataset) {
+  mDataset.reset(dataset);
   ObtainDatasetInfo();
 }
 

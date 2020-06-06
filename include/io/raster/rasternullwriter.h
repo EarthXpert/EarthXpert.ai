@@ -10,6 +10,9 @@
 namespace earthxpert {
 /**
  *  The class RasterNullWriter provides mock functios doing nothing.
+ *
+ *  \todo deal with mock objects of RasterMetadata, SpatialReferenceSystem, 
+ *  Geocoding, CvRaster, GdalRaster, etc.
  */
 class EXIO_EXPORTS RasterNullWriter final : public IRasterWriter, public IRasterReader {
 public:

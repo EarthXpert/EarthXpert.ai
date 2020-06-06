@@ -15,13 +15,17 @@ using namespace earthxpert;
 /**
  *  \brief Construct reader object.
  *
- *  \param [in] vecFile full path of the vector file
- *  \param [in] layers an array of 1-based layer indices
+ *  \param [in] vecFile full path of the vector data source
+ *  \param [in] layersInfo an array of 1-based layer information
  */
-VectorReader::VectorReader(const std::string& vecFile, const std::vector<int>& layers)
-  : mLayers(layers) {
+VectorReader::VectorReader(const std::string& vecFile, const std::vector<LayerInfo>& layersInfo)
+  : mLayersInfo(layersInfo) {
+  auto dataset = GDALOpenEx(vecFile.c_str(), GDAL_OF_VECTOR, nullptr, nullptr, nullptr);
+  if (!dataset) {
+    throw IOError("OGR failed to open vector data source for read access.");
+  }
 
-  ObtainDatasetInfo();
+  Initialize(static_cast<GDALDataset*>(dataset));
 }
 
 /**
@@ -30,11 +34,19 @@ VectorReader::VectorReader(const std::string& vecFile, const std::vector<int>& l
  *  \param [in] dataset an opened dataset for reading
  *  \param [in] layers an array of 1-based layer indices
  */
-VectorReader::VectorReader(GDALDataset* dataset, const std::vector<int>& layers)
-  : mLayers(layers) {
+VectorReader::VectorReader(GDALDataset* dataset, const std::vector<LayerInfo>& layersInfo)
+  : mLayersInfo(layersInfo) {
   assert(dataset);
-  mDataset.reset(dataset);
+  Initialize(dataset);
+}
 
+/**
+ *  \brief Initialize reader object.
+ *
+ *  \param [in] dataset an opened dataset for reading
+ */
+void VectorReader::Initialize(GDALDataset* dataset) {
+  mDataset.reset(dataset);
   ObtainDatasetInfo();
 }
 
@@ -51,7 +63,7 @@ std::unique_ptr<VectorMetadata> VectorReader::GetMetadata() const {
 std::unique_ptr<SpatialReferenceSystem> VectorReader::GetCoordinateSystem() const {
   auto spatialRef = std::make_unique<SpatialReferenceSystem>(mDataset->GetProjectionRef());
   if (!spatialRef) {
-    throw IOError("This image file has no infomation on coordinate system ");
+    throw IOError("This data source file has no infomation on coordinate system ");
   }
   return spatialRef;
 }
@@ -59,10 +71,10 @@ std::unique_ptr<SpatialReferenceSystem> VectorReader::GetCoordinateSystem() cons
 /**
  *  \brief Reads the entire vector.
  *
- *  \param [in] layerType type of data structure
- *  \return Returns pointer to layer object holding the entire vector
+ *  \param [in] layerInfo information of layer to read
+ *  \return Returns pointer to layer object holding the entire vector data source
  */
-std::unique_ptr<ILayer> VectorReader::ReadLayer(LayerType layerType) {
+std::unique_ptr<ILayer> VectorReader::ReadLayer(const LayerInfo& layerInfo) {
   return {};
 }
 
@@ -74,11 +86,12 @@ std::unique_ptr<ILayer> VectorReader::ReadLayer(LayerType layerType) {
  *  \param [in] minY
  *  \param [in] width horizontal width
  *  \param [in] height vertical height
- *  \return Returns pointer to raster object holding a pixel block
+ *  \param [in] layerInfo information of layer to read
+ *  \return Returns pointer to layer object holding a vector block
  */
 std::unique_ptr<ILayer> VectorReader::ReadLayer(const double minX, const double minY,
-  const double width, const double height, const LayerType layerType) {
-  return {};
+  const double width, const double height, const LayerInfo& layerInfo) {
+  return {}; 
 }
 
 /**
@@ -88,6 +101,9 @@ std::unique_ptr<ILayer> VectorReader::ReadLayer(const double minX, const double 
  *  \param [in/out] layer the layer object to be populated with the vector block.
  */
 void VectorReader::ReadLayer(ILayer* const layer) {
+}
+
+void VectorReader::ReadLayer(OgrLayer* const layer) {
 }
 
 /**

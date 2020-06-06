@@ -14,6 +14,9 @@ class GdalRaster;
 
 /**
  *  The class RasterNullReader provides mock behaviour that does nothing.
+ *
+ *  \todo deal with mock objects of RasterMetadata, SpatialReferenceSystem, 
+ *  Geocoding, CvRaster, GdalRaster, etc.
  */
 class EXIO_EXPORTS RasterNullReader final : public IRasterReader {
 public:

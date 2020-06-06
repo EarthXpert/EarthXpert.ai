@@ -11,20 +11,20 @@
 
 namespace earthxpert {
 /**
- *  The class VectorWriter provides functios to write into a vector file
+ *  The class VectorWriter provides functios to write into a vector data source
  *  with OGR as backend, and serialize vector block in an ILayer object
  *  having specific configurations, such as geometry, attributes, etc.
  *  Each VectorWriter instance is connected and thus bound to specific layers.
  *  Therefore a new instance is needed to write into different subsets of layers.
  *
- *  \remark will revisit for a better design.
+ *  \todo revisit the design for use with SpatiaLite, postgreSQL/PostGIS
  */
 class EXIO_EXPORTS VectorWriter final : public IVectorWriter, public IVectorReader {
 public:
-  VectorWriter(const std::string& vecFile, const std::vector<int>& layers = {});
+  VectorWriter(const std::string& vecFile, const std::vector<LayerInfo>& layersInfo = {});
   VectorWriter(const std::string& vecFile, const std::string format,
-    GDALDataType dataType, int numLayers);
-  VectorWriter(GDALDataset* dataset, const std::vector<int>& layers = {});
+    const std::vector<LayerInfo>& layersInfo);
+  VectorWriter(GDALDataset* dataset, const std::vector<LayerInfo>& layersInfo = {});
   VectorWriter(const VectorWriter&) = delete;
   VectorWriter(VectorWriter&&) = delete;
   ~VectorWriter() = default;
@@ -63,9 +63,9 @@ public:
   void SetCoordinateSystem(const SpatialReferenceSystem* srs) override;
 
   /**
-   *  \brief Write the vector block contained in the layer object into vector file.
+   *  \brief Write the vector block contained in the layer object into vector data source.
    *
-   *  \param [in] layer the layer object to be written into vector file on disk
+   *  \param [in] layer the layer object to be written into vector data source on disk
    */
   void WriteLayer(ILayer* const layer) override;
 
@@ -83,7 +83,7 @@ public:
   }
 
   /**
-   *  \return Return the number of layers contained in the vector file
+   *  \return Return the number of layers contained in the vector data source
    */
   int GetNumLayers() const noexcept override {
     return 0;
@@ -102,12 +102,12 @@ public:
   /**
    *  \brief Reads the entire vector.
    *
-   *  \param [in] layerType type of data structure
-   *  \return Returns pointer to layer object holding the entire vector
+   *  \param [in] layerInfo information of layer to read
+   *  \return Returns pointer to layer object holding the entire vector data source
    */
-  std::unique_ptr<ILayer> ReadLayer(LayerType layerType = LayerType::ePOINT) override {
+  std::unique_ptr<ILayer> ReadLayer(const LayerInfo& layerInfo) override {
     std::shared_lock<std::shared_mutex> lock(mMutex);
-    return mReader->ReadLayer(layerType);
+    return mReader->ReadLayer(layerInfo);
   }
 
   /**
@@ -118,12 +118,13 @@ public:
    *  \param [in] minY
    *  \param [in] width horizontal width
    *  \param [in] height vertical height
-   *  \return Returns pointer to raster object holding a pixel block
+   *  \param [in] layerInfo information of layer to read
+   *  \return Returns pointer to layer object holding a vector block
    */
   std::unique_ptr<ILayer> ReadLayer(double minX, double minY,
-    double width, double height, LayerType layerType = LayerType::ePOINT) override {
+    double width, double height, const LayerInfo& layerInfo) override {
     std::shared_lock<std::shared_mutex> lock(mMutex);
-    return mReader->ReadLayer(minX, minY, width, height, layerType);
+    return mReader->ReadLayer(minX, minY, width, height, layerInfo);
   }
 
   /**
@@ -143,6 +144,8 @@ public:
    //std::unique_ptr<ILodReader> GetLodReader() override;
 
 private:
+  void Initialize(GDALDataset* dataset, const std::vector<LayerInfo>& layersInfo = {});
+
   std::unique_ptr<VectorReader> mReader;  // pointer to reader implementation
 
   mutable std::shared_mutex mMutex;

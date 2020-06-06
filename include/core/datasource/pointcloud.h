@@ -7,7 +7,7 @@
 #include "core/excore.h"
 #include "core/datasource/pointtypes.h"
 #include "core/exceptions/exexcept.h"
-#include "core/utils/regiontile.h"
+#include "core/utils/spatialtile.h"
 
 #include <cassert>
 #include <type_traits>

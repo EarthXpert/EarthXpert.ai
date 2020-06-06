@@ -39,6 +39,15 @@ public:
   PointcloudWriter& operator=(PointcloudWriter&&) = delete;
 
   /**
+   *  \return Returns the backend LASreader object. PointcloudWriter
+   *  exports partially the LASlib functions. The caller could exploit
+   *  the full LASlib capabilities via the returned object pointer.
+   */
+  LASwriter* GetLasWriter() const noexcept {
+    return mWriter.get();
+  }
+
+  /**
    *  \return Returns fields group
    */
   FieldGroup GetFieldGroup() const noexcept override {
@@ -77,13 +86,6 @@ public:
    */
   size_t WritePointcloud(Pointcloud const* const pointCloud,
     size_t start, size_t numPoints) override;
-
-  /**
-   *  \return Returns LASwriter object.
-   */
-  LASwriter* GetLasWriter() const noexcept {
-    return mWriter.get();
-  }
 
 private:
   std::unique_ptr<LASwriter> mWriter;

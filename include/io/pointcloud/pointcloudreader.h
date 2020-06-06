@@ -5,7 +5,7 @@
 #pragma once
 
 #include "io/pointcloud/ipointcloudreader.h"
-#include "core/utils/regiontile.h"
+#include "core/utils/spatialtile.h"
 
 #include "lasreader.hpp"
 #include <iostream>
@@ -31,6 +31,15 @@ public:
 
   PointcloudReader &operator=(const PointcloudReader &) = delete;
   PointcloudReader &operator=(PointcloudReader &&) = delete;
+
+  /**
+   *  \return Returns the backend LASreader object. PointcloudReader
+   *  exports partially the LASlib functions. The caller could exploit
+   *  the full LASlib capabilities via the returned object pointer.
+   */
+  LASreader* GetLasReader() const noexcept {
+    return mReader.get();
+  }
 
   /**
    *  \return Returns fields group
@@ -116,13 +125,6 @@ public:
    *  \return Return Pointcloud container object.
    */
   std::unique_ptr<Pointcloud> ReadPointcloud(const RegionTileD& tile) override;
-
-  /**
-   *  \return Returns LASreader object.
-   */
-  LASreader* GetLasReader() const noexcept {
-    return mReader.get();
-  }
 
   /**
    *  \return Returns LASreader object.

@@ -172,6 +172,8 @@ public:
    //std::unique_ptr<IPyramidReader> GetPyramidReader();
 
 private:
+  void Initialize(GDALDataset* dataset);
+
   GDALDatasetUniquePtr mDataset;  // pointer to GDALDataset object
   std::vector<int> mBands;  // list of bands to read from
 

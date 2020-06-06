@@ -2,13 +2,13 @@
  *  Copyright (c) 2019.  All rights reserved.
  * -----------------------------------------------------------------------------
  */
-#include "core/utils/regionlayout.h"
+#include "core/utils/spatiallayout.h"
 
 #include <algorithm>
 #include <stdexcept>
 
-using earthxpert::RegionLayout;
-using earthxpert::RegionTile;
+using earthxpert::SpatialLayout;
+using earthxpert::SpatialTile;
 
 /**
  *  \param [in] width    width of region
@@ -17,9 +17,9 @@ using earthxpert::RegionTile;
  *  \param [in] tileHeight height of tile
  */
 template <typename Ty>
-RegionLayout<Ty>::RegionLayout(const Ty width, const Ty height,
+SpatialLayout<Ty>::SpatialLayout(const Ty width, const Ty height,
   const Ty tileWidth, const Ty tileHeight, const LayoutKind kind)
-  : RegionLayout(0, 0, width, height, tileWidth, tileHeight, kind) {
+  : SpatialLayout(0, 0, width, height, tileWidth, tileHeight, kind) {
 }
 
 /**
@@ -31,7 +31,7 @@ RegionLayout<Ty>::RegionLayout(const Ty width, const Ty height,
  *  \param [in] tileHeight height of tile
  */
 template <typename Ty>
-RegionLayout<Ty>::RegionLayout(const Ty minX, const Ty minY, 
+SpatialLayout<Ty>::SpatialLayout(const Ty minX, const Ty minY, 
   const Ty width, const Ty height,
   const Ty tileWidth, const Ty tileHeight, const LayoutKind kind)
   : mMinX(minX), mMinY(minY), mWidth(width), mHeight(height), 
@@ -40,14 +40,14 @@ RegionLayout<Ty>::RegionLayout(const Ty minX, const Ty minY,
 }
 
 /**
- *  \brief Divides region extent into tiles using specified tiling size.
+ *  \brief Divides spatial extent into tiles using specified tiling size.
  *
  *  \param [in] tileWidth width of tile
  *  \param [in] tileHeight height of tile
  *  \return Returns number of tiles.
  */
 template <typename Ty>
-int RegionLayout<Ty>::SetTileSize(const Ty tileWidth, const Ty tileHeight) {
+int SpatialLayout<Ty>::SetTileSize(const Ty tileWidth, const Ty tileHeight) {
   mTileWidth = tileWidth;
   mTileHeight = tileHeight;
   LayoutTiles();
@@ -55,23 +55,23 @@ int RegionLayout<Ty>::SetTileSize(const Ty tileWidth, const Ty tileHeight) {
 }
 
 /**
- *  \brief Divides region extent into tiles according to the expected number of tiles.
+ *  \brief Divides spatial extent into tiles according to the expected number of tiles.
  *  The tile's width and height are balanced to be close to square.
  *
  *  \param [in] numTiles expected number of tiles
  *  \return Returns actual number of tiles.
  */
 template <typename Ty>
-int RegionLayout<Ty>::SetNumTiles(const int numTiles) {
+int SpatialLayout<Ty>::SetNumTiles(const int numTiles) {
   // \todo
   return static_cast<int>(mTiles.size());
 }
 
 /**
- *  \brief Divides region extent into tiles.
+ *  \brief Divides spatial extent into tiles.
  */
 template <typename Ty>
-void RegionLayout<Ty>::LayoutTiles() {
+void SpatialLayout<Ty>::LayoutTiles() {
   if (mWidth < mTileWidth || mHeight < mTileHeight) {
     throw std::invalid_argument("Thw tile size should be less than or equal to the region size");
   }
@@ -85,7 +85,7 @@ void RegionLayout<Ty>::LayoutTiles() {
       for (Ty w = 0; w < mWidth; w += mTileWidth) {
         Ty tileWidth = std::min<Ty>(mTileWidth, mWidth - w);
 
-        mTiles.push_back(RegionTile<Ty>{ mMinX + w, mMinY + h, tileWidth, tileHeight });
+        mTiles.push_back(SpatialTile<Ty>{ mMinX + w, mMinY + h, tileWidth, tileHeight });
       }
     }
   }
@@ -96,11 +96,11 @@ void RegionLayout<Ty>::LayoutTiles() {
       for (Ty h = 0; h < mHeight; h += mTileHeight) {
         Ty tileHeight = std::min<Ty>(mTileHeight, mHeight - h);
 
-        mTiles.push_back(RegionTile<Ty>{ mMinX + w, mMinY + h, tileWidth, tileHeight });
+        mTiles.push_back(SpatialTile<Ty>{ mMinX + w, mMinY + h, tileWidth, tileHeight });
       }
     }
   }
 }
 
-template class earthxpert::RegionLayout<float>;
-template class earthxpert::RegionLayout<double>;
+template class earthxpert::SpatialLayout<float>;
+template class earthxpert::SpatialLayout<double>;
