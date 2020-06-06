@@ -25,6 +25,11 @@ public:
     eDISPARITY  // match disparity in image space
   };
 
+  enum PathType {
+    ePT8,     // 8 pathes
+    ePY16     // 16 pathes
+  };
+
   virtual ~IDenseMatch() = default;
 
   /**

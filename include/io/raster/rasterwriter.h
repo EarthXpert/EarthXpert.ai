@@ -6,7 +6,6 @@
 
 #include "io/raster/irasterwriter.h"
 #include "io/raster/rasterreader.h"
-#include "core/spatialref/geocoding.h"
 
 #include <shared_mutex>
 

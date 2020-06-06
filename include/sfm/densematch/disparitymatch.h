@@ -5,20 +5,20 @@
 #pragma once
 
 #include "sfm/densematch/densematch.h"
-#include "sfm/densematch/censuscostfunc.h"
-#include "sfm/densematch/circleneighbor.h"
-#include "sfm/densematch/micostfunc.h"
-#include "sfm/densematch/rectneighbor.h"
+#include "epipolarmodel/iepipolarmodel.h"
+#include "sensormodel/isensormodel.h"
+#include "sfm/densematch/disparitymatchtypes.h"
+#include "sfm/densematch/icostfunc.h"
+#include "sfm/densematch/ineighborhood.h"
 
 #include <algorithm>
-#include <cmath>
 #include <cassert>
+#include <cmath>
 #include <execution>
 #include <omp.h>
 #include <type_traits>
 
 namespace earthxpert {
-
 /**
  *  The class DisparityMatch implements a binocunar view semi-global matching algorithm.
  *  The algorithm computes the disparity map in image space. The input images determined
@@ -32,6 +32,7 @@ namespace earthxpert {
  */
 template <class GeometryModel, class CostFunc, class Neighborhood>
 class EXSFM_EXPORTS DisparityMatch final : public DenseMatch {
+  static_assert(std::is_base_of_v<IEpipolarModel, GeometryModel> || std::is_base_of_v<ISensorModel, GeometryModel>, "IEpipolarModel or ISensorModel");
   static_assert(std::is_base_of_v<ICostFunc, CostFunc>, "ICostFunc");
   static_assert(std::is_base_of_v<INeighborhood, Neighborhood>, "INeighborhood");
 
@@ -42,25 +43,16 @@ public:
 
   ~DisparityMatch() = default;
 
-  /**
-   *  \param [out] disparity the disparity map where the element value represents the
-   *  the disparity of the corresonding pixel.
-   *
-   *  \return Retruns true if successful, false otherwise.
-   */
-  bool Match(IRaster* disparity) override {
-    return true;
-  }
-
-  MatchType GetMatchType() const noexcept {
+  MatchType GetMatchType() const noexcept override {
     return eDISPARITY;
   }
 
 private:
-  void Preprocess();
-  void CalculateCost();
-  void AggreagateCost();
-  void OptimizeDisparity();
-  void Postprocess();
+  std::vector<DisparityTile> mTiles;
+
+  int LayoutTiles() override;
+  int MatchTiles() override;
 };
 } // namespace earthxpert
+
+#include "detail/disparitymatch.hh"

@@ -11,3 +11,21 @@
 #include <omp.h>
 
 using earthxpert::DenseMatch;
+
+/**
+ *  \param [out] map the depth map where the element value represents the
+ *  the depth of the corresonding pixel.
+ *
+ *  \return Retruns true if successful, false otherwise.
+ */
+bool DenseMatch::Match(IRaster* map) {
+  try {
+    LayoutTiles();
+    MatchTiles();
+  }
+  catch (...) {
+    throw;
+  }
+
+  return true;
+}

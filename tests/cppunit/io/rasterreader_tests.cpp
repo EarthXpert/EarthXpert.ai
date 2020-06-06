@@ -8,9 +8,40 @@
 #include "core/datasource/cvraster.h"
 #include "core/datasource/gdalraster.h"
 #include "core/datasource/rasterutils.h"
+#include "io/raster/rasternullreader.h"
 #include "io/raster/rasterreader.h"
 
 using namespace earthxpert;
+
+
+/**
+ *  TestCase 0: null reder
+ */
+TEST(rasterreader, NullReader_T0) {
+  const std::string imgFile(TestConfig::DataPath("Imagery/image_small.tif"));
+  RasterNullReader reader(imgFile);
+
+  ASSERT_FALSE(reader.GetDataset());
+  ASSERT_FALSE(reader.GetMetadata());
+
+  auto [fileNumCols, fileNumRows] = reader.GetSize();
+  ASSERT_EQ(fileNumCols, 0);
+  ASSERT_EQ(fileNumRows, 0);
+
+  ASSERT_EQ(reader.GetDataType(), GDT_Unknown);
+  ASSERT_EQ(reader.GetNumBands(), 0);
+  ASSERT_EQ(reader.GetMarginKind(), MarginKind::eCONSTANT);
+
+  ASSERT_FALSE(reader.GetCoordinateSystem());
+  ASSERT_FALSE(reader.GetGeocoding());
+
+  auto raster = reader.ReadRaster(fileNumCols / 2 - 1000, fileNumRows / 2 - 1000, 2000, 2000, RasterType::eCVMAT);
+  ASSERT_FALSE(raster);
+
+  ASSERT_NO_THROW(reader.ReadRaster(static_cast<IRaster*>(nullptr)));
+  ASSERT_NO_THROW(reader.ReadRaster(static_cast<CvRaster*>(nullptr)));
+  ASSERT_NO_THROW(reader.ReadRaster(static_cast<GdalRaster*>(nullptr)));
+}
 
 /**
  *  \brief cv::Mat test cases
