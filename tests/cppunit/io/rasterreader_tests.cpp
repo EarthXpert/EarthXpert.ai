@@ -37,6 +37,7 @@ TEST(rasterreader, NullReader_T0) {
 
   auto raster = reader.ReadRaster(fileNumCols / 2 - 1000, fileNumRows / 2 - 1000, 2000, 2000, RasterType::eCVMAT);
   ASSERT_FALSE(raster);
+  ASSERT_THROW(raster->GetBuffer(), std::exception_ptr);
 
   ASSERT_NO_THROW(reader.ReadRaster(static_cast<IRaster*>(nullptr)));
   ASSERT_NO_THROW(reader.ReadRaster(static_cast<CvRaster*>(nullptr)));
