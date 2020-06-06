@@ -9,18 +9,11 @@
 #include <utility>
 
 namespace earthxpert {
-
 /**
  *  The interface IDenseMatch defines the behaviours of dense matching algorithms.
  */
 class EXSFM_EXPORTS IDenseMatch {
 public:
-  // match algorithm
-  enum MatchAlgo {
-    eSGM,   // semi-global matching in image space
-    eMVS    // semi-global matching in ground space
-  };
-
   // match dimension
   enum MatchDim {
     e1D,    // 1D along x direction
@@ -28,16 +21,19 @@ public:
   };
 
   enum MatchType {
-    eDEPTH,     // match depth
-    eDISPARITY  // match disparity
+    eDEPTH,     // match depth in ground space
+    eDISPARITY  // match disparity in image space
   };
 
   virtual ~IDenseMatch() = default;
 
   /**
-   *  \return Retruns a map representing the disparity or depth.
+   *  \param [out] depth the depth map where the element value represents the
+   *  the depth of the corresonding pixel.
+   *
+   *  \return Retruns true if successful, false otherwise.
    */
-  virtual std::unique_ptr<IRaster> Match() = 0;
+  virtual bool Match(IRaster*) = 0;
 
   virtual MatchType GetMatchType() const noexcept = 0;
 };

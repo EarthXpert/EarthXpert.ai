@@ -13,5 +13,6 @@ namespace earthxpert {
  */
 class EXPROJECT_EXPORTS IProject {
 public:
-  virtual ~IProject() {}
+  virtual ~IProject() = default;
+};
 }

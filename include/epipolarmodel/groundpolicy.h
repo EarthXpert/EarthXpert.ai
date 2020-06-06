@@ -27,10 +27,10 @@ constexpr int kLU_USFEET = 3;
  *  The class GeographicGround offers the ground transformation
  *  between the geographic and LSR coordinates.
  *
- *  \param AngleUnit angle unit of horizontal coordinates in ground: degree, gon, radian
- *  \param LinearUnit linear unit of vertical coordinate in ground: feet, meter, us_survey_feet
+ *  \param angleUnit angle unit of horizontal coordinates in ground: degree, gon, radian
+ *  \param linearUnit linear unit of vertical coordinate in ground: feet, meter, us_survey_feet
  */
-template <int AngleUnit = kAU_RADIAN, int LinearUnit = kLU_METER>
+template <int angleUnit = kAU_RADIAN, int linearUnit = kLU_METER>
 class EXEPIPOLARMODEL_EXPORTS GeographicGround final : public IGroundPolicy {
 public:
   /**
@@ -76,10 +76,10 @@ public:
    *  \return Return 3d position in geographic coordinate system [unit: AngleUnit]
    */
   Point3d RectToGround(const Point3d &rect) const  override {
-    if constexpr (kAU_DEGREE == AngleUnit) {
+    if constexpr (kAU_DEGREE == angleUnit) {
       return Rad2Deg(mEarthEllip->LSRToLPH(rect));
     }
-    else if constexpr (kAU_GON == AngleUnit) {
+    else if constexpr (kAU_GON == angleUnit) {
       return Rad2Gon(mEarthEllip->LSRToLPH(rect));
     }
     else {
@@ -95,10 +95,10 @@ public:
    *  \return Return 3d position in LSR coordinate system
    */
   Point3d GroundToRect(const Point3d &ground) const override {
-    if constexpr (kAU_DEGREE == AngleUnit) {
+    if constexpr (kAU_DEGREE == angleUnit) {
       return mEarthEllip->LSRToLPH(Deg2Rad(ground));
     }
-    else if constexpr (kAU_GON == AngleUnit) {
+    else if constexpr (kAU_GON == angleUnit) {
       return mEarthEllip->LSRToLPH(Gon2Rad(ground));
     }
     else {
@@ -129,9 +129,9 @@ using GeographicGroundRad = GeographicGround<kAU_RADIAN>;
  *  The class LocalGround offers the ground transformation
  *  between the model LSR and the rectification LSR coordinates.
  *
- *  \param LinearUnit linear unit of vertical coordinate in ground: feet, meter, us_survey_feet
+ *  \param linearUnit linear unit of vertical coordinate in ground: feet, meter, us_survey_feet
  */
-template <int LinearUnit = kLU_METER>
+template <int linearUnit = kLU_METER>
 class EXEPIPOLARMODEL_EXPORTS LocalGround final : public IGroundPolicy{
 public:
   /**
@@ -191,9 +191,9 @@ using LocalGroundUf = LocalGround<kLU_USFEET>;
  *  The class MapGround offers the ground transformation
  *  between the model map and the rectification map coordinates.
  *
- *  \param LinearUnit linear unit of vertical coordinate in ground: feet, meter, us_survey_feet
+ *  \param linearUnit linear unit of vertical coordinate in ground: feet, meter, us_survey_feet
  */
-template <int LinearUnit = kLU_METER>
+template <int linearUnit = kLU_METER>
 class EXEPIPOLARMODEL_EXPORTS MapGround final : public IGroundPolicy {
 public:
   /**

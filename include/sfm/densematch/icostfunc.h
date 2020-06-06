@@ -9,10 +9,10 @@
 namespace earthxpert {
 
 /**
- *  The interface ICostFunction defines the math methods used to calculate cost/difference
+ *  The interface ICostFunc defines the math methods used to calculate cost/difference
  *  given a pixel location on one image and its disparity against anohter image.
  */
-class EXSFM_EXPORTS ICostFunction {
+class EXSFM_EXPORTS ICostFunc {
 public:
   enum CostType {
     eAD,        // absolute difference
@@ -22,15 +22,11 @@ public:
     eRANK       // rank transform
   };
 
-  // cost activation functions
-  enum CostActivate {
-    eIDENTITY,   // identical, no transformation
-    eNORMALIZE,  // offset and scale
-    eSIGMOID     // sigmoid function
-  };
-
-  virtual ~ICostFunction() = default;
+  virtual ~ICostFunc() = default;
 
   virtual CostType GetCostType() const noexcept = 0;
+
+private:
+  virtual double CalcCostImpl() const = 0;
 };
 }

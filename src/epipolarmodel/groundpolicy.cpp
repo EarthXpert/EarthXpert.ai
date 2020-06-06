@@ -16,32 +16,32 @@ using earthxpert::Point3d;
  *
  *  \param [in]
  */
-template <int LinearUnit> LocalGround<LinearUnit>::LocalGround() {
+template <int linearUnit> LocalGround<linearUnit>::LocalGround() {
 }
 
-template <int LinearUnit> 
-LocalGround<LinearUnit>::LocalGround(const LocalGround<LinearUnit>&rhs) {}
+template <int linearUnit> 
+LocalGround<linearUnit>::LocalGround(const LocalGround<linearUnit>&rhs) {}
 
-template <int LinearUnit> 
-LocalGround<LinearUnit>::LocalGround(LocalGround<LinearUnit>&&rhs) noexcept {}
+template <int linearUnit> 
+LocalGround<linearUnit>::LocalGround(LocalGround<linearUnit>&&rhs) noexcept {}
 
-template <int LinearUnit> LocalGround<LinearUnit>& 
-LocalGround<LinearUnit>::operator=(const LocalGround<LinearUnit>&rhs) {
+template <int linearUnit> LocalGround<linearUnit>& 
+LocalGround<linearUnit>::operator=(const LocalGround<linearUnit>&rhs) {
   return *this;
 }
 
-template <int LinearUnit> 
-LocalGround<LinearUnit>& LocalGround<LinearUnit>::operator=(LocalGround<LinearUnit>&&rhs) noexcept {
+template <int linearUnit> 
+LocalGround<linearUnit>& LocalGround<linearUnit>::operator=(LocalGround<linearUnit>&&rhs) noexcept {
   return *this;
 }
 
-template <int LinearUnit> 
-bool LocalGround<LinearUnit>::operator==(const LocalGround<LinearUnit>&rhs) const {
+template <int linearUnit> 
+bool LocalGround<linearUnit>::operator==(const LocalGround<linearUnit>&rhs) const {
   return true;
 }
 
-template <int LinearUnit> 
-bool LocalGround<LinearUnit>::operator!=(const LocalGround<LinearUnit>&rhs) const {
+template <int linearUnit> 
+bool LocalGround<linearUnit>::operator!=(const LocalGround<linearUnit>&rhs) const {
   return !(operator==(rhs));
 }
 
@@ -52,8 +52,8 @@ bool LocalGround<LinearUnit>::operator!=(const LocalGround<LinearUnit>&rhs) cons
  *  \param [in] rect 3d position in rectification LSR coordinate system
  *  \return Return 3d position in model LSR coordinate system
  */
-template <int LinearUnit> 
-Point3d LocalGround<LinearUnit>::RectToGround(const Point3d &rect) const {
+template <int linearUnit> 
+Point3d LocalGround<linearUnit>::RectToGround(const Point3d &rect) const {
   return Point3d(0, 0, 0);
 }
 
@@ -64,23 +64,23 @@ Point3d LocalGround<LinearUnit>::RectToGround(const Point3d &rect) const {
  *  \param [in] ground 3d position in model LSR coordinate system
  *  \return Return 3d position in rectification LSR coordinate system
  */
-template <int LinearUnit> 
-Point3d LocalGround<LinearUnit>::GroundToRect(const Point3d &ground) const {
+template <int linearUnit> 
+Point3d LocalGround<linearUnit>::GroundToRect(const Point3d &ground) const {
   return Point3d(0, 0, 0);
 }
 
 /**
  *  \brief helper of copy constructor & assignment.
  */
-template <int LinearUnit> 
-void LocalGround<LinearUnit>::CopyFrom(const LocalGround &rhs) {
+template <int linearUnit> 
+void LocalGround<linearUnit>::CopyFrom(const LocalGround &rhs) {
 }
 
 /**
  *  \brief helper of move constructor & assignment.
  */
-template <int LinearUnit> 
-void LocalGround<LinearUnit>::MoveFrom(LocalGround &&rhs) noexcept {
+template <int linearUnit> 
+void LocalGround<linearUnit>::MoveFrom(LocalGround &&rhs) noexcept {
 }
 
 template class earthxpert::LocalGround<earthxpert::kLU_FEET>;
@@ -94,33 +94,33 @@ template class earthxpert::LocalGround<earthxpert::kLU_USFEET>;
  *
  *  \param [in]
  */
-template <int LinearUnit> MapGround<LinearUnit>::MapGround() {
+template <int linearUnit> MapGround<linearUnit>::MapGround() {
 }
 
-template <int LinearUnit> 
-MapGround<LinearUnit>::MapGround(const MapGround<LinearUnit>&rhs) {}
+template <int linearUnit> 
+MapGround<linearUnit>::MapGround(const MapGround<linearUnit>&rhs) {}
 
-template <int LinearUnit> 
-MapGround<LinearUnit>::MapGround(MapGround<LinearUnit>&&rhs) noexcept {}
+template <int linearUnit> 
+MapGround<linearUnit>::MapGround(MapGround<linearUnit>&&rhs) noexcept {}
 
-template <int LinearUnit> 
-MapGround<LinearUnit>& 
-MapGround<LinearUnit>::operator=(const MapGround<LinearUnit>&rhs) {
+template <int linearUnit> 
+MapGround<linearUnit>& 
+MapGround<linearUnit>::operator=(const MapGround<linearUnit>&rhs) {
   return *this;
 }
 
-template <int LinearUnit> 
-MapGround<LinearUnit>&MapGround<LinearUnit>::operator=(MapGround<LinearUnit>&&rhs) noexcept {
+template <int linearUnit> 
+MapGround<linearUnit>&MapGround<linearUnit>::operator=(MapGround<linearUnit>&&rhs) noexcept {
   return *this;
 }
 
-template <int LinearUnit> 
-bool MapGround<LinearUnit>::operator==(const MapGround<LinearUnit>&rhs) const {
+template <int linearUnit> 
+bool MapGround<linearUnit>::operator==(const MapGround<linearUnit>&rhs) const {
   return true;
 }
 
-template <int LinearUnit> 
-bool MapGround<LinearUnit>::operator!=(const MapGround<LinearUnit>&rhs) const {
+template <int linearUnit> 
+bool MapGround<linearUnit>::operator!=(const MapGround<linearUnit>&rhs) const {
   return !(operator==(rhs));
 }
 
@@ -131,8 +131,8 @@ bool MapGround<LinearUnit>::operator!=(const MapGround<LinearUnit>&rhs) const {
  *  \param [in] rect 3d position in rectification map coordinate system
  *  \return Return 3d position in model map coordinate system
  */
-template <int LinearUnit> 
-Point3d MapGround<LinearUnit>::RectToGround(const Point3d &rect) const {
+template <int linearUnit> 
+Point3d MapGround<linearUnit>::RectToGround(const Point3d &rect) const {
   return Point3d(0, 0, 0);
 }
 
@@ -143,23 +143,23 @@ Point3d MapGround<LinearUnit>::RectToGround(const Point3d &rect) const {
  *  \param [in] ground 3d position in model map coordinate system
  *  \return Return 3d position in rectification map coordinate system
  */
-template <int LinearUnit> 
-Point3d MapGround<LinearUnit>::GroundToRect(const Point3d &ground) const {
+template <int linearUnit> 
+Point3d MapGround<linearUnit>::GroundToRect(const Point3d &ground) const {
   return Point3d(0, 0, 0);
 }
 
 /**
  *  \brief helper of copy constructor & assignment.
  */
-template <int LinearUnit> 
-void MapGround<LinearUnit>::CopyFrom(const MapGround<LinearUnit>&rhs) {
+template <int linearUnit> 
+void MapGround<linearUnit>::CopyFrom(const MapGround<linearUnit>&rhs) {
 }
 
 /**
  *  \brief helper of move constructor & assignment.
  */
-template <int LinearUnit> 
-void MapGround<LinearUnit>::MoveFrom(MapGround<LinearUnit>&&rhs) noexcept  {
+template <int linearUnit> 
+void MapGround<linearUnit>::MoveFrom(MapGround<linearUnit>&&rhs) noexcept  {
 }
 
 template class earthxpert::MapGround<earthxpert::kLU_FEET>;

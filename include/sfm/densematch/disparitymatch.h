@@ -5,10 +5,17 @@
 #pragma once
 
 #include "sfm/densematch/densematch.h"
-#include "sfm/densematch/censuscostfunction.h"
+#include "sfm/densematch/censuscostfunc.h"
 #include "sfm/densematch/circleneighbor.h"
-#include "sfm/densematch/micostfunction.h"
+#include "sfm/densematch/micostfunc.h"
 #include "sfm/densematch/rectneighbor.h"
+
+#include <algorithm>
+#include <cmath>
+#include <cassert>
+#include <execution>
+#include <omp.h>
+#include <type_traits>
 
 namespace earthxpert {
 
@@ -23,20 +30,27 @@ namespace earthxpert {
  *  \param CostFunction defines the behaviour of calculating cost
  *  \param Neighborhood defines the behaviour of neighborhood selection
  */
-template <class GeometryModel, class CostFunction, class Neighborhood>
+template <class GeometryModel, class CostFunc, class Neighborhood>
 class EXSFM_EXPORTS DisparityMatch final : public DenseMatch {
+  static_assert(std::is_base_of_v<ICostFunc, CostFunc>, "ICostFunc");
+  static_assert(std::is_base_of_v<INeighborhood, Neighborhood>, "INeighborhood");
+
 public:
-  using GeometryType = GeometryModel;
-  using CostPolicyType = CostFunction;
+  using GeometryPolicyType = GeometryModel;
+  using CostPolicyType = CostFunc;
   using NeighborPolicyType = Neighborhood;
 
   ~DisparityMatch() = default;
 
   /**
-   *  \return Retruns the disparity map where the element value is the x-parallax
-   *  (assuming a perfect epipolar), or the x- and y-parallax pair (e.g. Point2f).
+   *  \param [out] disparity the disparity map where the element value represents the
+   *  the disparity of the corresonding pixel.
+   *
+   *  \return Retruns true if successful, false otherwise.
    */
-  std::unique_ptr<IRaster> Match();
+  bool Match(IRaster* disparity) override {
+    return true;
+  }
 
   MatchType GetMatchType() const noexcept {
     return eDISPARITY;

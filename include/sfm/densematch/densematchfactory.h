@@ -28,5 +28,15 @@ public:
    *  \brief
    */
   static std::unique_ptr<IDenseMatch> CreateDisparityMatch();
+
+  /**
+   *  \brief
+   */
+  static std::unique_ptr<IDenseMatch> CreateEpipolarDisparityMatch();
+
+  /**
+   *  \brief
+   */
+  static std::unique_ptr<IDenseMatch> CreateSensorDisparityMatch();
 };
 } // namespace earthxpert
