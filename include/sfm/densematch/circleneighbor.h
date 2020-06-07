@@ -22,11 +22,13 @@ public:
   }
 
   NeighborType GetNeighborType() const noexcept {
-    return eRECT;
+    return eCIRCLE;
   }
 
 private:
   int mRadius{};
+
+  // cache
   std::vector<int> mIndices;
 
   void GenerateIndices();

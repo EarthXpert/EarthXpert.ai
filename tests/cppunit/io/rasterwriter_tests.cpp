@@ -9,6 +9,7 @@
 #include "core/datasource/gdalraster.h"
 #include "core/datasource/rasterutils.h"
 #include "core/utils/rasterlayout.h"
+#include "io/raster/rasternullwriter.h"
 #include "io/raster/rasterwriter.h"
 #include <filesystem>
 #include <omp.h>
@@ -39,6 +40,37 @@ static bool IsImageEqual(const std::string& imgFile, const std::string& imgFileT
   // \todo
 
   return true;
+}
+
+/**
+ *  TestCase 0: null writer
+ */
+TEST(rasterwriter, NullWriter) {
+  const std::string imgFile(TestConfig::DataPath("Imagery/image_small.tif"));
+  RasterNullReader reader(imgFile);
+
+  RasterLayout rasterLayout(10, 10, 1, 1);
+  auto& rasterWins = rasterLayout.GetRasterWindows();
+
+  const std::string imgFileT(TestConfig::OutputPath("image_small_t_NullRaster.tif"));
+  RasterNullWriter writer(imgFileT, "", 10, 10, GDT_Unknown, 0);
+
+  // pre-allocate buffer used by all windows
+  std::unique_ptr<uchar[]> buffer{ new uchar[1] };
+
+  for (auto& rw : rasterWins) {
+    CvRaster raster(rw.numCols, rw.numRows, CV_8UC3, rw.colOffset, rw.rowOffset,
+      0, 0, MarginKind::eCONSTANT, buffer.get());
+    reader.ReadRaster(&raster);
+
+    auto [numCols, numRows] = raster.GetSize();
+    ASSERT_EQ(numCols, rw.numCols);
+    ASSERT_EQ(numRows, rw.numRows);
+
+    writer.WriteRaster(&raster);
+  }
+
+  ASSERT_FALSE(fs::exists(fs::path(imgFileT))) << imgFileT;
 }
 
 /**

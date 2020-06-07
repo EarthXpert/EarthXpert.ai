@@ -2,7 +2,7 @@
 #include "testconfig.h"
 
 #include "core/datasource/vectorutils.h"
-#include "core/utils/regionlayout.h"
+#include "core/utils/spatiallayout.h"
 #include "io/vector/vectorreader.h"
 #include <filesystem>
 #include <omp.h>

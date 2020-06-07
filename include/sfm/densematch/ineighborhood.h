@@ -15,7 +15,7 @@ class EXSFM_EXPORTS INeighborhood {
 public:
   enum NeighborType {
     eCIRCLE,    // circular
-    eRECT     // rectangular
+    eRECT       // rectangular
   };
 
   virtual ~INeighborhood() = default;

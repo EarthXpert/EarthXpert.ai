@@ -5,7 +5,7 @@
 #include "3rd_party/gtest/gtest_main.h"
 #include "testconfig.h"
 
-#include "core/utils/regionlayout.h"
+#include "core/utils/spatiallayout.h"
 #include "io/pointcloud/pointcloudreader.h"
 #include "boost/format.hpp"
 #include <array>
@@ -192,7 +192,7 @@ TEST(pointcloudreader, ReadPointcloud_LAS_XYZC_CHUNKS) {
 
   Pointcloud pc(chunkNumPts, { fgt::kBITXYZ });
   for (size_t i = 0, j = 0; i < filePointCount; i += chunkNumPts, ++j) {
-    const auto readNumPts = reader.ReadPointcloud(&pc);
+    const auto readNumPts = reader.ReadPointcloud(i, &pc);
     ASSERT_EQ(chunkNumPts4[j], readNumPts);
 
     const auto xyz = pc.GetXYZ(0);
@@ -260,7 +260,7 @@ TEST(pointcloudreader, ReadPointcloud_LAS_XYZC_TILES) {
   const auto tileHeight = height * 0.5 + 1.0e-6;
   
   RegionLayoutD layout(header->min_x, header->min_y, width, height, tileWidth, tileHeight);
-  auto& tiles = layout.GetRegionTiles();
+  auto& tiles = layout.GetSpatialTiles();
 
   ASSERT_EQ(4, tiles.size()) << "number of tiles";
 
@@ -277,7 +277,7 @@ TEST(pointcloudreader, ReadPointcloud_LAS_XYZC_TILES) {
     ASSERT_NEAR(xyz4[i].z, xyz.z, tol) << "difference > 1 um";
 
     const auto tile2 = pc->ObtainBoundingBox2D();
-    if (!tile.ImproperContain(tile2)) {
+    if (!(tile >= tile2)) {
       ++j;
     }
   }
@@ -305,7 +305,7 @@ TEST(pointcloudreader, ReadPointcloudOMP_LAS_XYZ_TILES) {
   const auto tileHeight = height / 25.0 + 1.0e-6;
 
   RegionLayoutD layout(header->min_x, header->min_y, width, height, tileWidth, tileHeight);
-  auto& tiles = layout.GetRegionTiles();
+  auto& tiles = layout.GetSpatialTiles();
 
   ASSERT_EQ(625, tiles.size()) << "number of tiles";
 
@@ -316,7 +316,7 @@ TEST(pointcloudreader, ReadPointcloudOMP_LAS_XYZ_TILES) {
     auto pc = reader.ReadPointcloud(tile);
 
     const auto tile2 = pc->ObtainBoundingBox2D();
-    if (!tile.ImproperContain(tile2)) {
+    if (!(tile >= tile2)) {
       //std::cerr << boost::format("tile extent: %1%\n") % i;
       ++j;
     }

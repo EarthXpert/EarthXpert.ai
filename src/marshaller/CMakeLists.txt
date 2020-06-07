@@ -7,7 +7,7 @@ earthxpert_add_library(marshaller "api"
        "sensormodel/distgridmarshaller.cpp"
        "sensormodel/framemodelmarshaller.cpp"
        "sensormodel/rationalmodelmarshaller.cpp"
-  ITEMS ex3rd_party core sensormodel epipolarmodel
+  ITEMS ex3rd_party core epipolarmodel exproject sensormodel
         ${GDAL_LIBRARY})
 
 earthxpert_install_target(marshaller)

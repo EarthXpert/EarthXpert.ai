@@ -7,12 +7,34 @@
 #include "lasindex.hpp"
 #include "lasquadtree.hpp"
 #include "lasreader.hpp"
- //#include <experimental/filesystem>
+#include "boost/format.hpp"
 #include <memory>
+#include <sstream>
 #include <sys/stat.h>
 
 namespace earthxpert::thirdparty {
 /**
+ *  \param [in] minX x location of the lower-left corner of the tile
+ *  \param [in] minY y location of the lower-left corner of the tile
+ *  \param [in] width the tile width [unit: meter]
+ *  \param [in] height the tile height
+ *
+ *  \return Return a LASfilter object for the given region.
+ */
+std::unique_ptr<LASfilter> CreateLasFilter(const double minX,
+  const double minY, const double width, const double height) {
+  std::stringstream ss;
+  ss << boost::format("-keep_xy %1% %2% %3% %4%") \
+    % minX % minY % (minX + width) % (minY + height);
+  std::string str{ ss.str() };
+
+  auto filter = std::make_unique<LASfilter>();
+  filter->parse(str.data());
+
+  return filter;
+}
+
+ /**
  *  \brief create a lax index file for storing quadtree of the
  *   las file, return if the lax file already exist
  *

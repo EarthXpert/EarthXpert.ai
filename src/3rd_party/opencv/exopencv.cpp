@@ -4,3 +4,9 @@
  */
 #include "3rd_party/opencv/exopencv.h"
 
+namespace earthxpert {
+
+namespace thirdparty {
+
+}
+}

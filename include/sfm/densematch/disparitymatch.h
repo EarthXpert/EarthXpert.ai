@@ -5,13 +5,20 @@
 #pragma once
 
 #include "sfm/densematch/densematch.h"
-#include "sfm/densematch/censuscostfunction.h"
-#include "sfm/densematch/circleneighbor.h"
-#include "sfm/densematch/micostfunction.h"
-#include "sfm/densematch/rectneighbor.h"
+#include "epipolarmodel/iepipolarmodel.h"
+#include "sensormodel/isensormodel.h"
+#include "sfm/densematch/disparitymatchtypes.h"
+#include "sfm/densematch/icostfunc.h"
+#include "sfm/densematch/ineighborhood.h"
+
+#include <algorithm>
+#include <cassert>
+#include <cmath>
+#include <execution>
+#include <omp.h>
+#include <type_traits>
 
 namespace earthxpert {
-
 /**
  *  The class DisparityMatch implements a binocunar view semi-global matching algorithm.
  *  The algorithm computes the disparity map in image space. The input images determined
@@ -23,30 +30,29 @@ namespace earthxpert {
  *  \param CostFunction defines the behaviour of calculating cost
  *  \param Neighborhood defines the behaviour of neighborhood selection
  */
-template <class GeometryModel, class CostFunction, class Neighborhood>
+template <class GeometryModel, class CostFunc, class Neighborhood>
 class EXSFM_EXPORTS DisparityMatch final : public DenseMatch {
+  static_assert(std::is_base_of_v<IEpipolarModel, GeometryModel> || std::is_base_of_v<ISensorModel, GeometryModel>, "IEpipolarModel or ISensorModel");
+  static_assert(std::is_base_of_v<ICostFunc, CostFunc>, "ICostFunc");
+  static_assert(std::is_base_of_v<INeighborhood, Neighborhood>, "INeighborhood");
+
 public:
-  using GeometryType = GeometryModel;
-  using CostPolicyType = CostFunction;
+  using GeometryPolicyType = GeometryModel;
+  using CostPolicyType = CostFunc;
   using NeighborPolicyType = Neighborhood;
 
   ~DisparityMatch() = default;
 
-  /**
-   *  \return Retruns the disparity map where the element value is the x-parallax
-   *  (assuming a perfect epipolar), or the x- and y-parallax pair (e.g. Point2f).
-   */
-  std::unique_ptr<IRaster> Match();
-
-  MatchType GetMatchType() const noexcept {
+  MatchType GetMatchType() const noexcept override {
     return eDISPARITY;
   }
 
 private:
-  void Preprocess();
-  void CalculateCost();
-  void AggreagateCost();
-  void OptimizeDisparity();
-  void Postprocess();
+  std::vector<DisparityTile> mTiles;
+
+  int LayoutTiles() override;
+  int MatchTiles() override;
 };
 } // namespace earthxpert
+
+#include "detail/disparitymatch.hh"

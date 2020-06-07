@@ -11,7 +11,6 @@
 
 namespace earthxpert {
 class Geocoding;
-using LayerType = ILayer::LayerType;
 
 /**
  *  The interface IVectorReader defines the behaviors for reading an image file
@@ -41,10 +40,10 @@ public:
   /**
    *  \brief Reads the entire vector.
    *
-   *  \param [in] layerType type of data structure
-   *  \return Returns pointer to layer object holding the entire vector
+ *  \param [in] layerInfo information of layer to read
+ *  \return Returns pointer to layer object holding the entire vector data source
    */
-  virtual std::unique_ptr<ILayer> ReadLayer(LayerType layerType = LayerType::ePOINT) = 0;
+  virtual std::unique_ptr<ILayer> ReadLayer(const LayerInfo& layerInfo) = 0;
 
   /**
    *  \brief Reads a vector block defined by offsets, size. 
@@ -54,10 +53,11 @@ public:
    *  \param [in] minY 
    *  \param [in] width horizontal width
    *  \param [in] height vertical height
-   *  \return Returns pointer to raster object holding a pixel block
+   *  \param [in] layerInfo information of layer to read
+   *  \return Returns pointer to layer object holding a vector block
    */
   virtual std::unique_ptr<ILayer> ReadLayer(double minX, double minY,
-    double width, double height, LayerType layerType = LayerType::ePOINT) = 0;
+    double width, double height, const LayerInfo& layerInfo) = 0;
 
   /**
    *  \brief Reads a vector block defined by the passed vector object, populates

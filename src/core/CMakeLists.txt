@@ -6,12 +6,14 @@ earthxpert_add_library(core "api"
        "datasource/gdalraster.cpp"
        "datasource/kindfillpolicy.cpp"
        "datasource/metadata.cpp"
+       "datasource/ogrlayer.cpp"
        "datasource/pointcloud.cpp"
        "datasource/pointcloudutils.cpp"
        "datasource/rasterutils.cpp"
        "datasource/vectorutils.cpp"
        "math/interpcube.cpp"
        "math/interpgrid.cpp"
+       "math/graphics/fitting.cpp"
        "math/graphics/rotation.cpp"
        "spatialref/earthellipsoid.cpp"
        "spatialref/geocoding.cpp"
@@ -19,10 +21,11 @@ earthxpert_add_library(core "api"
        "utils/paramhelper.cpp"
        "utils/stringutils.cpp"
        "utils/layout/rasterlayout.cpp"
-       "utils/layout/regionlayout.cpp"
+       "utils/layout/spatiallayout.cpp"
        "utils/resample/rasterresample.cpp"
   ITEMS ex3rd_party
         Boost::boost Boost::filesystem Boost::iostreams
-        ${CERES_LIBRARY} ${CGAL_LIBRARIES} ${GDAL_LIBRARY} ${LASLIB_LIBRARY} ${OPENCV_LIBS})
+        ${CERES_LIBRARY} ${CGAL_LIBRARIES} ${GDAL_LIBRARY} glog::glog 
+        ${LASLIB_LIBRARY} ${OPENCV_LIBS})
 
 earthxpert_install_target(core)

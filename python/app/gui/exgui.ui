@@ -24,7 +24,7 @@
      </rect>
     </property>
     <property name="currentIndex">
-     <number>1</number>
+     <number>0</number>
     </property>
     <widget class="QWidget" name="tab">
      <attribute name="title">
@@ -79,6 +79,14 @@
       <string>Tab 2</string>
      </attribute>
      <widget class="QCheckBox" name="checkBox">
+      <property name="geometry">
+       <rect>
+        <x>0</x>
+        <y>0</y>
+        <width>70</width>
+        <height>17</height>
+       </rect>
+      </property>
       <property name="text">
        <string>CheckBox</string>
       </property>

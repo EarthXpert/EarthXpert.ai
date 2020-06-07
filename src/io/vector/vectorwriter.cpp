@@ -12,35 +12,41 @@
 using namespace earthxpert;
 
 /**
- *  \brief Construct writer object for existing vector file.
+ *  \brief Construct writer object for existing vector data source.
  *
- *  \param [in] vecFile full path of the vector file
- *  \param [in] layers an array of 1-based layer indices
+ *  \param [in] vecFile full path of the vector data source
+ *  \param [in] layersInfo an array of 1-based layer information
  */
-VectorWriter::VectorWriter(const std::string& vecFile, const std::vector<int>& layers) {
-  ObtainDatasetInfo();
+VectorWriter::VectorWriter(const std::string& vecFile, const std::vector<LayerInfo>& layersInfo) {
+  mDataset = static_cast<GDALDataset*>(GDALOpenEx(vecFile.c_str(), GDAL_OF_UPDATE, nullptr, nullptr, nullptr));
+  if (!mDataset) {
+    throw IOError("OGR failed to open vector data source for write acess.");
+  }
+  Initialize(mDataset, layersInfo);
 }
 
 /**
- *  \brief Construct writer object for newly created vector file.
+ *  \brief Construct writer object for newly created vector data source.
  *
- *  \param [in] vecFile path and name of vector file to create
- *  \param [in] format format of vector file
- *  \param [in] dataType datatype for the vector
- *  \param [in] numLayers number of layers in the vector
+ *  \param [in] vecFile path and name of vector data source to create
+ *  \param [in] format format of vector data source
+ *  \param [in] layersInfo an array of 1-based layer information
  */
 VectorWriter::VectorWriter(const std::string& vecFile, const std::string format,
-  const GDALDataType dataType, const int numLayers) {
-  ObtainDatasetInfo();
+  const std::vector<LayerInfo>& layersInfo) {
+  mDataset = thirdparty::CreateVectorDataset(vecFile, format, layersInfo);
+
+  Initialize(mDataset, {});
 }
 
 /**
- *  \brief Construct writer object for existing vector file.
+ *  \brief Initialize both reader and writer components for existing vector data source.
  *
  *  \param [in] dataset an opened dataset for writing
  *  \param [in] layers an array of 1-based layer indices
  */
-VectorWriter::VectorWriter(GDALDataset* dataset, const std::vector<int>& layers) {
+void VectorWriter::Initialize(GDALDataset* dataset, const std::vector<LayerInfo>& layersInfo) {
+  mReader = std::make_unique<VectorReader>(dataset, layersInfo);
   ObtainDatasetInfo();
 }
 
@@ -50,6 +56,7 @@ VectorWriter::VectorWriter(GDALDataset* dataset, const std::vector<int>& layers)
  *  \param [in] metaData the metadata tags
  */
 void VectorWriter::SetMetadata(const VectorMetadata* metaData) {
+  std::unique_lock<std::shared_mutex> lock(mMutex);
 }
 
 /**
@@ -66,9 +73,9 @@ void VectorWriter::SetCoordinateSystem(const SpatialReferenceSystem* srs) {
 }
 
 /**
- *  \brief Write the vector block contained in the layer object into vector file.
+ *  \brief Write the vector block contained in the layer object into vector data source.
  *
- *  \param [in] layer the layer object to be written into vector file on disk
+ *  \param [in] layer the layer object to be written into vector data source on disk
  */
 void VectorWriter::WriteLayer(ILayer* const layer) {
 }

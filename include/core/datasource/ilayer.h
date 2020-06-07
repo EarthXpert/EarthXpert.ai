@@ -5,6 +5,7 @@
 #pragma once
 
 #include "core/excore.h"
+#include "3rd_party/gdal/exgdal.h"
 #include "core/datasource/vectortypes.h"
 
 #include <memory>
@@ -17,31 +18,18 @@ namespace earthxpert {
  */
 class EXCORE_EXPORTS ILayer {
 public:
-  virtual ~ILayer() {}
-
-  /**
-   *  The RasterType defines the raster data structure
-   */
-  enum class LayerType {
-    eUNDEFINED = -1,
-    ePOINT,       //
-    eLINE,        //
-    eMULTILINE,   //
-    ePOLYGON,     //
-    NumLayerTypes
-  };
-  using lt = LayerType;
+  virtual ~ILayer() = default;
 
   virtual std::unique_ptr<ILayer> Clone() const = 0;
 
   /**
-   *  \return Returns type of vector data
+   *  \return Returns vector layer information
    */
-  virtual LayerType GetLayerType() const noexcept = 0;
+  virtual LayerInfo GetLayerInfo() const noexcept = 0;
 
   /**
    *  \return Return number of entities
    */
-  virtual int GetNumEntities() const noexcept = 0;
+  virtual int GetNumFeatures() const noexcept = 0;
 };
 } // namespace earthxpert

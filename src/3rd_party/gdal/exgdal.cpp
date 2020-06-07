@@ -14,6 +14,7 @@ void GDALInitialize() {
   GDALAllRegister();
 }
 
+namespace thirdparty {
 /**
  *  \brief create a raster dataset
  *
@@ -39,5 +40,38 @@ GDALDataset *CreateRasterDataset(const std::string& imgFile,
   }
 
   return driver->Create(imgFile.c_str(), numCols, numRows, numBands, dataType, nullptr);
+}
+
+/**
+ *  \brief create a vector dataset
+ *
+ *  \param [in] vecFile path and name of vector data source to create
+ *  \param [in] format format of image file
+ *  \param [in] layersInfo the vector layers information
+ *  \return Return pointer to GDALDataset if operation succeeds.
+ */
+GDALDataset* CreateVectorDataset(const std::string& vecFile,
+  const std::string format, const std::vector<LayerInfo>& layersInfo) {
+  auto driver = GetGDALDriverManager()->GetDriverByName(format.c_str());
+  if (!driver) {
+    throw std::invalid_argument("OGR does not support given vector format");
+  }
+
+  auto metaData = driver->GetMetadata();
+  if (FALSE == CSLFetchBoolean(metaData, GDAL_DCAP_CREATE, FALSE)) {
+    throw std::invalid_argument("OGR does not support the creation of given vector format");
+  }
+
+  auto dataset = driver->Create(vecFile.c_str(), 0, 0, 0, GDT_Unknown, nullptr);
+  if (!dataset) {
+    throw std::invalid_argument("OGR failed to create vector data source");
+  }
+
+  for (auto layerInfo : layersInfo) {
+    auto layer = dataset->CreateLayer("", nullptr, layerInfo.type, nullptr);
+  }
+
+  return dataset;
+}
 }
 } // namespace earthxpert

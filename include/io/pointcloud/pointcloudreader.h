@@ -5,7 +5,7 @@
 #pragma once
 
 #include "io/pointcloud/ipointcloudreader.h"
-#include "core/utils/regiontile.h"
+#include "core/utils/spatialtile.h"
 
 #include "lasreader.hpp"
 #include <iostream>
@@ -31,6 +31,15 @@ public:
 
   PointcloudReader &operator=(const PointcloudReader &) = delete;
   PointcloudReader &operator=(PointcloudReader &&) = delete;
+
+  /**
+   *  \return Returns the backend LASreader object. PointcloudReader
+   *  exports partially the LASlib functions. The caller could exploit
+   *  the full LASlib capabilities via the returned object pointer.
+   */
+  LASreader* GetLasReader() const noexcept {
+    return mReader.get();
+  }
 
   /**
    *  \return Returns fields group
@@ -96,15 +105,6 @@ public:
   size_t ReadPointcloud(const size_t start, Pointcloud* const pointCloud) override;
 
   /**
-   *  \brief Reads a point range defined by the passed cloud object, 
-   *  starting from the current point, and populates the associated buffer.
-   *
-   *  \param [in/out] pointCloud the container object to be populated with points.
-   *  \return Returns number of points actually read
-   */
-  size_t ReadPointcloud(Pointcloud* const pointCloud) override;
-
-  /**
    *  \brief Reads point tile defined by tile, internal margin size.
    *
    *  \param [in] minX x location of the lower-left corner of the tile [unit: meter]
@@ -129,13 +129,6 @@ public:
   /**
    *  \return Returns LASreader object.
    */
-  LASreader* GetLasReader() const noexcept {
-    return mReader.get();
-  }
-
-  /**
-   *  \return Returns LASreader object.
-   */
   const LASheader* GetLasHeader() const noexcept {
     return mHeader;
   }
@@ -149,6 +142,15 @@ private:
   float mMarginY{};
 
   mutable std::mutex mMutex;    // ranged reading
+
+  /**
+   *  \brief Reads a point range defined by the passed cloud object,
+   *  starting from the current point, and populates the associated buffer.
+   *
+   *  \param [in/out] pointCloud the container object to be populated with points.
+   *  \return Returns number of points actually read
+   */
+  size_t ReadPointcloud(Pointcloud* const pointCloud);
 
   // cache
   const LASheader *mHeader{};   // file format infomation

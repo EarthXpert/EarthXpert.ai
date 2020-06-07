@@ -9,17 +9,21 @@
 
 namespace earthxpert {
 /**
- *  The structure RegionTile contains the offset and size information.
+ *  The structure SpatialTile contains the offset and size information.
  *
  *  \param Ty value type of coordinates
  */
-template <typename Ty> struct RegionTile {
+template <typename Ty> struct SpatialTile {
   static_assert(std::is_arithmetic_v<Ty>, "Requires that template argument be integral or floating data type");
 
   Ty minX{};    // x coordinate of lower-left corner
   Ty minY{};    // y coordinate of lower-left corner
   Ty width{};
   Ty height{};
+
+  bool operator>=(const SpatialTile<Ty>& rhs) const {
+    return ImproperContain(rhs);
+  }
 
   void SetMinXY(const Ty minX, const Ty minY) {
     this->minX = minX;
@@ -42,7 +46,7 @@ template <typename Ty> struct RegionTile {
    *  \param [in] rhs Object to test
    *  \return Return true if containing the other object improperly, false otherwise.
    */
-  bool ImproperContain(const RegionTile<Ty>& rhs) const {
+  bool ImproperContain(const SpatialTile<Ty>& rhs) const {
     if (minX > rhs.minX) return false;
     if (minY > rhs.minY) return false;
     if (minX + width < rhs.minX + rhs.width) return false;
@@ -51,6 +55,6 @@ template <typename Ty> struct RegionTile {
   }
 };
 
-using RegionTileF = RegionTile<float>;
-using RegionTileD = RegionTile<double>;
+using RegionTileF = SpatialTile<float>;
+using RegionTileD = SpatialTile<double>;
 } // namespace earthxpert

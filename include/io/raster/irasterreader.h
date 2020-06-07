@@ -8,9 +8,9 @@
 #include "3rd_party/gdal/exgdal.h"
 #include "core/datasource/iraster.h"
 #include "core/datasource/metadata.h"
+#include "core/spatialref/geocoding.h"
 
 namespace earthxpert {
-class Geocoding;
 //class IPyramidReader;
 using RasterType = IRaster::RasterType;
 

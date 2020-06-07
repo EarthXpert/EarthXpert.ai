@@ -150,6 +150,6 @@ private:
 };
 
 using GeoEpipolarModel = EpipolarModel<GeographicGroundDeg>;
-using LocalEpipolarModel = EpipolarModel<LocalGround>;
-using MapEpipolarModel = EpipolarModel<MapGround>;
+using LocalEpipolarModel = EpipolarModel<LocalGroundMe>;
+using MapEpipolarModel = EpipolarModel<MapGroundMe>;
 } // namespace earthxpert

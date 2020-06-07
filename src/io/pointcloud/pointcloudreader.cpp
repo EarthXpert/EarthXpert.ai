@@ -7,14 +7,12 @@
 #include "core/datasource/pointcloudutils.h"
 #include "core/exceptions/exexcept.h"
 
-#include "boost/format.hpp"
-#include "lasfilter.hpp"
 #include <limits>
 #include <omp.h>
 #include <optional>
-#include <sstream>
 
 using namespace earthxpert;
+using earthxpert::thirdparty::CreateLasFilter;
 using earthxpert::thirdparty::PointDataTraits;
 
 /**
@@ -114,40 +112,6 @@ size_t PointcloudReader::ReadPointcloud(const size_t start, Pointcloud* const po
 }
 
 /**
- *  \brief Reads a point range defined by the passed cloud object,
- *  starting from the current point, and populates the associated buffer.
- *
- *  \param [in/out] pointCloud the container object to be populated with points.
- *                  The requested fields must be available from the dataset.
- *  \return Returns number of points actually read
- *
- *  \remark thread unsafe: donot call directly from mulitple threads simutaneously
- */
-size_t PointcloudReader::ReadPointcloud(Pointcloud* const pointCloud) {
-  assert(pointCloud);
-  if (pointCloud->GetFieldGroup() > mFieldGroup) {
-    throw std::out_of_range("Requested fields are out of the range of read fields");
-  }
-  if (0 == pointCloud->GetPointCapacity()) {
-    throw std::invalid_argument("ReadPointcloud: pointCloud's buffer is empty");
-  }
-
-  pointCloud->SetOrigin(Point3d(mHeader->x_offset, 
-    mHeader->y_offset, mHeader->z_offset));
-
-  const size_t numPoints = std::min<size_t>(pointCloud->GetPointCapacity(), // capacity
-    mReader->npoints - mReader->p_count);                           // available
-
-  for (size_t i = 0; i < numPoints; ++i) {
-    mReader->read_point();
-    pointCloud->SetPoint_Unchecked(i, mReader->point, false);
-  }
-  pointCloud->SetPointCount(numPoints);
-
-  return numPoints;
-}
-
-/**
  *  \brief Reads point tile defined by tile.
  *
  *  \param [in] minX x location of the lower-left corner of the tile
@@ -156,8 +120,6 @@ size_t PointcloudReader::ReadPointcloud(Pointcloud* const pointCloud) {
  *  \param [in] height the tile height
  *
  *  \return Return Pointcloud container object.
- *
- *  \todo reduce memory usage
  */
 std::unique_ptr<Pointcloud> PointcloudReader::ReadPointcloud(
   const double minX, const double minY, const double width, const double height) {
@@ -173,19 +135,13 @@ std::unique_ptr<Pointcloud> PointcloudReader::ReadPointcloud(
  */
 std::unique_ptr<Pointcloud> 
 PointcloudReader::ReadPointcloud(const RegionTileD& tile) {
-  // faster: direct reading if covering the entire file
-  if (tile.ImproperContain(mFileBBox2D)) {
+  // fast: direct reading if covering the entire file
+  if (tile >= mFileBBox2D) {
     return ReadPointcloud();
   }
 
   // slower: filtered reading
-  std::stringstream ss;
-  ss << boost::format("-keep_xy %1% %2% %3% %4%") \
-    % tile.minX % tile.minY % (tile.minX + tile.width) % (tile.minY + tile.height);
-  std::string str{ ss.str() };
-
-  auto filter = std::make_unique<LASfilter>();
-  filter->parse(str.data());
+  auto filter = CreateLasFilter(tile.minX, tile.minY, tile.width, tile.height);
 
   std::lock_guard<std::mutex> lock(mMutex);
   mReader->set_filter(filter.get());
@@ -220,6 +176,40 @@ PointcloudReader::ReadPointcloud(const RegionTileD& tile) {
   mReader->set_filter(nullptr);
 
   return pointCloud;
+}
+
+/**
+ *  \brief Reads a point range defined by the passed cloud object,
+ *  starting from the current point, and populates the associated buffer.
+ *
+ *  \param [in/out] pointCloud the container object to be populated with points.
+ *                  The requested fields must be available from the dataset.
+ *  \return Returns number of points actually read
+ *
+ *  \remark thread unsafe: donot call directly from mulitple threads simutaneously
+ */
+size_t PointcloudReader::ReadPointcloud(Pointcloud* const pointCloud) {
+  assert(pointCloud);
+  if (pointCloud->GetFieldGroup() > mFieldGroup) {
+    throw std::out_of_range("Requested fields are out of the range of read fields");
+  }
+  if (0 == pointCloud->GetPointCapacity()) {
+    throw std::invalid_argument("ReadPointcloud: pointCloud's buffer is empty");
+  }
+
+  pointCloud->SetOrigin(Point3d(mHeader->x_offset,
+    mHeader->y_offset, mHeader->z_offset));
+
+  const size_t numPoints = std::min<size_t>(pointCloud->GetPointCapacity(), // capacity
+    mReader->npoints - mReader->p_count);                           // available
+
+  for (size_t i = 0; i < numPoints; ++i) {
+    mReader->read_point();
+    pointCloud->SetPoint_Unchecked(i, mReader->point, false);
+  }
+  pointCloud->SetPointCount(numPoints);
+
+  return numPoints;
 }
 
 /**

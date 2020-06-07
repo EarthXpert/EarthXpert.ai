@@ -21,7 +21,7 @@ earthxpert_add_library(ex3rd_party "api"
        "qt/exqt.cpp"
        "sltbench/exsltbench.cpp"
   ITEMS Boost::boost Boost::filesystem ${CERES_LIBRARY} ${CGAL_LIBRARIES} ${GDAL_LIBRARY} 
-        ${GTEST_BOTH_LIBRARIES} ${LASLIB_LIBRARY} ${OPENCV_LIBS} 
+        glog::glog ${GTEST_BOTH_LIBRARIES} ${LASLIB_LIBRARY} ${OPENCV_LIBS} 
         Qt5::Widgets ${SLTBENCH_LIBS})
 
 earthxpert_install_target(ex3rd_party)
