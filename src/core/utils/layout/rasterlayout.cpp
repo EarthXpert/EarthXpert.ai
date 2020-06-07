@@ -73,26 +73,34 @@ void RasterLayout::LayoutWindows() {
   if (0 == mWinNumCols) mWinNumCols = mNumCols;
   if (0 == mWinNumRows) mWinNumRows = mNumRows;
 
-  if (LayoutKind::eHORIZONTAL == mLayoutkind) {
-    for (int r = 0; r < mNumRows; r += mWinNumRows) {
-      const int winNumRows = std::min(mWinNumRows, mNumRows - r);
-
-      for (int c = 0; c < mNumCols; c += mWinNumCols) {
-        const int winNumCols = std::min(mWinNumCols, mNumCols - c);
-
-        mWins.push_back(RasterWindow{ mColOffset + c, mRowOffset + r, winNumCols, winNumRows });
-      }
-    }
+  std::vector<int> colOffsets;
+  for (int c = 0; c < mNumCols; c += mWinNumCols) {
+    colOffsets.push_back(c);
   }
-  else {
-    for (int c = 0; c < mNumCols; c += mWinNumCols) {
-      int winNumCols = std::min(mWinNumCols, mNumCols - c);
+  std::vector<int> rowOffsets;
+  for (int r = 0; r < mNumRows; r += mWinNumRows) {
+    rowOffsets.push_back(r);
+  }
 
-      for (int r = 0; r < mNumRows; r += mWinNumRows) {
-        int winNumRows = std::min(mWinNumRows, mNumRows - r);
-
-        mWins.push_back(RasterWindow{ mColOffset + c, mRowOffset + r, winNumCols, winNumRows });
-      }
+  const int numHoriWins = int(colOffsets.size());
+  const int numVertWins = int(rowOffsets.size());
+  const int numWins = numHoriWins * numVertWins;
+  
+  mWins.resize(numWins);
+  for (int w = 0; w < numWins; ++w) {
+    int c{}, r{};
+    if (LayoutKind::eHORIZONTAL == mLayoutkind) {
+      c = w % numHoriWins;
+      r = w / numHoriWins;
     }
+    else {
+      c = w / numVertWins;
+      r = w % numVertWins;
+    }
+    mWins[w].SetOffsets(colOffsets[c], rowOffsets[r]);
+
+    const int winNumCols = std::min(mWinNumCols, mNumCols - colOffsets[c]);
+    const int winNumRows = std::min(mWinNumRows, mNumRows - rowOffsets[r]);
+    mWins[w].SetSize(winNumCols, winNumRows);
   }
 }

@@ -78,27 +78,36 @@ void SpatialLayout<Ty>::LayoutTiles() {
   if (0 == mTileWidth) mTileWidth = mWidth;
   if (0 == mTileHeight) mTileHeight = mHeight;
 
-  if (LayoutKind::eHORIZONTAL == mLayoutkind) {
-    for (Ty h = 0; h < mHeight; h += mTileHeight) {
-      Ty tileHeight = std::min<Ty>(mTileHeight, mHeight - h);
-
-      for (Ty w = 0; w < mWidth; w += mTileWidth) {
-        Ty tileWidth = std::min<Ty>(mTileWidth, mWidth - w);
-
-        mTiles.push_back(SpatialTile<Ty>{ mMinX + w, mMinY + h, tileWidth, tileHeight });
-      }
-    }
+  std::vector<Ty> minXs;
+  for (Ty x = 0; x < mWidth; x += mTileWidth) {
+    minXs.push_back(x);
   }
-  else {
-    for (Ty w = 0; w < mWidth; w += mTileWidth) {
-      Ty tileWidth = std::min<Ty>(mTileWidth, mWidth - w);
+  std::vector<Ty> minYs;
+  for (Ty y = 0; y < mHeight; y += mTileHeight) {
+    minYs.push_back(y);
+  }
 
-      for (Ty h = 0; h < mHeight; h += mTileHeight) {
-        Ty tileHeight = std::min<Ty>(mTileHeight, mHeight - h);
 
-        mTiles.push_back(SpatialTile<Ty>{ mMinX + w, mMinY + h, tileWidth, tileHeight });
-      }
+  const int numHoriTiles = int(minXs.size());
+  const int numVertTiles = int(minYs.size());
+  const int numTiles = numHoriTiles * numVertTiles;
+
+  mTiles.resize(numTiles);
+  for (int t = 0; t < numTiles; ++t) {
+    int x{}, y{};
+    if (LayoutKind::eHORIZONTAL == mLayoutkind) {
+      x = t % numHoriTiles;
+      y = t / numHoriTiles;
     }
+    else {
+      x = t / numVertTiles;
+      y = t % numVertTiles;
+    }
+    mTiles[t].SetMinXY(mMinX + minXs[x], mMinY + minYs[y]);
+
+    const Ty tileWidth = std::min<Ty>(mTileWidth, mWidth - minXs[x]);
+    const Ty tileHeight = std::min<Ty>(mTileHeight, mHeight - minYs[y]);
+    mTiles[t].SetSize(tileWidth, tileHeight);
   }
 }
 
