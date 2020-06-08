@@ -107,6 +107,10 @@ public:
     mXYZ = std::move(xyz);
   }
 
+  template <typename Field> void SetField(std::vector<Field>&& field) {
+
+  }
+
   /**
    *  \brief set XYZ coordinates at specified index
    *
@@ -122,6 +126,10 @@ public:
     mXYZ[i].x = xyz.x;
     mXYZ[i].y = xyz.y;
     mXYZ[i].z = xyz.z;
+  }
+
+  template <typename Field> void SetField(const size_t i, const Field field) {
+
   }
 
   /**
@@ -231,17 +239,6 @@ public:
   }
 
   /**
-   *  \param [in] i index of point
-   *  \return Returns XYZ coordinates at specified index, whose values are w.r.t. the origin.
-   */
-  const auto& GetXYZ(const size_t i) const noexcept {
-    return mXYZ[i];
-  }
-  auto& GetXYZ(const size_t i) noexcept {
-    return mXYZ[i];
-  }
-
-  /**
  *  \param [in] i index of point
  *  \return Returns XYZ coordinates at specified index.
  */
@@ -263,17 +260,6 @@ public:
   }
 
   /**
-   *  \param [in] i index of point
-   *  \return Returns classification at specified index.
-   */
-  const auto& GetCla(const size_t i) const noexcept {
-    return mCla[i];
-  }
-  auto& GetCla(const size_t i) noexcept {
-    return mCla[i];
-  }
-
-  /**
    *  \return Returns array of intensity.
    */
   const auto& GetIntensity() const noexcept {
@@ -284,17 +270,6 @@ public:
   }
 
   /**
-   *  \param [in] i index of point
-   *  \return Returns intensity at specified index.
-   */
-  const auto& GetIntensity(const size_t i) const noexcept {
-    return mIntensity[i];
-  }
-  auto& GetIntensity(const size_t i) noexcept {
-    return mIntensity[i];
-  }
-
-  /**
    *  \return Returns array of RGB.
    */
   const auto& GetRGB() const noexcept {
@@ -302,17 +277,6 @@ public:
   }
   auto& GetRGB() noexcept {
     return mRGB;
-  }
-
-  /**
-   *  \param [in] i index of point
-   *  \return Returns RGB at specified index.
-   */
-  const auto& GetRGB(const size_t i) const noexcept {
-    return mRGB[i];
-  }
-  auto& GetRGB(const size_t i) noexcept {
-    return mRGB[i];
   }
 
   /**

@@ -110,7 +110,7 @@ TEST(pointcloudreader, ReadPointcloud_LAZ_XYZ) {
 
   const size_t i = filePointCount / 2;
 
-  const auto xyz = pc->GetXYZ(i);
+  const auto xyz = pc->GetField<XYZF>(i);
   ASSERT_NEAR(-11.8599997, xyz.x, tol) << "difference > 1 um";
   ASSERT_NEAR( 99.4300003, xyz.y, tol) << "difference > 1 um";
   ASSERT_NEAR( 11.9899998, xyz.z, tol) << "difference > 1 um";
@@ -150,15 +150,15 @@ TEST(pointcloudreader, ReadPointcloud_LAZ_XYZCRGB) {
 
   const size_t i = 823560 / 2;
 
-  const auto xyz = pc->GetXYZ(i);
+  const auto xyz = pc->GetField<XYZF>(i);
   ASSERT_NEAR(-11.8599997, xyz.x, tol) << "difference > 1 um";
   ASSERT_NEAR( 99.4300003, xyz.y, tol) << "difference > 1 um";
   ASSERT_NEAR( 11.9899998, xyz.z, tol) << "difference > 1 um";
 
-  const auto c = pc->GetCla(i);
+  const auto c = pc->GetField<Classification>(i);
   ASSERT_EQ(0, c.c);
 
-  const auto rgb = pc->GetRGB(i);
+  const auto rgb = pc->GetField<RGB16>(i);
   ASSERT_EQ(47616, rgb.r);
   ASSERT_EQ(65280, rgb.g);
   ASSERT_EQ(    0, rgb.b);
@@ -192,7 +192,7 @@ TEST(pointcloudreader, ReadPointcloud_LAS_XYZC_CHUNKS) {
     const auto readNumPts = reader.ReadPointcloud(i, &pc);
     ASSERT_EQ(chunkNumPts4[j], readNumPts);
 
-    const auto xyz = pc.GetXYZ(0);
+    const auto xyz = pc.GetField<XYZF>(0);
     ASSERT_NEAR(xyz4[j].x, xyz.x, tol) << "difference > 1 um";
     ASSERT_NEAR(xyz4[j].y, xyz.y, tol) << "difference > 1 um";
     ASSERT_NEAR(xyz4[j].z, xyz.z, tol) << "difference > 1 um";
@@ -266,7 +266,7 @@ TEST(pointcloudreader, ReadPointcloud_LAS_XYZC_TILES) {
 
     ASSERT_EQ(tileNumPts4[i], pc->GetPointCount()) << "#points";
 
-    const auto xyz = pc->GetXYZ(0);
+    const auto xyz = pc->GetField<XYZF>(0);
     ASSERT_NEAR(xyz4[i].x, xyz.x, tol) << "difference > 1 um";
     ASSERT_NEAR(xyz4[i].y, xyz.y, tol) << "difference > 1 um";
     ASSERT_NEAR(xyz4[i].z, xyz.z, tol) << "difference > 1 um";

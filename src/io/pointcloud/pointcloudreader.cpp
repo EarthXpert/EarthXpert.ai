@@ -39,23 +39,23 @@ std::unique_ptr<VectorMetadata> PointcloudReader::GetMetadata() const {
 }
 
 /**
- *  \brief Set the margin size.
+ *  \brief Set the buffer size.
  *
- *  \param [in] marginX the horizontal margin size
- *  \param [in] marginY the vertical margin size
+ *  \param [in] bufferX the horizontal buffer size
+ *  \param [in] bufferY the vertical buffer size
  *
  *  \todo pending
  */
-void PointcloudReader::SetMargins(const float marginX, const float marginY) {
-  mMarginX = marginX;
-  mMarginY = marginY;
+void PointcloudReader::SetBuffers(const float bufferX, const float bufferY) {
+  mBufferX = bufferX;
+  mBufferY = bufferY;
 }
 
 /**
- *  \return Returns margin size.
+ *  \return Returns buffer size.
  */
-std::pair<float, float> PointcloudReader::GetMargins() const noexcept {
-  return {mMarginX, mMarginY};
+std::pair<float, float> PointcloudReader::GetBuffers() const noexcept {
+  return {mBufferX, mBufferY};
 }
 
 /**
@@ -127,7 +127,7 @@ std::unique_ptr<Pointcloud> PointcloudReader::ReadPointcloud(
 }
 
 /**
- *  \brief Reads point tile defined by tile, internal margin size.
+ *  \brief Reads point tile defined by tile, internal buffer size.
  *
  *  \param [in] tile The horizontal extent of region to read
  *
