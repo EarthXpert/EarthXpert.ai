@@ -16,13 +16,14 @@ using namespace earthxpert;
 using earthxpert::RegionLayoutD;
 using fgt = FieldGroup;
 
+static constexpr double tol = 1.0e-6; // [um]
+
 /**
  *  \brief PointcloudReader test cases, zero offsets in .las
  *
  *  TestCase 1: read XYZ fields in .las
  */
 TEST(pointcloudreader, ReadPointcloud_LAS_XYZ) {
-  constexpr auto tol = 1.0e-6; // [um]
   constexpr size_t filePointCount{ 20680 };
 
   const std::string lasFile(TestConfig::DataPath("PointClouds/points_small.las"));
@@ -55,7 +56,6 @@ TEST(pointcloudreader, ReadPointcloud_LAS_XYZ) {
  *  TestCase 2: read XYZC fields
  */
 TEST(pointcloudreader, ReadPointcloud_LAS_XYZC) {
-  constexpr auto tol = 1.0e-6; // [um]
   constexpr size_t filePointCount{ 478069 };
 
   const std::string lasFile(TestConfig::DataPath("PointClouds/guided_tour_c3d/DEM/DSM.las"));
@@ -88,7 +88,6 @@ TEST(pointcloudreader, ReadPointcloud_LAS_XYZC) {
  *  TestCase 3: read XYZ fields in .laz
  */
 TEST(pointcloudreader, ReadPointcloud_LAZ_XYZ) {
-  constexpr auto tol = 1.0e-6; // [um]
   constexpr size_t filePointCount{ 823560 };
 
   const std::string lasFile(TestConfig::DataPath("PointClouds/OMA_276_PC3.laz"));
@@ -129,7 +128,6 @@ TEST(pointcloudreader, ReadPointcloud_LAZ_XYZ) {
  *  TestCase 4: read XYZC & RGB fields in .laz
  */
 TEST(pointcloudreader, ReadPointcloud_LAZ_XYZCRGB) {
-  constexpr auto tol = 1.0e-6; // [um]
   constexpr size_t filePointCount{ 823560 };
 
   const std::string lasFile(TestConfig::DataPath("PointClouds/OMA_276_PC3.laz"));
@@ -172,7 +170,6 @@ TEST(pointcloudreader, ReadPointcloud_LAZ_XYZCRGB) {
  *  TestCase 5: read chunks of points in .las
  */
 TEST(pointcloudreader, ReadPointcloud_LAS_XYZC_CHUNKS) {
-  constexpr auto tol = 1.0e-6; // [um]
   constexpr size_t filePointCount{ 20680 };
   const size_t chunkNumPts = filePointCount / 3;
   const std::array<size_t, 4> chunkNumPts4{
@@ -208,7 +205,6 @@ TEST(pointcloudreader, ReadPointcloud_LAS_XYZC_CHUNKS) {
  *  TestCase 6: read chunks of points in .las
  */
 TEST(pointcloudreader, ReadPointcloudOMP_LAS_XYZ_CHUNKS) {
-  constexpr auto tol = 1.0e-6; // [um]
   constexpr size_t filePointCount{ 20680 };
   const size_t chunkNumPts{ 21 };
   const size_t numChunks{ filePointCount / chunkNumPts };
@@ -239,7 +235,6 @@ TEST(pointcloudreader, ReadPointcloudOMP_LAS_XYZ_CHUNKS) {
  *  TestCase 7: read tiles of points in .las
  */
 TEST(pointcloudreader, ReadPointcloud_LAS_XYZC_TILES) {
-  constexpr auto tol = 1.0e-6; // [um]
   constexpr size_t filePointCount{ 20680 };
   const std::array<size_t, 4> tileNumPts4{
     6680, 4257, 6390, 3249 };
@@ -290,7 +285,6 @@ TEST(pointcloudreader, ReadPointcloud_LAS_XYZC_TILES) {
  *  TestCase 8: read tile of points in .las
  */
 TEST(pointcloudreader, ReadPointcloudOMP_LAS_XYZ_TILES) {
-  constexpr auto tol = 1.0e-6; // [um]
   constexpr size_t filePointCount{ 20680 };
 
   const std::string lasFile(TestConfig::DataPath("PointClouds/points_small.las"));

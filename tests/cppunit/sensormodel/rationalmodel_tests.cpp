@@ -12,6 +12,7 @@
 using namespace earthxpert;
 using rfm = earthxpert::RationalModel;
 
+static constexpr double tol = 1.0e-8; // [mm]
 static std::unique_ptr<RationalModel> CreateRationalModel();
 
 /**
@@ -27,8 +28,6 @@ TEST(rationalmodel, CreateRationalModel) {
  * Test consistency between G2I & I2G projections at corners.
  */
 TEST(rationalmodel, CornerI2G) {
-  constexpr auto tol = 1.0e-8; // [mm]
-
   const auto rationalModel = CreateRationalModel();
 
   std::array<Point3d, 4> grdCorners{
@@ -54,8 +53,6 @@ TEST(rationalmodel, CornerI2G) {
 }
 
 TEST(rationalmodel, CornerI2G_Functor) {
-  constexpr auto tol = 1.0e-8; // [mm]
-
   const auto rationalModel = CreateRationalModel();
 
   std::array<Point3d, 4> grdCorners{
@@ -124,8 +121,6 @@ TEST(rationalmodel, CubeI2G) {
     }
   }
 
-  constexpr auto tol = 1.0e-8; // [mm]
-
   ASSERT_LE(maxDiffLon, tol) << "Max. longitude difference > 1 mm";
   ASSERT_LE(maxDiffLat, tol) << "Max. latitude difference > 1 mm";
 }
@@ -170,8 +165,6 @@ TEST(rationalmodel, CubeI2G_Functor) {
       }
     }
   }
-
-  constexpr auto tol = 1.0e-8; // [mm]
 
   ASSERT_LE(maxDiffLon, tol) << "Max. longitude difference > 1 mm";
   ASSERT_LE(maxDiffLat, tol) << "Max. latitude difference > 1 mm";

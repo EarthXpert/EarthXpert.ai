@@ -327,7 +327,7 @@ public:
     if (mPointCapacity <= i) {
       throw std::out_of_range("Pointcloud::SetPoint()");
     }
-    if (!VerifyPointFieldGroup(PointTy::kPointFieldGroup)) {
+    if (!VerifyPointFieldGroup(PointTy::kPointFieldBits)) {
       throw std::invalid_argument("PointTy");
     }
 
@@ -353,16 +353,46 @@ public:
    *  \param [in] i index of point
    *  \return Returns a point at given index.
    */
-  template <typename PointTy>
-  PointTy GetPoint(const size_t i) const {
+  template <typename PointTy> PointTy GetPoint(const size_t i) const {
     if (mPointCapacity <= i) {
       throw std::out_of_range("Pointcloud::GetPoint()");
     }
-    if (!VerifyPointFieldGroup(PointTy::kPointFieldGroup)) {
+    if (!VerifyPointFieldGroup(PointTy::kPointFieldBits)) {
       throw std::invalid_argument("PointTy");
     }
 
     return GetPoint_Unchecked<PointTy>(i);
+  }
+
+  /**
+   *  \param FieldTy the field type of a WxPoint<> component
+   *  \param [in] i index of point
+   *  \return Returns a field at given index.
+   */
+  template <typename FieldTy> const FieldTy& GetField(const size_t i) const {
+    static_assert(std::is_same_v<XYZF, FieldTy> || std::is_same_v<Classification, FieldTy> ||
+      std::is_same_v<Intensity, FieldTy> || std::is_same_v<RGB16, FieldTy>, "GetField: FieldTy");
+    if (mPointCapacity <= i) {
+      throw std::out_of_range("Pointcloud::GetField()");
+    }
+    if (!mFieldGroup.test(FieldTy::kFieldPos)) {
+      throw std::invalid_argument("GetField: FieldTy");
+    }
+
+    return GetField_Unchecked<FieldTy>(i);
+  }
+
+  template <typename FieldTy> FieldTy& GetField(const size_t i) {
+    static_assert(std::is_same_v<XYZF, FieldTy> || std::is_same_v<Classification, FieldTy> ||
+      std::is_same_v<Intensity, FieldTy> || std::is_same_v<RGB16, FieldTy>, "GetField: FieldTy");
+    if (mPointCapacity <= i) {
+      throw std::out_of_range("Pointcloud::GetField()");
+    }
+    if (!mFieldGroup.test(FieldTy::kFieldPos)) {
+      throw std::invalid_argument("GetField: FieldTy");
+    }
+
+    return GetField_Unchecked<FieldTy>(i);
   }
 
   /**
@@ -484,6 +514,45 @@ public:
     // \todo add other field groups
 
     return point;
+  }
+
+  /**
+   *  \param FieldTy the field type of a WxPoint<> component
+   *  \param [in] i index of point
+   *  \return Returns a field at given index.
+   */
+  template <typename FieldTy> const FieldTy& GetField_Unchecked(const size_t i) const {
+    if constexpr (std::is_same_v<XYZF, FieldTy>) {
+      return mXYZ[i];
+    }
+    if constexpr (std::is_same_v<Classification, FieldTy>) {
+      return mCla[i];
+    }
+    if constexpr (std::is_same_v<Intensity, FieldTy>) {
+      return mIntensity[i];
+    }
+    if constexpr (std::is_same_v<RGB16, FieldTy>) {
+      return mRGB[i];
+    }
+    // \todo add other field groups
+    assert(false);
+  }
+
+  template <typename FieldTy> FieldTy& GetField_Unchecked(const size_t i) {
+    if constexpr (std::is_same_v<XYZF, FieldTy>) {
+      return mXYZ[i];
+    }
+    if constexpr (std::is_same_v<Classification, FieldTy>) {
+      return mCla[i];
+    }
+    if constexpr (std::is_same_v<Intensity, FieldTy>) {
+      return mIntensity[i];
+    }
+    if constexpr (std::is_same_v<RGB16, FieldTy>) {
+      return mRGB[i];
+    }
+    // \todo add other field groups
+    assert(false);
   }
 
   /**
