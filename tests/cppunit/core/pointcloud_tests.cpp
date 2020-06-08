@@ -129,8 +129,8 @@ TEST(pointcloud, Constructor_PointCount_FieldGroup) {
   pc.SetOrigin(origin);
   ASSERT_EQ(origin, pc.GetOrigin());
 
-  auto& xyz = pc.GetXYZ();
-  auto& cla = pc.GetCla();
+  auto& xyz = pc.GetField<XYZF>();
+  auto& cla = pc.GetField<Classification>();
 
   std::mt19937 rng;
   FillXYZ(xyz, rng);
