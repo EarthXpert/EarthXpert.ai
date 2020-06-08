@@ -536,7 +536,7 @@ public:
    *  \remark This convenient function will always traverse all points to obtain the region extent.
    *  Use it at caution to avoid perforamnce penaty.
    */
-  RegionTileD ObtainBoundingBox2D() const noexcept;
+  SpatialTileD ObtainBoundingBox2D() const noexcept;
 
 private:
   size_t mPointCapacity{};  // max number of points to be able to hold

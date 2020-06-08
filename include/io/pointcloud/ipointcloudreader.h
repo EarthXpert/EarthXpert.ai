@@ -99,6 +99,6 @@ public:
    *
    *  \return Return Pointcloud container object.
    */
-  virtual std::unique_ptr<Pointcloud> ReadPointcloud(const RegionTileD& tile) = 0;
+  virtual std::unique_ptr<Pointcloud> ReadPointcloud(const SpatialTileD& tile) = 0;
 };
 } // namespace earthxpert

@@ -134,7 +134,7 @@ std::unique_ptr<Pointcloud> PointcloudReader::ReadPointcloud(
  *  \return Return Pointcloud container object.
  */
 std::unique_ptr<Pointcloud> 
-PointcloudReader::ReadPointcloud(const RegionTileD& tile) {
+PointcloudReader::ReadPointcloud(const SpatialTileD& tile) {
   // fast: direct reading if covering the entire file
   if (tile >= mFileBBox2D) {
     return ReadPointcloud();

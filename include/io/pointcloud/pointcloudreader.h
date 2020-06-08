@@ -124,7 +124,7 @@ public:
    *
    *  \return Return Pointcloud container object.
    */
-  std::unique_ptr<Pointcloud> ReadPointcloud(const RegionTileD& tile) override;
+  std::unique_ptr<Pointcloud> ReadPointcloud(const SpatialTileD& tile) override;
 
   /**
    *  \return Returns LASreader object.
@@ -160,7 +160,7 @@ private:
 
   FieldGroup mFileFieldGroup;
   size_t mFilePointCount{};  // total number of point records in file
-  RegionTileD mFileBBox2D;   // 2D bounding box of all points in file
+  SpatialTileD mFileBBox2D;   // 2D bounding box of all points in file
 
   void ObtainLasInfo();
 };
