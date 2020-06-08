@@ -93,13 +93,13 @@ public:
    *  \brief set an array of field objects. For XYZ coordinates, their values have been 
    *  shifted w.r.t. the origin.
    *
-   *  \param [in] field an array of FieldTy objects
+   *  \param [in] fields an array of FieldTy objects
    */
-  template <typename FieldTy> void SetField(std::vector<FieldTy>&& field) {
+  template <typename FieldTy> void SetField(std::vector<FieldTy>&& fields) {
     VerifyFieldType<FieldTy>();
-    assert(mPointCapacity == field.size());
+    assert(mPointCapacity == fields.size());
 
-    SetField_Unchecked<FieldTy>(std::move(field));
+    SetField_Unchecked<FieldTy>(std::move(fields));
   }
 
   /**
@@ -109,7 +109,7 @@ public:
    *  \param [in] i index of point
    *  \param [in] field the field object.
    */
-  template <typename FieldTy> void SetField(const size_t i, const FieldTy field) {
+  template <typename FieldTy> void SetField(const size_t i, const FieldTy& field) {
     VerifyFieldType<FieldTy>();
     assert(i < mPointCapacity);
 
@@ -246,20 +246,20 @@ public:
 
   /**
    *  \param FieldTy the field type of a WxPoint<> component
-   *  \param [in] field an array of FieldTy objects
+   *  \param [in] fields an array of FieldTy objects
    */
-  template <typename FieldTy> void SetField_Unchecked(std::vector<FieldTy>&& field) {
+  template <typename FieldTy> void SetField_Unchecked(std::vector<FieldTy>&& fields) {
     if constexpr (std::is_same_v<XYZF, FieldTy>) {
-      mXYZ = std::move(field);
+      mXYZ = std::move(fields);
     }
     if constexpr (std::is_same_v<Classification, FieldTy>) {
-      mCla = std::move(field);
+      mCla = std::move(fields);
     }
     if constexpr (std::is_same_v<Intensity, FieldTy>) {
-      mIntensity = std::move(field);
+      mIntensity = std::move(fields);
     }
     if constexpr (std::is_same_v<RGB16, FieldTy>) {
-      mRGB = std::move(field);
+      mRGB = std::move(fields);
     }
     // \todo add other field groups
   }
@@ -307,7 +307,7 @@ public:
    *  \param [in] i index of point
    *  \param [in] field the FieldTy object
    */
-  template <typename FieldTy> void SetField_Unchecked(const size_t i, const FieldTy field) {
+  template <typename FieldTy> void SetField_Unchecked(const size_t i, const FieldTy& field) {
     if constexpr (std::is_same_v<XYZF, FieldTy>) {
       mXYZ[i] = field;
     }
@@ -371,9 +371,7 @@ public:
   template <typename PointTy>
   void SetPoint_Unchecked(const size_t i, const PointTy& point) {
     if constexpr (std::is_base_of_v<XYZF, PointTy>) {
-      mXYZ[i].x = point.x;
-      mXYZ[i].y = point.y;
-      mXYZ[i].z = point.z;
+      mXYZ[i] = static_cast<const XYZF&>(point);  // SetField<XYZF>()
     }
     if constexpr (std::is_base_of_v<Classification, PointTy>) {
       mCla[i].c = point.c;
@@ -382,9 +380,7 @@ public:
       mIntensity[i].i = point.i;
     }
     if constexpr (std::is_base_of_v<RGB16, PointTy>) {
-      mRGB[i].r = point.r;
-      mRGB[i].g = point.g;
-      mRGB[i].b = point.b;
+      mRGB[i] = static_cast<const RGB16&>(point);
     }
     // \todo add other field groups
   }
@@ -397,9 +393,8 @@ public:
   PointTy GetPoint_Unchecked(const size_t i) const {
     PointTy point;
     if constexpr (std::is_base_of_v<XYZF, PointTy>) {
-      point.x = mXYZ[i].x;
-      point.y = mXYZ[i].y;
-      point.z = mXYZ[i].z;
+      auto& xyz = static_cast<XYZF&>(point);
+      xyz = mXYZ[i];    // GetField<XYZF>(i)
     }
     if constexpr (std::is_base_of_v<Classification, PointTy>) {
       point.c = mCla[i].c;
@@ -408,9 +403,8 @@ public:
       point.i = mIntensity[i].i;
     }
     if constexpr (std::is_base_of_v<RGB16, PointTy>) {
-      point.r = mRGB[i].r;
-      point.g = mRGB[i].g;
-      point.b = mRGB[i].b;
+      auto& rgb = static_cast<RGB16&>(point);
+      rgb = mRGB[i];
     }
     // \todo add other field groups
 
