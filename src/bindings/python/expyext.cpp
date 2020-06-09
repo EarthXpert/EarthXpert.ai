@@ -77,12 +77,6 @@ PYBIND11_MODULE(expyext, m) {
     .def_readwrite("y", &Point3d::y)
     .def_readwrite("z", &Point3d::z);
 
-  // free functions
-  m.def("generateFrameEpipolar", &GenerateFrameEpipolar, R"pbdoc(
-        Generate epipolar images for frame model)pbdoc");
-  m.def("generateRationalEpipolar", &GenerateRationalEpipolar, R"pbdoc(
-        Generate epipolar images for rational model)pbdoc");
-
   // classes
   pb::class_<EarthEllipsoid>(m, "EarthEllipsoid")
     .def(pb::init<double, double>(), pb::arg("semiMajor") = kWGS84_A, pb::arg("eccSq") = kWGS84_ECCSQ)
@@ -116,6 +110,12 @@ PYBIND11_MODULE(expyext, m) {
   //isensorModel.def(pb::init<>())
   //  .def("imageToGround", pb::overload_cast<const Point2d&, Point3d&>(&ISensorModel::ImageToGround, pb::const_))
   //  .def("groundToImage", pb::overload_cast<const Point3d&, Point2d&>(&ISensorModel::GroundToImage, pb::const_));
+
+  // free functions
+  m.def("generateFrameEpipolar", &GenerateFrameEpipolar, R"pbdoc(
+        Generate epipolar images for frame model)pbdoc");
+  m.def("generateRationalEpipolar", &GenerateRationalEpipolar, R"pbdoc(
+        Generate epipolar images for rational model)pbdoc");
 
   // module attributes
   m.attr("__version__") = "1.0.0";
