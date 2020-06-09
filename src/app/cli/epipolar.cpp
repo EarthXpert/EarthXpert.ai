@@ -2,8 +2,8 @@
  *  Copyright (c) 2020.  All rights reserved.
  * -----------------------------------------------------------------------------
  */
-#include "3rd_party/boost/exboost.h"
-#include "3rd_party/gdal/exgdal.h"
+#include "3rdparty/boost/exboost.h"
+#include "3rdparty/gdal/exgdal.h"
 #include "core/exceptions/exexcept.h"
 #include "core/utils/rasterresample.h"
 #include "rectification/epipolar/epipolar.h"

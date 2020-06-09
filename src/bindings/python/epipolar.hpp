@@ -1,0 +1,13 @@
+/* -----------------------------------------------------------------------------
+ *  Copyright (c) 2019.  All rights reserved.
+ * -----------------------------------------------------------------------------
+ */
+//#include "rectification/epipolar/epipolar.h"
+
+  // data types
+
+  //structures
+
+  // classes
+
+  // free functions

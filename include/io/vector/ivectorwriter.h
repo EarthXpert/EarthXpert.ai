@@ -5,7 +5,7 @@
 #pragma once
 
 #include "io/exio.h"
-#include "3rd_party/gdal/exgdal.h"
+#include "3rdparty/gdal/exgdal.h"
 
 namespace earthxpert {
 class ILayer;

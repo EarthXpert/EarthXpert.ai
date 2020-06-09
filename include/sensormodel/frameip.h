@@ -5,7 +5,7 @@
 #pragma once
 
 #include "sensormodel/distortiongrid.h"
-#include "3rd_party/opencv/exopencv.h"
+#include "3rdparty/opencv/exopencv.h"
 
 #include <array>
 #include <bitset>

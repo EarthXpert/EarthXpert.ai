@@ -5,7 +5,7 @@
 #pragma once
 
 #include "io/exio.h"
-#include "3rd_party/gdal/exgdal.h"
+#include "3rdparty/gdal/exgdal.h"
 #include "core/datasource/metadata.h"
 #include "core/datasource/pointcloud.h"
 
@@ -31,17 +31,17 @@ public:
   virtual std::unique_ptr<VectorMetadata> GetMetadata() const = 0;
 
   /**
-   *  \brief Set the margin size.
+   *  \brief Set the buffer size.
    *
-   *  \param [in] marginX the horizontal margin size
-   *  \param [in] marginY the vertical margin size
+   *  \param [in] bufferX the horizontal buffer size
+   *  \param [in] bufferY the vertical buffer size
    */
-  virtual void SetMargins(float marginX, float marginY) = 0;
+  virtual void SetBuffers(float bufferX, float bufferY) = 0;
 
   /**
-   *  \return Returns margin size.
+   *  \return Returns buffer size.
    */
-  virtual std::pair<float, float> GetMargins() const noexcept = 0;
+  virtual std::pair<float, float> GetBuffers() const noexcept = 0;
 
   /**
    *  \return Returns pointer to a coordinate system
@@ -80,7 +80,7 @@ public:
   virtual size_t ReadPointcloud(const size_t start, Pointcloud* const pointCloud) = 0;
 
   /**
-   *  \brief Reads point tile defined by tile, internal margin size.
+   *  \brief Reads point tile defined by tile, internal buffer size.
    *
    *  \param [in] xmin x location of the lower-left corner of the tile [unit: meter]
    *  \param [in] ymin y location of the lower-left corner of the tile
@@ -93,12 +93,12 @@ public:
     double width, double height) = 0;
 
   /**
-   *  \brief Reads point tile defined by tile, internal margin size.
+   *  \brief Reads point tile defined by tile, internal buffer size.
    *
    *  \param [in] tile The horizontal extent of region to read
    *
    *  \return Return Pointcloud container object.
    */
-  virtual std::unique_ptr<Pointcloud> ReadPointcloud(const RegionTileD& tile) = 0;
+  virtual std::unique_ptr<Pointcloud> ReadPointcloud(const SpatialTileD& tile) = 0;
 };
 } // namespace earthxpert

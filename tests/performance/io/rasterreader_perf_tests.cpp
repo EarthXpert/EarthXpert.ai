@@ -2,7 +2,7 @@
  *  Copyright (c) 2020.  All rights reserved.
  * -----------------------------------------------------------------------------
  */
-#include "3rd_party/sltbench/sltbench_main_gdal.h"
+#include "3rdparty/sltbench/sltbench_main_gdal.h"
 #include "testconfig.h"
 
 #include "core/datasource/cvraster.h"
@@ -38,5 +38,5 @@ void RasterReader_ORTHOGF1MS_T2() {
   auto raster = reader.ReadRaster(fileNumCols / 2 - 1000, fileNumRows / 2 - 1000, 2000, 2000, RasterType::eGDAL);
 }
 
-SLTBENCH_FUNCTION(RasterReader_ORTHOGF1MS_T1); 
+SLTBENCH_FUNCTION(RasterReader_ORTHOGF1MS_T1);
 SLTBENCH_FUNCTION(RasterReader_ORTHOGF1MS_T2);

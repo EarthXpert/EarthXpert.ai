@@ -2,7 +2,7 @@
  *  Copyright (c) 2020.  All rights reserved.
  * -----------------------------------------------------------------------------
  */
-#include "3rd_party/gtest/gtest_main_gdal.h"
+#include "3rdparty/gtest/gtest_main_gdal.h"
 #include "testconfig.h"
 
 #include "core/datasource/cvraster.h"
@@ -113,7 +113,7 @@ TEST(rasterwriter, CvRaster) {
   const auto bufNumBytes = reader.GetRasterBufferNumBytes(winNumCols, winNumRows);
   std::unique_ptr<uchar[]> buffer{ new uchar[bufNumBytes] };
 
-  for (auto& rw : rasterWins) {  
+  for (auto& rw : rasterWins) {
     CvRaster raster(rw.numCols, rw.numRows, cvDT, rw.colOffset, rw.rowOffset,
       marginCols, marginRows, MarginKind::eCONSTANT, buffer.get());
     reader.ReadRaster(&raster);

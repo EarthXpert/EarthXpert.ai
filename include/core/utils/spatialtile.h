@@ -55,6 +55,6 @@ template <typename Ty> struct SpatialTile {
   }
 };
 
-using RegionTileF = SpatialTile<float>;
-using RegionTileD = SpatialTile<double>;
+using SpatialTileF = SpatialTile<float>;
+using SpatialTileD = SpatialTile<double>;
 } // namespace earthxpert

@@ -1,4 +1,4 @@
-#include "3rd_party/gtest/gtest_main.h"
+#include "3rdparty/gtest/gtest_main.h"
 #include "testconfig.h"
 
 #include "io/marshaller/epipolarmodelmarshaller.h"

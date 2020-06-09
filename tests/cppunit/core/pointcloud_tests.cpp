@@ -2,7 +2,7 @@
  *  Copyright (c) 2019.  All rights reserved.
  * -----------------------------------------------------------------------------
  */
-#include "3rd_party/gtest/gtest_main.h"
+#include "3rdparty/gtest/gtest_main.h"
 #include "testconfig.h"
 
 #include "core/datasource/pointcloud.h"
@@ -11,6 +11,7 @@
 
 using namespace earthxpert;
 
+static constexpr float tol{ 0.000001f };
 static constexpr auto rngMax = static_cast<double>(std::mt19937::max());
 static constexpr auto rngMid = rngMax / 2;
 static constexpr auto scaleX = 1000. / (rngMax + 2.0);
@@ -40,6 +41,11 @@ static void CheckPointcloud_PointF(const Pointcloud& pc) {
     ASSERT_LE(point.y, 500.0f);
     ASSERT_GE(point.z, -50.0f);
     ASSERT_LE(point.z, 50.0f);
+
+    auto& xyz = pc.GetField<XYZF>(i);
+    ASSERT_NEAR(point.x, xyz.x, tol);
+    ASSERT_NEAR(point.y, xyz.y, tol);
+    ASSERT_NEAR(point.z, xyz.z, tol);
   }
 }
 
@@ -54,12 +60,14 @@ static void CheckPointcloud_PointF_Subscript(const Pointcloud& pc) {
     ASSERT_LE(point.z, 50.0f);
 
     auto cvpoint = static_cast<Point3f>(point);
-    ASSERT_GE(cvpoint.x, -500.0f);
-    ASSERT_LE(cvpoint.x, 500.0f);
-    ASSERT_GE(cvpoint.y, -500.0f);
-    ASSERT_LE(cvpoint.y, 500.0f);
-    ASSERT_GE(cvpoint.z, -50.0f);
-    ASSERT_LE(cvpoint.z, 50.0f);
+    ASSERT_NEAR(point.x, cvpoint.x, tol);
+    ASSERT_NEAR(point.y, cvpoint.y, tol);
+    ASSERT_NEAR(point.z, cvpoint.z, tol);
+
+    auto& xyz = pc.GetField<XYZF>(i);
+    ASSERT_NEAR(point.x, xyz.x, tol);
+    ASSERT_NEAR(point.y, xyz.y, tol);
+    ASSERT_NEAR(point.z, xyz.z, tol);
   }
 }
 
@@ -73,6 +81,14 @@ static void CheckPointcloud_CPointF(const Pointcloud& pc) {
     ASSERT_GE(point.z, -50.0f);
     ASSERT_LE(point.z, 50.0f);
     ASSERT_LT(point.c, 128);
+
+    auto& xyz = pc.GetField<XYZF>(i);
+    ASSERT_NEAR(point.x, xyz.x, tol);
+    ASSERT_NEAR(point.y, xyz.y, tol);
+    ASSERT_NEAR(point.z, xyz.z, tol);
+
+    auto& c = pc.GetField<Classification>(i);
+    ASSERT_EQ(point.c, c.c);
   }
 }
 
@@ -86,6 +102,14 @@ static void CheckPointcloud_CPointF_Subscript(const Pointcloud& pc) {
     ASSERT_GE(point.z, -50.0f);
     ASSERT_LE(point.z, 50.0f);
     ASSERT_LT(point.c, 128);
+
+    auto& xyz = pc.GetField<XYZF>(i);
+    ASSERT_NEAR(point.x, xyz.x, tol);
+    ASSERT_NEAR(point.y, xyz.y, tol);
+    ASSERT_NEAR(point.z, xyz.z, tol);
+
+    auto& c = pc.GetField<Classification>(i);
+    ASSERT_EQ(point.c, c.c);
   }
 }
 
@@ -105,8 +129,8 @@ TEST(pointcloud, Constructor_PointCount_FieldGroup) {
   pc.SetOrigin(origin);
   ASSERT_EQ(origin, pc.GetOrigin());
 
-  auto& xyz = pc.GetXYZ();
-  auto& cla = pc.GetCla();
+  auto& xyz = pc.GetField<XYZF>();
+  auto& cla = pc.GetField<Classification>();
 
   std::mt19937 rng;
   FillXYZ(xyz, rng);

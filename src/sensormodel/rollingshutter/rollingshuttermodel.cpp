@@ -3,7 +3,7 @@
  * -----------------------------------------------------------------------------
  */
 #include "sensormodel/rollingshuttermodel.h"
-#include "3rd_party/gdal/exgdal.h"
+#include "3rdparty/gdal/exgdal.h"
 #include "sensormodel/frameip.h"
 #include "sensormodel/imagemodel.h"
 #include "sensormodel/satellitedp.h"

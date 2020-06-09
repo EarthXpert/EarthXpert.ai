@@ -3,7 +3,7 @@
  * -----------------------------------------------------------------------------
  */
 #include "sensormodel/rationalmodel.h"
-#include "3rd_party/gdal/exgdal.h"
+#include "3rdparty/gdal/exgdal.h"
 #include "core/utils/typehelper.h"
 
 #include <algorithm>
@@ -16,6 +16,8 @@ using earthxpert::Point3d;
 using earthxpert::RationalModel;
 using earthxpert::SpatialReferenceSystem;
 using earthxpert::Tuple4d;
+
+static constexpr double tol = std::numeric_limits<double>::epsilon();
 
 /**
  *  \brief Construct a standard third-order rational function model.
@@ -172,7 +174,6 @@ bool RationalModel::operator!=(const RationalModel &rhs) const {
  *  \except Throw invalid_arguments if it is a bad model.
  */
 void RationalModel::CheckModel() const {
-  constexpr auto tol = std::numeric_limits<double>::epsilon();
   const auto nfc = mNormalFators.data();
 
   if (nfc[eSLINE] < 0.0 || nfc[eSSAMP] < 0.0)
@@ -796,7 +797,6 @@ Tuple4d RationalModel::CalcPolynomials(const double L, const double P, const dou
     Sd += sdc[i] * LPH[i];
   }
 
-  constexpr double tol = std::numeric_limits<double>::epsilon();
   if (fabs(Ld) < tol || fabs(Sd) < tol) {
     throw std::underflow_error("denominator is 0 in rational model");
   }

@@ -6,7 +6,7 @@
 
 #include "core/excore.h"
 #include "core/utils/typehelper.h"
-#include "3rd_party/opencv/exopencv.h"
+#include "3rdparty/opencv/exopencv.h"
 
 #include <cassert>
 #include <memory>

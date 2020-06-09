@@ -23,7 +23,7 @@ earthxpert_add_library(core "api"
        "utils/layout/rasterlayout.cpp"
        "utils/layout/spatiallayout.cpp"
        "utils/resample/rasterresample.cpp"
-  ITEMS ex3rd_party
+  ITEMS ex3rdparty
         Boost::boost Boost::filesystem Boost::iostreams
         ${CERES_LIBRARY} ${CGAL_LIBRARIES} ${GDAL_LIBRARY} glog::glog 
         ${LASLIB_LIBRARY} ${OPENCV_LIBS})

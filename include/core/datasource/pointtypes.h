@@ -5,7 +5,7 @@
 #pragma once
 
 #include "core/excore.h"
-#include "3rd_party/opencv/exopencv.h"
+#include "3rdparty/opencv/exopencv.h"
 #include "core/math/math.h"
 
 #include <array>
@@ -77,7 +77,7 @@ struct FieldGroup : std::bitset<8> {
 
   /**
    *  \brief examine if rhs contains all fields of current field group
-   * 
+   *
    *  \param [in] rhs the other field group to compare with
    *  \return Returns true if all fields are contained in rhs.
    */
@@ -102,11 +102,15 @@ struct FieldGroup : std::bitset<8> {
 };
 
 /**
+ *  \brief XYZ field
+ *
  *  \param CoordTy the type of point coordinates, such as int, float, double.
  */
 template <typename CoordTy>
 struct XYZ /*: public cv::Point3_<CoordTy>*/{
-  static constexpr size_t kFieldGroup = FieldGroup::kBITXYZ;
+  static constexpr size_t kFieldPos = FieldGroup::kPOSXYZ;
+  static constexpr size_t kFieldBit = FieldGroup::kBITXYZ;
+  static constexpr size_t kFieldBytes = sizeof(CoordTy) * 3;
   CoordTy x{};  // x-coordinate
   CoordTy y{};  // y-coordinate
   CoordTy z{};  // z-coordinate
@@ -123,29 +127,41 @@ struct XYZ /*: public cv::Point3_<CoordTy>*/{
 };
 
 /**
+ *  \brief classification field
+ *
  *  The structure Classfication stores feature category value.
  */
 struct Classification {
-  static constexpr size_t kFieldGroup = FieldGroup::kBITCLA;
+  static constexpr size_t kFieldPos = FieldGroup::kPOSCLA;
+  static constexpr size_t kFieldBit = FieldGroup::kBITCLA;
+  static constexpr size_t kFieldBytes = sizeof(uint8_t);
   uint8_t c{}; // feature catagory
 };
 
 /**
+ *  \brief intensity field
+ *
  *  The structure Intensity stores lidar intensity value.
  */
 struct Intensity {
-  static constexpr size_t kFieldGroup = FieldGroup::kBITINT;
+  static constexpr size_t kFieldPos = FieldGroup::kPOSINT;
+  static constexpr size_t kFieldBit = FieldGroup::kBITINT;
+  static constexpr size_t kFieldBytes = sizeof(uint16_t);
   uint16_t i{}; // laser intensity
 };
 
 /**
+ *  \brief RGB field
+ *
  *  The structure RGB stores the group of color fields.
  *
  *  \param ColorTy the type of point color, such as uchar, ushort.
  */
 template <typename ColorTy>
 struct RGB {
-  static constexpr size_t kFieldGroup = FieldGroup::kBITRGB;
+  static constexpr size_t kFieldPos = FieldGroup::kPOSRGB;
+  static constexpr size_t kFieldBit = FieldGroup::kBITRGB;
+  static constexpr size_t kFieldBytes = sizeof(ColorTy) * 3;
   ColorTy b{};  // blue
   ColorTy g{};  // green
   ColorTy r{};  // red
@@ -158,15 +174,20 @@ struct RGB {
  */
 template <typename ColorTy>
 struct RGBN : RGB<ColorTy> {
-  static constexpr size_t kFieldGroup = FieldGroup::kBITRGB + FieldGroup::kBITNIR;
+  static constexpr size_t kFieldBit = FieldGroup::kBITRGB + FieldGroup::kBITNIR;
+  static constexpr size_t kFieldBytes = sizeof(ColorTy) * 4;
   ColorTy n{};  // NIR
 };
 
 /**
+ *  \brief time field
+ *
  *  The structure GPSTime stores time stamp.
  */
 struct GPSTime {
-  static constexpr size_t kFieldGroup = FieldGroup::kBITTIM;
+  static constexpr size_t kFieldPos = FieldGroup::kPOSTIM;
+  static constexpr size_t kFieldBit = FieldGroup::kBITTIM;
+  static constexpr size_t kFieldBytes = sizeof(double);
   double time{};
 };
 
@@ -179,7 +200,8 @@ struct GPSTime {
 template <typename... Fields>
 struct WxPoint : Fields... {
   static_assert(0 < sizeof...(Fields), "Empty fields");
-  static constexpr size_t kPointFieldGroup = (... + Fields::kFieldGroup);
+  static constexpr size_t kPointFieldBits = (... + Fields::kFieldBit);
+  //static constexpr size_t kPointFieldBytes = (... + Fields::kFieldBytes);   // align()
 };
 
 // XYZ

@@ -212,7 +212,7 @@ void Pointcloud::GetPoint_Unchecked(const size_t i,
  *  \remark This convenient function will always traverse all points to obtain the region extent.
  *  Use it at caution to avoid perforamnce penaty.
  */
-RegionTileD Pointcloud::ObtainBoundingBox2D() const noexcept {
+SpatialTileD Pointcloud::ObtainBoundingBox2D() const noexcept {
   assert(mFieldGroup.test(FieldGroup::kPOSXYZ));
   if (0 == mPointCount) return {};
 

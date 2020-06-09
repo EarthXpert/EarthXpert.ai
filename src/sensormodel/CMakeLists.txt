@@ -22,7 +22,7 @@ earthxpert_add_library(sensormodel "api"
        "utils/utils.cpp"
        "sensormodel.cpp"
        "sensormodelfactory.cpp"
-  ITEMS ex3rd_party core
+  ITEMS ex3rdparty core
         ${GDAL_LIBRARY} ${OPENCV_LIBS})
 
 earthxpert_install_target(sensormodel)

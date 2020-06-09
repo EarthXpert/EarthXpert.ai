@@ -49,9 +49,7 @@ public:
   /**
    *  \return Returns max number of points to hold.
    */
-  auto GetPointCapacity() const noexcept {
-    return mPointCapacity;
-  }
+  auto GetPointCapacity() const noexcept { return mPointCapacity; }
 
   /**
    *  \breif Set actual number of points
@@ -66,16 +64,12 @@ public:
   /**
    *  \return Returns total number of points actually held.
    */
-  auto GetPointCount() const noexcept {
-    return mPointCount;
-  }
+  auto GetPointCount() const noexcept { return mPointCount; }
 
   /**
    *  \return Returns field groups.
    */
-  auto GetFieldGroup() const noexcept {
-    return mFieldGroup;
-  }
+  auto GetFieldGroup() const noexcept { return mFieldGroup; }
 
   /**
    *  \return Returns memory size in bytes.
@@ -96,32 +90,30 @@ public:
   }
 
   /**
-   *  \brief set an array of XYZ coordinates whose values have been 
-   *  shifted w.r.t. the origin
+   *  \brief set an array of field objects. For XYZ coordinates, their values have been 
+   *  shifted w.r.t. the origin.
    *
-   *  \param [in] xyz an array of XYZ coordinates
+   *  \param [in] fields an array of FieldTy objects
    */
-  void SetXYZ(std::vector<XYZF>&& xyz) {
-    assert(mFieldGroup.test(FieldGroup::kPOSXYZ));
-    assert(mPointCapacity == xyz.size());
-    mXYZ = std::move(xyz);
+  template <typename FieldTy> void SetField(std::vector<FieldTy>&& fields) {
+    VerifyFieldType<FieldTy>();
+    assert(mPointCapacity == fields.size());
+
+    SetField_Unchecked<FieldTy>(std::move(fields));
   }
 
   /**
-   *  \brief set XYZ coordinates at specified index
+   *  \brief set a field object at specified index.
+   *  For XYZ coordinates, their values have been shifted w.r.t. the origin
    *
    *  \param [in] i index of point
-   *  \param [in] xyz XYZ coordinates that have been shifted w.r.t. the origin
+   *  \param [in] field the field object.
    */
-  void SetXYZ(const size_t i, const XYZF xyz) {
-    SetXYZ(i, static_cast<Point3f>(xyz));
-  }
-  void SetXYZ(const size_t i, const Point3f xyz) {
-    assert(mFieldGroup.test(FieldGroup::kPOSXYZ));
+  template <typename FieldTy> void SetField(const size_t i, const FieldTy& field) {
+    VerifyFieldType<FieldTy>();
     assert(i < mPointCapacity);
-    mXYZ[i].x = xyz.x;
-    mXYZ[i].y = xyz.y;
-    mXYZ[i].z = xyz.z;
+
+    SetField_Unchecked<FieldTy>(i, field);
   }
 
   /**
@@ -130,6 +122,14 @@ public:
    *  \param [in] i index of point
    *  \param [in] xyz XYZ coordinates
    */
+  void SetXYZ(const size_t i, const Point3f xyz) {
+    assert(mFieldGroup.test(FieldGroup::kPOSXYZ));
+    assert(i < mPointCapacity);
+    mXYZ[i].x = xyz.x;
+    mXYZ[i].y = xyz.y;
+    mXYZ[i].z = xyz.z;
+  }
+
   void SetXYZ(const size_t i, const XYZD xyz) {
     SetXYZ(i, static_cast<Point3d>(xyz));
   }
@@ -139,75 +139,6 @@ public:
     mXYZ[i].x = xyz.x - mOrigin.x;
     mXYZ[i].y = xyz.x - mOrigin.y;
     mXYZ[i].y = xyz.x - mOrigin.y;
-  }
-
-  /**
-   *  \brief set an array of classifications
-   *
-   *  \param [in] cla an array of classifications
-   */
-  void SetCla(std::vector<Classification>&& cla) {
-    assert(mFieldGroup.test(FieldGroup::kPOSCLA));
-    assert(mPointCapacity == cla.size());
-    mCla = std::move(cla);
-  }
-
-  /**
-   *  \brief set classification at specified index
-   *
-   *  \param [in] i index of point
-   *  \param [in] cla classification
-   */
-  void SetCla(const size_t i, const Classification cla) {
-    assert(mFieldGroup.test(FieldGroup::kPOSCLA));
-    assert(i < mPointCapacity);
-    mCla[i] = cla;
-  }
-
-  /**
-   *  \brief set an array of intensity
-   *
-   *  \param [in] intensity an array of intensity
-   */
-  void SetIntensity(std::vector<Intensity>&& intensity) {
-    assert(mFieldGroup.test(FieldGroup::kPOSINT));
-    assert(mPointCapacity == intensity.size());
-    mIntensity = std::move(intensity);
-  }
-
-  /**
-   *  \brief set intensity at specified index
-   *
-   *  \param [in] i index of point
-   *  \param [in] intensity intensity
-   */
-  void SetIntensity(const size_t i, const Intensity intensity) {
-    assert(mFieldGroup.test(FieldGroup::kPOSINT));
-    assert(i < mPointCapacity);
-    mIntensity[i] = intensity;
-  }
-
-  /**
-   *  \brief set an array of RGB
-   *
-   *  \param [in] rgb an array of RGB
-   */
-  void SetRGB(std::vector<RGB16>&& rgb) {
-    assert(mFieldGroup.test(FieldGroup::kPOSRGB));
-    assert(mPointCapacity == rgb.size());
-    mRGB = std::move(rgb);
-  }
-
-  /**
-   *  \brief set RGB at specified index
-   *
-   *  \param [in] i index of point
-   *  \param [in] rgb RGB
-   */
-  void SetRGB(const size_t i, const RGB16 rgb) {
-    assert(mFieldGroup.test(FieldGroup::kPOSRGB));
-    assert(i < mPointCapacity);
-    mRGB[i] = rgb;
   }
 
   /**
@@ -221,24 +152,17 @@ public:
   }
 
   /**
-   *  \return Returns the array of XYZ coordinates w.r.t. the origin.
+   *  \return Returns the array of field objects. XYZ coordinates are w.r.t. the origin.
    */
-  const auto& GetXYZ() const noexcept {
-    return mXYZ;
-  }
-  auto& GetXYZ() noexcept {
-    return mXYZ;
-  }
+  template <typename FieldTy> const std::vector<FieldTy>& GetField() const {
+    VerifyFieldType<FieldTy>();
 
-  /**
-   *  \param [in] i index of point
-   *  \return Returns XYZ coordinates at specified index, whose values are w.r.t. the origin.
-   */
-  const auto& GetXYZ(const size_t i) const noexcept {
-    return mXYZ[i];
+    return GetField_Unchecked<FieldTy>();
   }
-  auto& GetXYZ(const size_t i) noexcept {
-    return mXYZ[i];
+  template <typename FieldTy> std::vector<FieldTy>& GetField() {
+    VerifyFieldType<FieldTy>();
+
+    return GetField_Unchecked<FieldTy>();
   }
 
   /**
@@ -253,66 +177,26 @@ public:
   }
 
   /**
-   *  \return Returns array of classifications.
-   */
-  const auto& GetCla() const noexcept {
-    return mCla;
-  }
-  auto& GetCla() noexcept {
-    return mCla;
-  }
-
-  /**
+   *  \param FieldTy the field type of a WxPoint<> component
    *  \param [in] i index of point
-   *  \return Returns classification at specified index.
+   *  \return Returns a field at given index.
    */
-  const auto& GetCla(const size_t i) const noexcept {
-    return mCla[i];
-  }
-  auto& GetCla(const size_t i) noexcept {
-    return mCla[i];
+  template <typename FieldTy> const FieldTy& GetField(const size_t i) const {
+    VerifyFieldType<FieldTy>();
+    if (mPointCapacity <= i) {
+      throw std::out_of_range("Pointcloud::GetField()");
+    }
+
+    return GetField_Unchecked<FieldTy>(i);
   }
 
-  /**
-   *  \return Returns array of intensity.
-   */
-  const auto& GetIntensity() const noexcept {
-    return mIntensity;
-  }
-  auto& GetIntensity() noexcept {
-    return mIntensity;
-  }
+  template <typename FieldTy> FieldTy& GetField(const size_t i) {
+    VerifyFieldType<FieldTy>();
+    if (mPointCapacity <= i) {
+      throw std::out_of_range("Pointcloud::GetField()");
+    }
 
-  /**
-   *  \param [in] i index of point
-   *  \return Returns intensity at specified index.
-   */
-  const auto& GetIntensity(const size_t i) const noexcept {
-    return mIntensity[i];
-  }
-  auto& GetIntensity(const size_t i) noexcept {
-    return mIntensity[i];
-  }
-
-  /**
-   *  \return Returns array of RGB.
-   */
-  const auto& GetRGB() const noexcept {
-    return mRGB;
-  }
-  auto& GetRGB() noexcept {
-    return mRGB;
-  }
-
-  /**
-   *  \param [in] i index of point
-   *  \return Returns RGB at specified index.
-   */
-  const auto& GetRGB(const size_t i) const noexcept {
-    return mRGB[i];
-  }
-  auto& GetRGB(const size_t i) noexcept {
-    return mRGB[i];
+    return GetField_Unchecked<FieldTy>(i);
   }
 
   /**
@@ -327,9 +211,7 @@ public:
     if (mPointCapacity <= i) {
       throw std::out_of_range("Pointcloud::SetPoint()");
     }
-    if (!VerifyPointFieldGroup(PointTy::kPointFieldGroup)) {
-      throw std::invalid_argument("PointTy");
-    }
+    VerifyPointFieldBits(PointTy::kPointFieldBits);
 
     SetPoint_Unchecked<PointTy>(i, point);
   }
@@ -353,17 +235,199 @@ public:
    *  \param [in] i index of point
    *  \return Returns a point at given index.
    */
-  template <typename PointTy>
-  PointTy GetPoint(const size_t i) const {
+  template <typename PointTy> PointTy GetPoint(const size_t i) const {
     if (mPointCapacity <= i) {
       throw std::out_of_range("Pointcloud::GetPoint()");
     }
-    if (!VerifyPointFieldGroup(PointTy::kPointFieldGroup)) {
-      throw std::invalid_argument("PointTy");
-    }
+    VerifyPointFieldBits(PointTy::kPointFieldBits);
 
     return GetPoint_Unchecked<PointTy>(i);
   }
+
+  /**
+   *  \param FieldTy the field type of a WxPoint<> component
+   *  \param [in] fields an array of FieldTy objects
+   */
+  template <typename FieldTy> void SetField_Unchecked(std::vector<FieldTy>&& fields) {
+    if constexpr (std::is_same_v<XYZF, FieldTy>) {
+      mXYZ = std::move(fields);
+    }
+    if constexpr (std::is_same_v<Classification, FieldTy>) {
+      mCla = std::move(fields);
+    }
+    if constexpr (std::is_same_v<Intensity, FieldTy>) {
+      mIntensity = std::move(fields);
+    }
+    if constexpr (std::is_same_v<RGB16, FieldTy>) {
+      mRGB = std::move(fields);
+    }
+    // \todo add other field groups
+  }
+
+  /**
+   *  \param FieldTy the field type of a WxPoint<> component
+   *  \return Return a reference to the array of FieldTy objects
+   */
+  template <typename FieldTy> const std::vector<FieldTy>& GetField_Unchecked() const {
+    if constexpr (std::is_same_v<XYZF, FieldTy>) {
+      return mXYZ;
+    }
+    if constexpr (std::is_same_v<Classification, FieldTy>) {
+      return mCla;
+    }
+    if constexpr (std::is_same_v<Intensity, FieldTy>) {
+      return mIntensity;
+    }
+    if constexpr (std::is_same_v<RGB16, FieldTy>) {
+      return mRGB;
+    }
+    // \todo add other field groups
+    assert(false);
+  }
+
+  template <typename FieldTy> std::vector<FieldTy>& GetField_Unchecked() {
+    if constexpr (std::is_same_v<XYZF, FieldTy>) {
+      return mXYZ;
+    }
+    if constexpr (std::is_same_v<Classification, FieldTy>) {
+      return mCla;
+    }
+    if constexpr (std::is_same_v<Intensity, FieldTy>) {
+      return mIntensity;
+    }
+    if constexpr (std::is_same_v<RGB16, FieldTy>) {
+      return mRGB;
+    }
+    // \todo add other field groups
+    assert(false);
+  }
+
+  /**
+   *  \param FieldTy the field type of a WxPoint<> component
+   *  \param [in] i index of point
+   *  \param [in] field the FieldTy object
+   */
+  template <typename FieldTy> void SetField_Unchecked(const size_t i, const FieldTy& field) {
+    if constexpr (std::is_same_v<XYZF, FieldTy>) {
+      mXYZ[i] = field;
+    }
+    if constexpr (std::is_same_v<Classification, FieldTy>) {
+      mCla[i] = field;
+    }
+    if constexpr (std::is_same_v<Intensity, FieldTy>) {
+      mIntensity[i] = field;
+    }
+    if constexpr (std::is_same_v<RGB16, FieldTy>) {
+      mRGB[i] = field;
+    }
+    // \todo add other field groups
+  }
+
+  /**
+   *  \param FieldTy the field type of a WxPoint<> component
+   *  \param [in] i index of point
+   *  \return Returns a field at given index.
+   */
+  template <typename FieldTy> const FieldTy& GetField_Unchecked(const size_t i) const {
+    if constexpr (std::is_same_v<XYZF, FieldTy>) {
+      return mXYZ[i];
+    }
+    if constexpr (std::is_same_v<Classification, FieldTy>) {
+      return mCla[i];
+    }
+    if constexpr (std::is_same_v<Intensity, FieldTy>) {
+      return mIntensity[i];
+    }
+    if constexpr (std::is_same_v<RGB16, FieldTy>) {
+      return mRGB[i];
+    }
+    // \todo add other field groups
+    assert(false);
+  }
+
+  template <typename FieldTy> FieldTy& GetField_Unchecked(const size_t i) {
+    if constexpr (std::is_same_v<XYZF, FieldTy>) {
+      return mXYZ[i];
+    }
+    if constexpr (std::is_same_v<Classification, FieldTy>) {
+      return mCla[i];
+    }
+    if constexpr (std::is_same_v<Intensity, FieldTy>) {
+      return mIntensity[i];
+    }
+    if constexpr (std::is_same_v<RGB16, FieldTy>) {
+      return mRGB[i];
+    }
+    // \todo add other field groups
+    assert(false);
+  }
+
+  /**
+   *  \brief Set fields to given point.
+   *
+   *  \param [in] i index of point
+   *  \param PointTy the point type of WxPoint<>
+   */
+  template <typename PointTy>
+  void SetPoint_Unchecked(const size_t i, const PointTy& point) {
+    if constexpr (std::is_base_of_v<XYZF, PointTy>) {
+      mXYZ[i] = static_cast<const XYZF&>(point);  // SetField<XYZF>()
+    }
+    if constexpr (std::is_base_of_v<Classification, PointTy>) {
+      mCla[i].c = point.c;
+    }
+    if constexpr (std::is_base_of_v<Intensity, PointTy>) {
+      mIntensity[i].i = point.i;
+    }
+    if constexpr (std::is_base_of_v<RGB16, PointTy>) {
+      mRGB[i] = static_cast<const RGB16&>(point);
+    }
+    // \todo add other field groups
+  }
+
+  /**
+   *  \param [in] i index of point
+   *  \return Returns a point at given index.
+   */
+  template <typename PointTy>
+  PointTy GetPoint_Unchecked(const size_t i) const {
+    PointTy point;
+    if constexpr (std::is_base_of_v<XYZF, PointTy>) {
+      auto& xyz = static_cast<XYZF&>(point);
+      xyz = mXYZ[i];    // GetField<XYZF>(i)
+    }
+    if constexpr (std::is_base_of_v<Classification, PointTy>) {
+      point.c = mCla[i].c;
+    }
+    if constexpr (std::is_base_of_v<Intensity, PointTy>) {
+      point.i = mIntensity[i].i;
+    }
+    if constexpr (std::is_base_of_v<RGB16, PointTy>) {
+      auto& rgb = static_cast<RGB16&>(point);
+      rgb = mRGB[i];
+    }
+    // \todo add other field groups
+
+    return point;
+  }
+
+  /**
+   *  \brief Set fields of given point.
+   *
+   *  \param [in] i index of point
+   *  \param [in] point the LASlib point
+   *  \param [in] offset flag indicating if offset is different
+   */
+  void SetPoint_Unchecked(size_t i, const LASpoint& point, bool offset = true);
+
+  /**
+   *  \brief Get fields to given point.
+   *
+   *  \param [in] i index of point
+   *  \param [in/out] point LASlib point
+   *  \param [in] offset flag indicating if offset is different
+   */
+  void GetPoint_Unchecked(size_t i, LASpoint& point, bool offset = true) const;
 
   /**
    *  \brief subscript access via proxy to a point
@@ -405,97 +469,6 @@ public:
   }
 
   /**
-   *  \brief verify if point cloud contains fields requested.
-   *
-   *  \param [in] pointFieldGroup The field groups bit mask requested.
-   *  \return Returns true if point cloud contains all the requested field groups, otherwise false.
-   */
-  bool VerifyPointFieldGroup(const size_t pointFieldGroup) const {
-    bool ret{true};
-    for (auto [pos, bit] : FieldGroup::kPOSBIT) {
-      if (bit & pointFieldGroup) {
-        ret = ret && mFieldGroup.test(pos);
-      }
-    }
-
-    return ret;
-  }
-
-  /**
-   *  \brief Set fields to given point.
-   *
-   *  \param [in] i index of point
-   *  \param PointTy the point type of WxPoint<>
-   */
-  template <typename PointTy>
-  void SetPoint_Unchecked(const size_t i, const PointTy& point) {
-    if constexpr (std::is_base_of_v<XYZF, PointTy>) {
-      mXYZ[i].x = point.x;
-      mXYZ[i].y = point.y;
-      mXYZ[i].z = point.z;
-    }
-    if constexpr (std::is_base_of_v<Classification, PointTy>) {
-      mCla[i].c = point.c;
-    }
-    if constexpr (std::is_base_of_v<Intensity, PointTy>) {
-      mIntensity[i].i = point.i;
-    }
-    if constexpr (std::is_base_of_v<RGB16, PointTy>) {
-      mRGB[i].r = point.r;
-      mRGB[i].g = point.g;
-      mRGB[i].b = point.b;
-    }
-    // \todo add other field groups
-  }
-
-  /**
-   *  \brief Set fields of given point.
-   *
-   *  \param [in] i index of point
-   *  \param [in] point LASlib point
-   *  \param [in] quantizer scale and offset parameters
-   *  \param [in] offset flag indicating if offset is different
-   */
-  void SetPoint_Unchecked(size_t i, const LASpoint& point, bool offset = true);
-
-  /**
-   *  \param [in] i index of point
-   *  \return Returns a point at given index.
-   */
-  template <typename PointTy>
-  PointTy GetPoint_Unchecked(const size_t i) const {
-    PointTy point;
-    if constexpr (std::is_base_of_v<XYZF, PointTy>) {
-      point.x = mXYZ[i].x;
-      point.y = mXYZ[i].y;
-      point.z = mXYZ[i].z;
-    }
-    if constexpr (std::is_base_of_v<Classification, PointTy>) {
-      point.c = mCla[i].c;
-    }
-    if constexpr (std::is_base_of_v<Intensity, PointTy>) {
-      point.i = mIntensity[i].i;
-    }
-    if constexpr (std::is_base_of_v<RGB16, PointTy>) {
-      point.r = mRGB[i].r;
-      point.g = mRGB[i].g;
-      point.b = mRGB[i].b;
-    }
-    // \todo add other field groups
-
-    return point;
-  }
-
-  /**
-   *  \brief Get fields to given point.
-   *
-   *  \param [in] i index of point
-   *  \param [in/out] point LASlib point
-   *  \param [in] offset flag indicating if offset is different
-   */
-  void GetPoint_Unchecked(size_t i, LASpoint& point, bool offset = true) const;
-
-  /**
    *  \brief it is tedious also in-efficient to track the modification of points and maintain their bounding box.
    *
    *  \return Returns 2D extent of region covered by points in XY
@@ -503,7 +476,7 @@ public:
    *  \remark This convenient function will always traverse all points to obtain the region extent.
    *  Use it at caution to avoid perforamnce penaty.
    */
-  RegionTileD ObtainBoundingBox2D() const noexcept;
+  SpatialTileD ObtainBoundingBox2D() const noexcept;
 
 private:
   size_t mPointCapacity{};  // max number of points to be able to hold
@@ -518,7 +491,40 @@ private:
   // uncomment when needed
   //std::vector<GPSTime> mTime;
 
+  /**
+   *  \brief verify if point cloud contains fields requested.
+   *
+   *  \param [in] pointFieldGroup The field groups bit mask requested.
+   *  \throw Throws invalid_argument if point cloud does not contain all the requested field groups.
+   */
+  void VerifyPointFieldBits(const size_t pointFieldBits) const {
+    bool good{ true };
+    for (auto [pos, bit] : FieldGroup::kPOSBIT) {
+      if (bit & pointFieldBits) {
+        good = good && mFieldGroup.test(pos);
+      }
+    }
+
+    if (!good) {
+      throw std::invalid_argument("VerifyPointFieldBits: pointFieldBits");
+    }
+  }
+
+  /**
+   *  \param FieldTy the field type of a WxPoint<> component
+   *  \throw Throws invalid_argument if point cloud does not contain the requested field group.
+   */
+  template <typename FieldTy> void VerifyFieldType() const {
+    static_assert(std::is_same_v<XYZF, FieldTy> || std::is_same_v<Classification, FieldTy> ||
+      std::is_same_v<Intensity, FieldTy> || std::is_same_v<RGB16, FieldTy>, "VerifyFieldType: FieldTy");
+    if (!mFieldGroup.test(FieldTy::kFieldPos)) {
+      throw std::invalid_argument("VerifyFieldType: FieldTy");
+    }
+  }
+
   // cache
   size_t mPointCount{};     // actual number of points held, default to mPointCapacity
+  std::tuple<std::vector<XYZF>*, std::vector<Classification>*, std::vector<Intensity>*, 
+    std::vector<RGB16>*> mData{ &mXYZ, &mCla, &mIntensity, &mRGB }; // indexed by kPOS
 };
 }

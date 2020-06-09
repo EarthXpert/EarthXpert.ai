@@ -55,13 +55,13 @@ class CMakeBuild(build_ext):
 
 
 setup(
-    name='wxpyext',
+    name='expyext',
     version='1.0.0',
-    author='WatXtract.ai Inc.',
-    author_email='info@watxtractai.com',
-    description='WatXtract.ai extension for Python',
-    long_description='',
-    ext_modules=[CMakeExtension('wxpyext')],
+    author='EarthXpert.ai Inc.',
+    author_email='info@earthxpertai.com',
+    description='EarthXpert.ai extension for Python',
+    long_description='Python API to all modules and free functions to ease the workflow development.',
+    ext_modules=[CMakeExtension('expyext')],
     cmdclass=dict(build_ext=CMakeBuild),
     zip_safe=False,
 )

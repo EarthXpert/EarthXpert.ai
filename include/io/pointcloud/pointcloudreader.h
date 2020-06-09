@@ -54,17 +54,17 @@ public:
   std::unique_ptr<VectorMetadata> GetMetadata() const override;
 
   /**
-   *  \brief Set the margin size.
+   *  \brief Set the buffer size.
    *
-   *  \param [in] marginX the horizontal margin size
-   *  \param [in] marginY the vertical margin size
+   *  \param [in] bufferX the horizontal buffer size
+   *  \param [in] bufferY the vertical buffer size
    */
-  void SetMargins(float marginX, float marginY) override;
+  void SetBuffers(float bufferX, float bufferY) override;
 
   /**
-   *  \return Returns margin size.
+   *  \return Returns buffer size.
    */
-  std::pair<float, float> GetMargins() const noexcept override;
+  std::pair<float, float> GetBuffers() const noexcept override;
 
   /**
    *  \return Returns pointer to a coordinate system
@@ -105,7 +105,7 @@ public:
   size_t ReadPointcloud(const size_t start, Pointcloud* const pointCloud) override;
 
   /**
-   *  \brief Reads point tile defined by tile, internal margin size.
+   *  \brief Reads point tile defined by tile, internal buffer size.
    *
    *  \param [in] minX x location of the lower-left corner of the tile [unit: meter]
    *  \param [in] minY y location of the lower-left corner of the tile
@@ -118,13 +118,13 @@ public:
     double width, double height) override;
 
   /**
-   *  \brief Reads point tile defined by tile, internal margin size.
+   *  \brief Reads point tile defined by tile, internal buffer size.
    *
    *  \param [in] tile The horizontal extent of region to read
    *
    *  \return Return Pointcloud container object.
    */
-  std::unique_ptr<Pointcloud> ReadPointcloud(const RegionTileD& tile) override;
+  std::unique_ptr<Pointcloud> ReadPointcloud(const SpatialTileD& tile) override;
 
   /**
    *  \return Returns LASreader object.
@@ -137,9 +137,9 @@ private:
   std::unique_ptr<LASreader> mReader{};
   FieldGroup mFieldGroup{};   // fields group to read
 
-  // \remark margin of point cloud seems not quite meaningful. remove?
-  float mMarginX{};
-  float mMarginY{};
+  // \todo
+  float mBufferX{};
+  float mBufferY{};
 
   mutable std::mutex mMutex;    // ranged reading
 
@@ -160,7 +160,7 @@ private:
 
   FieldGroup mFileFieldGroup;
   size_t mFilePointCount{};  // total number of point records in file
-  RegionTileD mFileBBox2D;   // 2D bounding box of all points in file
+  SpatialTileD mFileBBox2D;   // 2D bounding box of all points in file
 
   void ObtainLasInfo();
 };

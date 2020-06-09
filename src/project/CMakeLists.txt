@@ -6,7 +6,7 @@ earthxpert_add_library(exproject "api"
        "ads/adsprj.cpp"
        "frame/frameprj.cpp"
        "rational/rationalprj.cpp"
-  ITEMS ex3rd_party core sensormodel
+  ITEMS ex3rdparty core sensormodel
         Boost::boost Boost::filesystem Boost::iostreams
         ${CERES_LIBRARY} ${CGAL_LIBRARIES} ${GDAL_LIBRARY} ${OPENCV_LIBS})
 

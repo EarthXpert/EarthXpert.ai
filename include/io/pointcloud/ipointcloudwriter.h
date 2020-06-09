@@ -6,7 +6,7 @@
 
 #include "io/exio.h"
 #include "core/datasource/pointcloud.h"
-#include "3rd_party//gdal/exgdal.h"
+#include "3rdparty//gdal/exgdal.h"
 
 namespace earthxpert {
 class VectorMetadata;
@@ -32,7 +32,7 @@ public:
   virtual void SetMetadata(const VectorMetadata* metaData) = 0;
 
   /**
-   *  \brief Inject the ground coordinate system 
+   *  \brief Inject the ground coordinate system
    *
    *  \param [in] spatialref the coordinate system
    */

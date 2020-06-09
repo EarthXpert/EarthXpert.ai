@@ -36,7 +36,7 @@ option(EARTHXPERT_INSTALL_TESTS_PYUNIT "install python unit tests" OFF)
 
 set(TESTS_BIN_DIR ${CMAKE_INSTALL_PREFIX}/${EARTHXPERT_BIN_DIR})
 set(BOOST_BIN_DIR "${Boost_LIBRARY_DIRS}")
-add_subdirectory(3rd_party)
+add_subdirectory(3rdparty)
 add_subdirectory(cppunit)
 add_subdirectory(performance)
 #add_subdirectory(pyunit)

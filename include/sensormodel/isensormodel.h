@@ -5,8 +5,8 @@
 #pragma once
 
 #include "sensormodel/exsensormodel.h"
-#include "3rd_party/gdal/exgdal.h"
-#include "3rd_party/opencv/exopencv.h"
+#include "3rdparty/gdal/exgdal.h"
+#include "3rdparty/opencv/exopencv.h"
 
 #include <memory>
 #include <vector>

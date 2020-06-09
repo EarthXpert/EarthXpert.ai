@@ -5,7 +5,7 @@
 #pragma once
 
 #include "io/exio.h"
-#include "3rd_party/gdal/exgdal.h"
+#include "3rdparty/gdal/exgdal.h"
 #include "core/datasource/ilayer.h"
 #include "core/datasource/metadata.h"
 
@@ -46,11 +46,11 @@ public:
   virtual std::unique_ptr<ILayer> ReadLayer(const LayerInfo& layerInfo) = 0;
 
   /**
-   *  \brief Reads a vector block defined by offsets, size. 
+   *  \brief Reads a vector block defined by offsets, size.
    *  The offsets are relative to the lower-left corner in Cartician coordinate system.
    *
-   *  \param [in] minX 
-   *  \param [in] minY 
+   *  \param [in] minX
+   *  \param [in] minY
    *  \param [in] width horizontal width
    *  \param [in] height vertical height
    *  \param [in] layerInfo information of layer to read
