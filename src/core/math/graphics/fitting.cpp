@@ -3,7 +3,7 @@
  * ----------------------------------------------------------------------
  */
 #include "core/math/fitting.h"
-#include "3rd_party/ceres/exceres.h"
+#include "3rdparty/ceres/exceres.h"
 #include "core/exceptions/exexcept.h"
 
 #include <cassert>
@@ -75,14 +75,14 @@ namespace detail {
    *  \todo do not instantiate LossPolicy before resolving the construtor issue
    */
   template <typename ResidualPolicy, typename LossPolicy = void>
-  std::pair<double, double> FitCurve2D(const std::vector<Point2d>& points, 
+  std::pair<double, double> FitCurve2D(const std::vector<Point2d>& points,
     LossPolicy* lossFunc = nullptr) {
     static_assert(std::is_base_of_v<IResidual, ResidualPolicy>, "IResidual");
     static_assert(std::is_base_of_v<LossFunction, LossPolicy> || std::is_void_v<LossPolicy>, "LossFunction");
     assert(!points.empty());
     double m{};
     double c{};
-    
+
     LossFunction* lossF = (lossFunc) ? static_cast<LossFunction*>(lossFunc) : nullptr;
 
     Problem problem;

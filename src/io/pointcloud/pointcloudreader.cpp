@@ -3,7 +3,7 @@
  * -----------------------------------------------------------------------------
  */
 #include "io/pointcloud/pointcloudreader.h"
-#include "3rd_party/laslib/exlaslib.h"
+#include "3rdparty/laslib/exlaslib.h"
 #include "core/datasource/pointcloudutils.h"
 #include "core/exceptions/exexcept.h"
 
@@ -80,7 +80,7 @@ std::unique_ptr<Pointcloud> PointcloudReader::ReadPointcloud() {
  *
  *  \return Return specified number of points
  */
-std::unique_ptr<Pointcloud> 
+std::unique_ptr<Pointcloud>
 PointcloudReader::ReadPointcloud(const size_t start, const size_t numPoints) {
   if (start + numPoints > mFilePointCount) {
     throw std::out_of_range("ReadPointcloud");
@@ -91,7 +91,7 @@ PointcloudReader::ReadPointcloud(const size_t start, const size_t numPoints) {
 
   auto pc = std::make_unique<Pointcloud>(numPoints, mFieldGroup);
   ReadPointcloud(pc.get());
-  
+
   return pc;
 }
 
@@ -133,7 +133,7 @@ std::unique_ptr<Pointcloud> PointcloudReader::ReadPointcloud(
  *
  *  \return Return Pointcloud container object.
  */
-std::unique_ptr<Pointcloud> 
+std::unique_ptr<Pointcloud>
 PointcloudReader::ReadPointcloud(const SpatialTileD& tile) {
   // fast: direct reading if covering the entire file
   if (tile >= mFileBBox2D) {
@@ -230,7 +230,7 @@ void PointcloudReader::ObtainLasInfo() {
 
   mFileFieldGroup = FormatToFieldGroup(fmt);
 
-  // turn off fields not used till now: intensity, time, nir 
+  // turn off fields not used till now: intensity, time, nir
   mFileFieldGroup.reset(FieldGroup::kPOSINT);   // comment out if using intenisty
   mFileFieldGroup.reset(FieldGroup::kPOSTIM);   // comment out if using GpsTime
   mFileFieldGroup.reset(FieldGroup::kPOSNIR);
@@ -247,7 +247,7 @@ void PointcloudReader::ObtainLasInfo() {
   if (0 == mFilePointCount) {
     throw IOError("ObtainLasInfo: empty points file");
   }
-  assert(mHeader->number_of_point_records == mFilePointCount);  // extended_number_of_point_records 
+  assert(mHeader->number_of_point_records == mFilePointCount);  // extended_number_of_point_records
 
   mFileBBox2D.SetMinXY(mHeader->min_x, mHeader->min_y);
   mFileBBox2D.SetSize(mHeader->max_x - mHeader->min_x, mHeader->max_y - mHeader->min_y);

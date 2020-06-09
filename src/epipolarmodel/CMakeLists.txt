@@ -7,7 +7,7 @@ earthxpert_add_library(epipolarmodel "api"
        "epipolarrect.cpp"
        "frameepipolarmodel.cpp"
        "groundpolicy.cpp"
-  ITEMS ex3rd_party core sensormodel 
+  ITEMS ex3rdparty core sensormodel 
         ${GDAL_LIBRARY})
 
 earthxpert_install_target(epipolarmodel)

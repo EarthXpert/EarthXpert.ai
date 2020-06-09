@@ -7,7 +7,7 @@
 #include "core/excore.h"
 #include "core/math/constants.h"
 #include "core/utils/typehelper.h"
-#include "3rd_party/opencv/exopencv.h"
+#include "3rdparty/opencv/exopencv.h"
 #include "opencv2/core/mat.hpp"
 
 #include <memory>

@@ -3,7 +3,7 @@ project(expyext CXX)
 include_directories(${pybind11_INCLUDE_DIRS}) 
 include_directories(${PYTHON_INCLUDE_DIRS}) 
 
-# Build a Python extension module:
+# Build a Python extension API module:
 function(earthxpert_add_py_library name libs_dir)
   earthxpert_add_library(${name} ${libs_dir} ${ARGN})
 
@@ -24,7 +24,7 @@ endfunction()
 
 earthxpert_add_py_library(expyext "bindings"
   SRCS "expyext.cpp"
-  ITEMS ex3rd_party core dataio epipolar epipolarmodel marshaller sensormodel
+  ITEMS ex3rdparty core dataio epipolar epipolarmodel marshaller sensormodel
         Boost::python37 ${GDAL_LIBRARY} ${PYTHON_LIBRARIES})
 
 earthxpert_install_target(expyext)

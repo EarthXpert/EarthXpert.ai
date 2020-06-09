@@ -3,7 +3,7 @@
  * -----------------------------------------------------------------------------
  */
 #include "sensormodel/rationalmodel.h"
-#include "3rd_party/gdal/exgdal.h"
+#include "3rdparty/gdal/exgdal.h"
 #include "core/utils/typehelper.h"
 
 #include <algorithm>

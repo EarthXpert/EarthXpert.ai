@@ -3,7 +3,7 @@
  * -----------------------------------------------------------------------------
  */
 #include "core/utils/rasterresample.h"
-#include "3rd_party/opencv/exopencv.h"
+#include "3rdparty/opencv/exopencv.h"
 
 #include "opencv2/imgproc.hpp"
 #include <algorithm>

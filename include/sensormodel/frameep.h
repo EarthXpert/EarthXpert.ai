@@ -4,7 +4,7 @@
  */
 #pragma once
 
-#include "3rd_party/gdal/exgdal.h"
+#include "3rdparty/gdal/exgdal.h"
 #include "sensormodel/exsensormodel.h"
 
 #include <array>

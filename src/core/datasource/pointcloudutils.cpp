@@ -3,7 +3,7 @@
  * -----------------------------------------------------------------------------
  */
 #include "core/datasource/pointcloudutils.h"
-#include "3rd_party/laslib/exlaslib.h"
+#include "3rdparty/laslib/exlaslib.h"
 #include "core/datasource/pointtypes.h"
 #include "core/exceptions/exexcept.h"
 
@@ -22,7 +22,7 @@ namespace detail {
     {pdt::kPDF1, {fgt::kBITXCI | fgt::kBITTIM}},
     {pdt::kPDF2, {fgt::kBITXCI | fgt::kBITRGB}},
     {pdt::kPDF3, {fgt::kBITXCI | fgt::kBITTIM | fgt::kBITRGB}},
-    {pdt::kPDF4, {fgt::kBITXCI | fgt::kBITTIM}},   
+    {pdt::kPDF4, {fgt::kBITXCI | fgt::kBITTIM}},
     {pdt::kPDF5, {fgt::kBITXCI | fgt::kBITTIM | fgt::kBITRGB}},
     {pdt::kPDF6, {fgt::kBITXCI | fgt::kBITTIM}},
     {pdt::kPDF7, {fgt::kBITXCI | fgt::kBITTIM | fgt::kBITRGB}},

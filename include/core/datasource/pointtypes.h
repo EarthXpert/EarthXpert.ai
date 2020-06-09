@@ -5,7 +5,7 @@
 #pragma once
 
 #include "core/excore.h"
-#include "3rd_party/opencv/exopencv.h"
+#include "3rdparty/opencv/exopencv.h"
 #include "core/math/math.h"
 
 #include <array>
@@ -77,7 +77,7 @@ struct FieldGroup : std::bitset<8> {
 
   /**
    *  \brief examine if rhs contains all fields of current field group
-   * 
+   *
    *  \param [in] rhs the other field group to compare with
    *  \return Returns true if all fields are contained in rhs.
    */

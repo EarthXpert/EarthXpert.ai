@@ -3,8 +3,8 @@
  * -----------------------------------------------------------------------------
  */
 #include "srcconfig.h"
-#include "3rd_party/boost/exboost.h"
-#include "3rd_party/gdal/exgdal.h"
+#include "3rdparty/boost/exboost.h"
+#include "3rdparty/gdal/exgdal.h"
 #include "core/utils/rasterlayout.h"
 
 #include <iostream>

@@ -2,7 +2,7 @@
  *  Copyright (c) 2020.  All rights reserved.
  * -----------------------------------------------------------------------------
  */
-#include "3rd_party/gtest/gtest_main.h"
+#include "3rdparty/gtest/gtest_main.h"
 #include "testconfig.h"
 
 #include "core/utils/spatiallayout.h"
@@ -214,7 +214,7 @@ TEST(pointcloudreader, ReadPointcloudOMP_LAS_XYZ_CHUNKS) {
 
   ASSERT_EQ(filePointCount, reader.GetPointCount()) << "number of points";
 
-#pragma omp parallel 
+#pragma omp parallel
   {
     Pointcloud pc(chunkNumPts, { fgt::kBITXYZ });
 
@@ -253,7 +253,7 @@ TEST(pointcloudreader, ReadPointcloud_LAS_XYZC_TILES) {
   const auto height = header->max_y - header->min_y;
   const auto tileWidth = width * 0.5 + 1.0e-6; // increase a little bit to ensure only two horizontal tiles
   const auto tileHeight = height * 0.5 + 1.0e-6;
-  
+
   RegionLayoutD layout(header->min_x, header->min_y, width, height, tileWidth, tileHeight);
   auto& tiles = layout.GetSpatialTiles();
 

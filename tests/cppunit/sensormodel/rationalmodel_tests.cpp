@@ -2,7 +2,7 @@
  *  Copyright (c) 2019.  All rights reserved.
  * -----------------------------------------------------------------------------
  */
-#include "3rd_party/gtest/gtest_main.h"
+#include "3rdparty/gtest/gtest_main.h"
 #include "testconfig.h"
 
 #include "sensormodel/rationalmodel.h"
@@ -203,6 +203,6 @@ std::unique_ptr<RationalModel> CreateRationalModel() {
 
   auto wgs84Geog = std::make_shared<SpatialReferenceSystem>("WGS84");
 
-  return std::make_unique<RationalModel>(normalFators, 
+  return std::make_unique<RationalModel>(normalFators,
     lineNumCoef, lineDenCoef, sampNumCoef, sampDenCoef, wgs84Geog);
 }

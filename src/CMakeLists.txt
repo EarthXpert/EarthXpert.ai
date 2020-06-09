@@ -56,7 +56,7 @@ function(earthxpert_install_target name)
 endfunction()
 
 add_definitions(-D_USE_MATH_DEFINES -DBOOST_ALL_DYN_LINK)
-add_subdirectory(3rd_party)
+add_subdirectory(3rdparty)
 add_subdirectory(app)
 add_subdirectory(bindings)
 add_subdirectory(blockadjust)

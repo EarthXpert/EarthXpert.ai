@@ -4,7 +4,7 @@
  */
 #pragma once
 
-#include "3rd_party/opencv/exopencv.h"
+#include "3rdparty/opencv/exopencv.h"
 #include "core/math/interpgrid.h"
 #include "epipolarmodel/epipolarrect.h"
 #include "epipolarmodel/iepipolarmodel.h"

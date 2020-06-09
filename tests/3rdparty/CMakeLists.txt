@@ -1,0 +1,17 @@
+project(tests_3rdparty)
+
+function(add_3rdparty_test name)
+  earthxpert_add_test(${name} "tests_3rdparty" ${ARGN})
+endfunction()
+
+add_subdirectory(boost)
+add_subdirectory(ceres)
+add_subdirectory(cgal)
+add_subdirectory(eigen)
+add_subdirectory(gdal)
+add_subdirectory(gtest)
+add_subdirectory(laslib)
+add_subdirectory(opencv)
+add_subdirectory(pdal)
+add_subdirectory(qt)
+#add_subdirectory(sgm)

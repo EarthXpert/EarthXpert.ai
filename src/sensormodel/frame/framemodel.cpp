@@ -3,7 +3,7 @@
  * -----------------------------------------------------------------------------
  */
 #include "sensormodel/framemodel.h"
-#include "3rd_party/opencv/exopencv.h"
+#include "3rdparty/opencv/exopencv.h"
 #include "core/math/constants.h"
 #include "core/math/rotation.h"
 

@@ -1,4 +1,4 @@
-#include "3rd_party/gtest/gtest_main_gdal.h"
+#include "3rdparty/gtest/gtest_main_gdal.h"
 #include "testconfig.h"
 
 #include "core/datasource/vectorutils.h"
