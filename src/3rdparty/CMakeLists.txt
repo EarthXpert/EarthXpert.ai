@@ -18,10 +18,11 @@ earthxpert_add_library(ex3rdparty "api"
        "gtest/exgtest.cpp"
        "laslib/exlaslib.cpp"
        "opencv/exopencv.cpp"
+       "pdal/expdal.cpp"
        "qt/exqt.cpp"
        "sltbench/exsltbench.cpp"
   ITEMS Boost::boost Boost::filesystem ${CERES_LIBRARY} ${CGAL_LIBRARIES} ${GDAL_LIBRARY} 
         glog::glog ${GTEST_BOTH_LIBRARIES} ${LASLIB_LIBRARY} ${OPENCV_LIBS} 
-        Qt5::Widgets ${SLTBENCH_LIBS})
+        ${PDAL_LIBRARIES} Qt5::Widgets ${SLTBENCH_LIBS})
 
 earthxpert_install_target(ex3rdparty)

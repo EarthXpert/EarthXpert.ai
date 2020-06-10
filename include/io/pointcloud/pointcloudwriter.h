@@ -43,16 +43,12 @@ public:
    *  exports partially the LASlib functions. The caller could exploit
    *  the full LASlib capabilities via the returned object pointer.
    */
-  LASwriter* GetLasWriter() const noexcept {
-    return mWriter.get();
-  }
+  LASwriter* GetLasWriter() const noexcept { return mWriter.get(); }
 
   /**
    *  \return Returns fields group
    */
-  FieldGroup GetFieldGroup() const noexcept override {
-    return mFieldGroup;
-  }
+  FieldGroup GetFieldGroup() const noexcept override { return mFieldGroup; }
 
   /**
    *  \brief Inject metadata tags

@@ -37,16 +37,12 @@ public:
    *  exports partially the LASlib functions. The caller could exploit
    *  the full LASlib capabilities via the returned object pointer.
    */
-  LASreader* GetLasReader() const noexcept {
-    return mReader.get();
-  }
+  LASreader* GetLasReader() const noexcept { return mReader.get(); }
 
   /**
    *  \return Returns fields group
    */
-  FieldGroup GetFieldGroup() const noexcept override {
-    return mFieldGroup;
-  }
+  FieldGroup GetFieldGroup() const noexcept override { return mFieldGroup; }
 
   /**
    *  \return Returns metadata tags
@@ -74,9 +70,7 @@ public:
   /**
    *  \return Returns total number of points of las file
    */
-  int64 GetPointCount() const noexcept override {
-    return mFilePointCount;
-  }
+  int64 GetPointCount() const noexcept override { return mFilePointCount; }
 
   /**
    *  \return Return all points in the las file
@@ -129,9 +123,7 @@ public:
   /**
    *  \return Returns LASreader object.
    */
-  const LASheader* GetLasHeader() const noexcept {
-    return mHeader;
-  }
+  const LASheader* GetLasHeader() const noexcept { return mHeader; }
 
 private:
   std::unique_ptr<LASreader> mReader{};

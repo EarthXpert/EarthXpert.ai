@@ -1,5 +1,8 @@
 project(tests_cppunit_core CXX)
 
+add_cppunit_test(coordinatetransform_tests 
+  core  
+  ${GDAL_LIBRARY} ${OPENCV_LIBS})
 add_cppunit_test(earthellipsoid_tests 
   core  
   ${GDAL_LIBRARY} ${OPENCV_LIBS})
@@ -15,10 +18,11 @@ ${GTEST_BIN_DIR};${BOOST_BIN_DIR};${GDAL_BIN_DIR};${OPENCV_BIN_DIR};${OPENNI_BIN
 ${TESTS_BIN_DIR};$ENV{PATH}")
   string(REPLACE ";" "\\;" TESTS_CORE_PATH "${TESTS_CORE_PATH}")
   message(STATUS "Tests_Core_Path: ${TESTS_CORE_PATH}")
-  set_tests_properties(earthellipsoid_tests pointcloud_tests PROPERTIES ENVIRONMENT "${TESTS_CORE_PATH}")
+  set_tests_properties(coordinatetransform_tests earthellipsoid_tests pointcloud_tests PROPERTIES ENVIRONMENT "${TESTS_CORE_PATH}")
 endif()
 
 if(EARTHXPERT_INSTALL_TESTS_CPPUNIT)
+  earthxpert_install_test(coordinatetransform_tests)
   earthxpert_install_test(earthellipsoid_tests)
   earthxpert_install_test(pointcloud_tests)
 endif()
