@@ -74,6 +74,27 @@ public:
   void FitExponentialCurve(const std::vector<Point2d>& points, 
     std::vector<double>& pb, Solver::Summary& summary);
 
+  /**
+   *  \breif fit a parameterized plane to a sequence of 3D points.
+   *  The plane equation is defined by
+   *
+   *    z = m * x + n * y + c
+   *
+   *  where
+   *
+   *    z: output variable
+   *    x,y: input variables
+   *    m,n: the slope parameters
+   *    c: the intercept parameter
+   *
+   *  \param [in] points a sequence, at least three non-colinear, of 3D points
+   *  \param [in/out] pb the parameter block holding all unknown parameters
+   *                  optionally with initial values.
+   *  \param [out] summary the report of ceres solver.
+   */
+  void FitPlane(const std::vector<Point3d>& points,
+    std::vector<double>& pb, Solver::Summary& summary);
+
 private:
   Solver::Options mOptions;   // the options to control ceres solver
   //Solver::Summary mSummary; // the report of ceres solver

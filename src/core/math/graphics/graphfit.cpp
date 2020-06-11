@@ -145,7 +145,7 @@ void Fit2D_3D(const std::vector<PointTy>& points, std::vector<double>& pb,
 GraphFit::GraphFit() {
   mOptions.max_num_iterations = 20;
   mOptions.linear_solver_type = ceres::DENSE_QR;
-  mOptions.minimizer_progress_to_stdout = true;
+  mOptions.minimizer_progress_to_stdout = false;
 }
 
 GraphFit::GraphFit(const Solver::Options& options) : mOptions(options) {
@@ -210,4 +210,30 @@ void GraphFit::FitExponentialCurve(const std::vector<Point2d>& points,
 
   return detail::Fit2D_3D<Point2d, detail::ExponentialResidual>(points, 
     pb, mOptions, summary);
+}
+
+/**
+ *  \breif fit a parameterized plane to a sequence of 3D points.
+ *  The plane equation is defined by
+ *
+ *    z = m * x + n * y + c
+ *
+ *  where
+ *
+ *    z: output variable
+ *    x,y: input variables
+ *    m,n: the slope parameters
+ *    c: the intercept parameter
+ *
+ *  \param [in] points a sequence, at least three non-colinear, of 3D points
+ *  \param [in/out] pb the parameter block holding all unknown parameters
+ *                  optionally with initial values.
+ *  \param [out] summary the report of ceres solver.
+ */
+void GraphFit::FitPlane(const std::vector<Point3d>& points,
+  std::vector<double>& pb, Solver::Summary& summary) {
+  if (3 > points.size())
+    throw std::invalid_argument("FitPlane: must have 3+ points");
+
+  detail::Fit2D_3D<Point3d, detail::LinearResidual>(points, pb, mOptions, summary);
 }
