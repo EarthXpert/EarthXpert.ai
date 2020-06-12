@@ -6,4 +6,5 @@ endfunction()
 
 add_definitions(-D_USE_MATH_DEFINES)
 
+add_subdirectory(core)
 add_subdirectory(io)

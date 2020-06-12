@@ -16,13 +16,14 @@ using namespace earthxpert;
 using namespace earthxpert::math;
 using namespace earthxpert::thirdparty;
 using namespace::ceres;
+using namespace::Eigen;
 
 namespace earthxpert::math {
 namespace detail {
 /**
  *  \brief cost functors implements IResidual
  *
- *  \param PointTy type of point: Point2f, Point2d, Point3f, Point3d
+ *  \param PointTy type of point: Point2f, Point2d, Point3f, Point3d, Vector2f, Vector3d, etc
  *
  *  \param [in] point the observation data
  */
@@ -77,7 +78,7 @@ private:
  *  a three-variable function to a sequence of 3D points,
  *  assuming equal weighting for point coordinates.
  *
- *  \param PointTy type of point: Point2f, Point2d, Point3f, Point3d
+ *  \param PointTy type of point: Point2f, Point2d, Point3f, Point3d, Vector2f, Vector3d
  *  \param ResidualPolicy defines the functor for residual calculation.
  *
  *  The 2d equation is defined by y = func(m, c). for example,
@@ -112,8 +113,12 @@ private:
  *
  *  \todo do not instantiate LossPolicy before resolving the construtor issue
  *  \todo estimate initial parameter values
+ *  \todo weighting of observations
+ *  \todo make CostFunction a template parameter
  */
-template <typename PointTy, template <typename PtTy = PointTy> class ResidualPolicy, class LossPolicy = void>
+template <typename PointTy, 
+  template <typename PtTy = PointTy> class ResidualPolicy, 
+  class LossPolicy = void>
 void Fit2D_3D(const std::vector<PointTy>& points, std::vector<double>& pb, 
   const Solver::Options& options, Solver::Summary& summary, LossPolicy* lossFunc = nullptr) {
   //static_assert(std::is_same_v<Point2d, PointTy> || std::is_same_v<Point3d, PointTy>, "PointTy");
@@ -137,7 +142,7 @@ void Fit2D_3D(const std::vector<PointTy>& points, std::vector<double>& pb,
     problem.AddResidualBlock(costFunc, lossF, pb.data());
   }
 
-  Solve(options, &problem, &summary);
+  ceres::Solve(options, &problem, &summary);
 }
 } // detail
 } // namespace earthxpert::math
@@ -152,7 +157,7 @@ GraphFit::GraphFit(const Solver::Options& options) : mOptions(options) {
 }
 
 /**
- *  \breif fit a parameterized stright line to a sequence of 2D points.
+ *  \brief fit a parameterized stright line to a sequence of 2D points.
  *  The line equation is defined by
  *
  *    y = m * x + c
@@ -187,6 +192,34 @@ void GraphFit::FitStraightLineRobust(const std::vector<Point2d>& points,
 }
 
 /**
+ *  \brief fit line by Eigen Solver
+ */
+void GraphFit::FitStraightLine(const std::vector<Point2d>& points, std::vector<double>& pb) {
+  const int n = int(points.size());
+  if (2 > n)
+    throw std::invalid_argument("FitStraightLine: must have 2+ points");
+
+  if (pb.empty()) {
+    pb.resize(2, 0.0);
+  }
+
+  MatrixXd A(n, 2);
+  VectorXd b(n);
+
+  for (int i = 0; i < n; ++i) {
+    A(i, 0) = points[i].x;
+    A(i, 1) = 1.0;
+    b[i] = points[i].y;
+  }
+
+  //const auto& x = A.colPivHouseholderQr().solve(b);
+  const auto& x = A.bdcSvd(ComputeThinU | ComputeThinV).solve(b);
+
+  pb[0] = x[0];
+  pb[1] = x[1];
+}
+
+/**
  *  \breif fit a parameterized exponential curve to a sequence of 2D points.
  *  The line equation is defined by
  *
@@ -206,7 +239,7 @@ void GraphFit::FitStraightLineRobust(const std::vector<Point2d>& points,
 void GraphFit::FitExponentialCurve(const std::vector<Point2d>& points, 
   std::vector<double>& pb, Solver::Summary& summary) {
   if (2 > points.size())
-    throw std::invalid_argument("FitStraightLine: must have 2+ points");
+    throw std::invalid_argument("FitExponentialCurve: must have 2+ points");
 
   return detail::Fit2D_3D<Point2d, detail::ExponentialResidual>(points, 
     pb, mOptions, summary);

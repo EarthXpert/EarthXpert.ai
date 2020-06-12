@@ -6,6 +6,7 @@
 
 #include "3rdparty/ex3rdparty.h"
 #include "ceres/ceres.h"
+#include "ceres/tiny_solver.h"
 
 namespace earthxpert::thirdparty {
 // the interface IResidual defines the base of cost functor

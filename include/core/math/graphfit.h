@@ -6,6 +6,7 @@
 
 #include "core/excore.h"
 #include "3rdparty/ceres/exceres.h"
+#include "3rdparty/eigen/exeigen.h"
 #include "3rdparty/opencv/exopencv.h"
 
 #include <utility>
@@ -22,6 +23,12 @@ namespace earthxpert::math {
  */
 class EXCORE_EXPORTS GraphFit {
 public:
+  // Library used to solve algebraic problems
+  enum SolverType {
+    eCERES,
+    eEIGEN
+  };
+
   GraphFit();
   GraphFit(const Solver::Options& options);
   ~GraphFit() = default;
@@ -52,6 +59,8 @@ public:
     std::vector<double>& pb, Solver::Summary& summary);
   void FitStraightLineRobust(const std::vector<Point2d>& points, 
     std::vector<double>& pb, Solver::Summary& summary);
+
+  void FitStraightLine(const std::vector<Point2d>& points, std::vector<double>& pb);
 
   /**
    *  \breif fit a parameterized exponential curve to a sequence of 2D points.

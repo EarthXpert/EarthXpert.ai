@@ -24,7 +24,7 @@ static std::vector<Point3d> ObtainPlanePoints();
 /**
  *  TestCase 1: fit straight line
  */
-TEST(graphfit, FitCurve_T1) {
+TEST(graphfit, FitLine_Ceres) {
   auto points = ObtainLinePoints();
 
   GraphFit graphFit;
@@ -35,9 +35,9 @@ TEST(graphfit, FitCurve_T1) {
   std::cout << "Initial m: " << 0.0 << " c: " << 0.0 << "\n";
 
   graphFit.FitStraightLine(points, pb, summary);
-
+  ASSERT_TRUE(summary.IsSolutionUsable());
   ASSERT_EQ(2, pb.size()) << "2 parameters";
-
+  
   std::cout << summary.BriefReport() << "\n";
   std::cout << "Final   m: " << pb[0] << " c: " << pb[1] << "\n";
 
@@ -49,6 +49,7 @@ TEST(graphfit, FitCurve_T1) {
   std::cout << "Initial m: " << pb[0] << " c: " << pb[1] << "\n";
 
   graphFit.FitStraightLine(points, pb, summary);
+  ASSERT_TRUE(summary.IsSolutionUsable());
 
   std::cout << summary.BriefReport() << "\n";
   std::cout << "Final   m: " << pb[0] << " c: " << pb[1] << "\n";
@@ -59,6 +60,7 @@ TEST(graphfit, FitCurve_T1) {
   std::cout << "Initial m: " << pb[0] << " c: " << pb[1] << "\n";
 
   graphFit.FitStraightLine(points, pb, summary);
+  ASSERT_TRUE(summary.IsSolutionUsable());
 
   std::cout << summary.BriefReport() << "\n";
   std::cout << "Final   m: " << pb[0] << " c: " << pb[1] << "\n";
@@ -67,7 +69,7 @@ TEST(graphfit, FitCurve_T1) {
 /**
  *  TestCase 2: fit exponetial curve
  */
-TEST(graphfit, FitCurve_T2) {
+TEST(graphfit, FitCurve_Ceres) {
   auto points = ObtainCurvePoints();
 
   GraphFit graphFit;
@@ -78,7 +80,7 @@ TEST(graphfit, FitCurve_T2) {
   std::cout << "Initial m: " << 0.0 << " c: " << 0.0 << "\n";
 
   graphFit.FitExponentialCurve(points, pb, summary);
-
+  ASSERT_TRUE(summary.IsSolutionUsable());
   ASSERT_EQ(2, pb.size()) << "2 parameters";
 
   std::cout << summary.BriefReport() << "\n";
@@ -92,6 +94,7 @@ TEST(graphfit, FitCurve_T2) {
   std::cout << "Initial m: " << pb[0] << " c: " << pb[1] << "\n";
   
   graphFit.FitExponentialCurve(points, pb, summary);
+  ASSERT_TRUE(summary.IsSolutionUsable());
 
   std::cout << summary.BriefReport() << "\n";
   std::cout << "Final   m: " << pb[0] << " c: " << pb[1] << "\n";
@@ -102,15 +105,34 @@ TEST(graphfit, FitCurve_T2) {
   std::cout << "Initial m: " << pb[0] << " c: " << pb[1] << "\n";
 
   graphFit.FitExponentialCurve(points, pb, summary);
+  ASSERT_TRUE(summary.IsSolutionUsable());
 
   std::cout << summary.BriefReport() << "\n";
   std::cout << "Final   m: " << pb[0] << " c: " << pb[1] << "\n";
 }
 
 /**
- *  TestCase 3: fit plane
+ *  TestCase 3: fit line by Eigen Solver
  */
-TEST(graphfit, FitPlane_T3) {
+TEST(graphfit, FitLine_Eigen) {
+  auto points = ObtainLinePoints();
+
+  GraphFit graphFit;
+
+  // zero initial parameter valus
+  std::vector<double> pb;
+  std::cout << "Initial m: " << 0.0 << " n: " << 0.0 << " c: " << 0.0 << "\n";
+
+  graphFit.FitStraightLine(points, pb);
+  ASSERT_EQ(2, pb.size()) << "2 parameters";
+
+  std::cout << "Final   m: " << pb[0] << " c: " << pb[1] << "\n";
+}
+
+/**
+ *  TestCase 4: fit plane
+ */
+TEST(graphfit, FitPlane_Ceres) {
   auto points = ObtainPlanePoints();
 
   GraphFit graphFit;
@@ -121,7 +143,7 @@ TEST(graphfit, FitPlane_T3) {
   std::cout << "Initial m: " << 0.0 << " n: " << 0.0 << " c: " << 0.0 << "\n";
 
   graphFit.FitPlane(points, pb, summary);
-
+  ASSERT_TRUE(summary.IsSolutionUsable());
   ASSERT_EQ(3, pb.size()) << "3 parameters";
 
   std::cout << summary.BriefReport() << "\n";
@@ -134,6 +156,7 @@ TEST(graphfit, FitPlane_T3) {
   std::cout << "Initial m: " << pb[0] << " n: " << pb[1] << " c: " << pb[2] << "\n";
 
   graphFit.FitPlane(points, pb, summary);
+  ASSERT_TRUE(summary.IsSolutionUsable());
 
   std::cout << summary.BriefReport() << "\n";
   std::cout << "Final   m: " << pb[0] << " n: " << pb[1] << " c: " << pb[2] << "\n";
@@ -145,6 +168,7 @@ TEST(graphfit, FitPlane_T3) {
   std::cout << "Initial m: " << pb[0] << " n: " << pb[1] << " c: " << pb[2] << "\n";
 
   graphFit.FitPlane(points, pb, summary);
+  ASSERT_TRUE(summary.IsSolutionUsable());
 
   std::cout << summary.BriefReport() << "\n";
   std::cout << "Final   m: " << pb[0] << " n: " << pb[1] << " c: " << pb[2] << "\n";
@@ -247,23 +271,20 @@ std::vector<Point2d> ObtainCurvePoints() {
  *    data = [x', y', z_observed'];
  */
 std::vector<Point3d> ObtainPlanePoints() {
+  std::mt19937 rng;
   std::vector<Point3d> points;
 
   const double m{ 0.3 };
   const double n{ 0.6 };
   const double c{ 0.1 };
-  const double noise{ 0.08 };
-
-  std::mt19937 rng;
 
   for (double x = 0.0; x <= 5.0; x += 0.5) {
     for (double y = -2.5; y <= 2.5; y += 0.5) {
-      const double dz = noise * (rng() * scale - 0.5);
+      const double dz = 0.05 * (rng() * scale - 0.5);
       const double z = m * x + n * y + c + dz;
 
       points.emplace_back<Point3d>({ x, y, z });
     }
   }
-
   return points;
 }
