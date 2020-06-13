@@ -70,7 +70,7 @@ private:
   double mEccSq{kWGS84_ECCSQ};  // first Eccentricity squared
 
   Point3d mLsrOrigin{0.0, 0.0, 0.0}; // LSR origin Longitude/Latitude/Height
-  double mHgtTol{0.0001}; // Height tolerance
+  double mHgtTol{1.0e-4}; // Height tolerance
 
   double RadiusInPrimeMeridian(double) const;
   double RadiusInPrimeVertical(double) const;

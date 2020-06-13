@@ -1,0 +1,9 @@
+/* ----------------------------------------------------------------------
+ *  Copyright (c) 2019.  All rights reserved.                          -
+ * ----------------------------------------------------------------------
+ */
+#pragma once
+
+namespace earthxpert {
+extern int kNumPhysicalCores;
+}

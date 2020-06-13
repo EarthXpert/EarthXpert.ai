@@ -5,6 +5,8 @@
 #pragma once
 
 #include "sensormodel/istereomodel.h"
+#include "core/spatialref/earthellipsoid.h"
+#include "core/exceptions/exexcept.h"
 
 namespace earthxpert {
 class ISensorModel;
@@ -19,6 +21,11 @@ class ISensorModel;
 class EXSENSORMODEL_EXPORTS StereoModel : public IStereoModel {
 public:
   StereoModel();
+  StereoModel(std::unique_ptr<EarthEllipsoid>&& earthEllip)
+    : mEarthEllip(std::move(earthEllip)) {
+    if (!mEarthEllip)
+      throw std::invalid_argument("StereoModel: earthEllip");
+  }
   virtual ~StereoModel() {}
 
   /**
@@ -169,5 +176,18 @@ public:
   GroundToImage(const std::vector<Point3d> &grounds,
                 const std::vector<ISensorModel const *> &sensorModels,
                 std::vector<Point2d> &images) const override;
+
+private:
+  int mMaxIters{ 8 };
+  double mTolZ{ 1.0e-4 };  // [mm]
+  double mH{ 10.0 };
+
+  std::unique_ptr<EarthEllipsoid> mEarthEllip;
+
+  bool ImageToGroundAprox(ISensorModel const* const leftModel, const Point2d& leftImage,
+    ISensorModel const* const rightModel, const Point2d& rightImage, Point3d& ground) const;
+
+  // cache
+  double mInvH{ 0.1 };
 };
 } // namespace earthxpert

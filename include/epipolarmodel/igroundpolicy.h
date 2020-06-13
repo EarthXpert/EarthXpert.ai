@@ -6,6 +6,7 @@
 
 #include "epipolarmodel/exepipolarmodel.h"
 #include "3rdparty/opencv/exopencv.h"
+#include "core/spatialref//spatialdef.h"
 
 namespace earthxpert {
 /**

@@ -209,6 +209,12 @@ public:
     return mGroundSRS;
   }
 
+  /**
+   *  \return Returns type of SRS
+   *  \todo parse from mGroundSRS;
+   */
+  virtual SrsType GetSrsType() const noexcept { return eGEO; }
+
   void SetImageSize(const int numCols, const int numRows) noexcept {
     mNumCols = numCols;
     mNumRows = numRows;
@@ -220,6 +226,11 @@ public:
   std::pair<int, int> GetImageSize() const noexcept override {
     return { mNumCols, mNumRows };
   }
+
+  /**
+   *  \return Returns the middle height
+   */
+  double GetMeanHeight() const noexcept { return mNormalFators[eOHEIGHT]; }
 
   /**
    *  \brief Get normalization factors including offsets & scales.

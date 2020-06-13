@@ -6,7 +6,6 @@
 
 #include "core/excore.h"
 #include "3rdparty/ceres/exceres.h"
-#include "3rdparty/eigen/exeigen.h"
 #include "3rdparty/opencv/exopencv.h"
 
 #include <utility>
@@ -33,9 +32,9 @@ public:
   GraphFit(const Solver::Options& options);
   ~GraphFit() = default;
 
-  void SetOptions(const Solver::Options& options) {
-    mOptions = options;
-  }
+  void SetOptions(const Solver::Options& options) { mOptions = options; }
+
+  auto& GetOptions() { return mOptions; }
 
   /**
    *  \breif fit a parameterized stright line to a sequence of 2D points.

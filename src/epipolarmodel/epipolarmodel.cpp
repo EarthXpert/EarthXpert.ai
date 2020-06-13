@@ -46,6 +46,8 @@ EpipolarModel<GroundPolicy>::EpipolarModel(std::shared_ptr<ISensorModel> leftMod
     : mLeftModel(leftModel), mLeftRect(std::move(leftRect)), 
   mRightModel(rightModel), mRightRect(std::move(rightRect)),
   mGroundPolicy(std::move(groundPolicy)) {
+  assert(GroundPolicy::kGroundType == leftModel->GetSrsType());
+
   mOrigin = mLeftRect->GetOrigin();
   assert(mOrigin == mRightRect->GetOrigin());
 

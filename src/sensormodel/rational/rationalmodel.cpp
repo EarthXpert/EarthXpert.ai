@@ -798,7 +798,7 @@ Tuple4d RationalModel::CalcPolynomials(const double L, const double P, const dou
   }
 
   if (fabs(Ld) < tol || fabs(Sd) < tol) {
-    throw std::underflow_error("denominator is 0 in rational model");
+    throw std::underflow_error("RationalModel: denominator is 0 in rational model");
   }
 
   return { Ln, Ld, Sn, Sd };
@@ -882,7 +882,7 @@ void RationalModel::BuildCubeS2G() {
   {
     if (!SensorToGround(cubeNodes[i].x, cubeNodes[i].y, cubeNodes[i].z,
                         cube[i*2], cube[i*2 + 1])) {
-      throw std::exception("SensorToGround failed to project: RationalModel.");
+      throw std::exception("RationalModel: SensorToGround failed to project.");
     }
   }
 

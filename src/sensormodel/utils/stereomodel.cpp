@@ -4,6 +4,7 @@
  */
 #include "sensormodel/stereomodel.h"
 #include "sensormodel/isensormodel.h"
+#include "core/utils/unitutils.h"
 
 #include <algorithm>
 #include <cassert>
@@ -38,28 +39,82 @@ StereoModel::StereoModel() {}
  *
  *  \details
  */
-bool StereoModel::ImageToGround(ISensorModel const *const leftModel,
+bool StereoModel::ImageToGround(ISensorModel const* const leftModel,
+  const Point2d& leftImage,
+  ISensorModel const* const rightModel,
+  const Point2d& rightImage,
+  Point3d& ground) const {
+  if (!mEarthEllip) {
+    return ImageToGroundAprox(leftModel, leftImage, rightModel, rightImage, ground);
+  }
+  assert(eGEO == leftModel->GetSrsType());
+
+  const double meanHgt = (leftModel->GetMeanHeight() + rightModel->GetMeanHeight()) / 2.0;
+  const double hgtRange[2] = { meanHgt + mH, meanHgt - mH };
+
+  Point3d leftLsr[2];
+  Point3d rightLsr[2];
+
+  for (int i = 0; i < 2; ++i) {
+    Point3d grd{ 0.0, 0.0, hgtRange[i] };
+
+    leftModel->ImageToGround(leftImage, grd);
+    leftLsr[i] = mEarthEllip->LPHToLSR(Deg2Rad(grd));
+    
+    rightModel->ImageToGround(rightImage, grd);
+    rightLsr[i] = mEarthEllip->LPHToLSR(Deg2Rad(grd));
+  }
+
+  // 3d intersection
+  Point3d lsr;
+
+
+  ground = Rad2Deg(mEarthEllip->LSRToLPH(lsr));
+
+  return true;
+}
+
+// Newton-Raphson
+bool StereoModel::ImageToGroundAprox(ISensorModel const *const leftModel,
                                 const Point2d &leftImage,
                                 ISensorModel const *const rightModel,
                                 const Point2d &rightImage,
                                 Point3d &ground) const {
-  const double interval{100.0};
-  const double leftMeanHgt{};  // leftModel->GetMeanHeight()
-  const double rightMeanHgt{}; // rightModel->GetMeanHeight()
-  const double meanHgt = (leftMeanHgt + rightMeanHgt) / 2.0;
-  const double upperHgt{meanHgt + interval};
-  const double lowerHgt{meanHgt - interval};
+  const double meanHgt = (leftModel->GetMeanHeight() + rightModel->GetMeanHeight()) / 2.0;
+  ground.z = meanHgt;
 
-  // forward projection
-  Point3d leftGrd[2]{{0.0, 0.0, upperHgt}, {0.0, 0.0, lowerHgt}};
-  Point3d rightGrd[2]{{0.0, 0.0, upperHgt}, {0.0, 0.0, lowerHgt}};
+  int i;
+  for (i = 0; i < mMaxIters; ++i) {
+    Point3d grd{ 0.0, 0.0, ground.z + mH };
 
-  for (int i = 0; i < 2; ++i) {
-    leftModel->ImageToGround(leftImage, leftGrd[i]);
-    rightModel->ImageToGround(rightImage, rightGrd[i]);
+    Point3d leftGrd{ 0.0, 0.0, ground.z };
+    leftModel->ImageToGround(leftImage, grd);
+    leftModel->ImageToGround(leftImage, leftGrd);
+    const Point2d dLeft_dz{(grd.x - leftGrd.x) * mInvH, (grd.y - leftGrd.y) * mInvH};
+
+    Point3d rightGrd{ 0.0, 0.0, ground.z };
+    rightModel->ImageToGround(rightImage, grd);
+    rightModel->ImageToGround(rightImage, rightGrd);
+    const Point2d dRight_dz{ (grd.x - rightGrd.x) * mInvH, (grd.y - rightGrd.y) * mInvH };
+
+    const Point2d A = dRight_dz - dLeft_dz;
+    const double den = cv::normL2Sqr<double>(A);
+    if (std::numeric_limits<double>::epsilon() > den) {
+      return false;
+    }
+
+    ground.x = (leftGrd.x + rightGrd.x) * 0.5;
+    ground.y = (leftGrd.y + rightGrd.y) * 0.5;
+
+    const double dz = A.ddot(Point2d(leftGrd.x - rightGrd.x, leftGrd.y - rightGrd.y)) / den;
+    ground.z += dz;
+
+    if (mTolZ > fabs(dz)) break;
   }
 
-  // 3D intersection
+  if (mMaxIters == i) {
+    return false;
+  }
 
   return true;
 }
@@ -240,8 +295,7 @@ bool StereoModel::GroundToImage(
   image.resize(size);
 
   bool ret{true};
-  for (long i = 0; i < size; ++i)
-  {
+  for (long i = 0; i < size; ++i) {
       auto g2s = sensorModels[i]->GroundToImage(ground, image[i]);
       ret = ret && g2s;
   }
@@ -255,7 +309,8 @@ bool StereoModel::GroundToImage(
  *
  *  \param [in] grounds List of 3d ground positions (X, Y, Z)
  *  \param [in] sensorModels multiple (two or more) sensor models composing the
- * stereo model \param [in/out] images List of 2d positions (x, y) on image,
+ * stereo model 
+ *  \param [in/out] images List of 2d positions (x, y) on image,
  * interleaved by sensor models
  *
  *  \details
@@ -272,11 +327,9 @@ size_t StereoModel::GroundToImage(
   size_t ret{};
 
   #pragma omp parallel for reduction(+ : ret)
-  for (long i = 0; i < size; ++i)
-  {
+  for (long i = 0; i < size; ++i) {
       std::vector<Point2d> image(numModels);
-      if (GroundToImage(grounds[i], sensorModels, image))
-      {
+      if (GroundToImage(grounds[i], sensorModels, image)) {
           std::copy_n(std::begin(image), numModels, std::next(iter,
   numModels*i));
           ++ret;
