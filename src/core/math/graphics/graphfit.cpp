@@ -53,28 +53,28 @@ GraphFit::GraphFit(const Solver::Options& options) : mOptions(options) {
  *  \param [in/out] pb the parameter block holding all unknown parameters
  *                  optionally with initial values.
  */
-void GraphFit::FitStraightLine(const std::vector<Point2d>& points, 
+bool GraphFit::FitStraightLine(const std::vector<Point2d>& points, 
   std::vector<double>& pb, Solver::Summary& summary) {
   if (2 > points.size())
     throw std::invalid_argument("FitStraightLine: must have 2+ points");
 
-  FitPoints<Point2d, LinearResidual>(points, pb, mOptions, summary);
+  return FitPoints<Point2d, LinearResidual>(points, pb, mOptions, summary);
 }
 
-void GraphFit::FitStraightLineRobust(const std::vector<Point2d>& points, 
+bool GraphFit::FitStraightLineRobust(const std::vector<Point2d>& points, 
   std::vector<double>& pb, Solver::Summary& summary) {
   if (2 > points.size())
     throw std::invalid_argument("FitStraightLine: must have 2+ points");
 
   auto* lossFunc = new CauchyLoss(0.5);
-  FitPoints<Point2d, LinearResidual, CauchyLoss>(points,
+  return FitPoints<Point2d, LinearResidual, CauchyLoss>(points,
     pb, mOptions, summary, lossFunc);
 }
 
 /**
  *  \brief fit line by Eigen Solver
  */
-void GraphFit::FitStraightLine(const std::vector<Point2d>& points, std::vector<double>& pb) {
+bool GraphFit::FitStraightLine(const std::vector<Point2d>& points, std::vector<double>& pb) {
   const int n = int(points.size());
   if (2 > n)
     throw std::invalid_argument("FitStraightLine: must have 2+ points");
@@ -85,7 +85,6 @@ void GraphFit::FitStraightLine(const std::vector<Point2d>& points, std::vector<d
 
   MatrixXd A(n, 2);
   VectorXd b(n);
-
   for (int i = 0; i < n; ++i) {
     A(i, 0) = points[i].x;
     A(i, 1) = 1.0;
@@ -94,9 +93,11 @@ void GraphFit::FitStraightLine(const std::vector<Point2d>& points, std::vector<d
 
   //const auto& x = A.colPivHouseholderQr().solve(b);
   const auto& x = A.bdcSvd(ComputeThinU | ComputeThinV).solve(b);
+  // if () return false;
 
   pb[0] = x[0];
   pb[1] = x[1];
+  return true;
 }
 
 /**
@@ -116,7 +117,7 @@ void GraphFit::FitStraightLine(const std::vector<Point2d>& points, std::vector<d
  *  \param [in/out] pb the parameter block holding all unknown parameters
  *                  optionally with initial values.
  */
-void GraphFit::FitExponentialCurve(const std::vector<Point2d>& points, 
+bool GraphFit::FitExponentialCurve(const std::vector<Point2d>& points, 
   std::vector<double>& pb, Solver::Summary& summary) {
   if (2 > points.size())
     throw std::invalid_argument("FitExponentialCurve: must have 2+ points");
@@ -143,10 +144,10 @@ void GraphFit::FitExponentialCurve(const std::vector<Point2d>& points,
  *                  optionally with initial values.
  *  \param [out] summary the report of ceres solver.
  */
-void GraphFit::FitPlane(const std::vector<Point3d>& points,
+bool GraphFit::FitPlane(const std::vector<Point3d>& points,
   std::vector<double>& pb, Solver::Summary& summary) {
   if (3 > points.size())
     throw std::invalid_argument("FitPlane: must have 3+ points");
 
-  FitPoints<Point3d, LinearResidual>(points, pb, mOptions, summary);
+  return FitPoints<Point3d, LinearResidual>(points, pb, mOptions, summary);
 }

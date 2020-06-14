@@ -8,6 +8,8 @@
 #include "core/spatialref/earthellipsoid.h"
 #include "core/exceptions/exexcept.h"
 
+#include <cassert>
+
 namespace earthxpert {
 class ISensorModel;
 
@@ -17,16 +19,60 @@ class ISensorModel;
  *  the template method for better perforamnce. In detail, the bundle of
  *  rays from a block of sensor geometry models are used to implement
  *    forward intersection and backward projection in the network.
+ *
+ *  \todo member binding pointers to associated sensor models
  */
 class EXSENSORMODEL_EXPORTS StereoModel : public IStereoModel {
 public:
-  StereoModel();
-  StereoModel(std::unique_ptr<EarthEllipsoid>&& earthEllip)
-    : mEarthEllip(std::move(earthEllip)) {
-    if (!mEarthEllip)
-      throw std::invalid_argument("StereoModel: earthEllip");
+  /**
+   *  Constructor.
+   *
+   *  \brief Form a stereo model by a pair of sensor models.
+   *
+   *  \param [in] leftModel left sensor model composing the stereo model
+   *  \param [in] rightModel right sensor model composing the stereo model
+   */
+  StereoModel(ISensorModel const* const leftModel, ISensorModel const* const rightModel) {
+    mModels.resize(2);
+    mModels[0] = leftModel;
+    mModels[1] = rightModel;
   }
+
+  /**
+   *  \brief Form a triplet stereo model by three sensor models.
+   *
+   *  \param [in] sensorModels triplet sensor models composing the stereo model
+   */
+  StereoModel(const std::array<ISensorModel const*, 3>& sensorModels) {
+    mModels.resize(3);
+    std::copy_n(std::begin(sensorModels), 3, std::begin(mModels));
+  }
+
+  /**
+   *  \brief form a stereo model by the given two or more sensor models.
+   *
+   *  \param [in] sensorModels multiple (two or more) sensor models composing
+   * the stereo model.
+   */
+  StereoModel(const std::vector<ISensorModel const*>& sensorModels) {
+    assert(2 <= sensorModels.size());
+    mModels = sensorModels;
+  }
+
+  StereoModel(const StereoModel&) = delete;
+  StereoModel(StereoModel&&) = delete;
   virtual ~StereoModel() {}
+
+  StereoModel& operator=(const StereoModel&) = delete;
+  StereoModel& operator=(StereoModel&&) = delete;
+
+  void SetEarthEllipsoid(std::unique_ptr<EarthEllipsoid>&& earthEllip) {
+    if (!earthEllip)
+      throw std::invalid_argument("StereoModel: earthEllip");
+    mEarthEllip = std::move(earthEllip);
+  }
+
+  const auto& GetSensorModels() const noexcept { return mModels; }
 
   /**
    *  Image-to-ground forward intersection.
@@ -35,10 +81,8 @@ public:
    *  in image coordinate system, do forward intersection of pair-rays, and
    *  output the ground position with respect to the ground coordinate system.
    *
-   *  \param [in] leftModel left sensor model composing the stereo model
    *  \param [in] leftImage 2d position (x, y) in left image raster coordinate
    * system
-   *  \param [in] rightModel right sensor model composing the stereo model
    *  \param [in] rightImage the corresponding 2d position (x, y) in right image
    * raster coordinate system
    *  \param [in/out] ground 3d ground position (X, Y, Z) in ground coordinate
@@ -46,10 +90,8 @@ public:
    *
    *  \details
    */
-  virtual bool ImageToGround(ISensorModel const *const leftModel,
-                             const Point2d &leftImage,
-                             ISensorModel const *const rightModel,
-                             const Point2d &rightImage, Point3d &ground) const override;
+  virtual bool ImageToGround(const Point2d &leftImage,
+    const Point2d &rightImage, Point3d &ground) const override;
 
   /**
    *  \brief Given a pair of sensor models and associated list of 2d positions
@@ -57,88 +99,56 @@ public:
    *  output the list of ground positions with respect to the ground coordinate
    * system.
    *
-   *  \param [in] leftModel left sensor model composing the stereo model
    *  \param [in] leftImages a list of 2d positions (x, y) in left image raster
-   * coordinate system \param [in] rightModel right sensor model composing the
-   * stereo model \param [in] rightImages a list of corresponding 2d position
-   * (x, y) in right image raster coordinate system \param [in/out] grounds a
+   * coordinate system 
+   *  \param [in] rightImages a list of corresponding 2d position
+   * (x, y) in right image raster coordinate system 
+   *  \param [in/out] grounds a
    * list of 3d ground positions (X, Y, Z) in ground coordinate system
-   *
-   *  \details
    */
-  virtual size_t ImageToGround(ISensorModel const *const leftModel,
-                               const std::vector<Point2d> &leftImages,
-                               ISensorModel const *const rightModel,
-                               const std::vector<Point2d> &rightImages,
-                               std::vector<Point3d> &grounds) const override;
+  virtual size_t ImageToGround(const std::vector<Point2d> &leftImages,
+    const std::vector<Point2d> &rightImages, std::vector<Point3d> &grounds) const override;
 
   /**
    *  \brief Given a triplet of sensor models and associated 2d positions
    *  in image coordinate system, do forward intersection of triple-rays, and
    *  output the ground position with respect to the ground coordinate system.
    *
-   *  \param [in] sensorModels triplet sensor models composing the stereo model
    *  \param [in] image the corresponding 2d positions (x, y) in imagery raster
    * coordinate systems \param [in/out] ground 3d ground position (X, Y, Z) in
    * ground coordinate system \return Returns true if the operation succeeds
-   *
-   *  \details
    */
   virtual bool
-  ImageToGround(const std::array<ISensorModel const *, 3> &sensorModels,
-                const std::array<Point2d, 3> &image, Point3d &ground) const override;
-
-  /**
-   *  \brief Given a triplet of sensor models and associated list of triplet 2d
-   * positions in image coordinate system, do forward intersection of
-   * triple-rays, and output the ground position with respect to the ground
-   * coordinate system.
-   *
-   *  \param [in] sensorModels triplet sensor models composing the stereo model
-   *  \param [in] images the corresponding 2d positions (x, y) in imagery raster
-   * coordinate systems, interleaved by sensor models. \param [in/out] grounds
-   * 3d ground position (X, Y, Z) in ground coordinate system
-   *
-   *  \details
-   */
-  virtual size_t
-  ImageToGround(const std::array<ISensorModel const *, 3> &sensorModels,
-                const std::vector<Point2d> &images,
-                std::vector<Point3d> &grounds) const override;
+  ImageToGround(const std::array<Point2d, 3> &image, Point3d &ground) const override;
 
   /**
    *  \brief Given two or more sensor models and associated 2d positions
    *  in image coordinate system, do forward intersection of rays, and
    *  output the ground position with respect to the ground coordinate system.
    *
-   *  \param [in] sensorModels multiple (two or more) sensor models composing
-   * the stereo model \param [in] image the corresponding 2d positions (x, y) in
-   * imagery raster coordinate systems, interleaved by sensor models. \param
-   * [in/out] ground 3d ground position (X, Y, Z) in ground coordinate system
+   *  \param [in] image the corresponding 2d positions (x, y) in
+   * imagery raster coordinate systems, interleaved by sensor models. 
+   *  \param [in/out] ground 3d ground position (X, Y, Z) in ground coordinate system
    *  \return Returns true if the operation succeeds
    *
    *  \details
    */
   virtual bool
-  ImageToGround(const std::vector<ISensorModel const *> &sensorModels,
-                const std::vector<Point2d> &image, Point3d &ground) const override;
+  ImageToGround(const std::vector<Point2d> &image, Point3d &ground) const override;
 
   /**
    *  \brief Given two or more sensor models and associated list of 2d positions
    *  in image coordinate system, do forward intersection of rays, and
    *  output the ground positions with respect to the ground coordinate system.
    *
-   *  \param [in] sensorModels multiple (two or more) sensor models composing
-   * the stereo model \param [in] images List of corresponding 2d positions (x,
+   *  \param [in] images List of corresponding 2d positions (x,
    * y) in imagery raster coordinate systems, interleaved by sensor models.
    *  \param [in/out] grounds List of 3d ground positions (X, Y, Z) in ground
    * coordinate system
    *
    *  \details
    */
-  virtual size_t
-  ImageToGround(const std::vector<ISensorModel const *> &sensorModels,
-                const std::vector<Point2d> &image,
+  virtual size_t ImageToGround(const std::vector<Point2d> &image,
                 std::vector<Point3d> &grounds) const override;
 
   /**
@@ -149,15 +159,12 @@ public:
    * positions in the image coordinate system for each sensor model.
    *
    *  \param [in] ground 3d position (X, Y, Z) in ground coordinate system
-   *  \param [in] sensorModels multiple (two or more) sensor models composing
-   * the stereo model \param [out] image 2d position (x, y) in sensor raster
+   *  \param [out] image 2d position (x, y) in sensor raster
    * coordinate system \return Returns true if operation succeeds
    *
    *  \details
    */
-  virtual bool
-  GroundToImage(const Point3d &ground,
-                const std::vector<ISensorModel const *> &sensorModels,
+  virtual bool GroundToImage(const Point3d &ground,
                 std::vector<Point2d> &image) const override;
 
   /**
@@ -166,26 +173,23 @@ public:
    * coordinate system.
    *
    *  \param [in] ground List of 3d ground positions (X, Y, Z)
-   *  \param [in] sensorModels multiple (two or more) sensor models composing
-   * the stereo model \param [in/out] images List of 2d positions (x, y) on
+   *  \param [in/out] images List of 2d positions (x, y) on
    * image, interleaved by sensor models
    *
    *  \details
    */
-  virtual size_t
-  GroundToImage(const std::vector<Point3d> &grounds,
-                const std::vector<ISensorModel const *> &sensorModels,
+  virtual size_t GroundToImage(const std::vector<Point3d> &grounds,
                 std::vector<Point2d> &images) const override;
 
 private:
+  std::vector<const ISensorModel*> mModels;
+  std::unique_ptr<EarthEllipsoid> mEarthEllip;
+
   int mMaxIters{ 8 };
   double mTolZ{ 1.0e-4 };  // [mm]
   double mH{ 10.0 };
 
-  std::unique_ptr<EarthEllipsoid> mEarthEllip;
-
-  bool ImageToGroundAprox(ISensorModel const* const leftModel, const Point2d& leftImage,
-    ISensorModel const* const rightModel, const Point2d& rightImage, Point3d& ground) const;
+  bool ImageToGroundNR(const Point2d& leftImage, const Point2d& rightImage, Point3d& ground) const;
 
   // cache
   double mInvH{ 0.1 };

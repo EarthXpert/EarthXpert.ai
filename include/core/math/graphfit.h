@@ -54,12 +54,12 @@ public:
    *                  optionally with initial values.
    *  \param [out] summary the report of ceres solver.
    */
-  void FitStraightLine(const std::vector<Point2d>& points, 
+  bool FitStraightLine(const std::vector<Point2d>& points, 
     std::vector<double>& pb, Solver::Summary& summary);
-  void FitStraightLineRobust(const std::vector<Point2d>& points, 
+  bool FitStraightLineRobust(const std::vector<Point2d>& points, 
     std::vector<double>& pb, Solver::Summary& summary);
 
-  void FitStraightLine(const std::vector<Point2d>& points, std::vector<double>& pb);
+  bool FitStraightLine(const std::vector<Point2d>& points, std::vector<double>& pb);
 
   /**
    *  \breif fit a parameterized exponential curve to a sequence of 2D points.
@@ -79,7 +79,7 @@ public:
    *                  optionally with initial values.
    *  \param [out] summary the report of ceres solver.
    */
-  void FitExponentialCurve(const std::vector<Point2d>& points, 
+  bool FitExponentialCurve(const std::vector<Point2d>& points, 
     std::vector<double>& pb, Solver::Summary& summary);
 
   /**
@@ -100,7 +100,7 @@ public:
    *                  optionally with initial values.
    *  \param [out] summary the report of ceres solver.
    */
-  void FitPlane(const std::vector<Point3d>& points,
+  bool FitPlane(const std::vector<Point3d>& points,
     std::vector<double>& pb, Solver::Summary& summary);
 
 private:

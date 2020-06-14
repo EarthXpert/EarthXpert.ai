@@ -8,6 +8,7 @@
 #include "core/math/graphfit.h"
 #include <cmath>
 #include <iostream>
+#include <omp.h>
 #include <random>
 
 using namespace earthxpert;
@@ -39,7 +40,7 @@ void GraphFit_Line_Ceres() {
 
   // zero initial parameter valus
   std::vector<double> pb;
-  for (int i = 0; i < 100; ++i)
+  for (int i = 0; i < 1000; ++i)
     graphFit.FitStraightLine(points, pb, summary);
 }
 
@@ -53,8 +54,39 @@ void GraphFit_Line_Eigen() {
 
   // zero initial parameter valus
   std::vector<double> pb;
-  for (int i = 0; i < 100; ++i)
+  for (int i = 0; i < 1000; ++i)
     graphFit.FitStraightLine(points, pb);
+}
+
+/**
+ *  TestCase 3: fit line using Ceres Solver
+ */
+void GraphFit_Line_CeresOMP() {
+  auto points = ObtainLinePoints();
+
+  GraphFit graphFit;
+  
+#pragma omp parallel for num_threads(4)
+  for (int i = 0; i < 1000; ++i) {
+    Solver::Summary summary;
+    std::vector<double> pb; // zero initial parameter valus
+    graphFit.FitStraightLine(points, pb, summary);
+  }
+}
+
+/**
+ *  TestCase 4: fit line using Eigen Solver
+ */
+void GraphFit_Line_EigenOMP() {
+  auto points = ObtainLinePoints();
+
+  GraphFit graphFit;
+ 
+#pragma omp parallel for num_threads(4)
+  for (int i = 0; i < 1000; ++i) {
+    std::vector<double> pb; // zero initial parameter valus
+    graphFit.FitStraightLine(points, pb);
+  }
 }
 
 /**
@@ -76,7 +108,7 @@ std::vector<Point2d> ObtainLinePoints() {
   const double m{ 0.3 };
   const double c{ 0.1 };
 
-  for (double x = 0.0; x <= 5.0; x += 1.25) {
+  for (double x = 0.0; x <= 5.0; x += 0.25) {
     const double dy = 0.05 * (rng() * scale - 0.5);
     const double y = m * x + c + dy;
 
@@ -88,3 +120,5 @@ std::vector<Point2d> ObtainLinePoints() {
 SLTBENCH_FUNCTION(GraphFit_Points);
 SLTBENCH_FUNCTION(GraphFit_Line_Ceres);
 SLTBENCH_FUNCTION(GraphFit_Line_Eigen);
+SLTBENCH_FUNCTION(GraphFit_Line_CeresOMP);
+SLTBENCH_FUNCTION(GraphFit_Line_EigenOMP);

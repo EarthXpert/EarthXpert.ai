@@ -112,7 +112,7 @@ private:
 template <typename PointTy,
   template <typename PtTy = PointTy> class ResidualPolicy,
   class LossPolicy = void>
-  void FitPoints(const std::vector<PointTy>& points, std::vector<double>& pb,
+  bool FitPoints(const std::vector<PointTy>& points, std::vector<double>& pb,
     const Solver::Options& options, Solver::Summary& summary, LossPolicy* lossFunc = nullptr) {
   //static_assert(std::is_same_v<Point2d, PointTy> || std::is_same_v<Point3d, PointTy>, "PointTy");
   static_assert(std::is_base_of_v<IResidual, ResidualPolicy<PointTy>>, "IResidual");
@@ -136,5 +136,6 @@ template <typename PointTy,
   }
 
   ceres::Solve(options, &problem, &summary);
+  return summary.IsSolutionUsable();
 }
 } // namespace earthxpert::math
