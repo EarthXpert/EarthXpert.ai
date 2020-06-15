@@ -22,7 +22,6 @@ void StereoModel::SetEarthEllipsoid(std::shared_ptr<EarthEllipsoid> earthEllip) 
     throw std::invalid_argument("StereoModel: earthEllip");
   mEarthEllip = earthEllip;
 
-  /* \todo modify tests accordingly
   const auto numRays = mModels.size();
   if (2 == numRays) {
     mIntersect = std::make_unique<XTwoLines>();
@@ -33,7 +32,7 @@ void StereoModel::SetEarthEllipsoid(std::shared_ptr<EarthEllipsoid> earthEllip) 
   else {
     mIntersect = std::make_unique<XMultipleLines>();
     throw std::exception(_("StereoModel: not implemented for four or more rays"));
-  }*/
+  }
 }
 
 /**
@@ -80,7 +79,7 @@ bool StereoModel::ImageToGround(const Point2d& leftImage,
     }
 
     // 3d intersection X
-    const bool ret = IntersectTwoLines(segs, segs + 2, lsr);   // \todo mIntersect->Intersect(segs, lsr)
+    const bool ret = mIntersect->Intersect(segs, lsr);   // IntersectTwoLines(segs, segs + 2, lsr)
     if (!ret) return false;
 
     ground = Rad2Deg(mEarthEllip->LSRToLPH(lsr));

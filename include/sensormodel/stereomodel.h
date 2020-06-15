@@ -23,7 +23,6 @@ class ISensorModel;
  *
  *  \todo revist the design for variable number of rays, specifily, 
  *  changing freaquently for matched key points: anohter class VariableStereoModel? 
- *  \remark create one SensorModel object per thread!
  */
 class EXSENSORMODEL_EXPORTS StereoModel : public IStereoModel {
 public:

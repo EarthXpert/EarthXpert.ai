@@ -28,7 +28,7 @@ public:
    *  \param [in] numSegs number of line segments given by segs, must be 2
    *  \return Return true if successful, false if parallel.
    */
-  bool Intersect(const Point3d* segs, Point3d& p, const int numSegs = 2) override {
+  bool Intersect(const Point3d* segs, Point3d& p, const int numSegs = 2) const override {
     return Intersect(segs, segs + 2, p);
   }
 
@@ -40,11 +40,7 @@ public:
    *  \param [out] p the intersection point.
    *  \return Return true if successful, false if parallel.
    */
-  bool Intersect(const Point3d* s1, const Point3d* s2, Point3d& p);
-
-private:
-  Eigen::Matrix<double, 6, 5> mA;
-  Eigen::Matrix<double, 6, 1> mB;
+  bool Intersect(const Point3d* s1, const Point3d* s2, Point3d& p) const;
 };
 
 /**
@@ -65,7 +61,7 @@ public:
    *  \param [in] numSegs number of line segments given by segs, must be 3
    *  \return Return true if successful, false if parallel.
    */
-  bool Intersect(const Point3d * segs, Point3d & p, const int numSegs = 3) override {
+  bool Intersect(const Point3d * segs, Point3d & p, const int numSegs = 3) const override {
     return Intersect(segs, segs + 2, segs + 4, p);
   }
 
@@ -78,11 +74,7 @@ public:
    *  \param [out] p the intersection point.
    *  \return Return true if successful, false if parallel.
    */
-  bool Intersect(const Point3d* s1, const Point3d* s2, const Point3d* s3, Point3d& p);
-
-private:
-  Eigen::Matrix<double, 9, 6> mA;
-  Eigen::Matrix<double, 9, 1> mB;
+  bool Intersect(const Point3d* s1, const Point3d* s2, const Point3d* s3, Point3d& p) const;
 };
 
 /**
@@ -103,7 +95,7 @@ public:
    *  \param [in] numSegs number of line segments given by segs, must be 2+
    *  \return Return true if successful, false if parallel.
    */
-  bool Intersect(const Point3d * segs, Point3d & p, const int numSegs) override {
+  bool Intersect(const Point3d * segs, Point3d & p, const int numSegs) const override {
     assert(2 <= numSegs);
     return true;
   }

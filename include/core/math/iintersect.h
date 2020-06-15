@@ -24,6 +24,6 @@ public:
    *  \param [in] numSegs number of line segments given by segs, -1 indicating dynamic
    *  \return Return true if successful, false if parallel.
    */
-  virtual bool Intersect(const Point3d* segs, Point3d& p, int numSegs = -1) = 0;
+  virtual bool Intersect(const Point3d* segs, Point3d& p, int numSegs = -1) const = 0;
 };
 } // namespace earthxpert::math

@@ -64,7 +64,6 @@ void StereoModel_I2G_NR() {
 
 /**
  *  TestCase 3: OMP stereo via intersection
- *  \todo create one SensorModel object per thread
  */
 void StereoModel_I2G_IntersectOMP() {
   const auto leftModel = CreateLeftRationalModel();
@@ -83,7 +82,6 @@ void StereoModel_I2G_IntersectOMP() {
 
 /**
  *  TestCase 4: OMP stereo via NR
- *  \todo create one SensorModel object per thread
  */
 void StereoModel_I2G_NROMP() {
   const auto leftModel = CreateLeftRationalModel();
