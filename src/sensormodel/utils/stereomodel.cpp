@@ -4,18 +4,37 @@
  */
 #include "sensormodel/stereomodel.h"
 #include "sensormodel/isensormodel.h"
+#include "3rdparty/gettext/exgettext.h"
+#include "core/exceptions/exexcept.h"
 #include "core/math/intersect.h"
 #include "core/utils/unitutils.h"
 
 #include <algorithm>
 #include <cassert>
+#include <memory>
 #include <omp.h>
 
-using earthxpert::ISensorModel;
-using earthxpert::Point2d;
-using earthxpert::Point3d;
-using earthxpert::StereoModel;
+using namespace earthxpert;
 using namespace earthxpert::math;
+
+void StereoModel::SetEarthEllipsoid(std::shared_ptr<EarthEllipsoid> earthEllip) {
+  if (!earthEllip)
+    throw std::invalid_argument("StereoModel: earthEllip");
+  mEarthEllip = earthEllip;
+
+  /* \todo modify tests accordingly
+  const auto numRays = mModels.size();
+  if (2 == numRays) {
+    mIntersect = std::make_unique<XTwoLines>();
+  }
+  else if (3 == numRays) {
+    mIntersect = std::make_unique<XThreeLines>();
+  }
+  else {
+    mIntersect = std::make_unique<XMultipleLines>();
+    throw std::exception(_("StereoModel: not implemented for four or more rays"));
+  }*/
+}
 
 /**
  *  Image-to-ground forward intersection.
@@ -37,15 +56,14 @@ using namespace earthxpert::math;
 bool StereoModel::ImageToGround(const Point2d& leftImage, 
   const Point2d& rightImage, Point3d& ground) const {
   assert(2 == mModels.size());
-  if (!mEarthEllip) {
+  if (!mEarthEllip ) {    // || !mIntersect
     return ImageToGroundNR(leftImage, rightImage, ground);
   }
   assert(eGEO == mModels[0]->GetSrsType());
 
   ground.z = (mModels[0]->GetMeanHeight() + mModels[1]->GetMeanHeight()) / 2.0;
 
-  Point3d leftLsr[2];
-  Point3d rightLsr[2];
+  Point3d segs[4];
   Point3d lsr;
 
   for (int i = 0; i < 2; ++i) {
@@ -55,14 +73,14 @@ bool StereoModel::ImageToGround(const Point2d& leftImage,
       Point3d grd{ 0.0, 0.0, hgtRange[j] };
 
       mModels[0]->ImageToGround(leftImage, grd);
-      leftLsr[j] = mEarthEllip->LPHToLSR(Deg2Rad(grd));
+      segs[j] = mEarthEllip->LPHToLSR(Deg2Rad(grd));
 
       mModels[1]->ImageToGround(rightImage, grd);
-      rightLsr[j] = mEarthEllip->LPHToLSR(Deg2Rad(grd));
+      segs[j+2] = mEarthEllip->LPHToLSR(Deg2Rad(grd));
     }
 
     // 3d intersection X
-    const bool ret = IntersectTwoLines(leftLsr, rightLsr, lsr);
+    const bool ret = IntersectTwoLines(segs, segs + 2, lsr);   // \todo mIntersect->Intersect(segs, lsr)
     if (!ret) return false;
 
     ground = Rad2Deg(mEarthEllip->LSRToLPH(lsr));
@@ -261,13 +279,39 @@ size_t StereoModel::GroundToImage(const std::vector<Point3d> &grounds, std::vect
   auto iter = std::begin(images);
   size_t ret{};
 
-  #pragma omp parallel for reduction(+ : ret)
-  for (long i = 0; i < size; ++i) {
-      std::vector<Point2d> image(numModels);
+#pragma omp parallel reduction(+ : ret)
+  {
+    std::vector<Point2d> image(numModels);
+
+#pragma omp for
+    for (long i = 0; i < size; ++i) {
       if (GroundToImage(grounds[i], image)) {
-          std::copy_n(std::begin(image), numModels, std::next(iter, numModels*i));
-          ++ret;
+        std::copy_n(std::begin(image), numModels, std::next(iter, numModels * i));
+        ++ret;
       }
+    }
   }
   return ret;
+}
+
+void StereoModel::ObtainModelsInfo() {
+  if (2 > mModels.size())
+    throw std::exception(_("StereoModel: requires 2 or more models"));
+
+  // verify the datum be compatible
+  if (mEarthEllip) {
+    EqualD eq;
+    const auto semiMajor = mEarthEllip->GetSemiMajor();
+    const auto eccSq = mEarthEllip->GetEccSquared();
+
+    for (auto sm : mModels) {
+      auto srs = sm->GetCoordinateSystem();
+      const auto a = srs->GetSemiMajor();
+      const auto ecc2 = srs->GetSquaredEccentricity();
+
+      if (!eq(semiMajor, a) || !eq(eccSq, ecc2)) {
+        throw std::exception(_("StereoModel: in-compatible datum"));
+      }
+    }
+  }
 }

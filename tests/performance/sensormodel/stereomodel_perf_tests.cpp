@@ -42,7 +42,7 @@ void StereoModel_I2G_Intersect() {
 
   auto nfcL = leftModel->GetNormalFators();
   Point3d origin(nfcL[rfm::eOLONG], nfcL[rfm::eOLAT], nfcL[rfm::eOHEIGHT]);
-  auto ee = std::make_unique<EarthEllipsoid>();
+  auto ee = std::make_shared<EarthEllipsoid>();
   ee->SetLsrOrigin(Deg2Rad(origin));
  
   StereoModel smI(leftModel.get(), rightModel.get());    // intersect
@@ -64,6 +64,7 @@ void StereoModel_I2G_NR() {
 
 /**
  *  TestCase 3: OMP stereo via intersection
+ *  \todo create one SensorModel object per thread
  */
 void StereoModel_I2G_IntersectOMP() {
   const auto leftModel = CreateLeftRationalModel();
@@ -72,7 +73,7 @@ void StereoModel_I2G_IntersectOMP() {
 
   auto nfcL = leftModel->GetNormalFators();
   Point3d origin(nfcL[rfm::eOLONG], nfcL[rfm::eOLAT], nfcL[rfm::eOHEIGHT]);
-  auto ee = std::make_unique<EarthEllipsoid>();
+  auto ee = std::make_shared<EarthEllipsoid>();
   ee->SetLsrOrigin(Deg2Rad(origin));
 
   StereoModel smI(leftModel.get(), rightModel.get());    // intersect
@@ -82,6 +83,7 @@ void StereoModel_I2G_IntersectOMP() {
 
 /**
  *  TestCase 4: OMP stereo via NR
+ *  \todo create one SensorModel object per thread
  */
 void StereoModel_I2G_NROMP() {
   const auto leftModel = CreateLeftRationalModel();
@@ -96,7 +98,7 @@ void StereoModel_I2G_NROMP() {
 void I2G_Cube(const StereoModel& sm, const std::vector<Point3d>& cube) {
   Point2d imageL;
   Point2d imageR;
-  Point3d grdN;
+  Point3d grd;
 
   auto& models = sm.GetSensorModels();
 
@@ -104,25 +106,28 @@ void I2G_Cube(const StereoModel& sm, const std::vector<Point3d>& cube) {
     models[0]->GroundToImage(ground, imageL);
     models[1]->GroundToImage(ground, imageR);
 
-    sm.ImageToGround(imageL, imageR, grdN);
+    sm.ImageToGround(imageL, imageR, grd);
   }
 }
 
 // OMP
 void I2G_CubeOMP(const StereoModel& sm, const std::vector<Point3d>& cube) {
-  Point2d imageL;
-  Point2d imageR;
-  Point3d grdN;
-
   auto& models = sm.GetSensorModels();
   const int64 numPts = cube.size();
 
-#pragma omp parallel for
+#pragma omp parallel 
+  {
+  Point2d imageL;
+  Point2d imageR;
+  Point3d grd;
+
+#pragma omp for
   for (int64 i = 0; i < numPts; ++i) {
     models[0]->GroundToImage(cube[i], imageL);
     models[1]->GroundToImage(cube[i], imageR);
 
-    sm.ImageToGround(imageL, imageR, grdN);
+    sm.ImageToGround(imageL, imageR, grd);
+  }
   }
 }
 

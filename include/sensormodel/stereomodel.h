@@ -5,6 +5,7 @@
 #pragma once
 
 #include "sensormodel/istereomodel.h"
+#include "core/math/iintersect.h"
 #include "core/spatialref/earthellipsoid.h"
 #include "core/exceptions/exexcept.h"
 
@@ -20,7 +21,9 @@ class ISensorModel;
  *  rays from a block of sensor geometry models are used to implement
  *    forward intersection and backward projection in the network.
  *
- *  \todo member binding pointers to associated sensor models
+ *  \todo revist the design for variable number of rays, specifily, 
+ *  changing freaquently for matched key points: anohter class VariableStereoModel? 
+ *  \remark create one SensorModel object per thread!
  */
 class EXSENSORMODEL_EXPORTS StereoModel : public IStereoModel {
 public:
@@ -36,6 +39,7 @@ public:
     mModels.resize(2);
     mModels[0] = leftModel;
     mModels[1] = rightModel;
+    ObtainModelsInfo();
   }
 
   /**
@@ -46,6 +50,7 @@ public:
   StereoModel(const std::array<ISensorModel const*, 3>& sensorModels) {
     mModels.resize(3);
     std::copy_n(std::begin(sensorModels), 3, std::begin(mModels));
+    ObtainModelsInfo();
   }
 
   /**
@@ -57,6 +62,7 @@ public:
   StereoModel(const std::vector<ISensorModel const*>& sensorModels) {
     assert(2 <= sensorModels.size());
     mModels = sensorModels;
+    ObtainModelsInfo();
   }
 
   StereoModel(const StereoModel&) = delete;
@@ -66,11 +72,7 @@ public:
   StereoModel& operator=(const StereoModel&) = delete;
   StereoModel& operator=(StereoModel&&) = delete;
 
-  void SetEarthEllipsoid(std::unique_ptr<EarthEllipsoid>&& earthEllip) {
-    if (!earthEllip)
-      throw std::invalid_argument("StereoModel: earthEllip");
-    mEarthEllip = std::move(earthEllip);
-  }
+  void SetEarthEllipsoid(std::shared_ptr<EarthEllipsoid> earthEllip);
 
   const auto& GetSensorModels() const noexcept { return mModels; }
 
@@ -182,14 +184,17 @@ public:
                 std::vector<Point2d> &images) const override;
 
 private:
-  std::vector<const ISensorModel*> mModels;
-  std::unique_ptr<EarthEllipsoid> mEarthEllip;
+  std::vector<const ISensorModel*> mModels;   // one model per ray
+  std::shared_ptr<EarthEllipsoid> mEarthEllip;
+  std::unique_ptr<math::IIntersect> mIntersect;
 
   int mMaxIters{ 8 };
   double mTolZ{ 1.0e-4 };  // [mm]
   double mH{ 10.0 };
 
   bool ImageToGroundNR(const Point2d& leftImage, const Point2d& rightImage, Point3d& ground) const;
+
+  void ObtainModelsInfo();
 
   // cache
   double mInvH{ 0.1 };

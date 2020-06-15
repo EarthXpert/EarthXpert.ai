@@ -9,7 +9,7 @@ earthxpert_add_executable(exgeoinfo "apps"
   SRCS "geoinfo.cpp"
   ITEMS ex3rdparty core dataio
         Boost::filesystem Boost::program_options
-        ${GDAL_LIBRARY})
+        ${GDAL_LIBRARY} ${GETTEXT_LIBRARY})
 
 earthxpert_install_target(exepipolar)
 earthxpert_install_target(exgeoinfo)

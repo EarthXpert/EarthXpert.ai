@@ -9,6 +9,6 @@ earthxpert_add_library(dataio "api"
        "vector/vectorreader.cpp"
        "vector/vectorwriter.cpp"
   ITEMS ex3rdparty core 
-        ${GDAL_LIBRARY} ${LASLIB_LIBRARY} ${OPENCV_LIBS})
+        ${GDAL_LIBRARY} ${GETTEXT_LIBRARY} ${LASLIB_LIBRARY} ${OPENCV_LIBS})
 
 earthxpert_install_target(dataio)

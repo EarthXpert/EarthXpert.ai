@@ -143,7 +143,7 @@ TEST(rasterwriter, CvRasterOMP) {
 
   const int marginCols{ 20 };
   const int marginRows{ 20 };
-  reader.SetMargins(20, 20, MarginKind::eCONSTANT);
+  reader.SetMargins(marginCols, marginRows, MarginKind::eCONSTANT);
 
   auto [fileNumCols, fileNumRows] = reader.GetSize();
   ASSERT_EQ(fileNumCols, 5000);
@@ -168,16 +168,22 @@ TEST(rasterwriter, CvRasterOMP) {
   writer.SetCoordinateSystem(srs.get());
   writer.SetGeocoding(geocoding.get());
 
-#pragma omp parallel for
+#pragma omp parallel 
+  {
+    // pre-allocate buffer used by windows within each thread
+    const auto bufNumBytes = reader.GetRasterBufferNumBytes(winNumCols, winNumRows);
+    std::unique_ptr<uchar[]> buffer{ new uchar[bufNumBytes] };
+
+#pragma omp for
   for (int64 i = 0; i < rasterWins.size(); ++i) {  // auto& rw : rasterWins
     auto& rw = rasterWins[i];
     CvRaster raster(rw.numCols, rw.numRows, cvDT, rw.colOffset, rw.rowOffset,
-      marginCols, marginRows, MarginKind::eCONSTANT);
+      marginCols, marginRows, MarginKind::eCONSTANT, buffer.get());
+    
     reader.ReadRaster(&raster);
-
     writer.WriteRaster(&raster);
   }
-
+  }
   ASSERT_TRUE(fs::exists(fs::path(imgFileT))) << imgFileT;
 }
 
@@ -252,7 +258,7 @@ TEST(rasterwriter, GdalRasterOMP) {
 
   const int marginCols{ 20 };
   const int marginRows{ 20 };
-  reader.SetMargins(20, 20, MarginKind::eCONSTANT);
+  reader.SetMargins(marginCols, marginRows, MarginKind::eCONSTANT);
 
   auto [fileNumCols, fileNumRows] = reader.GetSize();
   ASSERT_EQ(fileNumCols, 5000);
@@ -278,16 +284,22 @@ TEST(rasterwriter, GdalRasterOMP) {
   writer.SetCoordinateSystem(srs.get());
   writer.SetGeocoding(geocoding.get());
 
-#pragma omp parallel for
-  for (int64 i = 0; i < rasterWins.size(); ++i) {  // auto& rw : rasterWins
-    auto& rw = rasterWins[i];
-    GdalRaster raster(rw.numCols, rw.numRows, gdalDT, numBands, rw.colOffset, rw.rowOffset,
-      marginCols, marginRows, MarginKind::eCONSTANT);
-    reader.ReadRaster(&raster);
+#pragma omp parallel 
+  {
+    // pre-allocate buffer used by windows within each thread
+    const auto bufNumBytes = reader.GetRasterBufferNumBytes(winNumCols, winNumRows);
+    std::unique_ptr<uchar[]> buffer{ new uchar[bufNumBytes] };
 
-    writer.WriteRaster(&raster);
+#pragma omp for 
+    for (int64 i = 0; i < rasterWins.size(); ++i) {  // auto& rw : rasterWins
+      auto& rw = rasterWins[i];
+      GdalRaster raster(rw.numCols, rw.numRows, gdalDT, numBands, rw.colOffset, rw.rowOffset,
+        marginCols, marginRows, MarginKind::eCONSTANT, buffer.get());
+
+      reader.ReadRaster(&raster);
+      writer.WriteRaster(&raster);
+    }
   }
-
   ASSERT_TRUE(fs::exists(fs::path(imgFileT))) << imgFileT;
 }
 

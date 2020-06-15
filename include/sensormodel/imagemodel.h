@@ -46,7 +46,10 @@ public:
    *  \param [in] cr 2d raster position (col, row) in image space [unit: pixel]
    *  \return Return 2d metric position (x, y) in focal plane [unit: mm] if the operation succeeds
    */
-  Point2d CRToXY(const Point2d &cr) const override;
+  inline Point2d CRToXY(const Point2d &cr) const override {
+    return { mPixSizeX * (cr.x - mOrigin.x),
+             mPixSizeY * (mOrigin.y - cr.y) };
+  }
 
   /**
    *  \brief Given a 2d position in focal plane coordinate system,
@@ -55,7 +58,10 @@ public:
    *  \param [in] xy 2d metric position (x, y) in focal plane [unit: mm]
    *  \return Return 2d raster position (col, row) in image space [unit: pixel] if the operation succeeds
    */
-  Point2d XYToCR(const Point2d &xy) const override;
+  inline Point2d XYToCR(const Point2d &xy) const override {
+    return { mOrigin.x + mPpmmX * xy.x,
+             mOrigin.y - mPpmmY * xy.y };
+  }
 
   /**
    *  \return Return raster size of image (numCols, numRows) [unit: pixel]
@@ -126,7 +132,14 @@ public:
    *  \param [in] cr 2d raster position (col, row) in image space [unit: pixel]
    *  \return Return 2d metric position (x, y) in focal plane [unit: mm] if the operation succeeds
    */
-  Point2d CRToXY(const Point2d &cr) const override;
+  inline Point2d CRToXY(const Point2d &cr) const override {
+    const auto C{ cr.x };
+    const auto R{ cr.y };
+    const auto CR{ C * R };
+
+    return { mCRToX[0] + mCRToX[1] * C + mCRToX[2] * R + mCRToX[3] * CR,
+             mCRToY[0] + mCRToY[1] * C + mCRToY[2] * R + mCRToY[3] * CR };
+  }
 
   /**
    *  \brief Given a 2d position in focal plane coordinate system,
@@ -135,7 +148,11 @@ public:
    *  \param [in] xy 2d metric position (x, y) in focal plane [unit: mm]
    *  \return Return 2d raster position (col, row) in image space [unit: pixel] if the operation succeeds
    */
-  Point2d XYToCR(const Point2d &xy) const override;
+  inline Point2d XYToCR(const Point2d &xy) const override {
+    const auto XY{ xy.x * xy.y };
+    return { mXYToC[0] + mXYToC[1] * xy.x + mXYToC[2] * xy.y + mXYToC[3] * XY,
+            mXYToR[0] + mXYToR[1] * xy.x + mXYToR[2] * xy.y + mXYToR[3] * XY };
+  }
 
   /**
    *  \return Return raster size of image (numCols, numRows) [unit: pixel]

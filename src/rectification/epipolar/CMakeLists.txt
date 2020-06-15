@@ -6,6 +6,6 @@ earthxpert_add_library(epipolar "api"
        "epipolargenerator.cpp"
        "epipolargenerator_layout.cpp"
   ITEMS ex3rdparty dataio sensormodel epipolarmodel marshaller 
-        ${GDAL_LIBRARY})
+        ${GDAL_LIBRARY} ${GETTEXT_LIBRARY})
 
 earthxpert_install_target(epipolar)

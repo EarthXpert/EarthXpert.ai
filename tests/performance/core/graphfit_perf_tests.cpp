@@ -38,8 +38,7 @@ void GraphFit_Line_Ceres() {
   GraphFit graphFit;
   Solver::Summary summary;
 
-  // zero initial parameter valus
-  std::vector<double> pb;
+  std::vector<double> pb;  // zero initial parameter valus
   for (int i = 0; i < 1000; ++i)
     graphFit.FitStraightLine(points, pb, summary);
 }
@@ -52,8 +51,7 @@ void GraphFit_Line_Eigen() {
 
   GraphFit graphFit;
 
-  // zero initial parameter valus
-  std::vector<double> pb;
+  std::vector<double> pb;  // zero initial parameter valus
   for (int i = 0; i < 1000; ++i)
     graphFit.FitStraightLine(points, pb);
 }
@@ -66,11 +64,15 @@ void GraphFit_Line_CeresOMP() {
 
   GraphFit graphFit;
   
-#pragma omp parallel for num_threads(4)
-  for (int i = 0; i < 1000; ++i) {
+#pragma omp parallel num_threads(4)
+  {
     Solver::Summary summary;
     std::vector<double> pb; // zero initial parameter valus
-    graphFit.FitStraightLine(points, pb, summary);
+
+#pragma omp for
+    for (int i = 0; i < 1000; ++i) {
+      graphFit.FitStraightLine(points, pb, summary);
+    }
   }
 }
 
@@ -82,10 +84,14 @@ void GraphFit_Line_EigenOMP() {
 
   GraphFit graphFit;
  
-#pragma omp parallel for num_threads(4)
-  for (int i = 0; i < 1000; ++i) {
+#pragma omp parallel num_threads(4)
+  {
     std::vector<double> pb; // zero initial parameter valus
-    graphFit.FitStraightLine(points, pb);
+
+#pragma omp for
+    for (int i = 0; i < 1000; ++i) {
+      graphFit.FitStraightLine(points, pb);
+    }
   }
 }
 

@@ -35,9 +35,9 @@ TEST(stereomodel, ImageToGround) {
 
   StereoModel smI(leftModel.get(), rightModel.get());    // intersect
   Point3d origin(109.2114, 34.6557, 396);
-  auto ee = std::make_unique<EarthEllipsoid>();
+  auto ee = std::make_shared<EarthEllipsoid>();
   ee->SetLsrOrigin(Deg2Rad(origin));
-  smI.SetEarthEllipsoid(std::move(ee));
+  smI.SetEarthEllipsoid(ee);
 
   StereoModel smN(leftModel.get(), rightModel.get());    // NR 
 
@@ -120,10 +120,10 @@ void TestImageToGround_Cube(const RationalModel* leftModel, const RationalModel*
   double maxDiffLonN{ -1.0 }, maxDiffLatN{ -1.0 }, maxDiffHgtN{ -1.0 };
 
   Point3d origin((minLon + maxLon) / 2, (minLat + maxLat) / 2, (minHgt + maxHgt) / 2);
-  auto ee = std::make_unique<EarthEllipsoid>();
+  auto ee = std::make_shared<EarthEllipsoid>();
   ee->SetLsrOrigin(Deg2Rad(origin));
   StereoModel smI(leftModel, rightModel);    // intersect
-  smI.SetEarthEllipsoid(std::move(ee));
+  smI.SetEarthEllipsoid(ee);
 
   StereoModel smN(leftModel, rightModel);    // NR 
 

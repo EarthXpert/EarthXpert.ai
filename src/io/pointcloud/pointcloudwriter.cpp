@@ -3,6 +3,7 @@
  * -----------------------------------------------------------------------------
  */
 #include "io/pointcloud/pointcloudwriter.h"
+#include "3rdparty/gettext/exgettext.h"
 #include "3rdparty/laslib/exlaslib.h"
 #include "core/datasource/pointcloudutils.h"
 #include "core/exceptions/exexcept.h"
@@ -30,7 +31,7 @@ PointcloudWriter::PointcloudWriter(const std::string& lasFile,
 
   mWriter.reset(writeOpener.open(&mHeader));
   if (!mWriter)
-    throw IOError("Cannot open las file for write");
+    throw IOError(_("Cannot open las file for write"));
 
   ObtainLasInfo();
 }
@@ -91,7 +92,7 @@ size_t PointcloudWriter::WritePointcloud(Pointcloud const* const pointCloud) {
 size_t PointcloudWriter::WritePointcloud(Pointcloud const* const pointCloud,
   const size_t start, const size_t numPoints) {
   if (pointCloud->GetFieldGroup() > mFieldGroup) {
-    throw std::out_of_range("Fields to be written are out of the range of write fields");
+    throw std::out_of_range(_("Fields to be written are out of the range of write fields"));
   }
   const auto pointCount = pointCloud->GetPointCount();
   if (!pointCloud || 0 == pointCount) {

@@ -13,15 +13,15 @@ namespace earthxpert {
 /**
  *  Encapsulates a calibrated grid of camera lens distortion.
  */
-template <typename _Ty> class EXSENSORMODEL_EXPORTS DistortionGrid {
+template <typename Ty> class EXSENSORMODEL_EXPORTS DistortionGrid {
 public:
-  using ValueType = _Ty;
+  using ValueType = Ty;
 
-  DistortionGrid(std::string cameraName, const std::vector<_Ty> &vX,
-                 const std::vector<_Ty> &vY, const std::vector<_Ty> &vdX,
-                 const std::vector<_Ty> &vdY);
-  DistortionGrid(const std::vector<_Ty> &vX, const std::vector<_Ty> &vY,
-                 const std::vector<_Ty> &vdX, const std::vector<_Ty> &vdY);
+  DistortionGrid(std::string cameraName, const std::vector<Ty> &vX,
+                 const std::vector<Ty> &vY, const std::vector<Ty> &vdX,
+                 const std::vector<Ty> &vdY);
+  DistortionGrid(const std::vector<Ty> &vX, const std::vector<Ty> &vY,
+                 const std::vector<Ty> &vdX, const std::vector<Ty> &vdY);
   DistortionGrid(const DistortionGrid &rhs);
   DistortionGrid(DistortionGrid &&rhs) noexcept;
   ~DistortionGrid() = default;
@@ -33,11 +33,40 @@ public:
   bool operator!=(const DistortionGrid &rhs) const;
 
   bool FetchGrid(unsigned int &numCols, unsigned int &numRows,
-                 std::vector<_Ty> &vX, std::vector<_Ty> &vY,
-                 std::vector<_Ty> &vdX, std::vector<_Ty> &vdY) const;
+                 std::vector<Ty> &vX, std::vector<Ty> &vY,
+                 std::vector<Ty> &vdX, std::vector<Ty> &vdY) const;
 
-  bool GetDistortion(_Ty X, _Ty Y, _Ty *const d) const;
-  std::pair<_Ty, _Ty> GetDistortion(_Ty X, _Ty Y) const;
+  /**
+   * Interpolate a distortion amount at the given X,Y position.
+   *
+   * \param [in] X X position
+   * \param [in] Y Y position
+   * \param [in,out] d Array of interpolated (or extrapolated) distortions
+   */
+  bool GetDistortion(const Ty X, const Ty Y,
+    Ty* const d) const {
+    if (mGrid) {
+      assert(d);
+      mGrid->GetVal(X, Y, d);
+      return true;
+    }
+    return false;
+  }
+
+  /**
+   * Interpolate a distortion value for the given X,Y position.
+   *
+   * \param [in] X X position
+   * \param [in] Y Y position
+   * \return Returns interpolated (or extrapolated) X & Y distortions
+   */
+  std::pair<Ty, Ty> GetDistortion(const Ty X, const Ty Y) const {
+    if (mGrid) {
+      assert(2 == mGrid->GetDimension());
+      return mGrid->GetVal2(X, Y);
+    }
+    return { 0.f, 0.f };
+  }
 
   std::unique_ptr<DistortionGrid> Clone() const {
     return std::make_unique<DistortionGrid>(*this);
@@ -51,12 +80,12 @@ public:
 
 private:
   std::string mCameraName;
-  std::unique_ptr<InterpGrid<_Ty>> mGrid;
+  std::unique_ptr<InterpGrid<Ty>> mGrid;
 
-  // void VerifyGrid(const std::vector<_Ty>& vX, const std::vector<_Ty>& vY)
+  // void VerifyGrid(const std::vector<Ty>& vX, const std::vector<Ty>& vY)
   // const;
-  void EstablishGrid(const std::vector<_Ty> &vX, const std::vector<_Ty> &vY,
-                     const std::vector<_Ty> &vdX, const std::vector<_Ty> &vdY);
+  void EstablishGrid(const std::vector<Ty> &vX, const std::vector<Ty> &vY,
+                     const std::vector<Ty> &vdX, const std::vector<Ty> &vdY);
 
   void CopyFrom(const DistortionGrid &rhs);
   void MoveFrom(DistortionGrid &&rhs) noexcept;

@@ -13,8 +13,6 @@ using earthxpert::DigitalImageModel;
 using earthxpert::FilmImageModel;
 using earthxpert::DigitalImageModelImp;
 using earthxpert::FilmImageModelImp;
-using earthxpert::Point2d;
-using earthxpert::Point3d;
 
 /**
  *  Constructor.
@@ -51,33 +49,9 @@ bool DigitalImageModel::operator!=(const DigitalImageModel &rhs) const {
 }
 
 /**
- *  \brief Given a 2d position in image coordinate system,
- *  output the 2d position in sensor focal plane coordinate system.
- *
- *  \param [in] image 2d position (col, row) in imagery coordinate system
- *  \return Return 2d position (x, y) in sensor focal plane coordinate 
- */
-Point2d DigitalImageModel::ImageToSensor(const Point2d &image) const {
-  return mImgModel->CRToXY(image);
-}
-
-/**
- *  \brief Given a 2d position in sensor focal plane coordinate system,
- *  output the 2d position in image coordinate system.
- *
- *  \param [in] sensor 2d position (x, y) in sensor focal plane coordinate
- * system 
- *  \return Return 2d position (col, row) in imagery coordinate system 
- */
-Point2d DigitalImageModel::SensorToImage(const Point2d &sensor) const {
-  return mImgModel->XYToCR(sensor);
-}
-
-/**
  *  \return Return raster size of image (numCols, numRows) [unit: pixel]
  */
-std::pair<int, int> DigitalImageModel::GetImageSize() const
-    noexcept {
+std::pair<int, int> DigitalImageModel::GetImageSize() const noexcept {
   return mImgModel->GetImageSize();
 }
 
@@ -126,29 +100,6 @@ bool FilmImageModel::operator==(const FilmImageModel &rhs) const {
 
 bool FilmImageModel::operator!=(const FilmImageModel &rhs) const {
   return !(operator==(rhs));
-}
-
-/**
- *  \brief Given a 2d position in image coordinate system,
- *  output the 2d position in sensor focal plane coordinate system.
- *
- *  \param [in] image 2d position (col, row) in imagery coordinate system
- *  \return Return 2d position (x, y) in sensor focal plane coordinate
- */
-Point2d FilmImageModel::ImageToSensor(const Point2d &image) const {
-  return mImgModel->CRToXY(image);
-}
-
-/**
- *  \brief Given a 2d position in sensor focal plane coordinate system,
- *  output the 2d position in image coordinate system.
- *
- *  \param [in] sensor 2d position (x, y) in sensor focal plane coordinate
- * system
- *  \return Return 2d position (col, row) in imagery coordinate system
- */
-Point2d FilmImageModel::SensorToImage(const Point2d &sensor) const {
-  return mImgModel->XYToCR(sensor);
 }
 
 /**

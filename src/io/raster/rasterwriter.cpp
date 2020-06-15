@@ -4,6 +4,7 @@
  */
 
 #include "io/raster/rasterwriter.h"
+#include "3rdparty/gettext/exgettext.h"
 #include "core/datasource/cvraster.h"
 #include "core/datasource/gdalraster.h"
 #include "core/datasource/rasterutils.h"
@@ -20,7 +21,7 @@ using namespace earthxpert;
 RasterWriter::RasterWriter(const std::string& imageFile, const std::vector<int>& bands) {
   mDataset = static_cast<GDALDataset*>(GDALOpen(imageFile.c_str(), GA_Update));
   if (!mDataset) {
-    throw IOError("GDAL failed to open image file for write acess.");
+    throw IOError(_("GDAL failed to open image file for write acess."));
   }
 
   Initialize(mDataset, bands);
@@ -105,7 +106,7 @@ void RasterWriter::WriteRaster(IRaster* const raster) {
     WriteRaster(static_cast<GdalRaster* const>(raster));
   }
   else {
-    throw std::invalid_argument("Unsupported rater type");
+    throw std::invalid_argument(_("Unsupported rater type"));
   }
 }
 
@@ -131,7 +132,7 @@ void RasterWriter::WriteRaster(const CvRaster* raster) {
       const auto err = band->RasterIO(GF_Write, writeColOff, writeRowOff + r,
         writeNumCols, 1, writeRow, writeNumCols, 1, mGdalDT, 0, 0, nullptr);
       if (CE_None != err) {
-        throw IOError("Failaure when reading by RasterIO");
+        throw IOError(_("Failaure when reading by RasterIO"));
       }
 
       writeRow += rowNumBytes;
@@ -163,7 +164,7 @@ void RasterWriter::WriteRaster(const CvRaster* raster) {
         writeNumCols, 1, gdalBuffer.get(), writeNumCols, 1, mGdalDT,
         mWriteNumBands, mBands.data(), 0, 0, 0, nullptr);
       if (CE_None != err) {
-        throw IOError("Failaure when writing by RasterIO");
+        throw IOError(_("Failaure when writing by RasterIO"));
       }
 
       writeRow += rowNumBytes;
@@ -180,7 +181,7 @@ void RasterWriter::WriteRaster(const GdalRaster* raster) {
   std::unique_lock<std::shared_mutex> lock(mMutex);
   const auto gdalDT = raster->GetDataType();
   if (gdalDT != mGdalDT) {
-    throw std::invalid_argument("The data type of raster object is not compatible with image file");
+    throw std::invalid_argument(_("The data type of raster object is not compatible with image file"));
   }
 
   const int64 rowNumBytes = raster->GetRowNumBytes();
@@ -199,7 +200,7 @@ void RasterWriter::WriteRaster(const GdalRaster* raster) {
       const auto err = band->RasterIO(GF_Write, writeColOff, writeRowOff + r,
         writeNumCols, 1, writeRow, writeNumCols, 1, mGdalDT, 0, 0, nullptr);
       if (CE_None != err) {
-        throw IOError("Failaure when reading by RasterIO");
+        throw IOError(_("Failaure when reading by RasterIO"));
       }
 
       writeRow += rowNumBytes;
@@ -239,14 +240,14 @@ std::tuple<RasterWindow, int64>
 RasterWriter::ObtainWriteWindow(const IRaster* raster) const {
   const int numBands = raster->GetNumBands();
   if (numBands != mWriteNumBands) {
-    throw std::invalid_argument("Number of bands is different");
+    throw std::invalid_argument(_("Number of bands is different"));
   }
 
   const auto [colOffset, rowOffset] = raster->GetOffsets();
   const auto [numCols, numRows] = raster->GetSize();
   if (0 > colOffset || mFileNumCols < colOffset+numCols ||
       0 > rowOffset || mFileNumRows < rowOffset+numRows) {
-    throw std::out_of_range("raster object context is outside of image file");
+    throw std::out_of_range(_("raster object context is outside of image file"));
   }
 
   const int64 writePixelOff = raster->GetImagePixelOffset();
