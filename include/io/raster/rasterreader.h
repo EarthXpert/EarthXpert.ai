@@ -38,16 +38,12 @@ public:
    *  exports partially the GDAL functions. The caller could exploit
    *  the full GDAL capabilities via the returned object pointer.
    */
-  GDALDataset* GetDataset() const noexcept {
-    return mDataset.get();
-  }
+  GDALDataset* GetDataset() const noexcept { return mDataset.get(); }
 
   /**
    *  \return Returns name of file format.
    */
-  std::string GetFileFormat() const {
-    return mDataset->GetDriverName();
-  }
+  std::string GetFileFormat() const { return mDataset->GetDriverName(); }
 
   /**
    *  \return Returns metadata tags
@@ -64,23 +60,17 @@ public:
   /**
    *  \return Returns GDAL data type.
    */
-  GDALDataType GetDataType() const noexcept {
-    return mGdalDT;
-  }
+  GDALDataType GetDataType() const noexcept { return mGdalDT; }
 
   /**
    *  \return Return the 1-based band indices to read from
    */
-  auto GetReadBands() const noexcept {
-    return mBands;
-  }
+  auto GetReadBands() const noexcept { return mBands; }
 
   /**
    *  \return Return the number of channels contained in the image file
    */
-  int GetNumBands() const noexcept override {
-    return mFileNumBands;
-  }
+  int GetNumBands() const noexcept override { return mFileNumBands; }
 
   /**
    *  \brief Set the margin size and kind.
@@ -106,9 +96,7 @@ public:
   /**
    *  \return Returns the margin kind.
    */
-  MarginKind GetMarginKind() const noexcept override {
-    return mMarginKind;
-  }
+  MarginKind GetMarginKind() const noexcept override { return mMarginKind; }
 
   /**
    *  \brief Fetch the ground coordinate system where the image file operates.

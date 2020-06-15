@@ -63,30 +63,6 @@ bool DigitalImageModelImp::operator!=(const DigitalImageModelImp &rhs) const {
 }
 
 /**
- *  \brief Given a 2d position in image space,
- *  output the 2d position in focal plane coordinate system.
- *
- *  \param [in] cr 2d raster position (col, row) in image space [unit: pixel]
- *  \return Return 2d metric position (x, y) in focal plane [unit: mm]
- */
-Point2d DigitalImageModelImp::CRToXY(const Point2d &cr) const {
-  return { mPixSizeX * (cr.x - mOrigin.x),
-           mPixSizeY * (mOrigin.y - cr.y) };
-}
-
-/**
- *  \brief Given a 2d position in focal plane coordinate system,
- *  output the 2d position in image space.
- *
- *  \param [in] xy 2d metric position (x, y) in focal plane [unit: mm]
- *  \return Return 2d raster position (col, row) in image space [unit: pixel]
- */
-Point2d DigitalImageModelImp::XYToCR(const Point2d &xy) const {
-  return { mOrigin.x + mPpmmX * xy.x,
-           mOrigin.y - mPpmmY * xy.y };
-}
-
-/**
  *  \return Return metric size of frame (width, height) [unit: mm]
  */
 std::pair<double, double> DigitalImageModelImp::GetSensorSize() const noexcept {
@@ -153,35 +129,6 @@ bool FilmImageModelImp::operator==(const FilmImageModelImp &rhs) const {
 
 bool FilmImageModelImp::operator!=(const FilmImageModelImp &rhs) const {
   return !(operator==(rhs));
-}
-
-/**
- *  \brief Given a 2d position in image space,
- *  output the 2d position in focal plane coordinate system.
- *
- *  \param [in] cr 2d raster position (col, row) in image space [unit: pixel]
- *  \return Return 2d metric position (x, y) in focal plane [unit: mm]
- */
-Point2d FilmImageModelImp::CRToXY(const Point2d &cr) const {
-  const auto C{cr.x};
-  const auto R{cr.y};
-  const auto CR{C * R};
-
-  return { mCRToX[0] + mCRToX[1] * C + mCRToX[2] * R + mCRToX[3] * CR,
-           mCRToY[0] + mCRToY[1] * C + mCRToY[2] * R + mCRToY[3] * CR };
-}
-
-/**
- *  \brief Given a 2d position in focal plane coordinate system,
- *  output the 2d position in image space.
- *
- *  \param [in] xy 2d metric position (x, y) in focal plane [unit: mm]
- *  \return Return 2d raster position (col, row) in image space [unit: pixel]
- */
-Point2d FilmImageModelImp::XYToCR(const Point2d &xy) const {
-  const auto XY{xy.x * xy.y};
-  return { mXYToC[0] + mXYToC[1] * xy.x + mXYToC[2] * xy.y + mXYToC[3] * XY,
-          mXYToR[0] + mXYToR[1] * xy.x + mXYToR[2] * xy.y + mXYToR[3] * XY };
 }
 
 /**

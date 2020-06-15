@@ -6,6 +6,9 @@ add_cppunit_test(framemodel_tests
 add_cppunit_test(rationalmodel_tests 
   core sensormodel 
   ${GDAL_LIBRARY})
+add_cppunit_test(stereomodel_tests 
+  core sensormodel 
+  ${GDAL_LIBRARY} ${OPENCV_LIBS})
 if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
   get_filename_component(BOOST_BIN_DIR "${Boost_DIR}/../.." ABSOLUTE)
   set(TESTS_SENSORMODEL_PATH "PATH=$<TARGET_FILE_DIR:ex3rdparty>;$<TARGET_FILE_DIR:core>;\
@@ -15,11 +18,12 @@ ${GTEST_BIN_DIR};${BOOST_BIN_DIR};${GDAL_BIN_DIR};${OPENCV_BIN_DIR};${OPENNI_BIN
 ${TESTS_BIN_DIR};$ENV{PATH}")
   string(REPLACE ";" "\\;" TESTS_SENSORMODEL_PATH "${TESTS_SENSORMODEL_PATH}")
   message(STATUS "Tests_Sensormodel_Path: ${TESTS_SENSORMODEL_PATH}")
-  set_tests_properties(framemodel_tests rationalmodel_tests
+  set_tests_properties(framemodel_tests rationalmodel_tests stereomodel_tests
     PROPERTIES ENVIRONMENT "${TESTS_SENSORMODEL_PATH}")
 endif()
 
 if(EARTHXPERT_INSTALL_TESTS_CPPUNIT)
   earthxpert_install_test(framemodel_tests)
   earthxpert_install_test(rationalmodel_tests)
+  earthxpert_install_test(stereomodel_tests)
 endif()

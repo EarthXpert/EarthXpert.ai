@@ -9,6 +9,7 @@
 #include "cgal/excgal.h"
 #include "eigen/exeigen.h"
 #include "gdal/exgdal.h"
+#include "gettext/exgettext.h"
 #include "gtest/exgtest.h"
 #include "laslib/exlaslib.h"
 #include "opencv/exopencv.h"

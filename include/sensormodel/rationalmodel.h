@@ -209,6 +209,12 @@ public:
     return mGroundSRS;
   }
 
+  /**
+   *  \return Returns type of SRS
+   *  \todo parse from mGroundSRS;
+   */
+  virtual SrsType GetSrsType() const noexcept { return eGEO; }
+
   void SetImageSize(const int numCols, const int numRows) noexcept {
     mNumCols = numCols;
     mNumRows = numRows;
@@ -220,6 +226,11 @@ public:
   std::pair<int, int> GetImageSize() const noexcept override {
     return { mNumCols, mNumRows };
   }
+
+  /**
+   *  \return Returns the middle height
+   */
+  double GetMeanHeight() const noexcept { return mNormalFators[eOHEIGHT]; }
 
   /**
    *  \brief Get normalization factors including offsets & scales.
@@ -307,8 +318,30 @@ private:
 
   Point2d ImageActualToApparant(const Point2d& image) const;
   Point2d ImageApparantToActual(const Point2d& image) const;
-  Point2d ImageToSensor(const Point2d& image) const;
-  Point2d SensorToImage(const Point2d &sensor) const;
+
+  /**
+   *  \brief Given a 2d position in image coordinate system,
+   *  output the 2d position in virtual sensor coordinate system.
+   */
+  inline Point2d ImageToSensor(const Point2d& image) const {
+    auto nfc = mNormalFators.data();
+    return { (image.x - nfc[eOSAMP]) * mInvScale[eISSAMP],
+             (image.y - nfc[eOLINE]) * mInvScale[eISLINE] };
+  }
+
+  /**
+   *  \brief Given a 2d position in virtual sensor coordinate system,
+   *  output the 2d rpc position in image coordinate system.
+   *
+   *  \param [in] sensor 2d position (x, y) in virtual sensor coordinate system
+   *  \return Return 2d apparant rpc position (col, row) in imagery coordinate system
+   */
+  inline Point2d SensorToImage(const Point2d& sensor) const {
+    auto nfc = mNormalFators.data();
+    return { nfc[eOSAMP] + nfc[eSSAMP] * sensor.x,
+             nfc[eOLINE] + nfc[eSLINE] * sensor.y };
+  }
+
   Point2d CalcCorrection(const Point2d& image) const;
 
   /**
@@ -326,7 +359,26 @@ private:
   bool SensorToGround(const Point2d &sensor, Point3d &uvw) const {
     return SensorToGround(sensor.x, sensor.y, uvw.z, uvw.x, uvw.y);
   }
-  bool GroundToSensor(const Point3d &uvw, Point2d &sensor) const;
+
+  /**
+   *  Ground-to-sensor backward projection.
+   *
+   *  \brief Given a 3d ground position in the virtual ground coordinate
+   * system, output the 2d position in the virtual sensor coordinate system.
+   *
+   *  \param [in] uvw 3d ground position (L, P, H)
+   *  \param [out] sensor 2d sensor position (x, y)
+   *  \return Returns true if operation succeeds
+   */
+  inline bool GroundToSensor(const Point3d& uvw,
+    Point2d& sensor) const {
+    const auto [Ln, Ld, Sn, Sd] = CalcPolynomials(uvw);
+
+    // col/row computed from RFM
+    sensor.x = Sn / Sd;
+    sensor.y = Ln / Ld;
+    return true;
+  }
 
   void CalcTerms(const Point3d &uvw, double *const LPH) const {
       CalcTerms(uvw.x, uvw.y, uvw.z, LPH);

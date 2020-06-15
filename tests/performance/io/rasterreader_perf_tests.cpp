@@ -17,7 +17,7 @@ using namespace earthxpert;
  *
  *  TestCase 1: ortho of three bands in RGB with no margins
  */
-void RasterReader_ORTHOGF1MS_T1() {
+void RasterReader_ORTHOGF1MS_CVMAT() {
   const std::string imgFile(TestConfig::DataPath("Imagery/Satellite/ortho/GF1_PMS1_E112.8_N23.3_20180113_L1A0002927089-MSS1_ORTHO_PSH.tif"));
   RasterReader reader(imgFile);
 
@@ -30,7 +30,7 @@ void RasterReader_ORTHOGF1MS_T1() {
  *
  *  TestCase 2: ortho of three bands in RGB with no margins
  */
-void RasterReader_ORTHOGF1MS_T2() {
+void RasterReader_ORTHOGF1MS_GDAL() {
   const std::string imgFile(TestConfig::DataPath("Imagery/Satellite/ortho/GF1_PMS1_E112.8_N23.3_20180113_L1A0002927089-MSS1_ORTHO_PSH.tif"));
   RasterReader reader(imgFile);
 
@@ -38,5 +38,5 @@ void RasterReader_ORTHOGF1MS_T2() {
   auto raster = reader.ReadRaster(fileNumCols / 2 - 1000, fileNumRows / 2 - 1000, 2000, 2000, RasterType::eGDAL);
 }
 
-SLTBENCH_FUNCTION(RasterReader_ORTHOGF1MS_T1);
-SLTBENCH_FUNCTION(RasterReader_ORTHOGF1MS_T2);
+SLTBENCH_FUNCTION(RasterReader_ORTHOGF1MS_CVMAT);
+SLTBENCH_FUNCTION(RasterReader_ORTHOGF1MS_GDAL);

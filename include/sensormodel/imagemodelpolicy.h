@@ -43,7 +43,9 @@ public:
    *  \param [in] image 2d position (col, row) in imagery coordinate system
    *  \return Return 2d position (x, y) in sensor focal plane coordinate if the operation succeeds
    */
-  Point2d ImageToSensor(const Point2d &image) const override;
+  Point2d ImageToSensor(const Point2d &image) const override {
+    return mImgModel->CRToXY(image);
+  }
 
   /**
    *  \brief Given a 2d position in sensor focal plane coordinate system,
@@ -53,7 +55,9 @@ public:
    * system
    *  \return Return 2d position (col, row) in imagery coordinate if the operation succeeds
    */
-  Point2d SensorToImage(const Point2d &sensor) const override;
+  Point2d SensorToImage(const Point2d &sensor) const override {
+    return mImgModel->XYToCR(sensor);
+  }
 
   /**
    * \return Return type of image model policy
@@ -105,7 +109,9 @@ public:
    *  \param [in] image 2d position (col, row) in imagery coordinate system
    *  \return Return 2d position (x, y) in sensor focal plane coordinate if the operation succeeds
    */
-  Point2d ImageToSensor(const Point2d &image) const override;
+  Point2d ImageToSensor(const Point2d &image) const override {
+    return mImgModel->CRToXY(image);
+  }
 
   /**
    *  \brief Given a 2d position in sensor focal plane coordinate system,
@@ -115,7 +121,9 @@ public:
    * system
    * system \return Return 2d position (col, row) in imagery coordinate if the operation succeeds
    */
-  Point2d SensorToImage(const Point2d &sensor) const override;
+  Point2d SensorToImage(const Point2d &sensor) const override {
+    return mImgModel->XYToCR(sensor);
+  }
 
   /**
    * \return Return type of image model policy

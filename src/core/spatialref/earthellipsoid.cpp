@@ -11,6 +11,15 @@ using earthxpert::EarthEllipsoid;
 using earthxpert::Point3d;
 
 /**
+ * constructor. 
+ *
+ * \param [in] wkt parse ellipsoid from a datum, default to be WGS84 ellipsoid if empty.
+ */
+EarthEllipsoid::EarthEllipsoid(const std::string& wkt) {
+
+}
+
+/**
  * constructor.
  *
  * \param [in] semiMajor Semi-major axis length [m]
@@ -168,29 +177,6 @@ Point3d EarthEllipsoid::XYZToLSR(const Point3d& xyz) const {
 }
 
 /**
- * Convert coordinates from LSR to LPH.
- *
- * \param [in] lsr LSR XYZ coordinates [m]
- * \return Returns geographic longitude [rad], geographic latitude [rad], ellipsoidal height [m]
- */
-Point3d
-EarthEllipsoid::LSRToLPH(const Point3d& lsr) const {
-  const Point3d xyz = LSRToXYZ(lsr);
-  return XYZToLPH(xyz);
-}
-
-/**
- * Convert coordinates from the Geographic LPH to LSR
- *
- * \param [in] lph Longitude [rad], Latitude [rad], Ellipsoidal height [m]
- * \return Returns LSR XYZ coordinates [m]
- */
-Point3d EarthEllipsoid::LPHToLSR(const Point3d& lph) const {
-  const Point3d xyz = LPHToXYZ(lph);
-  return XYZToLSR(xyz);
-}
-
-/**
  * \param [in] lat Geodetic latitude [rad]
 
  * \return Returns radius [m] of curvature in the Prime Meridian
@@ -209,14 +195,4 @@ double EarthEllipsoid::RadiusInPrimeVertical(const double lat) const {
   const double cp = cos(lat);
   const double sp = sin(lat);
   return mAsq / sqrt(mAsq * cp * cp + mBsq * sp * sp);  // RadiusInPrimeVertical(cp, sp)
-}
-
-/**
- * \param [in] cp cosine(geodetic latitude)
- * \param [in] sp sine(geodetic latitude)
- *
- * \return Returns radius [m] of curvature in the Prime Vertical terminated by minor axis
- */
-double EarthEllipsoid::RadiusInPrimeVertical(const double cp, const double sp) const {
-  return mAsq / sqrt(mAsq * cp * cp + mBsq * sp * sp);
 }

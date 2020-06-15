@@ -38,9 +38,7 @@ public:
   /**
    * \return Returns type of raster data
    */
-  RasterType GetRasterType() const noexcept override {
-    return RasterType::eCVMAT;
-  }
+  RasterType GetRasterType() const noexcept override { return RasterType::eCVMAT; }
 
   /**
    *  Update a pixel value for the given pixel position.

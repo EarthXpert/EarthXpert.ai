@@ -33,6 +33,8 @@ constexpr int kLU_USFEET = 3;
 template <int angleUnit = kAU_RADIAN, int linearUnit = kLU_METER>
 class EXEPIPOLARMODEL_EXPORTS GeographicGround final : public IGroundPolicy {
 public:
+  static constexpr SrsType kGroundType = eGEO;
+
   /**
    *  \brief Constructor.
    *
@@ -134,6 +136,8 @@ using GeographicGroundRad = GeographicGround<kAU_RADIAN>;
 template <int linearUnit = kLU_METER>
 class EXEPIPOLARMODEL_EXPORTS LocalGround final : public IGroundPolicy{
 public:
+  static constexpr SrsType kGroundType = eLOCAL;
+
   /**
    *  \brief Constructor.
    *
@@ -196,6 +200,8 @@ using LocalGroundUf = LocalGround<kLU_USFEET>;
 template <int linearUnit = kLU_METER>
 class EXEPIPOLARMODEL_EXPORTS MapGround final : public IGroundPolicy {
 public:
+  static constexpr SrsType kGroundType = eMAP;
+
   /**
    *  \brief Constructor.
    *

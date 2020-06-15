@@ -453,29 +453,6 @@ Point2d RationalModel::ImageApparantToActual(const Point2d& image) const {
 }
 
 /**
- *  \brief Given a 2d position in image coordinate system,
- *  output the 2d position in virtual sensor coordinate system.
- */
-Point2d RationalModel::ImageToSensor(const Point2d & image) const {
-  auto nfc = mNormalFators.data();
-  return { (image.x - nfc[eOSAMP]) * mInvScale[eISSAMP],
-           (image.y - nfc[eOLINE]) * mInvScale[eISLINE] };
-}
-
-/**
- *  \brief Given a 2d position in virtual sensor coordinate system,
- *  output the 2d rpc position in image coordinate system.
- *
- *  \param [in] sensor 2d position (x, y) in virtual sensor coordinate system
- *  \return Return 2d apparant rpc position (col, row) in imagery coordinate system
- */
-Point2d RationalModel::SensorToImage(const Point2d &sensor) const {
-  auto nfc = mNormalFators.data();
-  return { nfc[eOSAMP] + nfc[eSSAMP] * sensor.x,
-           nfc[eOLINE] + nfc[eSLINE] * sensor.y };
-}
-
-/**
  *  \brief calculate the correction in image space.
  *
  *  \param [in] image The {col, row} position compatible with RPCs
@@ -490,26 +467,6 @@ Point2d RationalModel::CalcCorrection(const Point2d& image) const {
     scc[eCS2] * CR[0] + scc[eCSL] * CR[1] + scc[eCL2] * CR[2],
            lcc[eCO] + lcc[eCS] * image.x + lcc[eCL] * image.y +
     lcc[eCS2] * CR[0] + lcc[eCSL] * CR[1] + lcc[eCL2] * CR[2] };
-}
-
-/**
- *  Ground-to-sensor backward projection.
- *
- *  \brief Given a 3d ground position in the virtual ground coordinate
- * system, output the 2d position in the virtual sensor coordinate system.
- *
- *  \param [in] uvw 3d ground position (L, P, H)
- *  \param [out] sensor 2d sensor position (x, y)
- *  \return Returns true if operation succeeds
- */
-bool RationalModel::GroundToSensor(const Point3d &uvw,
-                                   Point2d &sensor) const {
-  const auto [Ln, Ld, Sn, Sd] = CalcPolynomials(uvw);
-
-  // col/row computed from RFM
-  sensor.x = Sn / Sd;
-  sensor.y = Ln / Ld;
-  return true;
 }
 
 /**
@@ -798,7 +755,7 @@ Tuple4d RationalModel::CalcPolynomials(const double L, const double P, const dou
   }
 
   if (fabs(Ld) < tol || fabs(Sd) < tol) {
-    throw std::underflow_error("denominator is 0 in rational model");
+    throw std::underflow_error("RationalModel: denominator is 0 in rational model");
   }
 
   return { Ln, Ld, Sn, Sd };
@@ -882,7 +839,7 @@ void RationalModel::BuildCubeS2G() {
   {
     if (!SensorToGround(cubeNodes[i].x, cubeNodes[i].y, cubeNodes[i].z,
                         cube[i*2], cube[i*2 + 1])) {
-      throw std::exception("SensorToGround failed to project: RationalModel.");
+      throw std::exception("RationalModel: SensorToGround failed to project.");
     }
   }
 

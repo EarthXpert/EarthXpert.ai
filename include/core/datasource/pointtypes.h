@@ -108,6 +108,9 @@ struct FieldGroup : std::bitset<8> {
  */
 template <typename CoordTy>
 struct XYZ /*: public cv::Point3_<CoordTy>*/{
+  using value_type = CoordTy;   // compatible with cv::Point_<>
+  static constexpr int kDim = 3;
+
   static constexpr size_t kFieldPos = FieldGroup::kPOSXYZ;
   static constexpr size_t kFieldBit = FieldGroup::kBITXYZ;
   static constexpr size_t kFieldBytes = sizeof(CoordTy) * 3;
@@ -159,6 +162,8 @@ struct Intensity {
  */
 template <typename ColorTy>
 struct RGB {
+  using value_type = ColorTy;
+
   static constexpr size_t kFieldPos = FieldGroup::kPOSRGB;
   static constexpr size_t kFieldBit = FieldGroup::kBITRGB;
   static constexpr size_t kFieldBytes = sizeof(ColorTy) * 3;
@@ -199,7 +204,9 @@ struct GPSTime {
  */
 template <typename... Fields>
 struct WxPoint : Fields... {
-  static_assert(0 < sizeof...(Fields), "Empty fields");
+  static constexpr int kNumFields = sizeof...(Fields);
+
+  static_assert(0 < kNumFields, "Empty fields");
   static constexpr size_t kPointFieldBits = (... + Fields::kFieldBit);
   //static constexpr size_t kPointFieldBytes = (... + Fields::kFieldBytes);   // align()
 };

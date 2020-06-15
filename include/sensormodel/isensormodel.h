@@ -7,6 +7,7 @@
 #include "sensormodel/exsensormodel.h"
 #include "3rdparty/gdal/exgdal.h"
 #include "3rdparty/opencv/exopencv.h"
+#include "core/spatialref//spatialdef.h"
 
 #include <memory>
 #include <vector>
@@ -144,6 +145,11 @@ public:
   GetCoordinateSystem() const noexcept = 0;
 
   /**
+   *  \return Returns type of SRS
+   */
+  virtual SrsType GetSrsType() const noexcept = 0;
+
+  /**
    *  \return Returns raster columns & rows [unit: pixel]
    */
   virtual std::pair<int, int> GetImageSize() const noexcept = 0;
@@ -152,5 +158,10 @@ public:
    *  \return Returns metric width & height [unit: mm]
    */
   //virtual std::pair<int, int> GetSensorSize() const noexcept = 0;
+
+  /**
+   *  \return Returns the middle height
+   */
+  virtual double GetMeanHeight() const noexcept = 0;
 };
 } // namespace earthxpert

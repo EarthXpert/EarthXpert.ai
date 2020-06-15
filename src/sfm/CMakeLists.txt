@@ -8,6 +8,6 @@ earthxpert_add_library(sfm "api"
        "densematch/rectneighbor.cpp"
        "sparsematch/sparsematch.cpp"
   ITEMS ex3rdparty core dataio epipolarmodel sensormodel
-        ${GDAL_LIBRARY} ${OPENCV_LIBS})
+        ${GDAL_LIBRARY} ${GETTEXT_LIBRARY} ${OPENCV_LIBS})
 
 earthxpert_install_target(sfm)

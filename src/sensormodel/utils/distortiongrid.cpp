@@ -124,40 +124,6 @@ bool DistortionGrid<Ty>::operator!=(const DistortionGrid<Ty> &rhs) const {
 }
 
 /**
- * Interpolate a distortion amount at the given X,Y position.
- *
- * \param [in] X X position
- * \param [in] Y Y position
- * \param [in,out] d Array of interpolated (or extrapolated) distortions
- */
-template <typename Ty>
-bool DistortionGrid<Ty>::GetDistortion(const Ty X, const Ty Y,
-                                        Ty *const d) const {
-  if (mGrid) {
-    assert(d);
-    mGrid->GetVal(X, Y, d);
-    return true;
-  }
-  return false;
-}
-
-/**
- * Interpolate a distortion value for the given X,Y position.
- *
- * \param [in] X X position
- * \param [in] Y Y position
- * \return Returns interpolated (or extrapolated) X & Y distortions
- */
-template <typename Ty>
-std::pair<Ty, Ty> DistortionGrid<Ty>::GetDistortion(const Ty X, const Ty Y) const {
-  if (mGrid) {
-    assert(2 == mGrid->GetDimension());
-    return mGrid->GetVal2(X, Y);
-  }
-  return {0.f, 0.f};
-}
-
-/**
  * Fetch the distortion grid.
  *
  * \param [out] numCols Number of columns

@@ -109,6 +109,16 @@ public:
   virtual size_t GroundToImage(const std::vector<Point3d> &ground,
                                std::vector<Point2d> &image) const override;
 
+  /**
+   *  \return Returns type of SRS
+   */
+  virtual SrsType GetSrsType() const noexcept { return eUNKNOWN; }
+
+  /**
+   *  \return Returns the middle height
+   */
+  virtual double GetMeanHeight() const noexcept { return 0.0; }
+
 protected:
   virtual bool EqualTo(const ISensorModel &rhs) const = 0;
 };

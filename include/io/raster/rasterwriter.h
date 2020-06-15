@@ -36,16 +36,12 @@ public:
    *  exports partially the GDAL functions. The caller could exploit
    *  the full GDAL capabilities via the returned object pointer.
    */
-  GDALDataset* GetDataset() const noexcept {
-    return mDataset;
-  }
+  GDALDataset* GetDataset() const noexcept { return mDataset; }
 
   /**
    *  \return Returns name of file format.
    */
-  std::string GetFileFormat() const {
-    return mDataset->GetDriverName();
-  }
+  std::string GetFileFormat() const { return mDataset->GetDriverName(); }
 
   /**
    *  \brief Inject metadata tags
@@ -94,23 +90,17 @@ public:
   /**
    *  \return Returns width and height of image file [unit: pixels]
    */
-  std::pair<int, int> GetSize() const noexcept override {
-    return mReader->GetSize();
-  }
+  std::pair<int, int> GetSize() const noexcept override { return mReader->GetSize(); }
 
   /**
    *  \return Returns GDAL data type.
    */
-  GDALDataType GetDataType() const noexcept {
-    return mGdalDT;
-  }
+  GDALDataType GetDataType() const noexcept { return mGdalDT; }
 
   /**
    *  \return Return the number of channels contained in the image file
    */
-  int GetNumBands() const noexcept override {
-    return mReader->GetNumBands();
-  }
+  int GetNumBands() const noexcept override { return mReader->GetNumBands(); }
 
   /**
    *  \brief Set the margin size and kind.
