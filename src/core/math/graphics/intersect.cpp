@@ -17,6 +17,19 @@ using namespace::Eigen;
  *
  *  \param [in] s1 the first line segment defined by two end points
  *  \param [in] s2 the second line segment defined by two end points
+ *  \param [out] p the intersection point.
+ *  \param [out] summary the report of ceres solver.
+ *  \return Return true if successful, false if parallel.
+ */
+bool XTwoLines::Intersect(const Point3d* s1, const Point3d* s2, Point3d& p, Solver::Summary& summary) const {
+  return false;
+}
+
+/**
+ *  Intersect two 3D line segements.
+ *
+ *  \param [in] s1 the first line segment defined by two end points
+ *  \param [in] s2 the second line segment defined by two end points
  *  \return Return true if successful, false if parallel.
  */
 bool XTwoLines::Intersect(const Point3d* s1, const Point3d* s2, Point3d& p) const {
@@ -39,6 +52,23 @@ bool XTwoLines::Intersect(const Point3d* s1, const Point3d* s2, Point3d& p) cons
 
   p = { x[0], x[1], x[2] };
   return true;
+}
+
+//template class earthxpert::XTwoLines<kST_EIGEN>;
+
+/**
+ *  Intersect three 3D line segements.
+ *
+ *  \param [in] s1 the first line segment defined by two end points
+ *  \param [in] s2 the second line segment defined by two end points
+ *  \param [in] s3 the second line segment defined by two end points
+ *  \param [out] p the intersection point.
+ *  \param [out] summary the report of ceres solver.
+ *  \return Return true if successful, false if parallel.
+ */
+bool XThreeLines::Intersect(const Point3d* s1, const Point3d* s2,
+  const Point3d* s3, Point3d& p, Solver::Summary& summary) const {
+  return false;
 }
 
 /**
