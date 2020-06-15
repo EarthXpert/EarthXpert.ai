@@ -3,7 +3,6 @@
  * -----------------------------------------------------------------------------
  */
 #include "sensormodel/stereomodel.h"
-#include "sensormodel/isensormodel.h"
 #include "3rdparty/gettext/exgettext.h"
 #include "core/exceptions/exexcept.h"
 #include "core/math/intersect.h"
@@ -16,6 +15,44 @@
 
 using namespace earthxpert;
 using namespace earthxpert::math;
+
+/**
+ *  Constructor.
+ *
+ *  \brief Form a stereo model by a pair of sensor models.
+ *
+ *  \param [in] leftModel left sensor model composing the stereo model
+ *  \param [in] rightModel right sensor model composing the stereo model
+ */
+StereoModel::StereoModel(ISensorModel const* const leftModel, ISensorModel const* const rightModel) {
+  mModels.resize(2);
+  mModels[0] = leftModel;
+  mModels[1] = rightModel;
+  ObtainModelsInfo();
+}
+
+/**
+ *  \brief Form a triplet stereo model by three sensor models.
+ *
+ *  \param [in] sensorModels triplet sensor models composing the stereo model
+ */
+StereoModel::StereoModel(const std::array<ISensorModel const*, 3>& sensorModels) {
+  mModels.resize(3);
+  std::copy_n(std::begin(sensorModels), 3, std::begin(mModels));
+  ObtainModelsInfo();
+}
+
+/**
+ *  \brief form a stereo model by the given two or more sensor models.
+ *
+ *  \param [in] sensorModels multiple (two or more) sensor models composing
+ * the stereo model.
+ */
+StereoModel::StereoModel(const std::vector<ISensorModel const*>& sensorModels) {
+  assert(2 <= sensorModels.size());
+  mModels = sensorModels;
+  ObtainModelsInfo();
+}
 
 void StereoModel::SetEarthEllipsoid(std::shared_ptr<EarthEllipsoid> earthEllip) {
   if (!earthEllip)
@@ -33,101 +70,6 @@ void StereoModel::SetEarthEllipsoid(std::shared_ptr<EarthEllipsoid> earthEllip) 
     mIntersect = std::make_unique<XMultipleLines>();
     throw std::exception(_("StereoModel: not implemented for four or more rays"));
   }
-}
-
-/**
- *  Image-to-ground forward intersection.
- *
- *  \brief Given a pair of sensor models and associated 2d positions
- *  in image coordinate system, do forward intersection of pair-rays, and
- *  output the ground position with respect to the ground coordinate system.
- *
- *  \param [in] leftImage 2d position (x, y) in left image raster coordinate
- * system 
- *  \param [in] rightImage the corresponding 2d position (x, y) in right image
- * raster coordinate system 
- *  \param [in/out] ground 3d ground position (X, Y, Z)
- * in ground coordinate system 
- *  \return Returns true if the operation succeeds
- *
- *  \todo extract X class
- */
-bool StereoModel::ImageToGround(const Point2d& leftImage, 
-  const Point2d& rightImage, Point3d& ground) const {
-  assert(2 == mModels.size());
-  if (!mEarthEllip ) {    // || !mIntersect
-    return ImageToGroundNR(leftImage, rightImage, ground);
-  }
-  assert(eGEO == mModels[0]->GetSrsType());
-
-  ground.z = (mModels[0]->GetMeanHeight() + mModels[1]->GetMeanHeight()) / 2.0;
-
-  Point3d segs[4];
-  Point3d lsr;
-
-  for (int i = 0; i < 2; ++i) {
-    const double hgtRange[2] = { ground.z + mH, ground.z - mH };
-
-    for (int j = 0; j < 2; ++j) {
-      Point3d grd{ 0.0, 0.0, hgtRange[j] };
-
-      mModels[0]->ImageToGround(leftImage, grd);
-      segs[j] = mEarthEllip->LPHToLSR(Deg2Rad(grd));
-
-      mModels[1]->ImageToGround(rightImage, grd);
-      segs[j+2] = mEarthEllip->LPHToLSR(Deg2Rad(grd));
-    }
-
-    // 3d intersection X
-    const bool ret = mIntersect->Intersect(segs, lsr);   // IntersectTwoLines(segs, segs + 2, lsr)
-    if (!ret) return false;
-
-    ground = Rad2Deg(mEarthEllip->LSRToLPH(lsr));
-  }
-
-  return true;
-}
-
-// Newton-Raphson
-bool StereoModel::ImageToGroundNR(const Point2d &leftImage,
-  const Point2d &rightImage, Point3d &ground) const {
-  assert(2 == mModels.size());
-  ground.z = (mModels[0]->GetMeanHeight() + mModels[1]->GetMeanHeight()) / 2.0;
-
-  int i;
-  for (i = 0; i < mMaxIters; ++i) {
-    Point3d grd{ 0.0, 0.0, ground.z + mH };
-
-    Point3d leftGrd{ 0.0, 0.0, ground.z };
-    mModels[0]->ImageToGround(leftImage, grd);
-    mModels[0]->ImageToGround(leftImage, leftGrd);
-    const Point2d dLeft_dz{(grd.x - leftGrd.x) * mInvH, (grd.y - leftGrd.y) * mInvH};
-
-    Point3d rightGrd{ 0.0, 0.0, ground.z };
-    mModels[1]->ImageToGround(rightImage, grd);
-    mModels[1]->ImageToGround(rightImage, rightGrd);
-    const Point2d dRight_dz{ (grd.x - rightGrd.x) * mInvH, (grd.y - rightGrd.y) * mInvH };
-
-    const Point2d A = dRight_dz - dLeft_dz;
-    const double den = cv::normL2Sqr<double>(A);
-    if (std::numeric_limits<double>::epsilon() > den) {
-      return false;
-    }
-
-    ground.x = (leftGrd.x + rightGrd.x) * 0.5;
-    ground.y = (leftGrd.y + rightGrd.y) * 0.5;
-
-    const double dz = A.ddot(Point2d(leftGrd.x - rightGrd.x, leftGrd.y - rightGrd.y)) / den;
-    ground.z += dz;
-
-    if (mTolZ > fabs(dz)) break;
-  }
-
-  if (mMaxIters == i) {
-    return false;
-  }
-
-  return true;
 }
 
 /**
@@ -159,46 +101,6 @@ size_t StereoModel::ImageToGround(const std::vector<Point2d> &leftImages,
     }
   }
   return ret;
-}
-
-/**
- *  \brief Given a triplet of sensor models and associated 2d positions
- *  in image coordinate system, do forward intersection of triple-rays, and
- *  output the ground position with respect to the ground coordinate system.
- *
- *  \param [in] image the corresponding 2d positions (x, y) in imagery raster
- * coordinate systems 
- *  \param [in/out] ground 3d ground position (X, Y, Z) in
- * ground coordinate system 
- *  \return Returns true if the operation succeeds
- *
- *  \details
- */
-bool StereoModel::ImageToGround(const std::array<Point2d, 3> &image, Point3d &ground) const {
-  return true;
-}
-
-/**
- *  \brief Given two or more sensor models and associated 2d positions
- *  in image coordinate system, do forward intersection of rays, and
- *  output the ground position with respect to the ground coordinate system.
- *
- *  \param [in] image the corresponding 2d positions (x, y) in
- * imagery raster coordinate systems, interleaved by sensor models. 
- *  \param [in/out] ground 3d ground position (X, Y, Z) in ground coordinate system
- *  \return Returns true if the operation succeeds
- *
- *  \details
- */
-bool StereoModel::ImageToGround(const std::vector<Point2d> &image, Point3d &ground) const {
-  // const size_t numModels = sensorModels.size();
-  // assert(numModels == image.size());
-
-  // forward projection
-
-  // 3D intersection
-
-  return true;
 }
 
 /**
@@ -291,6 +193,92 @@ size_t StereoModel::GroundToImage(const std::vector<Point3d> &grounds, std::vect
     }
   }
   return ret;
+}
+
+// Newton-Raphson
+bool StereoModel::ImageToGroundNR(const Point2d& leftImage,
+  const Point2d& rightImage, Point3d& ground) const {
+  assert(2 == mModels.size());
+  ground.z = (mModels[0]->GetMeanHeight() + mModels[1]->GetMeanHeight()) / 2.0;
+
+  int i;
+  for (i = 0; i < mMaxIters; ++i) {
+    Point3d grd{ 0.0, 0.0, ground.z + mH };
+
+    Point3d leftGrd{ 0.0, 0.0, ground.z };
+    mModels[0]->ImageToGround(leftImage, grd);
+    mModels[0]->ImageToGround(leftImage, leftGrd);
+    const Point2d dLeft_dz{ (grd.x - leftGrd.x), (grd.y - leftGrd.y) };
+
+    Point3d rightGrd{ 0.0, 0.0, ground.z };
+    mModels[1]->ImageToGround(rightImage, grd);
+    mModels[1]->ImageToGround(rightImage, rightGrd);
+    const Point2d dRight_dz{ (grd.x - rightGrd.x), (grd.y - rightGrd.y) };
+
+    const Point2d A = (dRight_dz - dLeft_dz) * mInvH;
+    const double den = cv::normL2Sqr<double>(A);
+    if (std::numeric_limits<double>::epsilon() > den) {
+      return false;
+    }
+
+    ground.x = (leftGrd.x + rightGrd.x) * 0.5;
+    ground.y = (leftGrd.y + rightGrd.y) * 0.5;
+
+    const double dz = A.ddot(Point2d(leftGrd.x - rightGrd.x, leftGrd.y - rightGrd.y)) / den;
+    ground.z += dz;
+
+    if (mTolZ > fabs(dz)) break;
+  }
+
+  if (mMaxIters == i) {
+    return false;
+  }
+
+  return true;
+}
+
+/**
+ *  \brief Given two or more sensor models and associated list of 2d positions
+ *  in image coordinate system, do forward intersection of rays, and
+ *  output the ground positions with respect to the ground coordinate system.
+ *
+ *  \param [in] images the corresponding 2d positions (x, y) in
+ * imagery raster coordinate systems, interleaved by sensor models.
+ *  \param [in] numRays one ray per model.
+ *  \param [in/out] grounds List of 3d ground positions (X, Y, Z) in ground coordinate
+ * system
+ */
+bool StereoModel::ImageToGroundX(const Point2d* images, const int numRays, Point3d& ground) const {
+  assert(numRays == mModels.size());
+  ground.z = 0.0;
+  for (int k = 0; k < numRays; ++k) {
+    ground.z += mModels[k]->GetMeanHeight();
+  }
+  ground.z /= double(numRays);
+
+  std::vector<Point3d> segs(numRays * 2);
+  Point3d lsr;
+
+  for (int i = 0; i < 2; ++i) {
+    const double hgtRange[2] = { ground.z + mH, ground.z - mH };
+
+    for (int j = 0; j < 2; ++j) {
+      Point3d grd{ 0.0, 0.0, hgtRange[j] };
+
+      for (int k = 0; k < numRays; ++k) {
+        mModels[k]->ImageToGround(images[k], grd);
+        segs[j + k * 2] = mEarthEllip->LPHToLSR(Deg2Rad(grd));
+      }
+    }
+
+    // 3d intersection X
+    const bool ret = mIntersect->Intersect(segs.data(), lsr, numRays);   // IntersectTwoLines(segs.data(), lsr, numRays)
+    if (!ret) return false;
+
+    ground = Rad2Deg(mEarthEllip->LSRToLPH(lsr));
+  }
+
+  return true;
 }
 
 void StereoModel::ObtainModelsInfo() {
