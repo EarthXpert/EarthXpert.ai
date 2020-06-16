@@ -1,5 +1,5 @@
 /* ----------------------------------------------------------------------
- *  Copyright (c) 2018.  All rights reserved.                          -
+ *  Copyright (c) 2019.  All rights reserved.                          -
  * ----------------------------------------------------------------------
  */
 #include "core/math/intersect.h"
@@ -12,17 +12,34 @@ using namespace earthxpert::math;
 using namespace::ceres;
 using namespace::Eigen;
 
+// construcctor
+Intersect::Intersect() {
+  mOptions.max_num_iterations = 20;
+  mOptions.num_threads = 1; // kNumPhysicalCores
+  //mOptions.function_tolerance = ;
+  //mOptions.gradient_tolerance = ;
+  //mOptions.parameter_tolerance = ;
+  mOptions.linear_solver_type = DENSE_QR; // DENSE_NORMAL_CHOLESKY
+  //mOptions.preconditioner_type = JACOBI;  // SUBSET
+  mOptions.minimizer_progress_to_stdout = false;
+  //mOptions.update_state_every_iteration = true;
+  //mOptions.callbacks = {};
+}
+
 /**
  *  Intersect two 3D line segements.
  *
- *  \param [in] s1 the first line segment defined by two end points
- *  \param [in] s2 the second line segment defined by two end points
+ *  \param [in] segs the list of four end points interlaeved by line segments,
+ *  each is defined by two points.
  *  \param [out] p the intersection point.
  *  \param [out] summary the report of ceres solver.
  *  \return Return true if successful, false if parallel.
  */
-bool XTwoLines::Intersect(const Point3d* s1, const Point3d* s2, Point3d& p, Solver::Summary& summary) const {
-  return false;
+bool XTwoLines::Intersect(const Point3d* segs, Point3d& p, Solver::Summary& summary) const {
+  //std::vector<double> pb(2, 0.5);
+ // const bool ret = IntersectGeometries<Point3d, LineIntersectResidual>(segs, 
+ //   2, pb, mOptions, summary);
+    return false;
 }
 
 /**
@@ -59,15 +76,14 @@ bool XTwoLines::Intersect(const Point3d* s1, const Point3d* s2, Point3d& p) cons
 /**
  *  Intersect three 3D line segements.
  *
- *  \param [in] s1 the first line segment defined by two end points
- *  \param [in] s2 the second line segment defined by two end points
- *  \param [in] s3 the second line segment defined by two end points
+ *  \param [in] segs the list of six end points interlaeved by line segments, 
+ *  each is defined by two points.
  *  \param [out] p the intersection point.
  *  \param [out] summary the report of ceres solver.
  *  \return Return true if successful, false if parallel.
  */
-bool XThreeLines::Intersect(const Point3d* s1, const Point3d* s2,
-  const Point3d* s3, Point3d& p, Solver::Summary& summary) const {
+bool XThreeLines::Intersect(const Point3d* segs, 
+  Point3d& p, Solver::Summary& summary) const {
   return false;
 }
 

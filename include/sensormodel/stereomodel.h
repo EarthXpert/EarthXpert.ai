@@ -65,7 +65,7 @@ public:
   const auto& GetSensorModels() const noexcept { return mModels; }
 
   /**
-   *  Image-to-ground forward intersection.
+   *  Image-to-ground backward projection (fixed).
    *
    *  \brief Given a pair of sensor models and associated 2d positions
    *  in image coordinate system, do forward intersection of pair-rays, and
@@ -78,8 +78,6 @@ public:
    *  \param [in/out] ground 3d ground position (X, Y, Z) in ground coordinate
    * system 
    *  \return Returns true if the operation succeeds
-   *
-   *  \details
    */
   virtual bool ImageToGround(const Point2d &leftImage,
     const Point2d &rightImage, Point3d &ground) const override {
@@ -140,8 +138,6 @@ public:
    * imagery raster coordinate systems, interleaved by sensor models. 
    *  \param [in/out] ground 3d ground position (X, Y, Z) in ground coordinate system
    *  \return Returns true if the operation succeeds
-   *
-   *  \details
    */
   virtual bool
   ImageToGround(const std::vector<Point2d> &images, Point3d &ground) const override {
@@ -157,6 +153,24 @@ public:
   }
 
   /**
+   *  Image-to-ground forward projection (variable).
+   *
+   *  \brief Given a variable number of sensor models and associated 2d positions
+   *  in image coordinate system, do forward intersection of rays, and
+   *  output the ground position with respect to the ground coordinate system.
+   *
+   *  \param [in] sensorModels an array of sensor models.
+   *  \param [in] images the corresponding 2d positions (x, y) in
+   * imagery raster coordinate systems, interleaved by sensor models. \param
+   * [in/out] ground 3d ground position (X, Y, Z) in ground coordinate system
+   *  \return Returns true if the operation succeeds
+   */
+  virtual bool ImageToGround(const std::vector<const ISensorModel*>& sensorModels,
+    const std::vector<Point2d>& images, Point3d& ground) const override {
+    return false;
+  }
+
+  /**
    *  \brief Given two or more sensor models and associated list of 2d positions
    *  in image coordinate system, do forward intersection of rays, and
    *  output the ground positions with respect to the ground coordinate system.
@@ -165,14 +179,12 @@ public:
    * y) in imagery raster coordinate systems, interleaved by sensor models.
    *  \param [in/out] grounds List of 3d ground positions (X, Y, Z) in ground
    * coordinate system
-   *
-   *  \details
    */
   virtual size_t ImageToGround(const std::vector<Point2d> &images,
                 std::vector<Point3d> &grounds) const override;
 
   /**
-   *  Ground-to-image backward projection.
+   *  Ground-to-image backward projection (fixed).
    *
    *  \brief Given a 3d ground position with reference to the ground coordinate
    * system and multiple sensor models, output the corresponding 2d sensor
@@ -181,11 +193,26 @@ public:
    *  \param [in] ground 3d position (X, Y, Z) in ground coordinate system
    *  \param [out] images 2d position (x, y) in sensor raster
    * coordinate system \return Returns true if operation succeeds
-   *
-   *  \details
    */
   virtual bool GroundToImage(const Point3d &ground,
                 std::vector<Point2d> &images) const override;
+
+  /**
+   *  Ground-to-image backward projection (variable).
+   *
+   *  \brief Given a 3d ground position with reference to the ground coordinate
+   *  system and a variable number of sensor models, output the corresponding 2d sensor
+   *  positions in the image coordinate system for each sensor model.
+   *
+   *  \param [in] sensorModels an array of sensor models.
+   *  \param [in] ground 3d position (X, Y, Z) in ground coordinate system
+   *  \param [out] images 2d position (x, y) in imagery raster
+   * coordinate system \return Returns true if operation succeeds
+   */
+  virtual bool GroundToImage(const std::vector<const ISensorModel*>& sensorModels,
+    const Point3d& ground, std::vector<Point2d>& images) const {
+    return false;
+  }
 
   /**
    *  \brief Given a list of 3d positions in ground coordinate system and
@@ -195,8 +222,6 @@ public:
    *  \param [in] ground List of 3d ground positions (X, Y, Z)
    *  \param [in/out] images List of 2d positions (x, y) on
    * image, interleaved by sensor models
-   *
-   *  \details
    */
   virtual size_t GroundToImage(const std::vector<Point3d> &grounds,
                 std::vector<Point2d> &images) const override;

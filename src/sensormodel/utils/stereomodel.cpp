@@ -67,7 +67,7 @@ void StereoModel::SetEarthEllipsoid(std::shared_ptr<EarthEllipsoid> earthEllip) 
     mIntersect = std::make_unique<XThreeLines>();
   }
   else {
-    mIntersect = std::make_unique<XMultipleLines>();
+    //mIntersect = std::make_unique<XMultipleLines>();
     throw std::exception(_("StereoModel: not implemented for four or more rays"));
   }
 }

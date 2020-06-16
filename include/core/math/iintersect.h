@@ -9,7 +9,7 @@
 
 namespace earthxpert::math {
 /**
- *  The interface IIntersect defines the behaviours for the intersection of 3D line segments. 
+ *  The interface IIntersect defines the behaviours for the intersection of 3D geometries. 
  */
 class EXCORE_EXPORTS IIntersect {
 public:
