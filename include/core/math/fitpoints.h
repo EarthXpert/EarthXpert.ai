@@ -29,8 +29,9 @@ template <typename PointTy> struct LinearResidual : IResidual {
    *  its estimated value calculated using the equation.
    */
   template <typename Ty = double> bool operator()(const Ty* const pb, Ty* residual) const {
+    //static_assert(std::is_same_v<double, Ty>, "LinearResidual: operator()");
     static_assert(sizeof(Ty) >= sizeof(PointTy::value_type), "Parameter precision must be not lowert than observation's");
-
+    
     if constexpr (2 == kDim) {
       residual[0] = pt.y - pb[0] * pt.x - pb[1];
     }

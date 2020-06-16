@@ -21,7 +21,7 @@ public:
   /**
    *  Intersect two 3D line segements (ceres).
    *
-   *  \param [in] segs the list of four end points interlaeved by line segments,
+   *  \param [in] segs the list of end points interlaeved by line segments,
    *  each is defined by two points.
    *  \param [out] p the intersection point.
    *  \param [out] summary the report of ceres solver.

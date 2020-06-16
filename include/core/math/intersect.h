@@ -23,52 +23,57 @@ template <typename PointTy> struct LineIntersectResidual : IResidual {
   /**
    *  Constructor
    *
-   *  \param [in] segs the observation data, containing (numSegs * 2) points.
+   *  \param [in] segs the packed observation data, containing (numSegs * 2) points.
    *  \param [in] numSegs number of observations
    */
   LineIntersectResidual(const PointTy* segms, const int numSegms) : segs(segms), numSegs(numSegms) {}
 
   /**
-   *  \param [in] pb the two ratios t1 & t2 used to determine the two postions.
+   *  \param [in] pb the ratios {t1, t2, ...} used to determine the postions.
    *  \param [out] residual discrepency between the two positions on the two line segments.
    */
-  bool operator()(const double* const pb, double* residual) const {
-    static_assert(sizeof(double) >= sizeof(PointTy::value_type), "Parameter precision must be not lowert than observation's");
+  template <typename Ty = double> bool operator()(const Ty* const pb, Ty* residual) const {
+    static_assert(sizeof(Ty) >= sizeof(PointTy::value_type), "Parameter precision must be not lowert than observation's");
     
     if (2 == numSegs) {
-      return XTwoLines(pb, residual);
+      return TwoLines(pb, residual);
     }
     else if (3 == numSegs) {
-      return XThreeLines(pb, residual);
+      return ThreeLines(pb, residual);
     }
     else {
-      return XMultipleLines(pb, residual);
+      return MultipleLines(pb, residual);
     }
+  }
+
+  //
+  template <typename Ty = double> bool operator()(const Ty* const* pb, Ty* residual) const {
+    return false;
   }
 
 private:
   const PointTy* segs;  // interleaved by segments each having two end points
   const int numSegs;
 
-  bool XTwoLines(const double* const pb, double* residual) const {
-    assert(2 == nunSegs);
+  template <typename Ty> bool TwoLines(const Ty* const pb, Ty* residual) const {
+    assert(2 == numSegs);
     const auto v1 = segs[1] - segs[0];
     const auto v2 = segs[3] - segs[2];
-    const auto p1 = segs[0] + v1 * pb[0];
-    const auto p2 = segs[2] + v2 * pb[1];
+    const auto p1 = segs[0] + v1 * pb[0]; // t1
+    const auto p2 = segs[2] + v2 * pb[1]; // t2
 
     residual[0] = cv::norm(p2 - p1);
     return true;
   }
 
-  bool XThreeLines(const double* const pb, double* residual) const {
-    assert(3 == nunSegs);
+  template <typename Ty> bool ThreeLines(const Ty* const pb, Ty* residual) const {
+    assert(3 == numSegs);
     const auto v1 = segs[1] - segs[0];
     const auto v2 = segs[3] - segs[2];
     const auto v3 = segs[5] - segs[4];
-    const auto p1 = segs[0] + v1 * pb[0];
-    const auto p2 = segs[2] + v2 * pb[1];
-    const auto p3 = segs[4] + v3 * pb[2];
+    const auto p1 = segs[0] + v1 * pb[0]; // t1
+    const auto p2 = segs[2] + v2 * pb[1]; // t2
+    const auto p3 = segs[4] + v3 * pb[2]; // t3
 
     // point to line distance
     const auto d1Sq = 0;  //dist(p1, segs)
@@ -76,20 +81,21 @@ private:
     const auto d3Sq = 0;  //dist(p3, segs + 4)
 
     residual[0] = d1Sq + d2Sq + d3Sq;
-    return false;
+    return true;
   }
 
-  bool XMultipleLines(const double* const pb, double* residual) const {
-    residual[0] = 0.0;
+  template <typename Ty> bool MultipleLines(const Ty* const pb, Ty* residual) const {
+    assert(2 <= numSegs);
+    residual[0] = Ty(0.0);
 
-    assert(2 <= nunSegs);
     for (int i = 0; i < numSegs; ++i) {
       const auto v = segs[i * 2 + 1] - segs[i * 2];
-      const auto p = segs[i * 2] + v * pb[i];
+      const auto p = segs[i * 2] + v * pb[i]; // t
       const auto dSq = 0; //dist(p, segs + i*2)
+
       residual[0] += dSq;
     }
-    return false;
+    return true;
   }
 };
 
@@ -120,7 +126,8 @@ template <typename SphereType> struct SphereIntersectResidual {
  *  \todo do not instantiate LossPolicy before resolving the construtor issue
  *  \todo estimate initial parameter values
  *  \todo weighting of observations
- *  \todo make CostFunction a template parameter
+ *  \todo make CostFunction a template parameter: AutoDiff, NumericDiff
+ *  \todo variadic Ns: specify size of parameter blocks at run-time
  */
 template <typename GeomTy,
   template <typename GTy = GeomTy> class ResidualPolicy, class LossPolicy = void>
@@ -128,19 +135,28 @@ bool IntersectGeometries(const GeomTy* geoms, const int numGeoms, std::vector<do
     const Solver::Options& options, Solver::Summary& summary, LossPolicy* lossFunc = nullptr) {
   static_assert(std::is_base_of_v<IResidual, ResidualPolicy<GeomTy>>, "IResidual");
   static_assert(std::is_base_of_v<LossFunction, LossPolicy> || std::is_void_v<LossPolicy>, "LossFunction");
-  assert(geoms && 0 < numGeoms);
+  assert(geoms && 2 <= numGeoms);
 
   if (pb.empty()) {
-    pb.resize(numGeoms, 0.5);
+    pb.resize(numGeoms, 0.5); // initial middle point
   }
 
   LossFunction* lossF = (lossFunc) ? static_cast<LossFunction*>(lossFunc) : nullptr;
 
   Problem problem;
-  auto costFunc = new AutoDiffCostFunction<ResidualPolicy<GeomTy>, 1, 2>(
+  // AutoDiffCostFunction
+  //auto costFunc = new AutoDiffCostFunction<ResidualPolicy<GeomTy>, 1, 2>(
+  //  new ResidualPolicy<GeomTy>(geoms, numGeoms));
+  
+  // NumericDiffCostFunction
+  auto costFunc = new NumericDiffCostFunction<ResidualPolicy<GeomTy>, ceres::CENTRAL, 1, 2>(
     new ResidualPolicy<GeomTy>(geoms, numGeoms));
 
-  problem.AddResidualBlock(costFunc, lossF, pb.data()); // numGeoms
+  // DynamicAutoDiffCostFunction
+
+  // DynamicNumericDiffCostFunction
+
+  problem.AddResidualBlock(costFunc, lossF, pb.data()); 
 
   ceres::Solve(options, &problem, &summary);
   return summary.IsSolutionUsable();
@@ -171,7 +187,7 @@ protected:
 class EXCORE_EXPORTS XTwoLines final : public Intersect {
 public:
   static constexpr size_t kSolverCapability = st::kBITCERES & st::kBITEIGEN & st::kBITEXAI;
-  static constexpr int kNumRays = 2;
+  static constexpr int kNumLines = 2;
 
   ~XTwoLines() = default;
 
@@ -220,7 +236,7 @@ public:
 class EXCORE_EXPORTS XThreeLines final : public Intersect {
 public:
   static constexpr size_t kSolverCapability = st::kBITCERES & st::kBITEIGEN;
-  static constexpr int kNumRays = 3;
+  static constexpr int kNumLines = 3;
 
   ~XThreeLines() = default;
 
@@ -268,7 +284,7 @@ public:
 class EXCORE_EXPORTS XMultipleLines final : public Intersect{
 public:
   static constexpr size_t kSolverCapability = st::kBITCERES & st::kBITEIGEN;
-  static constexpr int kNumRays = -1;   // dynamic
+  static constexpr int kNumLines = -1;   // dynamic
 
   ~XMultipleLines() = default;
 
