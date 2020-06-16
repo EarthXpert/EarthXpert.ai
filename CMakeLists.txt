@@ -22,6 +22,8 @@ set(EARTHXPERT_WORKSPACE_DIR "$<SHELL_PATH:${CMAKE_SOURCE_DIR}/../>")
 message(STATUS "EARTHXPERT_WORKSPACE_DIR: ${EARTHXPERT_WORKSPACE_DIR}")
 
 set(EX_THIRD_PARTY "$ENV{EX_Third_Party}")
+set(CUDA_ROOT "$ENV{CUDA_PATH}")
+set(OpenCL_ROOT "$ENV{CUDA_PATH}")
 
 #set(GFLAGS_USE_TARGET_NAMESPACE TRUE)
 
@@ -62,6 +64,19 @@ if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
                      optimized "${CGAL_LIBRARIES_DIR}/CGAL_Qt5-vc140-mt-5.0-I-900.lib"
                      optimized "${CGAL_LIBRARIES_DIR}/CGAL-vc140-mt-5.0-I-900.lib")
 
+  set(CUDA_INCLUDE_DIR "${CUDA_ROOT}/include")
+  set(CUDA_BIN_DIR "${CUDA_ROOT}/bin")
+  set(CUDA_LIBRARIES_DIR "${CUDA_ROOT}/lib/x64")
+  set(CUDA_LIBRARIES "${CUDA_LIBRARIES_DIR}/cublas.lib"
+                     "${CUDA_LIBRARIES_DIR}/cuda.lib"
+                     "${CUDA_LIBRARIES_DIR}/cudart.lib"
+                     "${CUDA_LIBRARIES_DIR}/cufft.lib"
+                     "${CUDA_LIBRARIES_DIR}/cufftw.lib"
+                     "${CUDA_LIBRARIES_DIR}/cusolver.lib"
+                     "${CUDA_LIBRARIES_DIR}/cusparse.lib"
+                     "${CUDA_LIBRARIES_DIR}/nvml.lib"
+                     "${CUDA_LIBRARIES_DIR}/nrtc.lib")
+
   set(Eigen3_DIR "${EX_THIRD_PARTY}/eigen_3.3.90/share/eigen3/cmake")
 
   set(GDAL_ROOT "${EX_THIRD_PARTY}/gdal_2.4.1")
@@ -94,15 +109,20 @@ if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
   set(LASLIB_INCLUDE_DIR "${LASLIB_ROOT}/include/LASlib")
   set(LASLIB_LIBRARY "${LASLIB_ROOT}/lib/${CDEGREL}/LASlib/LASlib.lib")
 
-  set(OPENCV_ROOT "${EX_THIRD_PARTY}/opencv_4.1.0")
-  set(OpenCV_DIR "${OPENCV_ROOT}")
-  set(OPENCV_BIN_DIR "${OPENCV_ROOT}/x64/vc15/bin")
-  set(OPENCV_INCLUDE_DIR "${OPENCV_ROOT}/include")
-  set(OPENCV_LIBRARY_DIR "${OPENCV_ROOT}/x64/vc15/lib")
-  set(OPENCV_LIBS debug "${OPENCV_LIBRARY_DIR}/opencv_img_hash410d.lib"
-                  debug "${OPENCV_LIBRARY_DIR}/opencv_world410d.lib"
-                  optimized "${OPENCV_LIBRARY_DIR}/opencv_img_hash410.lib"
-                  optimized "${OPENCV_LIBRARY_DIR}/opencv_world410.lib")
+  set(OpenCL_INCLUDE_DIR "${OpenCL_ROOT}/include")
+  set(OpenCL_BIN_DIR "${OpenCL_ROOT}/bin")
+  set(OpenCL_LIBRARIES_DIR "${OpenCL_ROOT}/lib/x64")
+  set(OpenCL_LIBRARIES "${OpenCL_LIBRARIES_DIR}/OpenCL.lib")
+
+  set(OpenCV_ROOT "${EX_THIRD_PARTY}/opencv_4.1.0")
+  set(OpenCV_DIR "${OpenCV_ROOT}")
+  set(OpenCV_BIN_DIR "${OpenCV_ROOT}/x64/vc15/bin")
+  set(OpenCV_INCLUDE_DIR "${OpenCV_ROOT}/include")
+  set(OpenCV_LIBRARY_DIR "${OpenCV_ROOT}/x64/vc15/lib")
+  set(OpenCV_LIBS debug "${OpenCV_LIBRARY_DIR}/opencv_img_hash410d.lib"
+                  debug "${OpenCV_LIBRARY_DIR}/opencv_world410d.lib"
+                  optimized "${OpenCV_LIBRARY_DIR}/opencv_img_hash410.lib"
+                  optimized "${OpenCV_LIBRARY_DIR}/opencv_world410.lib")
 
   set(OPENNI_ROOT "${EX_THIRD_PARTY}/openni_2.2.0")
   set(OPENNI_BIN_DIR "${OPENNI_ROOT}/Redist")
@@ -134,13 +154,13 @@ elseif(CMAKE_SYSTEM_NAME STREQUAL "Linux")
   set(LASLIB_INCLUDE_DIR "${LASLIB_ROOT}/include/LASlib")
   set(LASLIB_LIBRARY "${LASLIB_ROOT}/lib/LASlib/libLASlib.a")
 
-  set(OPENCV_ROOT "${EX_THIRD_PARTY}/opencv_4.1.0")
-  set(OPENCV_DIR "${OPENCV_ROOT}/lib/cmake/opencv4")
-  set(OPENCV_INCLUDE_DIR "${OPENCV_ROOT}/include/opencv4")
-  set(OPENCV_LIBRARY_DIR "${OPENCV_ROOT}/lib")
-  set(OPENCV_LIBS "${OPENCV_LIBRARY_DIR}/libopencv_img_hash.so"
-                  "${OPENCV_LIBRARY_DIR}/libopencv_sfm.so"
-                  "${OPENCV_LIBRARY_DIR}/libopencv_world.so")
+  set(OpenCV_ROOT "${EX_THIRD_PARTY}/opencv_4.1.0")
+  set(OpenCV_DIR "${OpenCV_ROOT}/lib/cmake/opencv4")
+  set(OpenCV_INCLUDE_DIR "${OpenCV_ROOT}/include/opencv4")
+  set(OpenCV_LIBRARY_DIR "${OpenCV_ROOT}/lib")
+  set(OpenCV_LIBS "${OpenCV_LIBRARY_DIR}/libopencv_img_hash.so"
+                  "${OpenCV_LIBRARY_DIR}/libopencv_sfm.so"
+                  "${OpenCV_LIBRARY_DIR}/libopencv_world.so")
                   
 else()
   message(FATAL_ERROR "${CMAKE_SYSTEM_NAME}: not supported.")
@@ -166,6 +186,7 @@ find_package(Boost 1.71.0 COMPONENTS filesystem iostreams program_options python
 
 find_package(Ceres REQUIRED)
 find_package(CGAL REQUIRED)
+#find_package(CUDA REQUIRED)
 find_package(Eigen3 REQUIRED)
 find_package(GDAL REQUIRED)
 #find_package(GETTEXT REQUIRED)
@@ -173,6 +194,7 @@ find_package(GDAL REQUIRED)
 find_package(glog REQUIRED)
 find_package(GTest REQUIRED)
 find_package(OpenCV REQUIRED)
+#find_package(OpenCL REQUIRED)
 #find_package(PDAL REQUIRED)
 find_package(pybind11 REQUIRED)
 find_package(Qt5 5.11.2 COMPONENTS Core Gui Widgets REQUIRED)
@@ -197,6 +219,7 @@ message(STATUS "Boost_INCLUDE_DIR: ${Boost_INCLUDE_DIR}")
 message(STATUS "CEREAL_INCLUDE_DIR: ${CEREAL_INCLUDE_DIR}")
 message(STATUS "CERES_INCLUDE_DIRS: ${CERES_INCLUDE_DIRS}")
 message(STATUS "CGAL_INCLUDE_DIRS: ${CGAL_INCLUDE_DIRS}")
+message(STATUS "CUDA_INCLUDE_DIR: ${CUDA_INCLUDE_DIR}")
 message(STATUS "EIGEN3_INCLUDE_DIR: ${EIGEN3_INCLUDE_DIR}")
 message(STATUS "GDAL_INCLUDE_DIR: ${GDAL_INCLUDE_DIR}")
 message(STATUS "GETTEXT_INCLUDE_DIR: ${GDAL_INCLUDE_DIR}")
@@ -204,7 +227,8 @@ message(STATUS "GETTEXT_INCLUDE_DIR: ${GDAL_INCLUDE_DIR}")
 message(STATUS "GLOG_INCLUDE_DIR: ${GLOG_INCLUDE_DIR}")
 message(STATUS "GTEST_INCLUDE_DIRS: ${GTEST_INCLUDE_DIRS}")
 message(STATUS "LASLIB_INCLUDE_DIR: ${LASLIB_INCLUDE_DIR}")
-message(STATUS "OPENCV_INCLUDE_DIR: ${OPENCV_INCLUDE_DIR}")
+message(STATUS "OpenCL_INCLUDE_DIR: ${OpenCL_INCLUDE_DIR}")
+message(STATUS "OpenCV_INCLUDE_DIR: ${OpenCV_INCLUDE_DIR}")
 message(STATUS "PDAL_INCLUDE_DIRS: ${PDAL_INCLUDE_DIRS}")
 message(STATUS "SLTBENCH_INCLUDE_DIRS: ${SLTBENCH_INCLUDE_DIRS}")
 
@@ -212,6 +236,7 @@ include_directories(${Boost_INCLUDE_DIR})
 include_directories(${CEREAL_INCLUDE_DIR})
 include_directories(${CERES_INCLUDE_DIRS})
 include_directories(${CGAL_INCLUDE_DIRS})
+include_directories(${CUDA_INCLUDE_DIR})
 include_directories(${EIGEN3_INCLUDE_DIR})
 include_directories(${GDAL_INCLUDE_DIR})
 include_directories(${GETTEXT_INCLUDE_DIR})
@@ -219,7 +244,8 @@ include_directories(${GETTEXT_INCLUDE_DIR})
 include_directories(${GLOG_INCLUDE_DIR})
 include_directories(${GTEST_INCLUDE_DIRS})
 include_directories(${LASLIB_INCLUDE_DIR})
-include_directories(${OPENCV_INCLUDE_DIR})
+include_directories(${OpenCL_INCLUDE_DIR})
+include_directories(${OpenCV_INCLUDE_DIR})
 include_directories(${PDAL_INCLUDE_DIRS})
 include_directories(${SLTBENCH_INCLUDE_DIRS})
 
@@ -244,7 +270,7 @@ if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
   #install(DIRECTORY ${HDF5_BIN_DIR}/
   #        DESTINATION bin 
   #        FILES_MATCHING PATTERN "*.dll")
-  #install(DIRECTORY ${OPENCV_BIN_DIR}/
+  #install(DIRECTORY ${OpenCV_BIN_DIR}/
   #            DESTINATION bin 
   #        FILES_MATCHING PATTERN "*.dll" PATTERN "*.pdb")
   #install(DIRECTORY ${QT_BIN_DIR}/
@@ -252,20 +278,20 @@ if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
   #        FILES_MATCHING PATTERN "*.dll")
 
   set(GDAL_DATA "${GDAL_ROOT}/data/")
-  set(OPENCV_DATA "${OPENCV_ROOT}/etc/")
+  set(OpenCV_DATA "${OpenCV_ROOT}/etc/")
 else()
   # TODO
   set(GDAL_DATA "${GDAL_ROOT}/share/gdal/")
-  set(OPENCV_DATA "${OPENCV_ROOT}/share/opencv4/")
-  set(OPENCV_LICENSES "${OPENCV_ROOT}/share/licenses/opencv4/")
+  set(OpenCV_DATA "${OpenCV_ROOT}/share/opencv4/")
+  set(OpenCV_LICENSES "${OpenCV_ROOT}/share/licenses/opencv4/")
 endif()
 
 install(DIRECTORY include DESTINATION sdk)
 install(DIRECTORY ${GDAL_DATA} DESTINATION etc/gdal)
-install(DIRECTORY ${OPENCV_DATA} DESTINATION etc/opencv)
+install(DIRECTORY ${OpenCV_DATA} DESTINATION etc/opencv)
 
-if(OPENCV_LICENSES)
-  install(DIRECTORY ${OPENCV_LICENSES} DESTINATION etc/opencv/licenses)
+if(OpenCV_LICENSES)
+  install(DIRECTORY ${OpenCV_LICENSES} DESTINATION etc/opencv/licenses)
 endif()
 
 option(EARTHXPERT_INSTALL_PACKAGES_3RDPARTY "install 3rdparty packages" OFF)

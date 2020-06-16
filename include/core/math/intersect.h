@@ -6,13 +6,11 @@
 
 #include "core/math/iintersect.h"
 #include "core/coretypes.h"
-#include "3rdparty/ceres/exceres.h"
 #include "3rdparty/eigen/exeigen.h"
-
-using ceres::Solver;
 
 namespace earthxpert {
 using thirdparty::IResidual;
+using st = SolverTraits;
 
 namespace math {
 /**
@@ -158,14 +156,11 @@ public:
   Intersect();
   virtual ~Intersect() = default;
 
-  void SetSolverType(const SolverType type) { mSolverType = type; }
   void SetOptions(const Solver::Options& options) { mOptions = options; }
 
-  SolverType GetSolverType() const noexcept { return mSolverType; }
   auto& GetOptions() const noexcept { return mOptions; }
 
 protected:
-  SolverType mSolverType{ eST_EIGEN };
   Solver::Options mOptions;   // the options to control ceres solver
 };
 
@@ -175,22 +170,10 @@ protected:
 //template <int solverType = kST_EIGEN>
 class EXCORE_EXPORTS XTwoLines final : public Intersect {
 public:
+  static constexpr size_t kSolverCapability = st::kBITCERES & st::kBITEIGEN & st::kBITEXAI;
   static constexpr int kNumRays = 2;
 
   ~XTwoLines() = default;
-
-  /**
-   *  Intersect two 3D line segements.
-   *
-   *  \param [in] segs the list of four end points interlaeved by line segments, each is
-   *  defined by two points.
-   *  \param [out] p the intersection point.
-   *  \param [in] numSegs number of line segments given by segs, must be 2
-   *  \return Return true if successful, false if parallel.
-   */
-  inline bool Intersect(const Point3d* segs, Point3d& p, const int numSegs = 2) const override {
-    return Intersect(segs, segs + 2, p);
-  }
 
   /**
    *  Intersect two 3D line segements (ceres).
@@ -201,7 +184,22 @@ public:
    *  \param [out] summary the report of ceres solver.
    *  \return Return true if successful, false if parallel.
    */
-  bool Intersect(const Point3d* segs, Point3d& p, Solver::Summary& summary) const;
+  bool Intersect(const Point3d* segs, Point3d& p, 
+    Solver::Summary& summary, int numSegs = 2) const override;
+
+  /**
+   *  Intersect two 3D line segements (Eigen).
+   *
+   *  \param [in] segs the list of four end points interlaeved by line segments, each is
+   *  defined by two points.
+   *  \param [out] p the intersection point.
+   *  \param [in] numSegs number of line segments given by segs, must be 2
+   *  \return Return true if successful, false if parallel.
+   */
+  inline bool Intersect(const Point3d* segs, Point3d& p, 
+    const int numSegs = 2) const override {
+    return Intersect(segs, segs + 2, p);
+  }
 
   /**
    *  Intersect two 3D line segements (Eigen).
@@ -221,12 +219,26 @@ public:
  */
 class EXCORE_EXPORTS XThreeLines final : public Intersect {
 public:
+  static constexpr size_t kSolverCapability = st::kBITCERES & st::kBITEIGEN;
   static constexpr int kNumRays = 3;
 
   ~XThreeLines() = default;
 
   /**
-   *  Intersect three 3D line segements.
+   *  Intersect three 3D line segements (ceres).
+   *
+   *  \param [in] segs the list of six end points interlaeved by line segments, 
+   *  each is defined by two points.
+   *  \param [out] p the intersection point.
+   *  \param [out] summary the report of ceres solver.
+   *  \param [in] numSegs number of line segments given by segs, must be 3
+   *  \return Return true if successful, false if parallel.
+   */
+  bool Intersect(const Point3d* segs, Point3d& p, 
+    Solver::Summary& summary, int numSegs = 3) const override;
+
+  /**
+   *  Intersect three 3D line segements (Eigen).
    *
    *  \param [in] segs the list of six end points interlaeved by line segments, each is
    *  defined by two points.
@@ -237,17 +249,6 @@ public:
   inline bool Intersect(const Point3d * segs, Point3d & p, const int numSegs = 3) const override {
     return Intersect(segs, segs + 2, segs + 4, p);
   }
-
-  /**
-   *  Intersect three 3D line segements (ceres).
-   *
-   *  \param [in] segs the list of six end points interlaeved by line segments, 
-   *  each is defined by two points.
-   *  \param [out] p the intersection point.
-   *  \param [out] summary the report of ceres solver.
-   *  \return Return true if successful, false if parallel.
-   */
-  bool Intersect(const Point3d* segs, Point3d& p, Solver::Summary& summary) const;
 
   /**
    *  Intersect three 3D line segements (Eigen).
@@ -266,6 +267,7 @@ public:
  */
 class EXCORE_EXPORTS XMultipleLines final : public Intersect{
 public:
+  static constexpr size_t kSolverCapability = st::kBITCERES & st::kBITEIGEN;
   static constexpr int kNumRays = -1;   // dynamic
 
   ~XMultipleLines() = default;
@@ -278,9 +280,11 @@ public:
    *  \param [out] p the intersection point.
    *  \param [in] numSegs number of line segments given by segs, must be 2+
    *  \param [out] summary the report of ceres solver.
+   *  \param [in] numSegs number of line segments given by segs, must be 2+
    *  \return Return true if successful, false if parallel.
    */
-  bool Intersect(const Point3d* segs, Point3d& p, const int numSegs, Solver::Summary& summary) const {
+  bool Intersect(const Point3d* segs, Point3d& p, 
+    Solver::Summary& summary, const int numSegs) const override {
     assert(2 <= numSegs);
     return true;
   }

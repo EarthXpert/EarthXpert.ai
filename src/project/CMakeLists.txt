@@ -8,6 +8,6 @@ earthxpert_add_library(exproject "api"
        "rational/rationalprj.cpp"
   ITEMS ex3rdparty core sensormodel
         Boost::boost Boost::filesystem Boost::iostreams
-        ${CERES_LIBRARY} ${CGAL_LIBRARIES} ${GDAL_LIBRARY} ${GETTEXT_LIBRARY} ${OPENCV_LIBS})
+        ${CERES_LIBRARY} ${CGAL_LIBRARIES} ${GDAL_LIBRARY} ${GETTEXT_LIBRARY} ${OpenCV_LIBS})
 
 earthxpert_install_target(exproject)

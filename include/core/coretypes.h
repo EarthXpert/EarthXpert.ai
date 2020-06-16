@@ -4,12 +4,18 @@
  */
 #pragma once
 
+#include "core/math/math.h"
+
 namespace earthxpert {
-// Solver types
-enum SolverType {
-  eST_CERES = 0,
-  eST_EIGEN = 1,
-  eST_EXAI = 2
+// Solver traits
+struct SolverTraits {
+  static constexpr size_t kPOSCERES = 0;
+  static constexpr size_t kPOSEIGEN = 1;
+  static constexpr size_t kPOSEXAI = 2;
+
+  static constexpr size_t kBITCERES = exp2(kPOSCERES);
+  static constexpr size_t kBITEIGEN = exp2(kPOSEIGEN);
+  static constexpr size_t kBITEXAI = exp2(kPOSEXAI);
 };
 
 /**

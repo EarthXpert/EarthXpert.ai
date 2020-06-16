@@ -35,7 +35,8 @@ Intersect::Intersect() {
  *  \param [out] summary the report of ceres solver.
  *  \return Return true if successful, false if parallel.
  */
-bool XTwoLines::Intersect(const Point3d* segs, Point3d& p, Solver::Summary& summary) const {
+bool XTwoLines::Intersect(const Point3d* segs, Point3d& p, 
+  Solver::Summary& summary, const int) const {
   //std::vector<double> pb(2, 0.5);
  // const bool ret = IntersectGeometries<Point3d, LineIntersectResidual>(segs, 
  //   2, pb, mOptions, summary);
@@ -71,8 +72,6 @@ bool XTwoLines::Intersect(const Point3d* s1, const Point3d* s2, Point3d& p) cons
   return true;
 }
 
-//template class earthxpert::XTwoLines<kST_EIGEN>;
-
 /**
  *  Intersect three 3D line segements.
  *
@@ -83,7 +82,7 @@ bool XTwoLines::Intersect(const Point3d* s1, const Point3d* s2, Point3d& p) cons
  *  \return Return true if successful, false if parallel.
  */
 bool XThreeLines::Intersect(const Point3d* segs, 
-  Point3d& p, Solver::Summary& summary) const {
+  Point3d& p, Solver::Summary& summary, const int) const {
   return false;
 }
 

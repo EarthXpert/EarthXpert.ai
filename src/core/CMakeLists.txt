@@ -16,7 +16,11 @@ earthxpert_add_library(core "api"
        "math/graphics/graphfit.cpp"
        "math/graphics/intersect.cpp"
        "math/graphics/rotation.cpp"
+       "parallel/excuda.cpp"
+       "parallel/exintelone.cpp"
        "parallel/exomp.cpp"
+       "parallel/exopencl.cpp"
+       "parallel/exsimd.cpp"
        "spatialref/earthellipsoid.cpp"
        "spatialref/coordinatetransform.cpp"
        "spatialref/geocoding.cpp"
@@ -28,7 +32,7 @@ earthxpert_add_library(core "api"
        "utils/resample/rasterresample.cpp"
   ITEMS ex3rdparty
         Boost::boost Boost::filesystem Boost::iostreams
-        ${CERES_LIBRARY} ${CGAL_LIBRARIES} ${GDAL_LIBRARY} ${GETTEXT_LIBRARY} glog::glog 
-        ${LASLIB_LIBRARY} ${OPENCV_LIBS})
+        ${CERES_LIBRARY} ${CGAL_LIBRARIES} ${CUDA_LIBRARIES} ${GDAL_LIBRARY} ${GETTEXT_LIBRARY} glog::glog 
+        ${LASLIB_LIBRARY} ${OpenCL_LIBS} ${OpenCV_LIBS})
 
 earthxpert_install_target(core)

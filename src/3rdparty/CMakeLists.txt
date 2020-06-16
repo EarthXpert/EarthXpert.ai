@@ -6,7 +6,7 @@ message(STATUS "GDAL_LIBRARY: ${GDAL_LIBRARY}")
 message(STATUS "GETTEXT_LIBRARY: ${GETTEXT_LIBRARY}")
 message(STATUS "GTEST_BOTH_LIBRARIES: ${GTEST_BOTH_LIBRARIES}")
 message(STATUS "LASLIB_LIBRARY: ${LASLIB_LIBRARY}")
-message(STATUS "OPENCV_LIBS: ${OPENCV_LIBS}")
+message(STATUS "OpenCV_LIBS: ${OpenCV_LIBS}")
 message(STATUS "SLTBENCH_LIBS: ${SLTBENCH_LIBS}")
 
 add_definitions(-DEX3RDPARTY_API)
@@ -23,8 +23,9 @@ earthxpert_add_library(ex3rdparty "api"
        "pdal/expdal.cpp"
        "qt/exqt.cpp"
        "sltbench/exsltbench.cpp"
+       "thrust/exthrust.cpp"
   ITEMS Boost::boost Boost::filesystem ${CERES_LIBRARY} ${CGAL_LIBRARIES} ${GDAL_LIBRARY} 
-        ${GETTEXT_LIBRARY} glog::glog ${GTEST_BOTH_LIBRARIES} ${LASLIB_LIBRARY} ${OPENCV_LIBS} 
+        ${GETTEXT_LIBRARY} glog::glog ${GTEST_BOTH_LIBRARIES} ${LASLIB_LIBRARY} ${OpenCV_LIBS} 
         ${PDAL_LIBRARIES} Qt5::Widgets ${SLTBENCH_LIBS})
 
 earthxpert_install_target(ex3rdparty)
