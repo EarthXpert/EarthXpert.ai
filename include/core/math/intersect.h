@@ -65,11 +65,32 @@ private:
 
   bool XThreeLines(const double* const pb, double* residual) const {
     assert(3 == nunSegs);
+    const auto v1 = segs[1] - segs[0];
+    const auto v2 = segs[3] - segs[2];
+    const auto v3 = segs[5] - segs[4];
+    const auto p1 = segs[0] + v1 * pb[0];
+    const auto p2 = segs[2] + v2 * pb[1];
+    const auto p3 = segs[4] + v3 * pb[2];
+
+    // point to line distance
+    const auto d1Sq = 0;  //dist(p1, segs)
+    const auto d2Sq = 0;  //dist(p2, segs + 2)
+    const auto d3Sq = 0;  //dist(p3, segs + 4)
+
+    residual[0] = d1Sq + d2Sq + d3Sq;
     return false;
   }
 
   bool XMultipleLines(const double* const pb, double* residual) const {
+    residual[0] = 0.0;
+
     assert(2 <= nunSegs);
+    for (int i = 0; i < numSegs; ++i) {
+      const auto v = segs[i * 2 + 1] - segs[i * 2];
+      const auto p = segs[i * 2] + v * pb[i];
+      const auto dSq = 0; //dist(p, segs + i*2)
+      residual[0] += dSq;
+    }
     return false;
   }
 };
