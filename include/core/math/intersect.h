@@ -158,7 +158,7 @@ public:
 
   void SetOptions(const Solver::Options& options) { mOptions = options; }
 
-  auto& GetOptions() const noexcept { return mOptions; }
+  auto& GetOptions() noexcept { return mOptions; }
 
 protected:
   Solver::Options mOptions;   // the options to control ceres solver
