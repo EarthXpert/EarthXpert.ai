@@ -31,15 +31,16 @@ protected:
  // 3d line equation: p(x, y, z) = p0(x0, y0, z0) + t * v(a, b, c), where v = p1 - p0
 template <typename PointTy> struct AutoLineIntersectResidual final : IntersectResidual<PointTy> {
   /**
-   *  Constructor
-   *
    *  \param [in] segs the packed observation data, containing (numSegs * 2) points.
    *  \param [in] numSegs number of observations
    */
-  AutoLineIntersectResidual(const PointTy* segms, const int numSegms) : IntersectResidual<PointTy>(segms, numSegms) {}
+  AutoLineIntersectResidual(const PointTy* segms, const int numSegms) 
+    : IntersectResidual<PointTy>(segms, numSegms) {}
   ~AutoLineIntersectResidual() = default;
 
   /**
+   *  \brief Fixed functor
+   *
    *  \param [in] pb the ratios {t1, t2, ...} used to determine the postions.
    *  \param [out] residual discrepency between the two positions on the two line segments.
    */
@@ -204,15 +205,16 @@ private:
  // 3d line equation: p(x, y, z) = p0(x0, y0, z0) + t * v(a, b, c), where v = p1 - p0
 template <typename PointTy> struct NumericLineIntersectResidual final : IntersectResidual<PointTy> {
   /**
-   *  Constructor
-   *
    *  \param [in] segs the packed observation data, containing (numSegs * 2) points.
    *  \param [in] numSegs number of observations
    */
-  NumericLineIntersectResidual(const PointTy* segms, const int numSegms) : IntersectResidual<PointTy>(segms, numSegms) {}
+  NumericLineIntersectResidual(const PointTy* segms, const int numSegms) 
+    : IntersectResidual<PointTy>(segms, numSegms) {}
   ~NumericLineIntersectResidual() = default;
 
   /**
+   *  \brief Fixed functor
+   *
    *  \param [in] pb the ratios {t1, t2, ...} used to determine the postions.
    *  \param [out] residual discrepency between the two positions on the two line segments.
    */
@@ -397,17 +399,23 @@ bool IntersectGeometries(const GeomTy* geoms, const int numGeoms, std::vector<do
   LossFunction* lossF = (lossFunc) ? static_cast<LossFunction*>(lossFunc) : nullptr;
   Problem problem;
 
-  // static parameter blocks
-  //auto costFunc = new AutoDiffCostFunction<ResidualPolicy<GeomTy>, 3, 2>(
-  //  new ResidualPolicy<GeomTy>(geoms, numGeoms));
-  auto costFunc = new NumericDiffCostFunction<ResidualPolicy<GeomTy>, ceres::CENTRAL, 3, 2>(
-    new ResidualPolicy<GeomTy>(geoms, numGeoms));
-
   // Dynamic parameter blocks
+  //auto costFunc = new DynamicAutoDiffCostFunction<ResidualPolicy<GeomTy>>(
+  //  new ResidualPolicy<GeomTy>(geoms, numGeoms));
+  //costFunc->SetNumResiduals(3);
+  //costFunc->AddParameterBlock(numGeoms);
+
   //auto costFunc = new DynamicNumericDiffCostFunction<ResidualPolicy<GeomTy>, ceres::CENTRAL>(
   //  new ResidualPolicy<GeomTy>(geoms, numGeoms));
-  //costFunc->AddParameterBlock(numGeoms);
   //costFunc->SetNumResiduals(3);
+  //costFunc->AddParameterBlock(numGeoms);
+
+  // Sized parameter blocks
+  //auto costFunc = new AutoDiffCostFunction<ResidualPolicy<GeomTy>, 3, 2>(
+  //  new ResidualPolicy<GeomTy>(geoms, numGeoms));
+  
+  auto costFunc = new NumericDiffCostFunction<ResidualPolicy<GeomTy>, ceres::CENTRAL, 3, 2>(
+    new ResidualPolicy<GeomTy>(geoms, numGeoms));
 
   problem.AddResidualBlock(costFunc, lossF, pb.data()); 
 
