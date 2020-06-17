@@ -58,7 +58,7 @@ bool GraphFit::FitStraightLine(const std::vector<Point2d>& points,
   if (2 > points.size())
     throw std::invalid_argument("FitStraightLine: must have 2+ points");
 
-  return FitPoints<Point2d, LinearResidual>(points, pb, mOptions, summary);
+  return FitPoints<Point2d, LinearFitResidual>(points, pb, mOptions, summary);
 }
 
 bool GraphFit::FitStraightLineRobust(const std::vector<Point2d>& points, 
@@ -67,7 +67,7 @@ bool GraphFit::FitStraightLineRobust(const std::vector<Point2d>& points,
     throw std::invalid_argument("FitStraightLine: must have 2+ points");
 
   auto* lossFunc = new CauchyLoss(0.5);
-  return FitPoints<Point2d, LinearResidual, CauchyLoss>(points,
+  return FitPoints<Point2d, LinearFitResidual, CauchyLoss>(points,
     pb, mOptions, summary, lossFunc);
 }
 
@@ -122,7 +122,7 @@ bool GraphFit::FitExponentialCurve(const std::vector<Point2d>& points,
   if (2 > points.size())
     throw std::invalid_argument("FitExponentialCurve: must have 2+ points");
 
-  return FitPoints<Point2d, ExponentialResidual>(points,
+  return FitPoints<Point2d, ExponentialFitResidual>(points,
     pb, mOptions, summary);
 }
 
@@ -149,5 +149,5 @@ bool GraphFit::FitPlane(const std::vector<Point3d>& points,
   if (3 > points.size())
     throw std::invalid_argument("FitPlane: must have 3+ points");
 
-  return FitPoints<Point3d, LinearResidual>(points, pb, mOptions, summary);
+  return FitPoints<Point3d, LinearFitResidual>(points, pb, mOptions, summary);
 }

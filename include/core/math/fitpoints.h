@@ -12,9 +12,13 @@ namespace earthxpert {
 using thirdparty::IResidual;
 
 namespace math {
-// residual base
-struct Residual : IResidual {
-  ~Residual() = default;
+// residual base for fitting points
+template <typename PointTy> struct FitResidual : IResidual {
+  FitResidual(const PointTy& point) : pt(point) {}
+  virtual ~FitResidual() = default;
+
+protected:
+  const PointTy pt; // observation
 };
 
 /**
@@ -23,14 +27,14 @@ struct Residual : IResidual {
  *  \param PointTy type of point: Point2f, Point2d, Point3f, Point3d, Vector2f, Vector3d, etc
  */
  // 2d line equation: y - m * x - c; 3d plane equation: z - m * x - n * y -c
-template <typename PointTy> struct LinearResidual final : IResidual {
+template <typename PointTy> struct LinearFitResidual final : FitResidual<PointTy> {
   static constexpr int kDim = sizeof(PointTy) / sizeof(PointTy::value_type);
   static constexpr int kNumUnknowns = kDim;
   /**
    *  \param [in] point the observation data.
    */
-  LinearResidual(const PointTy& point) : pt(point) {}
-  ~LinearResidual() = default;
+  LinearFitResidual(const PointTy& point) : FitResidual<PointTy>(point) {}
+  ~LinearFitResidual() = default;
 
   /**
    *  \param [in] pb the two parameters m & c.
@@ -38,7 +42,7 @@ template <typename PointTy> struct LinearResidual final : IResidual {
    *  its estimated value calculated using the equation.
    */
   template <typename Ty = double> bool operator()(const Ty* const pb, Ty* residual) const {
-    //static_assert(std::is_same_v<double, Ty>, "LinearResidual: operator()");
+    //static_assert(std::is_same_v<double, Ty>, "LinearFitResidual: operator()");
     static_assert(sizeof(Ty) >= sizeof(PointTy::value_type), "Parameter precision must be not lowert than observation's");
     
     if constexpr (2 == kDim) {
@@ -52,22 +56,19 @@ template <typename PointTy> struct LinearResidual final : IResidual {
     }
     return true;
   }
-
-private:
-  const PointTy pt; // observation
 };
 
 // 3d line equation: p(x, y, z) = p0(x0, y0, z0) + t * v(a, b, c), where v = p1 - p0
 
 // 2d curve equation: y - exp(m * x + c); 3d surface equation: z - exp(m * x + n * y + c)
-template <typename PointTy> struct ExponentialResidual final : IResidual {
+template <typename PointTy> struct ExponentialFitResidual final : FitResidual<PointTy> {
   static constexpr int kDim = sizeof(PointTy) / sizeof(PointTy::value_type);
   static constexpr int kNumUnknowns = kDim;
   /**
    *  \param [in] point the observation data.
    */
-  ExponentialResidual(const PointTy& point) : pt(point) {}
-  ~ExponentialResidual() = default;
+  ExponentialFitResidual(const PointTy& point) : FitResidual<PointTy>(point) {}
+  ~ExponentialFitResidual() = default;
 
   /**
    *  \param [in] pb the two parameters m & c.
@@ -86,9 +87,6 @@ template <typename PointTy> struct ExponentialResidual final : IResidual {
     }
     return true;
   }
-
-private:
-  const PointTy pt; // observation
 };
 
 /**

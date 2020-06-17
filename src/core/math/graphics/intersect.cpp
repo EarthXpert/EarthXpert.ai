@@ -38,7 +38,7 @@ Intersect::Intersect() {
 bool XTwoLines::Intersect(const Point3d* segs, Point3d& p, 
   Solver::Summary& summary, const int) const {
   std::vector<double> pb(2, 0.5);
-  const bool ret = IntersectGeometries<Point3d, LineIntersectResidual>(
+  const bool ret = IntersectGeometries<Point3d, NumericLineIntersectResidual>(
     segs, 2, pb, mOptions, summary);
 
   const Point3d v1 = segs[1] - segs[0];
@@ -90,7 +90,7 @@ bool XTwoLines::Intersect(const Point3d* s1, const Point3d* s2, Point3d& p) cons
 bool XThreeLines::Intersect(const Point3d* segs, 
   Point3d& p, Solver::Summary& summary, const int) const {
   std::vector<double> pb(3, 0.5);
-  const bool ret = IntersectGeometries<Point3d, LineIntersectResidual>(
+  const bool ret = IntersectGeometries<Point3d, NumericLineIntersectResidual>(
     segs, 3, pb, mOptions, summary);
 
   const auto v1 = segs[1] - segs[0];
@@ -153,7 +153,7 @@ bool XMultipleLines::Intersect(const Point3d* segs, Point3d& p,
   Solver::Summary& summary, const int numSegs) const {
   assert(2 <= numSegs);
   std::vector<double> pb(numSegs, 0.5);
-  const bool ret = IntersectGeometries<Point3d, LineIntersectResidual>(
+  const bool ret = IntersectGeometries<Point3d, NumericLineIntersectResidual>(
     segs, numSegs, pb, mOptions, summary);
 
   p = Point3d();

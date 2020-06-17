@@ -13,21 +13,31 @@ using thirdparty::IResidual;
 using st = SolverTraits;
 
 namespace math {
+// residual base for intersection
+template <typename GeomTy> struct IntersectResidual : IResidual {
+  IntersectResidual(const GeomTy* segms, const int numSegms) : segs(segms), numSegs(numSegms) {}
+  virtual ~IntersectResidual() = default;
+
+protected:
+  const GeomTy* segs;  // pointer to an array of geometries
+  const int numSegs;
+};
+
 /**
- *  \brief cost functors implements IResidual
+ *  \brief AutoDiff cost functors implements IResidual
  *
  *  \param PointTy type of point: Point3f, Point3d, Vector3d, etc
  */
  // 3d line equation: p(x, y, z) = p0(x0, y0, z0) + t * v(a, b, c), where v = p1 - p0
-template <typename PointTy> struct LineIntersectResidual final : IResidual {
+template <typename PointTy> struct AutoLineIntersectResidual final : IntersectResidual<PointTy> {
   /**
    *  Constructor
    *
    *  \param [in] segs the packed observation data, containing (numSegs * 2) points.
    *  \param [in] numSegs number of observations
    */
-  LineIntersectResidual(const PointTy* segms, const int numSegms) : segs(segms), numSegs(numSegms) {}
-  ~LineIntersectResidual() = default;
+  AutoLineIntersectResidual(const PointTy* segms, const int numSegms) : IntersectResidual<PointTy>(segms, numSegms) {}
+  ~AutoLineIntersectResidual() = default;
 
   /**
    *  \param [in] pb the ratios {t1, t2, ...} used to determine the postions.
@@ -35,7 +45,7 @@ template <typename PointTy> struct LineIntersectResidual final : IResidual {
    */
   template <typename Ty = double> bool operator()(const Ty* const pb, Ty* residual) const {
     static_assert(sizeof(Ty) >= sizeof(PointTy::value_type), "Parameter precision must be not lowert than observation's");
-    
+
     if (2 == numSegs) {
       return TwoLines(pb, residual);
     }
@@ -61,15 +71,7 @@ template <typename PointTy> struct LineIntersectResidual final : IResidual {
     return true;
   }
 
-  //
-  template <typename Ty = double> bool operator()(const Ty* const* pb, Ty* residual) const {
-    return false;
-  }
-
 private:
-  const PointTy* segs;  // interleaved by segments each having two end points
-  const int numSegs;
-
   /**
    *  \issue AutoDiff compiling error: binary '*': no operator found which takes a right-hand operand of type 'const JetT'
    *  \remark 3x faster than calculating the L2 norm: residual[0] = cv::norm(p2 - p1);
@@ -80,19 +82,6 @@ private:
     const Point3d v2 = segs[3] - segs[2];
     const Point3d p1 = segs[0] + v1 * pb[0];
     const Point3d p2 = segs[2] + v2 * pb[1];
-
-    residual[0] = p2.x - p1.x;
-    residual[1] = p2.y - p1.y;
-    residual[2] = p2.z - p1.z;
-    return true;
-  }
-
-  bool TwoLines(double const* const* pb, double* residual) const {
-    assert(2 == numSegs);
-    const Point3d v1 = segs[1] - segs[0];
-    const Point3d v2 = segs[3] - segs[2];
-    const Point3d p1 = segs[0] + v1 * (*pb[0]);
-    const Point3d p2 = segs[2] + v2 * (*pb[1]);
 
     residual[0] = p2.x - p1.x;
     residual[1] = p2.y - p1.y;
@@ -128,6 +117,19 @@ private:
     return true;
   }
    */
+
+  bool TwoLines(double const* const* pb, double* residual) const {
+    assert(2 == numSegs);
+    const Point3d v1 = segs[1] - segs[0];
+    const Point3d v2 = segs[3] - segs[2];
+    const Point3d p1 = segs[0] + v1 * (*pb[0]);
+    const Point3d p2 = segs[2] + v2 * (*pb[1]);
+
+    residual[0] = p2.x - p1.x;
+    residual[1] = p2.y - p1.y;
+    residual[2] = p2.z - p1.z;
+    return true;
+  }
 
   template <typename Ty> bool ThreeLines(const Ty* const pb, Ty* residual) const {
     assert(3 == numSegs);
@@ -195,13 +197,168 @@ private:
 };
 
 /**
- *  \brief cost functors implements IResidual
+ *  \brief NumericDiff cost functors implements IResidual
+ *
+ *  \param PointTy type of point: Point3f, Point3d, Vector3d, etc
+ */
+ // 3d line equation: p(x, y, z) = p0(x0, y0, z0) + t * v(a, b, c), where v = p1 - p0
+template <typename PointTy> struct NumericLineIntersectResidual final : IntersectResidual<PointTy> {
+  /**
+   *  Constructor
+   *
+   *  \param [in] segs the packed observation data, containing (numSegs * 2) points.
+   *  \param [in] numSegs number of observations
+   */
+  NumericLineIntersectResidual(const PointTy* segms, const int numSegms) : IntersectResidual<PointTy>(segms, numSegms) {}
+  ~NumericLineIntersectResidual() = default;
+
+  /**
+   *  \param [in] pb the ratios {t1, t2, ...} used to determine the postions.
+   *  \param [out] residual discrepency between the two positions on the two line segments.
+   */
+  template <typename Ty = double> bool operator()(const Ty* const pb, Ty* residual) const {
+    static_assert(sizeof(Ty) >= sizeof(PointTy::value_type), "Parameter precision must be not lowert than observation's");
+    
+    if (2 == numSegs) {
+      return TwoLines(pb, residual);
+    }
+    else if (3 == numSegs) {
+      return ThreeLines(pb, residual);
+    }
+    else {
+      return MultipleLines(pb, residual);
+    }
+  }
+
+  // Dynamic functor
+  bool operator()(double const* const* pb, double* residual) const {
+    if (2 == numSegs) {
+      return TwoLines(pb, residual);
+    }
+    else if (3 == numSegs) {
+      return ThreeLines(pb, residual);
+    }
+    else {
+      return MultipleLines(pb, residual);
+    }
+    return true;
+  }
+
+private:
+  /**
+   *  \remark 3x faster than calculating the L2 norm: residual[0] = cv::norm(p2 - p1);
+   */
+  template <typename Ty> bool TwoLines(const Ty* const pb, Ty* residual) const {
+    assert(2 == numSegs);
+    const Point3d v1 = segs[1] - segs[0];
+    const Point3d v2 = segs[3] - segs[2];
+    const Point3d p1 = segs[0] + v1 * pb[0];
+    const Point3d p2 = segs[2] + v2 * pb[1];
+
+    residual[0] = p2.x - p1.x;
+    residual[1] = p2.y - p1.y;
+    residual[2] = p2.z - p1.z;
+    return true;
+  }
+
+  bool TwoLines(double const* const* pb, double* residual) const {
+    assert(2 == numSegs);
+    const Point3d v1 = segs[1] - segs[0];
+    const Point3d v2 = segs[3] - segs[2];
+    const Point3d p1 = segs[0] + v1 * (*pb[0]);
+    const Point3d p2 = segs[2] + v2 * (*pb[1]);
+
+    residual[0] = p2.x - p1.x;
+    residual[1] = p2.y - p1.y;
+    residual[2] = p2.z - p1.z;
+    return true;
+  }
+
+  template <typename Ty> bool ThreeLines(const Ty* const pb, Ty* residual) const {
+    assert(3 == numSegs);
+    const auto v1 = segs[1] - segs[0];
+    const auto v2 = segs[3] - segs[2];
+    const auto v3 = segs[5] - segs[4];
+    const auto p1 = segs[0] + v1 * pb[0]; // t1
+    const auto p2 = segs[2] + v2 * pb[1]; // t2
+    const auto p3 = segs[4] + v3 * pb[2]; // t3
+
+    // point to line distance
+    const auto d1Sq = 0;  //dist(p1, segs)
+    const auto d2Sq = 0;  //dist(p2, segs + 2)
+    const auto d3Sq = 0;  //dist(p3, segs + 4)
+
+    residual[0] = d1Sq + d2Sq + d3Sq;
+    return true;
+  }
+
+  bool ThreeLines(double const* const* pb, double* residual) const {
+    assert(3 == numSegs);
+    const auto v1 = segs[1] - segs[0];
+    const auto v2 = segs[3] - segs[2];
+    const auto v3 = segs[5] - segs[4];
+    const auto p1 = segs[0] + v1 * (*pb[0]); // t1
+    const auto p2 = segs[2] + v2 * (*pb[1]); // t2
+    const auto p3 = segs[4] + v3 * (*pb[2]); // t3
+
+    // point to line distance
+    const auto d1Sq = 0;  //dist(p1, segs)
+    const auto d2Sq = 0;  //dist(p2, segs + 2)
+    const auto d3Sq = 0;  //dist(p3, segs + 4)
+
+    residual[0] = d1Sq + d2Sq + d3Sq;
+    return true;
+  }
+
+  template <typename Ty> bool MultipleLines(const Ty* const pb, Ty* residual) const {
+    assert(2 <= numSegs);
+    residual[0] = Ty(0.0);
+
+    for (int i = 0; i < numSegs; ++i) {
+      const auto v = segs[i * 2 + 1] - segs[i * 2];
+      const auto p = segs[i * 2] + v * pb[i]; // t
+      const auto dSq = 0; //dist(p, segs + i*2)
+
+      residual[0] += dSq;
+    }
+    return true;
+  }
+
+  bool MultipleLines(double const* const* pb, double* residual) const {
+    assert(2 <= numSegs);
+    residual[0] = 0.0;
+
+    for (int i = 0; i < numSegs; ++i) {
+      const auto v = segs[i * 2 + 1] - segs[i * 2];
+      const auto p = segs[i * 2] + v * (*pb[i]); // t
+      const auto dSq = 0; //dist(p, segs + i*2)
+
+      residual[0] += dSq;
+    }
+    return true;
+  }
+};
+
+/**
+ *  \brief AutoDiff cost functors implements IResidual
  *
  *  \param SphereType type of sphere: Circle3f, Circle3d, etc
  */
  // 3d sphere equation: r = distance(p(x, y, z), p0(x0, y0, z0))
-template <typename SphereType> struct SphereIntersectResidual final : IResidual {
-  ~SphereIntersectResidual() = default;
+template <typename SphereType> struct AutoSphereIntersectResidual final : IntersectResidual<SphereType> {
+  AutoSphereIntersectResidual(const SphereType* sphs, const int numSphs) : IntersectResidual<SphereType>(sphs, numSphs) {}
+  ~AutoSphereIntersectResidual() = default;
+};
+
+/**
+ *  \brief NumericDiff cost functors implements IResidual
+ *
+ *  \param SphereType type of sphere: Circle3f, Circle3d, etc
+ */
+ // 3d sphere equation: r = distance(p(x, y, z), p0(x0, y0, z0))
+template <typename SphereType> struct NumericSphereIntersectResidual final : IntersectResidual<SphereType> {
+  NumericSphereIntersectResidual(const SphereType* sphs, const int numSphs) : IntersectResidual<SphereType>(sphs, numSphs) {}
+  ~NumericSphereIntersectResidual() = default;
 };
 
 /**
