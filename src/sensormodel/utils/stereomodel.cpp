@@ -16,6 +16,7 @@
 
 using namespace earthxpert;
 using namespace earthxpert::math;
+using namespace earthxpert::thirdparty;
 
 /**
  *  Constructor.
@@ -226,6 +227,49 @@ bool StereoModel::ImageToGroundNR(const Point2d& leftImage,
     ground.y = (leftGrd.y + rightGrd.y) * 0.5;
 
     const double dz = A.ddot(Point2d(leftGrd.x - rightGrd.x, leftGrd.y - rightGrd.y)) / den;
+    ground.z += dz;
+
+    if (mTolZ > fabs(dz)) break;
+  }
+
+  if (mMaxIters == i) {
+    return false;
+  }
+
+  return true;
+}
+
+bool StereoModel::ImageToGroundNR(const std::array<Point2d, 3>& images, Point3d& ground) const {
+  assert(3 == mModels.size());
+  ground.z = (mModels[0]->GetMeanHeight() + mModels[1]->GetMeanHeight() + 
+    mModels[2]->GetMeanHeight()) / 3.0;
+
+  int i;
+  for (i = 0; i < mMaxIters; ++i) {
+    const double hgtRange[2] = { ground.z + mH , ground.z };
+
+    double dist[2];   // misclosure
+    Point3d grds[3];
+
+    for (int j = 0; j < 2; ++j) {
+      grds[0].z = grds[0].z = grds[0].z = hgtRange[j];
+
+      for (int k = 0; k < 3; ++k) {
+        mModels[k]->ImageToGround(images[k], grds[k]);
+      }
+      dist[j] = normL2Sqr(grds[0] - grds[1]) +
+        normL2Sqr(grds[1] - grds[2]) + normL2Sqr(grds[2] - grds[0]);
+    }
+
+    const double dd_dz = (dist[0] - dist[1]) * mInvH;
+    if (std::numeric_limits<double>::epsilon() > dd_dz) {
+      return false;
+    }
+
+    ground.x = (grds[0].x + grds[1].x + grds[2].x) / 3.0;
+    ground.y = (grds[0].y + grds[1].y + grds[2].y) / 3.0;
+
+    const double dz = - dist[1] / dd_dz;
     ground.z += dz;
 
     if (mTolZ > fabs(dz)) break;

@@ -38,7 +38,7 @@ Intersect::Intersect() {
 bool XTwoLines::Intersect(const Point3d* segs, Point3d& p, 
   Solver::Summary& summary, const int) const {
   std::vector<double> pb(2, 0.5);
-  const bool ret = IntersectGeometries<Point3d, NumericLineIntersectResidual>(
+  const bool ret = IntersectGeometries<Point3d, AutoLineIntersectResidual>(
     segs, 2, pb, mOptions, summary);
 
   const Point3d v1 = segs[1] - segs[0];

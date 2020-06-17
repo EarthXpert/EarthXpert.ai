@@ -122,7 +122,7 @@ public:
   ImageToGround(const std::array<Point2d, 3> &images, Point3d &ground) const override {
     assert(3 == mModels.size());
     if (!mEarthEllip || !mIntersect) {    // 
-      return false; // ImageToGroundNR(image, ground)
+      return ImageToGroundNR(images, ground);
     }
     assert(eGEO == mModels[0]->GetSrsType());
 
@@ -236,6 +236,7 @@ private:
   double mH{ 10.0 };
 
   bool ImageToGroundNR(const Point2d& leftImage, const Point2d& rightImage, Point3d& ground) const;
+  bool ImageToGroundNR(const std::array<Point2d, 3>& images, Point3d& ground) const;
   bool ImageToGroundX(const Point2d* images, int numRays, Point3d& ground) const;
 
   void ObtainModelsInfo();

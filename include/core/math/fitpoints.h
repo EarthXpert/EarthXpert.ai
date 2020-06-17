@@ -136,22 +136,23 @@ template <typename PointTy,
   template <typename PtTy = PointTy> class ResidualPolicy, class LossPolicy = void>
 bool FitPoints(const std::vector<PointTy>& points, std::vector<double>& pb,
   const Solver::Options& options, Solver::Summary& summary, LossPolicy* lossFunc = nullptr) {
+  using CostFunctor = ResidualPolicy<PointTy>;
   //static_assert(std::is_same_v<Point2d, PointTy> || std::is_same_v<Point3d, PointTy>, "PointTy");
-  static_assert(std::is_base_of_v<IResidual, ResidualPolicy<PointTy>>, "IResidual");
+  static_assert(std::is_base_of_v<IResidual, CostFunctor>, "IResidual");
   static_assert(std::is_base_of_v<LossFunction, LossPolicy> || std::is_void_v<LossPolicy>, "LossFunction");
   assert(!points.empty());
 
   if (pb.empty()) {
-    pb.resize(ResidualPolicy<PointTy>::kDim, 0.0);
+    pb.resize(CostFunctor::kDim, 0.0);
   }
-  assert(ResidualPolicy<PointTy>::kDim == pb.size());
+  assert(CostFunctor::kDim == pb.size());
 
   LossFunction* lossF = (lossFunc) ? static_cast<LossFunction*>(lossFunc) : nullptr;
 
   Problem problem;
   for (auto& point : points) {
-    auto costFunc = new AutoDiffCostFunction<ResidualPolicy<PointTy>, 1, ResidualPolicy<PointTy>::kDim>(
-      new ResidualPolicy<PointTy>(point));
+    auto costFunc = new AutoDiffCostFunction<CostFunctor, 1, CostFunctor::kDim>(
+      new CostFunctor(point));
 
     problem.AddResidualBlock(costFunc, lossF, pb.data());
   }

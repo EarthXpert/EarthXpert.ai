@@ -10,6 +10,7 @@
 
 namespace earthxpert {
 using thirdparty::IResidual;
+using ct = thirdparty::CeresTraits;
 using st = SolverTraits;
 
 namespace math {
@@ -30,6 +31,8 @@ protected:
  */
  // 3d line equation: p(x, y, z) = p0(x0, y0, z0) + t * v(a, b, c), where v = p1 - p0
 template <typename PointTy> struct AutoLineIntersectResidual final : IntersectResidual<PointTy> {
+  enum { eDiffAlg = ct::kAutoDiff };
+
   /**
    *  \param [in] segs the packed observation data, containing (numSegs * 2) points.
    *  \param [in] numSegs number of observations
@@ -39,7 +42,7 @@ template <typename PointTy> struct AutoLineIntersectResidual final : IntersectRe
   ~AutoLineIntersectResidual() = default;
 
   /**
-   *  \brief Fixed functor
+   *  \brief Size-fixed functor
    *
    *  \param [in] pb the ratios {t1, t2, ...} used to determine the postions.
    *  \param [out] residual discrepency between the two positions on the two line segments.
@@ -59,7 +62,7 @@ template <typename PointTy> struct AutoLineIntersectResidual final : IntersectRe
   }
 
   // Dynamic functor
-  bool operator()(double const* const* pb, double* residual) const {
+  template <typename Ty = double> bool operator()(Ty const* const* pb, Ty* residual) const {
     if (2 == numSegs) {
       return TwoLines(pb, residual);
     }
@@ -74,52 +77,39 @@ template <typename PointTy> struct AutoLineIntersectResidual final : IntersectRe
 
 private:
   /**
-   *  \issue AutoDiff compiling error: binary '*': no operator found which takes a right-hand operand of type 'const JetT'
+   *  \issue AutoDiff compiling error: binary '*': no operator found which takes a right-hand operand of type 'const JetT' (Point3d)
+   *  \issue AutoDiff compiling error: cannot convert from 'ceres::Jet<double,2>' to 'double'
    *  \remark 3x faster than calculating the L2 norm: residual[0] = cv::norm(p2 - p1);
    */
   template <typename Ty> bool TwoLines(const Ty* const pb, Ty* residual) const {
     assert(2 == numSegs);
-    const Point3d v1 = segs[1] - segs[0];
-    const Point3d v2 = segs[3] - segs[2];
-    const Point3d p1 = segs[0] + v1 * pb[0];
-    const Point3d p2 = segs[2] + v2 * pb[1];
+    //const Point3d v1 = segs[1] - segs[0];
+    const Ty v1x = Ty(segs[1].x - segs[0].x);
+    const Ty v1y = Ty(segs[1].y - segs[0].y);
+    const Ty v1z = Ty(segs[1].z - segs[0].z);
 
-    residual[0] = p2.x - p1.x;
-    residual[1] = p2.y - p1.y;
-    residual[2] = p2.z - p1.z;
+    //const Point3d v2 = segs[3] - segs[2];
+    const Ty v2x = Ty(segs[3].x - segs[2].x);
+    const Ty v2y = Ty(segs[3].y - segs[2].y);
+    const Ty v2z = Ty(segs[3].z - segs[2].z);
+
+    //const Point3d p1 = segs[0] + v1 * pb[0];
+    const Ty p1x = Ty(segs[0].x + v1x * pb[0]);
+    const Ty p1y = Ty(segs[0].y + v1y * pb[0]);
+    const Ty p1z = Ty(segs[0].z + v1z * pb[0]);
+
+    //const Point3d p2 = segs[2] + v2 * pb[1];
+    const Ty p2x = Ty(segs[2].x + v2x * pb[1]);
+    const Ty p2y = Ty(segs[2].y + v2y * pb[1]);
+    const Ty p2z = Ty(segs[2].z + v2z * pb[1]);
+
+    residual[0] = p2x - p1x;
+    residual[1] = p2y - p1y;
+    residual[2] = p2z - p1z;
     return true;
   }
 
-  /**
-   *  \issue AutoDiff compiling error: cannot convert from 'ceres::Jet<double,2>' to 'double'
-  template <typename Ty> bool TwoLines(const Ty* const pb, Ty* residual) const {
-    assert(2 == numSegs);
-    Point3d v1; // segs[1] - segs[0]
-    v1.x = segs[1].x - segs[0].x;
-    v1.y = segs[1].y - segs[0].y;
-    v1.z = segs[1].z - segs[0].z;
-
-    Point3d v2; // segs[3] - segs[2]
-    v2.x = segs[3].x - segs[2].x;
-    v2.y = segs[3].y - segs[2].y;
-    v2.z = segs[3].z - segs[2].z;
-
-    Point3d p1; // segs[0] + v1 * pb[0]
-    p1.x = segs[0].x + v1.x * pb[0];
-    p1.y = segs[0].y + v1.y * pb[0];
-    p1.z = segs[0].z + v1.z * pb[0];
-
-    Point3d p2; // segs[2] + v2 * pb[1]
-    p2.x = segs[2].x + v2.x * pb[1];
-    p2.y = segs[2].y + v2.y * pb[1];
-    p2.z = segs[2].z + v2.z * pb[1];
-
-    residual[0] = cv::norm(p2 - p1);
-    return true;
-  }
-   */
-
-  bool TwoLines(double const* const* pb, double* residual) const {
+  template <typename Ty> bool TwoLines(Ty const* const* pb, Ty* residual) const {
     assert(2 == numSegs);
     const Point3d v1 = segs[1] - segs[0];
     const Point3d v2 = segs[3] - segs[2];
@@ -134,7 +124,7 @@ private:
 
   template <typename Ty> bool ThreeLines(const Ty* const pb, Ty* residual) const {
     assert(3 == numSegs);
-    const auto v1 = segs[1] - segs[0];
+    /*const auto v1 = segs[1] - segs[0];
     const auto v2 = segs[3] - segs[2];
     const auto v3 = segs[5] - segs[4];
     const auto p1 = segs[0] + v1 * pb[0]; // t1
@@ -146,11 +136,11 @@ private:
     const auto d2Sq = 0;  //dist(p2, segs + 2)
     const auto d3Sq = 0;  //dist(p3, segs + 4)
 
-    residual[0] = d1Sq + d2Sq + d3Sq;
+    residual[0] = d1Sq + d2Sq + d3Sq;*/
     return true;
   }
 
-  bool ThreeLines(double const* const* pb, double* residual) const {
+  template <typename Ty> bool ThreeLines(Ty const* const* pb, Ty* residual) const {
     assert(3 == numSegs);
     const auto v1 = segs[1] - segs[0];
     const auto v2 = segs[3] - segs[2];
@@ -171,20 +161,20 @@ private:
   template <typename Ty> bool MultipleLines(const Ty* const pb, Ty* residual) const {
     assert(2 <= numSegs);
     residual[0] = Ty(0.0);
-
+    /*
     for (int i = 0; i < numSegs; ++i) {
       const auto v = segs[i * 2 + 1] - segs[i * 2];
       const auto p = segs[i * 2] + v * pb[i]; // t
       const auto dSq = 0; //dist(p, segs + i*2)
 
       residual[0] += dSq;
-    }
+    }*/
     return true;
   }
 
-  bool MultipleLines(double const* const* pb, double* residual) const {
+  template <typename Ty> bool MultipleLines(Ty const* const* pb, Ty* residual) const {
     assert(2 <= numSegs);
-    residual[0] = 0.0;
+    residual[0] = Ty(0.0);
 
     for (int i = 0; i < numSegs; ++i) {
       const auto v = segs[i * 2 + 1] - segs[i * 2];
@@ -204,6 +194,8 @@ private:
  */
  // 3d line equation: p(x, y, z) = p0(x0, y0, z0) + t * v(a, b, c), where v = p1 - p0
 template <typename PointTy> struct NumericLineIntersectResidual final : IntersectResidual<PointTy> {
+  enum { eDiffAlg = ct::kNumericDiff };
+
   /**
    *  \param [in] segs the packed observation data, containing (numSegs * 2) points.
    *  \param [in] numSegs number of observations
@@ -213,13 +205,13 @@ template <typename PointTy> struct NumericLineIntersectResidual final : Intersec
   ~NumericLineIntersectResidual() = default;
 
   /**
-   *  \brief Fixed functor
+   *  \brief Size-fixed functor
    *
    *  \param [in] pb the ratios {t1, t2, ...} used to determine the postions.
    *  \param [out] residual discrepency between the two positions on the two line segments.
    */
-  template <typename Ty = double> bool operator()(const Ty* const pb, Ty* residual) const {
-    static_assert(sizeof(Ty) >= sizeof(PointTy::value_type), "Parameter precision must be not lowert than observation's");
+  bool operator()(const double* const pb, double* residual) const {
+    static_assert(sizeof(double) >= sizeof(PointTy::value_type), "Parameter precision must be not lowert than observation's");
     
     if (2 == numSegs) {
       return TwoLines(pb, residual);
@@ -250,7 +242,7 @@ private:
   /**
    *  \remark 3x faster than calculating the L2 norm: residual[0] = cv::norm(p2 - p1);
    */
-  template <typename Ty> bool TwoLines(const Ty* const pb, Ty* residual) const {
+  bool TwoLines(const double* const pb, double* residual) const {
     assert(2 == numSegs);
     const Point3d v1 = segs[1] - segs[0];
     const Point3d v2 = segs[3] - segs[2];
@@ -276,7 +268,7 @@ private:
     return true;
   }
 
-  template <typename Ty> bool ThreeLines(const Ty* const pb, Ty* residual) const {
+  bool ThreeLines(const double* const pb, double* residual) const {
     assert(3 == numSegs);
     const auto v1 = segs[1] - segs[0];
     const auto v2 = segs[3] - segs[2];
@@ -312,9 +304,9 @@ private:
     return true;
   }
 
-  template <typename Ty> bool MultipleLines(const Ty* const pb, Ty* residual) const {
+  bool MultipleLines(const double* const pb, double* residual) const {
     assert(2 <= numSegs);
-    residual[0] = Ty(0.0);
+    residual[0] = 0.0;
 
     for (int i = 0; i < numSegs; ++i) {
       const auto v = segs[i * 2 + 1] - segs[i * 2];
@@ -388,7 +380,8 @@ template <typename GeomTy,
   template <typename GTy = GeomTy> class ResidualPolicy, class LossPolicy = void>
 bool IntersectGeometries(const GeomTy* geoms, const int numGeoms, std::vector<double>& pb,
     const Solver::Options& options, Solver::Summary& summary, LossPolicy* lossFunc = nullptr) {
-  static_assert(std::is_base_of_v<IResidual, ResidualPolicy<GeomTy>>, "IResidual");
+  using CostFunctor = ResidualPolicy<GeomTy>;
+  static_assert(std::is_base_of_v<IResidual, CostFunctor>, "IResidual");
   static_assert(std::is_base_of_v<LossFunction, LossPolicy> || std::is_void_v<LossPolicy>, "LossFunction");
   assert(geoms && 2 <= numGeoms);
 
@@ -396,30 +389,34 @@ bool IntersectGeometries(const GeomTy* geoms, const int numGeoms, std::vector<do
     pb.resize(numGeoms, 0.5); // initial middle point
   }
 
+  CostFunction* costFunc{};
   LossFunction* lossF = (lossFunc) ? static_cast<LossFunction*>(lossFunc) : nullptr;
   Problem problem;
 
   // Dynamic parameter blocks
-  //auto costFunc = new DynamicAutoDiffCostFunction<ResidualPolicy<GeomTy>>(
-  //  new ResidualPolicy<GeomTy>(geoms, numGeoms));
+  //costFunc = new DynamicAutoDiffCostFunction<CostFunctor>(
+  //  new CostFunctor(geoms, numGeoms));
   //costFunc->SetNumResiduals(3);
   //costFunc->AddParameterBlock(numGeoms);
 
-  //auto costFunc = new DynamicNumericDiffCostFunction<ResidualPolicy<GeomTy>, ceres::CENTRAL>(
-  //  new ResidualPolicy<GeomTy>(geoms, numGeoms));
+  //costFunc = new DynamicNumericDiffCostFunction<CostFunctor, ceres::CENTRAL>(
+  //  new CostFunctor(geoms, numGeoms));
   //costFunc->SetNumResiduals(3);
   //costFunc->AddParameterBlock(numGeoms);
 
   // Sized parameter blocks
-  //auto costFunc = new AutoDiffCostFunction<ResidualPolicy<GeomTy>, 3, 2>(
-  //  new ResidualPolicy<GeomTy>(geoms, numGeoms));
-  
-  auto costFunc = new NumericDiffCostFunction<ResidualPolicy<GeomTy>, ceres::CENTRAL, 3, 2>(
-    new ResidualPolicy<GeomTy>(geoms, numGeoms));
+  if constexpr (ct::kAutoDiff == CostFunctor::eDiffAlg) {
+    costFunc = new AutoDiffCostFunction<CostFunctor, 3, 2>(
+      new CostFunctor(geoms, numGeoms));
+  }
+  else {
+    costFunc = new NumericDiffCostFunction<CostFunctor, ceres::CENTRAL, 3, 2>(
+      new CostFunctor(geoms, numGeoms));
+  }
 
   problem.AddResidualBlock(costFunc, lossF, pb.data()); 
-
   ceres::Solve(options, &problem, &summary);
+
   return summary.IsSolutionUsable();
 }
 
