@@ -8,20 +8,29 @@
 #include "3rdparty/eigen/exeigen.h"
 #include "3rdparty/opencv/exopencv.h"
 
-namespace earthxpert::math {
+namespace earthxpert {
+using thirdparty::IResidual;
+
+namespace math {
+// residual base
+struct Residual : IResidual {
+  ~Residual() = default;
+};
+
 /**
  *  \brief cost functors implements IResidual
  *
  *  \param PointTy type of point: Point2f, Point2d, Point3f, Point3d, Vector2f, Vector3d, etc
  */
  // 2d line equation: y - m * x - c; 3d plane equation: z - m * x - n * y -c
-template <typename PointTy> struct LinearResidual : IResidual {
+template <typename PointTy> struct LinearResidual final : IResidual {
   static constexpr int kDim = sizeof(PointTy) / sizeof(PointTy::value_type);
   static constexpr int kNumUnknowns = kDim;
   /**
    *  \param [in] point the observation data.
    */
   LinearResidual(const PointTy& point) : pt(point) {}
+  ~LinearResidual() = default;
 
   /**
    *  \param [in] pb the two parameters m & c.
@@ -51,13 +60,14 @@ private:
 // 3d line equation: p(x, y, z) = p0(x0, y0, z0) + t * v(a, b, c), where v = p1 - p0
 
 // 2d curve equation: y - exp(m * x + c); 3d surface equation: z - exp(m * x + n * y + c)
-template <typename PointTy> struct ExponentialResidual : IResidual {
+template <typename PointTy> struct ExponentialResidual final : IResidual {
   static constexpr int kDim = sizeof(PointTy) / sizeof(PointTy::value_type);
   static constexpr int kNumUnknowns = kDim;
   /**
    *  \param [in] point the observation data.
    */
   ExponentialResidual(const PointTy& point) : pt(point) {}
+  ~ExponentialResidual() = default;
 
   /**
    *  \param [in] pb the two parameters m & c.
@@ -150,5 +160,6 @@ bool FitPoints(const std::vector<PointTy>& points, std::vector<double>& pb,
 
   ceres::Solve(options, &problem, &summary);
   return summary.IsSolutionUsable();
+}
 }
 } // namespace earthxpert::math

@@ -11,6 +11,6 @@
 namespace earthxpert::thirdparty {
 // the interface IResidual defines the base of cost functor
 struct IResidual {
-  ~IResidual() = default;
+  virtual ~IResidual() = default;
 };
 } // namespace earthxpert::thirdparty

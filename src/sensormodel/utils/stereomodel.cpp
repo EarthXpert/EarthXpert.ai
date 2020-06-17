@@ -10,6 +10,7 @@
 
 #include <algorithm>
 #include <cassert>
+#include <iostream>
 #include <memory>
 #include <omp.h>
 
@@ -272,9 +273,12 @@ bool StereoModel::ImageToGroundX(const Point2d* images, const int numRays, Point
     }
 
     // 3d intersection X
-    const bool ret = mIntersect->Intersect(segs.data(), lsr, numRays);   // IntersectTwoLines(segs.data(), lsr, numRays)
+    Solver::Summary summary;
+    const bool ret = mIntersect->Intersect(segs.data(), lsr, summary);
+    //std::cout << summary.BriefReport() << std::endl;
+    //const bool ret = mIntersect->Intersect(segs.data(), lsr, numRays);   // IntersectTwoLines(segs.data(), lsr, numRays)
+    
     if (!ret) return false;
-
     ground = Rad2Deg(mEarthEllip->LSRToLPH(lsr));
   }
 
