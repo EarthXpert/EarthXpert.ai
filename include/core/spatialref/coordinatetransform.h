@@ -68,6 +68,5 @@ private:
 
   void Initialize(OGRSpatialReference* srcSrs, OGRSpatialReference* tgtSrs);
 };
-
-} // namespace pdal
+} // namespace earthxpert
 
