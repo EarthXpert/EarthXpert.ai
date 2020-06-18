@@ -33,7 +33,7 @@
 * OF SUCH DAMAGE.
 ****************************************************************************/
 
-#include "3rdparty/pdal/pdaljob.h"
+#include "platform/services/pdaljob.h"
 
 #include <pdal/GDALUtils.hpp>
 #include <pdal/Kernel.hpp>
@@ -53,47 +53,51 @@
 #include <unistd.h>
 #endif
 
-using earthxpert::thirdparty::PdalJob;
+using earthxpert::PdalJob;
 using namespace pdal;
 
 PdalJob::PdalJob(std::ostream& out) : m_out(out) {
   m_headline = std::string(Utils::screenWidth(), '-');
+  addArgs();
+  m_logger.reset( new pdal::Log("PDAL", "stderr") );
 }
 
-int PdalJob::execute(StringList& cmdArgs, LogPtr logger) {
-  ProgramArgs args;
-  addArgs(args);
+int PdalJob::SetArgs(const StringList& cmdArgs) {
+  m_cmdArgs = cmdArgs;
 
   try {
-    args.parseSimple(cmdArgs);
+    m_args.parseSimple(m_cmdArgs);
   }
   catch (arg_val_error const& e) {
     Utils::printError(e.what());
     return -1;
   }
 
-  logger.reset(new Log("PDAL", m_log, m_logtiming));
+  m_logger.reset(new Log("PDAL", m_log, m_logtiming));
   if (m_logLevel != LogLevel::None)
-    logger->setLevel(m_logLevel);
+    m_logger->setLevel(m_logLevel);
   else if (m_debug)
-    logger->setLevel(LogLevel::Debug);
+    m_logger->setLevel(LogLevel::Debug);
 
-  logger->get(LogLevel::Debug) << "Debugging..." << std::endl;
-  PluginManager<Stage>::setLog(logger);
-  PluginManager<Kernel>::setLog(logger);
+  m_logger->get(LogLevel::Debug) << "Debugging..." << std::endl;
+  PluginManager<Stage>::setLog(m_logger);
+  PluginManager<Kernel>::setLog(m_logger);
 
 #ifndef _WIN32
   if (m_debug) {
     signal(SIGSEGV, [](int sig) {
-      logPtr->get(LogLevel::Debug) << "Segmentation fault (signal 11)\n";
+      m_logger->get(LogLevel::Debug) << "Segmentation fault (signal 11)\n";
       StringList lines = Utils::backtrace();
 
       for (const auto& l : lines)
-        logPtr->get(LogLevel::Debug) << l << std::endl;
+        m_logger->get(LogLevel::Debug) << l << std::endl;
       exit(1); });
   }
 #endif
+  return 0;
+}
 
+int PdalJob::Run() {
   m_command = Utils::tolower(m_command);
   if (!m_command.empty()) {
     int ret = 0;
@@ -102,12 +106,12 @@ int PdalJob::execute(StringList& cmdArgs, LogPtr logger) {
     std::unique_ptr<Kernel> kernel{ PluginManager<Kernel>::createObject(name) };
     if (kernel) {
       if (m_help)
-        cmdArgs.push_back("--help");
+        m_cmdArgs.push_back("--help");
 
       // This shouldn't throw.  If it does, it's something awful, so
       // not cleaning up seems inconsequential.
-      logger->setLeader("pdal " + m_command);
-      ret = kernel->run(cmdArgs, logger);
+      m_logger->setLeader("pdal " + m_command);
+      ret = kernel->run(m_cmdArgs, m_logger);
 
       // IMPORTANT - The kernel must be destroyed before GDAL
       //  drivers are unregistered or GDAL will attempt to destroy
@@ -115,7 +119,7 @@ int PdalJob::execute(StringList& cmdArgs, LogPtr logger) {
       gdal::unregisterDrivers();
     }
     else
-      logger->get(LogLevel::Error) << "Command '" << m_command <<
+      m_logger->get(LogLevel::Error) << "Command '" << m_command <<
       "' not recognized" << std::endl << std::endl;
     return ret;
   }
@@ -131,8 +135,28 @@ int PdalJob::execute(StringList& cmdArgs, LogPtr logger) {
       outputOptions(m_showOptions, m_out);
   }
   else
-    outputHelp(args);
+    outputHelp();
   return 0;
+}
+
+void PdalJob::addArgs() {
+  m_args.add("command", "The PDAL command", m_command).setPositional();
+  m_args.add("debug", "Sets the output level to 3 (option deprecated)",
+    m_debug);
+  m_args.add("verbose,v", "Sets the output level (0-8)", m_logLevel,
+    LogLevel::None);
+  m_args.add("drivers", "List available drivers", m_showDrivers);
+  m_args.add("help,h", "Display help text", m_help);
+  m_args.add("list-commands", "List available commands", m_showCommands);
+  m_args.add("version", "Show program version", m_showVersion);
+  m_args.add("options", "Show options for specified driver (or 'all')",
+    m_showOptions);
+  m_args.add("log", "Log filename (accepts stderr, stdout, stdlog, devnull"
+    " as special cases)", m_log, "stderr");
+  m_args.add("logtiming", "Turn on timing for m_logger messages", m_logtiming);
+  Arg& json = m_args.add("showjson", "List options or drivers as JSON output",
+    m_showJSON);
+  json.setHidden();
 }
 
 void PdalJob::outputVersion() {
@@ -142,12 +166,12 @@ void PdalJob::outputVersion() {
   m_out << std::endl;
 }
 
-void PdalJob::outputHelp(const ProgramArgs& args) {
+void PdalJob::outputHelp() {
   m_out << "Usage:" << std::endl;
   m_out << "  pdal <options>" << std::endl;
   m_out << "  pdal <command> <command options>" << std::endl;
 
-  args.dump(m_out, 2, 80);
+  m_args.dump(m_out, 2, 80);
   m_out << std::endl;
 
   m_out << "The following commands are available:" << std::endl;
@@ -227,19 +251,18 @@ void PdalJob::outputOptions(std::string const& stageName, std::ostream& strm) {
     return;
   }
 
-  ProgramArgs args;
-  s->addAllArgs(args);
+  s->addAllArgs(m_args);
 
   if (!m_showJSON) {
     strm << stageName << " -- " << PluginManager<Stage>::link(stageName) <<
       std::endl;
     strm << m_headline << std::endl;
 
-    args.dump2(strm, 2, 6, m_headline.size());
+    m_args.dump2(strm, 2, 6, m_headline.size());
   }
   else {
     std::ostringstream ostr;
-    args.dump3(ostr);
+    m_args.dump3(ostr);
 
     nlohmann::json array;
     try {
@@ -282,24 +305,4 @@ void PdalJob::outputOptions() {
     }
     m_out << options;
   }
-}
-
-void PdalJob::addArgs(ProgramArgs& args) {
-  args.add("command", "The PDAL command", m_command).setPositional();
-  args.add("debug", "Sets the output level to 3 (option deprecated)",
-    m_debug);
-  args.add("verbose,v", "Sets the output level (0-8)", m_logLevel,
-    LogLevel::None);
-  args.add("drivers", "List available drivers", m_showDrivers);
-  args.add("help,h", "Display help text", m_help);
-  args.add("list-commands", "List available commands", m_showCommands);
-  args.add("version", "Show program version", m_showVersion);
-  args.add("options", "Show options for specified driver (or 'all')",
-    m_showOptions);
-  args.add("logger", "Log filename (accepts stderr, stdout, stdlog, devnull"
-    " as special cases)", m_log, "stderr");
-  args.add("logtiming", "Turn on timing for logger messages", m_logtiming);
-  Arg& json = args.add("showjson", "List options or drivers as JSON output",
-    m_showJSON);
-  json.setHidden();
 }

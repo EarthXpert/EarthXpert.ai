@@ -37,47 +37,66 @@
  * OF SUCH DAMAGE.
  ****************************************************************************/
 
+#include "platform/explatform.h"
 #include "3rdparty/pdal/expdal.h"
+#include "core/parallel/ijob.h"
 #include <pdal/Log.hpp>
 #include <pdal/util/ProgramArgs.hpp>
 
 #include <iostream>
 #include <string>
 
-namespace earthxpert::thirdparty {
+using pdal::LogLevel;
+using pdal::ProgramArgs;
+using pdal::StringList;
+
+namespace earthxpert {
 /**
- *  \brief the PDAL tools pdal is a full featured CLI, and is copied and
- *  refactored here for easier customization.
+ *  \brief the PDAL tools pdal is a full featured CLI, and is copied here 
+ *  for easier customization. The coding style is un-touched for upgrading.
  */
-class EX3RDPARTY_EXPORTS PdalJob {
+class EXPLATFORM_EXPORTS PdalJob final : public IJob {
 public:
   PdalJob(std::ostream& out = std::cout);
+  PdalJob(const PdalJob&) = delete;
+  PdalJob(PdalJob&&) = delete;
   ~PdalJob() = default;
 
-  int execute(pdal::StringList& cmdArgs, pdal::LogPtr logger);
+  PdalJob& operator=(const PdalJob&) = delete;
+  PdalJob& operator=(PdalJob&&) = delete;
+
+  int SetArgs(const StringList& cmdArgs);
+
+  int Run() override;
 
 private:
   std::ostream& m_out;
 
-  bool m_help;
-  bool m_debug;
-  bool m_showVersion;
-  bool m_showCommands;
-  bool m_showDrivers;
-  bool m_showJSON;
-  bool m_logtiming;
-  pdal::LogLevel m_logLevel;
+  StringList m_cmdArgs;
+  ProgramArgs m_args;
+  
+  bool m_help{};
+  bool m_debug{};
+  bool m_showVersion{};
+  bool m_showCommands{};
+  bool m_showDrivers{};
+  bool m_showJSON{};
+  bool m_logtiming{};
+
+  LogLevel m_logLevel{ LogLevel::Error };
+  pdal::LogPtr m_logger;
+
   std::string m_command;
   std::string m_showOptions;
   std::string m_log;
   std::string m_headline;
 
+  void addArgs();
   void outputVersion();
-  void outputHelp(const pdal::ProgramArgs& args);
+  void outputHelp();
   void outputCommands(const std::string& leader);
   void outputDrivers();
   void outputOptions();
   void outputOptions(const std::string& stageName, std::ostream& strm);
-  void addArgs(pdal::ProgramArgs& args);
 };
 } // namespace earthxpert::thirdparty
