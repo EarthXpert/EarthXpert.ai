@@ -8,22 +8,43 @@
 #include "3rdparty/eigen/exeigen.h"
 #include "3rdparty/opencv/exopencv.h"
 
-namespace earthxpert::math {
+namespace earthxpert {
+using thirdparty::IResidual;
+
+namespace math {
+// residual base for fitting points
+template <typename PointTy> struct FitResidual : IResidual {
+  FitResidual(const PointTy& point) : pt(point) {}
+  virtual ~FitResidual() = default;
+
+protected:
+  const PointTy pt; // observation
+};
+
 /**
  *  \brief cost functors implements IResidual
  *
  *  \param PointTy type of point: Point2f, Point2d, Point3f, Point3d, Vector2f, Vector3d, etc
- *
- *  \param [in] point the observation data
  */
- // 2d equation: y - m * x - c; 3d equation: z - m * x - n * y -c
-template <typename PointTy>
-struct LinearResidual : IResidual {
+ // 2d line equation: y - m * x - c; 3d plane equation: z - m * x - n * y -c
+template <typename PointTy> struct LinearFitResidual final : FitResidual<PointTy> {
   static constexpr int kDim = sizeof(PointTy) / sizeof(PointTy::value_type);
   static constexpr int kNumUnknowns = kDim;
-  LinearResidual(const PointTy& point) : pt(point) {}
+  /**
+   *  \param [in] point the observation data.
+   */
+  LinearFitResidual(const PointTy& point) : FitResidual<PointTy>(point) {}
+  ~LinearFitResidual() = default;
 
-  template <typename Ty> bool operator()(const Ty* const pb, Ty* residual) const {
+  /**
+   *  \param [in] pb the two parameters m & c.
+   *  \param [out] residual discrepency between the measured dimension and 
+   *  its estimated value calculated using the equation.
+   */
+  template <typename Ty = double> bool operator()(const Ty* const pb, Ty* residual) const {
+    //static_assert(std::is_same_v<double, Ty>, "LinearFitResidual: operator()");
+    static_assert(sizeof(Ty) >= sizeof(PointTy::value_type), "Parameter precision must be not lowert than observation's");
+    
     if constexpr (2 == kDim) {
       residual[0] = pt.y - pb[0] * pt.x - pb[1];
     }
@@ -35,21 +56,26 @@ struct LinearResidual : IResidual {
     }
     return true;
   }
-
-private:
-  const PointTy pt;
 };
 
-// 3d line equation: (x, y, z) = (x0, y0, z0) + t(a, b, c)
+// 3d line equation: p(x, y, z) = p0(x0, y0, z0) + t * v(a, b, c), where v = p1 - p0
 
-// 2d equation: y - exp(m * x + c); 3d equation: z - exp(m * x + n * y + c)
-template <typename PointTy>
-struct ExponentialResidual : IResidual {
+// 2d curve equation: y - exp(m * x + c); 3d surface equation: z - exp(m * x + n * y + c)
+template <typename PointTy> struct ExponentialFitResidual final : FitResidual<PointTy> {
   static constexpr int kDim = sizeof(PointTy) / sizeof(PointTy::value_type);
   static constexpr int kNumUnknowns = kDim;
-  ExponentialResidual(const PointTy& point) : pt(point) {}
+  /**
+   *  \param [in] point the observation data.
+   */
+  ExponentialFitResidual(const PointTy& point) : FitResidual<PointTy>(point) {}
+  ~ExponentialFitResidual() = default;
 
-  template <typename Ty> bool operator()(const Ty* const pb, Ty* residual) const {
+  /**
+   *  \param [in] pb the two parameters m & c.
+   *  \param [out] residual discrepency between the measured dimension and
+   *  its estimated value calculated using the equation.
+   */
+  template <typename Ty = double> bool operator()(const Ty* const pb, Ty* residual) const {
     if constexpr (2 == kDim) {
       residual[0] = pt.y - exp(pb[0] * pt.x + pb[1]);
     }
@@ -61,9 +87,6 @@ struct ExponentialResidual : IResidual {
     }
     return true;
   }
-
-private:
-  const PointTy pt;
 };
 
 /**
@@ -110,32 +133,32 @@ private:
  *  \todo make CostFunction a template parameter
  */
 template <typename PointTy,
-  template <typename PtTy = PointTy> class ResidualPolicy,
-  class LossPolicy = void>
-  bool FitPoints(const std::vector<PointTy>& points, std::vector<double>& pb,
-    const Solver::Options& options, Solver::Summary& summary, LossPolicy* lossFunc = nullptr) {
+  template <typename PtTy = PointTy> class ResidualPolicy, class LossPolicy = void>
+bool FitPoints(const std::vector<PointTy>& points, std::vector<double>& pb,
+  const Solver::Options& options, Solver::Summary& summary, LossPolicy* lossFunc = nullptr) {
+  using CostFunctor = ResidualPolicy<PointTy>;
   //static_assert(std::is_same_v<Point2d, PointTy> || std::is_same_v<Point3d, PointTy>, "PointTy");
-  static_assert(std::is_base_of_v<IResidual, ResidualPolicy<PointTy>>, "IResidual");
+  static_assert(std::is_base_of_v<IResidual, CostFunctor>, "IResidual");
   static_assert(std::is_base_of_v<LossFunction, LossPolicy> || std::is_void_v<LossPolicy>, "LossFunction");
   assert(!points.empty());
 
-  constexpr int dim = sizeof(PointTy) / sizeof(PointTy::value_type);
   if (pb.empty()) {
-    pb.resize(dim, 0.0);
+    pb.resize(CostFunctor::kDim, 0.0);
   }
-  assert(dim == pb.size());
+  assert(CostFunctor::kDim == pb.size());
 
   LossFunction* lossF = (lossFunc) ? static_cast<LossFunction*>(lossFunc) : nullptr;
 
   Problem problem;
   for (auto& point : points) {
-    auto costFunc = new AutoDiffCostFunction<ResidualPolicy<PointTy>, 1, dim>(
-      new ResidualPolicy<PointTy>(point));
+    auto costFunc = new AutoDiffCostFunction<CostFunctor, 1, CostFunctor::kDim>(
+      new CostFunctor(point));
 
     problem.AddResidualBlock(costFunc, lossF, pb.data());
   }
 
   ceres::Solve(options, &problem, &summary);
   return summary.IsSolutionUsable();
+}
 }
 } // namespace earthxpert::math

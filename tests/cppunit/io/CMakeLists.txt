@@ -8,10 +8,10 @@ add_cppunit_test(pointcloudwriter_tests
   ${GDAL_LIBRARY} ${LASLIB_LIBRARY})
 add_cppunit_test(rasterreader_tests 
   ex3rdparty core dataio 
-  ${GDAL_LIBRARY} ${OPENCV_LIBS})
+  ${GDAL_LIBRARY} ${OpenCV_LIBS})
 add_cppunit_test(rasterwriter_tests 
   ex3rdparty core dataio 
-  ${GDAL_LIBRARY} ${OPENCV_LIBS})
+  ${GDAL_LIBRARY} ${OpenCV_LIBS})
 add_cppunit_test(vectorreader_tests 
   ex3rdparty core dataio 
   ${GDAL_LIBRARY})
@@ -23,7 +23,7 @@ if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
   set(TESTS_IO_PATH "PATH=$<TARGET_FILE_DIR:ex3rdparty>;$<TARGET_FILE_DIR:core>;\
 $<TARGET_FILE_DIR:dataio>;$<TARGET_FILE_DIR:epipolar>;$<TARGET_FILE_DIR:epipolarmodel>;\
 $<TARGET_FILE_DIR:marshaller>;$<TARGET_FILE_DIR:sensormodel>;\
-${GTEST_BIN_DIR};${BOOST_BIN_DIR};${GDAL_BIN_DIR};${OPENCV_BIN_DIR};${OPENNI_BIN_DIR};${QT_BIN_DIR};\
+${GTEST_BIN_DIR};${BOOST_BIN_DIR};${GDAL_BIN_DIR};${OpenCV_BIN_DIR};${OPENNI_BIN_DIR};${QT_BIN_DIR};\
 ${TESTS_BIN_DIR};$ENV{PATH}")
   string(REPLACE ";" "\\;" TESTS_IO_PATH "${TESTS_IO_PATH}")
   message(STATUS "Tests_Io_Path: ${TESTS_IO_PATH}")

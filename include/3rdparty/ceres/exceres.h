@@ -11,6 +11,21 @@
 namespace earthxpert::thirdparty {
 // the interface IResidual defines the base of cost functor
 struct IResidual {
-  ~IResidual() = default;
+  virtual ~IResidual() = default;
+};
+
+// CostFunction categary
+struct CeresTraits {
+  // size of parameter block
+  static constexpr unsigned int kDynamic = 0; // size set at run time
+  static constexpr unsigned int kSized = 1;   // Size-fixed at compile time
+
+  // differentation algorithm
+  static constexpr unsigned int kAutoDiff = 0;    // auto-differentiation framework
+  static constexpr unsigned int kNumericDiff = 1; // numeric differentiation
+
+  // bit fields
+  unsigned int sized : 1;  // 0: kDynamic;  1: kSized
+  unsigned int diff  : 1;  // 0: kAutoDiff; 1: kNumericDiff
 };
 } // namespace earthxpert::thirdparty

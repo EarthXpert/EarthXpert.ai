@@ -59,6 +59,27 @@ public:
   bool FitStraightLineRobust(const std::vector<Point2d>& points, 
     std::vector<double>& pb, Solver::Summary& summary);
 
+  /**
+   *  \breif fit a parameterized stright line to a sequence of 3D points.
+   *  The line equation is defined by
+   *
+   *    p = p0 + v * t
+   *
+   *  where
+   *
+   *    p: the observed 3D point
+   *    p0: the anchor point, can be initialized by the average position or a selected observation
+   *    v: the direction vector
+   *    t: the parametric ratio
+   *
+   *  \param [in] points a sequence, at least two, of 3D points
+   *  \param [in/out] pb the parameter block holding all unknown parameters
+   *                  optionally with initial values.
+   *  \param [out] summary the report of ceres solver.
+   */
+  bool FitStraightLine(const std::vector<Point3d>& points,
+    std::vector<double>& pb, Solver::Summary& summary);
+
   bool FitStraightLine(const std::vector<Point2d>& points, std::vector<double>& pb);
 
   /**

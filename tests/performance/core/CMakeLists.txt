@@ -2,13 +2,13 @@ project(tests_performance_core CXX)
 
 add_performance_test(graphfit_perf_tests 
   ex3rdparty core 
-  ${CERES_LIBRARY} ${GDAL_LIBRARY} ${OPENCV_LIBS})
+  ${CERES_LIBRARY} ${GDAL_LIBRARY} ${OpenCV_LIBS})
 if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
   get_filename_component(BOOST_BIN_DIR "${Boost_DIR}/../.." ABSOLUTE)
   set(TESTS_CORE_PATH "PATH=$<TARGET_FILE_DIR:ex3rdparty>;$<TARGET_FILE_DIR:core>;\
 $<TARGET_FILE_DIR:dataio>;$<TARGET_FILE_DIR:epipolar>;$<TARGET_FILE_DIR:epipolarmodel>;\
 $<TARGET_FILE_DIR:marshaller>;$<TARGET_FILE_DIR:sensormodel>;\
-${GTEST_BIN_DIR};${BOOST_BIN_DIR};${CERES_BIN_DIR};${GDAL_BIN_DIR};${OPENCV_BIN_DIR};${OPENNI_BIN_DIR};${QT_BIN_DIR};\
+${GTEST_BIN_DIR};${BOOST_BIN_DIR};${CERES_BIN_DIR};${GDAL_BIN_DIR};${OpenCV_BIN_DIR};${OPENNI_BIN_DIR};${QT_BIN_DIR};\
 ${TESTS_BIN_DIR};$ENV{PATH}")
   string(REPLACE ";" "\\;" TESTS_CORE_PATH "${TESTS_CORE_PATH}")
   message(STATUS "Tests_Core_Path: ${TESTS_CORE_PATH}")

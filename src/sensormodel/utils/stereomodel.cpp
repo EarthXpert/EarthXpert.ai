@@ -10,11 +10,13 @@
 
 #include <algorithm>
 #include <cassert>
+#include <iostream>
 #include <memory>
 #include <omp.h>
 
 using namespace earthxpert;
 using namespace earthxpert::math;
+using namespace earthxpert::thirdparty;
 
 /**
  *  Constructor.
@@ -67,7 +69,7 @@ void StereoModel::SetEarthEllipsoid(std::shared_ptr<EarthEllipsoid> earthEllip) 
     mIntersect = std::make_unique<XThreeLines>();
   }
   else {
-    mIntersect = std::make_unique<XMultipleLines>();
+    //mIntersect = std::make_unique<XMultipleLines>();
     throw std::exception(_("StereoModel: not implemented for four or more rays"));
   }
 }
@@ -237,6 +239,49 @@ bool StereoModel::ImageToGroundNR(const Point2d& leftImage,
   return true;
 }
 
+bool StereoModel::ImageToGroundNR(const std::array<Point2d, 3>& images, Point3d& ground) const {
+  assert(3 == mModels.size());
+  ground.z = (mModels[0]->GetMeanHeight() + mModels[1]->GetMeanHeight() + 
+    mModels[2]->GetMeanHeight()) / 3.0;
+
+  int i;
+  for (i = 0; i < mMaxIters; ++i) {
+    const double hgtRange[2] = { ground.z + mH , ground.z };
+
+    double dist[2];   // misclosure
+    Point3d grds[3];
+
+    for (int j = 0; j < 2; ++j) {
+      grds[0].z = grds[0].z = grds[0].z = hgtRange[j];
+
+      for (int k = 0; k < 3; ++k) {
+        mModels[k]->ImageToGround(images[k], grds[k]);
+      }
+      dist[j] = normL2Sqr(grds[0] - grds[1]) +
+        normL2Sqr(grds[1] - grds[2]) + normL2Sqr(grds[2] - grds[0]);
+    }
+
+    const double dd_dz = (dist[0] - dist[1]) * mInvH;
+    if (std::numeric_limits<double>::epsilon() > dd_dz) {
+      return false;
+    }
+
+    ground.x = (grds[0].x + grds[1].x + grds[2].x) / 3.0;
+    ground.y = (grds[0].y + grds[1].y + grds[2].y) / 3.0;
+
+    const double dz = - dist[1] / dd_dz;
+    ground.z += dz;
+
+    if (mTolZ > fabs(dz)) break;
+  }
+
+  if (mMaxIters == i) {
+    return false;
+  }
+
+  return true;
+}
+
 /**
  *  \brief Given two or more sensor models and associated list of 2d positions
  *  in image coordinate system, do forward intersection of rays, and
@@ -272,9 +317,12 @@ bool StereoModel::ImageToGroundX(const Point2d* images, const int numRays, Point
     }
 
     // 3d intersection X
-    const bool ret = mIntersect->Intersect(segs.data(), lsr, numRays);   // IntersectTwoLines(segs.data(), lsr, numRays)
+    Solver::Summary summary;
+    const bool ret = mIntersect->Intersect(segs.data(), lsr, summary);
+    //std::cout << summary.BriefReport() << std::endl;
+    //const bool ret = mIntersect->Intersect(segs.data(), lsr, numRays);   // IntersectTwoLines(segs.data(), lsr, numRays)
+    
     if (!ret) return false;
-
     ground = Rad2Deg(mEarthEllip->LSRToLPH(lsr));
   }
 

@@ -58,7 +58,7 @@ bool GraphFit::FitStraightLine(const std::vector<Point2d>& points,
   if (2 > points.size())
     throw std::invalid_argument("FitStraightLine: must have 2+ points");
 
-  return FitPoints<Point2d, LinearResidual>(points, pb, mOptions, summary);
+  return FitPoints<Point2d, LinearFitResidual>(points, pb, mOptions, summary);
 }
 
 bool GraphFit::FitStraightLineRobust(const std::vector<Point2d>& points, 
@@ -67,8 +67,34 @@ bool GraphFit::FitStraightLineRobust(const std::vector<Point2d>& points,
     throw std::invalid_argument("FitStraightLine: must have 2+ points");
 
   auto* lossFunc = new CauchyLoss(0.5);
-  return FitPoints<Point2d, LinearResidual, CauchyLoss>(points,
+  return FitPoints<Point2d, LinearFitResidual, CauchyLoss>(points,
     pb, mOptions, summary, lossFunc);
+}
+
+/**
+ *  \breif fit a parameterized stright line to a sequence of 3D points.
+ *  The line equation is defined by
+ *
+ *    p = p0 + v * t
+ *
+ *  where
+ *
+ *    p: the observed 3D point
+ *    p0: the anchor point, can be initialized by the average position or a selected observation
+ *    v: the direction vector
+ *    t: the parametric ratio
+ *
+ *  \param [in] points a sequence, at least two, of 3D points
+ *  \param [in/out] pb the parameter block holding all unknown parameters
+ *                  optionally with initial values.
+ *  \param [out] summary the report of ceres solver.
+ */
+bool FitStraightLine(const std::vector<Point3d>& points,
+  std::vector<double>& pb, Solver::Summary& summary) {
+  if (2 > points.size())
+    throw std::invalid_argument("FitStraightLine: must have 2+ points");
+
+  return false;
 }
 
 /**
@@ -122,7 +148,7 @@ bool GraphFit::FitExponentialCurve(const std::vector<Point2d>& points,
   if (2 > points.size())
     throw std::invalid_argument("FitExponentialCurve: must have 2+ points");
 
-  return FitPoints<Point2d, ExponentialResidual>(points,
+  return FitPoints<Point2d, ExponentialFitResidual>(points,
     pb, mOptions, summary);
 }
 
@@ -149,5 +175,5 @@ bool GraphFit::FitPlane(const std::vector<Point3d>& points,
   if (3 > points.size())
     throw std::invalid_argument("FitPlane: must have 3+ points");
 
-  return FitPoints<Point3d, LinearResidual>(points, pb, mOptions, summary);
+  return FitPoints<Point3d, LinearFitResidual>(points, pb, mOptions, summary);
 }

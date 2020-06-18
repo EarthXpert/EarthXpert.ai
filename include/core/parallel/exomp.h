@@ -4,6 +4,9 @@
  */
 #pragma once
 
+#include "core/excore.h"
+#include <omp.h>
+
 namespace earthxpert {
 extern int kNumPhysicalCores;
 }
