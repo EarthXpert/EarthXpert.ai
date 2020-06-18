@@ -49,10 +49,10 @@ namespace earthxpert::thirdparty {
  *  \brief the PDAL tools pdal is a full featured CLI, and is copied and
  *  refactored here for easier customization.
  */
-class EX3RDPARTY_EXPORTS PdalApp {
+class EX3RDPARTY_EXPORTS PdalJob {
 public:
-  PdalApp(std::ostream& out = std::cout);
-  ~PdalApp() = default;
+  PdalJob(std::ostream& out = std::cout);
+  ~PdalJob() = default;
 
   int execute(pdal::StringList& cmdArgs, pdal::LogPtr logger);
 

@@ -33,7 +33,7 @@
 * OF SUCH DAMAGE.
 ****************************************************************************/
 
-#include "3rdparty/pdal/pdalapp.h"
+#include "3rdparty/pdal/pdaljob.h"
 
 #include <pdal/GDALUtils.hpp>
 #include <pdal/Kernel.hpp>
@@ -53,14 +53,14 @@
 #include <unistd.h>
 #endif
 
-using earthxpert::thirdparty::PdalApp;
+using earthxpert::thirdparty::PdalJob;
 using namespace pdal;
 
-PdalApp::PdalApp(std::ostream& out) : m_out(out) {
+PdalJob::PdalJob(std::ostream& out) : m_out(out) {
   m_headline = std::string(Utils::screenWidth(), '-');
 }
 
-int PdalApp::execute(StringList& cmdArgs, LogPtr logger) {
+int PdalJob::execute(StringList& cmdArgs, LogPtr logger) {
   ProgramArgs args;
   addArgs(args);
 
@@ -135,14 +135,14 @@ int PdalApp::execute(StringList& cmdArgs, LogPtr logger) {
   return 0;
 }
 
-void PdalApp::outputVersion() {
+void PdalJob::outputVersion() {
   m_out << m_headline << std::endl;
   m_out << "pdal " << Config::fullVersionString() << std::endl;
   m_out << m_headline << std::endl;
   m_out << std::endl;
 }
 
-void PdalApp::outputHelp(const ProgramArgs& args) {
+void PdalJob::outputHelp(const ProgramArgs& args) {
   m_out << "Usage:" << std::endl;
   m_out << "  pdal <options>" << std::endl;
   m_out << "  pdal <command> <command options>" << std::endl;
@@ -160,7 +160,7 @@ void PdalApp::outputHelp(const ProgramArgs& args) {
   m_out << "See http://pdal.io/apps/ for more detail" << std::endl;
 }
 
-void PdalApp::outputCommands(const std::string& leader) {
+void PdalJob::outputCommands(const std::string& leader) {
   StageFactory f;
   PluginManager<Kernel>::loadAll();
   std::string kernelbase("kernels.");
@@ -172,7 +172,7 @@ void PdalApp::outputCommands(const std::string& leader) {
   }
 }
 
-void PdalApp::outputDrivers() {
+void PdalJob::outputDrivers() {
   // Force plugin loading.
   StageFactory f;
   PluginManager<Stage>::loadAll();
@@ -217,7 +217,7 @@ void PdalApp::outputDrivers() {
   }
 }
 
-void PdalApp::outputOptions(std::string const& stageName, std::ostream& strm) {
+void PdalJob::outputOptions(std::string const& stageName, std::ostream& strm) {
   // Force plugin loading.
   StageFactory f(false);
 
@@ -254,7 +254,7 @@ void PdalApp::outputOptions(std::string const& stageName, std::ostream& strm) {
   }
 }
 
-void PdalApp::outputOptions() {
+void PdalJob::outputOptions() {
   // Force plugin loading.
   StageFactory f(false);
   StringList nv = PluginManager<Stage>::names();
@@ -284,7 +284,7 @@ void PdalApp::outputOptions() {
   }
 }
 
-void PdalApp::addArgs(ProgramArgs& args) {
+void PdalJob::addArgs(ProgramArgs& args) {
   args.add("command", "The PDAL command", m_command).setPositional();
   args.add("debug", "Sets the output level to 3 (option deprecated)",
     m_debug);
