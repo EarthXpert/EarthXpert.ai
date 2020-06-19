@@ -9,11 +9,6 @@
 #include "ceres/tiny_solver.h"
 
 namespace earthxpert::thirdparty {
-// the interface IResidual defines the base of cost functor
-struct IResidual {
-  virtual ~IResidual() = default;
-};
-
 // CostFunction categary
 struct CeresTraits {
   // size of parameter block
@@ -27,5 +22,10 @@ struct CeresTraits {
   // bit fields
   unsigned int sized : 1;  // 0: kDynamic;  1: kSized
   unsigned int diff  : 1;  // 0: kAutoDiff; 1: kNumericDiff
+};
+
+// the interface IResidual defines the base of cost functor
+struct IResidual {
+  virtual ~IResidual() = default;
 };
 } // namespace earthxpert::thirdparty

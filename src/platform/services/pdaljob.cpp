@@ -153,7 +153,7 @@ void PdalJob::addArgs() {
     m_showOptions);
   m_args.add("log", "Log filename (accepts stderr, stdout, stdlog, devnull"
     " as special cases)", m_log, "stderr");
-  m_args.add("logtiming", "Turn on timing for m_logger messages", m_logtiming);
+  m_args.add("logtiming", "Turn on timing for log messages", m_logtiming);
   Arg& json = m_args.add("showjson", "List options or drivers as JSON output",
     m_showJSON);
   json.setHidden();
@@ -268,8 +268,7 @@ void PdalJob::outputOptions(std::string const& stageName, std::ostream& strm) {
     try {
       array = nlohmann::json::parse(ostr.str());
     }
-    catch (nlohmann::json::parse_error&)
-    {
+    catch (nlohmann::json::parse_error&) {
     }
 
     nlohmann::json object = { stageName, array };
@@ -297,8 +296,7 @@ void PdalJob::outputOptions() {
       try {
         strm >> j;
       }
-      catch (nlohmann::json::parse_error&)
-      {
+      catch (nlohmann::json::parse_error&) {
       }
       options.push_back(j);
       strm.str("");
