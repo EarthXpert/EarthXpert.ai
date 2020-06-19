@@ -66,11 +66,13 @@ Point3<Ty> operator*(const Point3<Ty>& p, const Ty& s) {
 /**
  *  \brief math functions
  */
+// norm of 3d vector
 template <typename Ty> inline
 Ty norm(const Point3<Ty>& p) {
   return sqrt(p.x * p.x + p.y * p.y + p.z * p.z);
 }
 
+// distance from 3d point to an infinit ray defined by two 3d points.
 template <typename Ty> inline
 Ty distance(const Point3<Ty>& p, const Point3d* seg) {
   return {};
