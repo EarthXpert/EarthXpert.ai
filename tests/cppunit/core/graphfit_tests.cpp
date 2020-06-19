@@ -182,7 +182,7 @@ TEST(graphfit, FitPlane_Ceres) {
  *    c = 0.1;
  *    x=[0:0.075:5];
  *    y = m * x + c;
- *    noise = randn(size(x)) * 0.05 - 0.025;
+ *    noise = randn(size(x)) * 0.05;
  *    y_observed = y + noise;
  *    data = [x', y_observed'];
  */
@@ -220,7 +220,7 @@ std::vector<Point2d> ObtainLinePoints() {
  *    c = 0.1;
  *    x=[0:0.075:5];
  *    y = exp(m * x + c);
- *    noise = randn(size(x)) * 0.2 - 0.1;
+ *    noise = randn(size(x)) * 0.2;
  *    y_observed = y + noise;
  *    data = [x', y_observed'];
  */
