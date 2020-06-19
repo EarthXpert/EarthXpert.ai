@@ -34,7 +34,7 @@ TEST(graphfit, FitLine_Ceres) {
   std::vector<double> pb;
   std::cout << "Initial m: " << 0.0 << " c: " << 0.0 << "\n";
 
-  graphFit.FitStraightLine(points, pb, summary);
+  graphFit.FitLineCeres(points, pb, summary);
   ASSERT_TRUE(summary.IsSolutionUsable());
   ASSERT_EQ(2, pb.size()) << "2 parameters";
   
@@ -48,7 +48,7 @@ TEST(graphfit, FitLine_Ceres) {
   pb[1] = p1.y - pb[0] * p1.x;
   std::cout << "Initial m: " << pb[0] << " c: " << pb[1] << "\n";
 
-  graphFit.FitStraightLine(points, pb, summary);
+  graphFit.FitLineCeres(points, pb, summary);
   ASSERT_TRUE(summary.IsSolutionUsable());
 
   std::cout << summary.BriefReport() << "\n";
@@ -59,7 +59,7 @@ TEST(graphfit, FitLine_Ceres) {
   pb[1] = 0.1;
   std::cout << "Initial m: " << pb[0] << " c: " << pb[1] << "\n";
 
-  graphFit.FitStraightLine(points, pb, summary);
+  graphFit.FitLineCeres(points, pb, summary);
   ASSERT_TRUE(summary.IsSolutionUsable());
 
   std::cout << summary.BriefReport() << "\n";
@@ -79,7 +79,7 @@ TEST(graphfit, FitCurve_Ceres) {
   std::vector<double> pb;
   std::cout << "Initial m: " << 0.0 << " c: " << 0.0 << "\n";
 
-  graphFit.FitExponentialCurve(points, pb, summary);
+  graphFit.FitCurveCeres(points, pb, summary);
   ASSERT_TRUE(summary.IsSolutionUsable());
   ASSERT_EQ(2, pb.size()) << "2 parameters";
 
@@ -93,7 +93,7 @@ TEST(graphfit, FitCurve_Ceres) {
   pb[1] = log(p1.y) - pb[0] * p1.x;
   std::cout << "Initial m: " << pb[0] << " c: " << pb[1] << "\n";
   
-  graphFit.FitExponentialCurve(points, pb, summary);
+  graphFit.FitCurveCeres(points, pb, summary);
   ASSERT_TRUE(summary.IsSolutionUsable());
 
   std::cout << summary.BriefReport() << "\n";
@@ -104,7 +104,7 @@ TEST(graphfit, FitCurve_Ceres) {
   pb[1] = 0.1;
   std::cout << "Initial m: " << pb[0] << " c: " << pb[1] << "\n";
 
-  graphFit.FitExponentialCurve(points, pb, summary);
+  graphFit.FitCurveCeres(points, pb, summary);
   ASSERT_TRUE(summary.IsSolutionUsable());
 
   std::cout << summary.BriefReport() << "\n";
@@ -123,7 +123,7 @@ TEST(graphfit, FitLine_Eigen) {
   std::vector<double> pb;
   std::cout << "Initial m: " << 0.0 << " n: " << 0.0 << " c: " << 0.0 << "\n";
 
-  graphFit.FitStraightLine(points, pb);
+  graphFit.FitLineEigen(points, pb);
   ASSERT_EQ(2, pb.size()) << "2 parameters";
 
   std::cout << "Final   m: " << pb[0] << " c: " << pb[1] << "\n";
@@ -142,7 +142,7 @@ TEST(graphfit, FitPlane_Ceres) {
   std::vector<double> pb;
   std::cout << "Initial m: " << 0.0 << " n: " << 0.0 << " c: " << 0.0 << "\n";
 
-  graphFit.FitPlane(points, pb, summary);
+  graphFit.FitPlaneCeres(points, pb, summary);
   ASSERT_TRUE(summary.IsSolutionUsable());
   ASSERT_EQ(3, pb.size()) << "3 parameters";
 
@@ -155,7 +155,7 @@ TEST(graphfit, FitPlane_Ceres) {
   pb[2] = 0.05;
   std::cout << "Initial m: " << pb[0] << " n: " << pb[1] << " c: " << pb[2] << "\n";
 
-  graphFit.FitPlane(points, pb, summary);
+  graphFit.FitPlaneCeres(points, pb, summary);
   ASSERT_TRUE(summary.IsSolutionUsable());
 
   std::cout << summary.BriefReport() << "\n";
@@ -167,7 +167,7 @@ TEST(graphfit, FitPlane_Ceres) {
   pb[2] = 0.1;
   std::cout << "Initial m: " << pb[0] << " n: " << pb[1] << " c: " << pb[2] << "\n";
 
-  graphFit.FitPlane(points, pb, summary);
+  graphFit.FitPlaneCeres(points, pb, summary);
   ASSERT_TRUE(summary.IsSolutionUsable());
 
   std::cout << summary.BriefReport() << "\n";

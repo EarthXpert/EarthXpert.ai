@@ -438,7 +438,7 @@ public:
    *  \param [out] summary the report of ceres solver.
    *  \return Return true if successful, false if parallel.
    */
-  bool Intersect(const Point3d* segs, Point3d& p, 
+  bool IntersectCeres(const Point3d* segs, Point3d& p, 
     Solver::Summary& summary, int = 2) const override;
 
   /**
@@ -450,8 +450,8 @@ public:
    *  \param [in] numSegs number of line segments given by segs, must be 2
    *  \return Return true if successful, false if parallel.
    */
-  inline bool Intersect(const Point3d* segs, Point3d& p, const int = 2) const override {
-    return Intersect(segs, segs + 2, p);
+  inline bool IntersectEigen(const Point3d* segs, Point3d& p, const int = 2) const override {
+    return IntersectEigen(segs, segs + 2, p);
   }
 
   /**
@@ -462,7 +462,7 @@ public:
    *  \param [out] p the intersection point.
    *  \return Return true if successful, false if parallel.
    */
-  bool Intersect(const Point3d* s1, const Point3d* s2, Point3d& p) const;
+  bool IntersectEigen(const Point3d* s1, const Point3d* s2, Point3d& p) const;
 };
 
 //using XTwoLinesEigen = XTwoLines<kST_EIGEN>;
@@ -487,7 +487,7 @@ public:
    *  \param [in] numSegs number of line segments given by segs, must be 3
    *  \return Return true if successful, false if parallel.
    */
-  bool Intersect(const Point3d* segs, Point3d& p, 
+  bool IntersectCeres(const Point3d* segs, Point3d& p, 
     Solver::Summary& summary, int = 3) const override;
 
   /**
@@ -499,8 +499,8 @@ public:
    *  \param [in] numSegs number of line segments given by segs, must be 3
    *  \return Return true if successful, false if parallel.
    */
-  inline bool Intersect(const Point3d * segs, Point3d & p, const int = 3) const override {
-    return Intersect(segs, segs + 2, segs + 4, p);
+  inline bool IntersectEigen(const Point3d * segs, Point3d & p, const int = 3) const override {
+    return IntersectEigen(segs, segs + 2, segs + 4, p);
   }
 
   /**
@@ -512,7 +512,7 @@ public:
    *  \param [out] p the intersection point.
    *  \return Return true if successful, false if parallel.
    */
-  bool Intersect(const Point3d* s1, const Point3d* s2, const Point3d* s3, Point3d& p) const;
+  bool IntersectEigen(const Point3d* s1, const Point3d* s2, const Point3d* s3, Point3d& p) const;
 };
 
 /**
@@ -536,7 +536,7 @@ public:
    *  \param [in] numSegs number of line segments given by segs, must be 2+
    *  \return Return true if successful, false if parallel.
    */
-  bool Intersect(const Point3d* segs, Point3d& p,
+  bool IntersectCeres(const Point3d* segs, Point3d& p,
     Solver::Summary& summary, const int numSegs) const override;
 
   /**
@@ -548,7 +548,7 @@ public:
    *  \param [in] numSegs number of line segments given by segs, must be 2+
    *  \return Return true if successful, false if parallel.
    */
-  bool Intersect(const Point3d* segs, Point3d& p, const int numSegs) const override;
+  bool IntersectEigen(const Point3d* segs, Point3d& p, const int numSegs) const override;
 };
 
 // helper free functions
@@ -560,7 +560,7 @@ public:
 inline EXCORE_EXPORTS bool IntersectTwoLines(const Point3d* segs, 
   Point3d& p, Solver::Summary& summary) {
   XTwoLines xl;
-  return xl.Intersect(segs, p, summary);
+  return xl.IntersectCeres(segs, p, summary);
 }
 
 /**
@@ -570,7 +570,7 @@ inline EXCORE_EXPORTS bool IntersectTwoLines(const Point3d* segs,
  */
 inline EXCORE_EXPORTS bool IntersectTwoLines(const Point3d* s1, const Point3d* s2, Point3d& p) {
   XTwoLines xl;
-  return xl.Intersect(s1, s2, p);
+  return xl.IntersectEigen(s1, s2, p);
 }
 
 /**
@@ -581,7 +581,7 @@ inline EXCORE_EXPORTS bool IntersectTwoLines(const Point3d* s1, const Point3d* s
 inline EXCORE_EXPORTS bool IntersectThreeLines(const Point3d* s1, const Point3d* s2,
   const Point3d* s3, Point3d& p) {
   XThreeLines xl;
-  return xl.Intersect(s1, s2, s3, p);
+  return xl.IntersectEigen(s1, s2, s3, p);
 }
 
 /**
@@ -592,7 +592,7 @@ inline EXCORE_EXPORTS bool IntersectThreeLines(const Point3d* s1, const Point3d*
 inline EXCORE_EXPORTS bool IntersectMultipleLines(const Point3d* segs, 
   Point3d& p, const int numSegs) {
   XMultipleLines xl;
-  return xl.Intersect(segs, p, numSegs);
+  return xl.IntersectEigen(segs, p, numSegs);
 }
 }
 } // namespace earthxpert

@@ -318,9 +318,9 @@ bool StereoModel::ImageToGroundX(const Point2d* images, const int numRays, Point
 
     // 3d intersection X
     Solver::Summary summary;
-    const bool ret = mIntersect->Intersect(segs.data(), lsr, summary);
+    const bool ret = mIntersect->IntersectCeres(segs.data(), lsr, summary);
     //std::cout << summary.BriefReport() << std::endl;
-    //const bool ret = mIntersect->Intersect(segs.data(), lsr, numRays);   // IntersectTwoLines(segs.data(), lsr, numRays)
+    //const bool ret = mIntersect->IntersectEigen(segs.data(), lsr, numRays);   // IntersectTwoLines(segs.data(), lsr, numRays)
     
     if (!ret) return false;
     ground = Rad2Deg(mEarthEllip->LSRToLPH(lsr));

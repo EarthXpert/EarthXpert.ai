@@ -54,18 +54,18 @@ GraphFit::GraphFit(const Solver::Options& options) : mOptions(options) {
  *  \param [in/out] pb the parameter block holding all unknown parameters
  *                  optionally with initial values.
  */
-bool GraphFit::FitStraightLine(const std::vector<Point2d>& points, 
+bool GraphFit::FitLineCeres(const std::vector<Point2d>& points, 
   std::vector<double>& pb, Solver::Summary& summary) {
   if (2 > points.size())
-    throw std::invalid_argument("FitStraightLine: must have 2+ points");
+    throw std::invalid_argument("FitLine: must have 2+ points");
 
   return FitPoints<Point2d, LinearFitResidual>(points, pb, mOptions, summary);
 }
 
-bool GraphFit::FitStraightLineRobust(const std::vector<Point2d>& points, 
+bool GraphFit::FitLineRobustCeres(const std::vector<Point2d>& points, 
   std::vector<double>& pb, Solver::Summary& summary) {
   if (2 > points.size())
-    throw std::invalid_argument("FitStraightLine: must have 2+ points");
+    throw std::invalid_argument("FitLine: must have 2+ points");
 
   auto* lossFunc = new CauchyLoss(0.5);
   return FitPoints<Point2d, LinearFitResidual, CauchyLoss>(points,
@@ -75,10 +75,10 @@ bool GraphFit::FitStraightLineRobust(const std::vector<Point2d>& points,
 /**
  *  \brief fit line by Eigen Solver
  */
-bool GraphFit::FitStraightLine(const std::vector<Point2d>& points, std::vector<double>& pb) {
+bool GraphFit::FitLineEigen(const std::vector<Point2d>& points, std::vector<double>& pb) {
   const int n = int(points.size());
   if (2 > n)
-    throw std::invalid_argument("FitStraightLine: must have 2+ points");
+    throw std::invalid_argument("FitLine: must have 2+ points");
 
   if (pb.empty()) {
     pb.resize(2, 0.0);
@@ -104,10 +104,10 @@ bool GraphFit::FitStraightLine(const std::vector<Point2d>& points, std::vector<d
 /**
  *  \brief fit line by OpenCV
  */
-bool GraphFit::FitStraightLine(const std::vector<Point2d>& points, cv::Vec2d& pb) {
+bool GraphFit::FitLineCv(const std::vector<Point2d>& points, cv::Vec2d& pb) {
   const int n = int(points.size());
   if (2 > n)
-    throw std::invalid_argument("FitStraightLine: must have 2+ points");
+    throw std::invalid_argument("FitLine: must have 2+ points");
 
   cv::Mat A(n, 2, CV_64FC1);
   cv::Mat b(n, 1, CV_64FC1);
@@ -129,10 +129,10 @@ bool GraphFit::FitStraightLine(const std::vector<Point2d>& points, cv::Vec2d& pb
 /**
  *  \brief fit line by OpenCV
  */
-bool GraphFit::FitStraightLine(const std::vector<Point2d>& points, std::array<double, 2>& pb) {
+bool GraphFit::FitLineCv(const std::vector<Point2d>& points, std::array<double, 2>& pb) {
   const int n = int(points.size());
   if (2 > n)
-    throw std::invalid_argument("FitStraightLine: must have 2+ points");
+    throw std::invalid_argument("FitLine: must have 2+ points");
 
   cv::Vec4d line;
   cv::fitLine(points, line, cv::DIST_L2, 0, 0.01, 0.01);
@@ -163,10 +163,10 @@ bool GraphFit::FitStraightLine(const std::vector<Point2d>& points, std::array<do
  *                  optionally with initial values.
  *  \param [out] summary the report of ceres solver.
  */
-bool FitStraightLine(const std::vector<Point3d>& points,
+bool FitLineCeres(const std::vector<Point3d>& points,
   std::vector<double>& pb, Solver::Summary& summary) {
   if (2 > points.size())
-    throw std::invalid_argument("FitStraightLine: must have 2+ points");
+    throw std::invalid_argument("FitLine: must have 2+ points");
 
   return false;
 }
@@ -174,9 +174,9 @@ bool FitStraightLine(const std::vector<Point3d>& points,
 /**
  *  \brief fit line by OpenCV
  */
-bool FitStraightLine(const std::vector<Point3d>& points, cv::Vec6d& pb) {
+bool FitLineCv(const std::vector<Point3d>& points, cv::Vec6d& pb) {
   if (2 > points.size())
-    throw std::invalid_argument("FitStraightLine: must have 2+ points");
+    throw std::invalid_argument("FitLine: must have 2+ points");
 
   cv::fitLine(points, pb, cv::DIST_L2, 0, 0.01, 0.01);
   return true;
@@ -199,7 +199,7 @@ bool FitStraightLine(const std::vector<Point3d>& points, cv::Vec6d& pb) {
  *  \param [in/out] pb the parameter block holding all unknown parameters
  *                  optionally with initial values.
  */
-bool GraphFit::FitExponentialCurve(const std::vector<Point2d>& points, 
+bool GraphFit::FitCurveCeres(const std::vector<Point2d>& points,
   std::vector<double>& pb, Solver::Summary& summary) {
   if (2 > points.size())
     throw std::invalid_argument("FitExponentialCurve: must have 2+ points");
@@ -226,7 +226,7 @@ bool GraphFit::FitExponentialCurve(const std::vector<Point2d>& points,
  *                  optionally with initial values.
  *  \param [out] summary the report of ceres solver.
  */
-bool GraphFit::FitPlane(const std::vector<Point3d>& points,
+bool GraphFit::FitPlaneCeres(const std::vector<Point3d>& points,
   std::vector<double>& pb, Solver::Summary& summary) {
   if (3 > points.size())
     throw std::invalid_argument("FitPlane: must have 3+ points");
