@@ -9,6 +9,7 @@
 #include "core/exceptions/exexcept.h"
 #include "core/parallel/exomp.h"
 
+#include <opencv2/imgproc.hpp>
 #include <cassert>
 #include <cmath>
 #include <iostream>
@@ -72,6 +73,79 @@ bool GraphFit::FitStraightLineRobust(const std::vector<Point2d>& points,
 }
 
 /**
+ *  \brief fit line by Eigen Solver
+ */
+bool GraphFit::FitStraightLine(const std::vector<Point2d>& points, std::vector<double>& pb) {
+  const int n = int(points.size());
+  if (2 > n)
+    throw std::invalid_argument("FitStraightLine: must have 2+ points");
+
+  if (pb.empty()) {
+    pb.resize(2, 0.0);
+  }
+
+  MatrixXd A(n, 2);
+  VectorXd b(n);
+  for (int i = 0; i < n; ++i) {
+    A(i, 0) = points[i].x;
+    A(i, 1) = 1.0;
+    b[i] = points[i].y;
+  }
+
+  //const auto& x = A.colPivHouseholderQr().solve(b);
+  const auto& x = A.bdcSvd(ComputeThinU | ComputeThinV).solve(b);
+  // if () return false;
+
+  pb[0] = x[0];
+  pb[1] = x[1];
+  return true;
+}
+
+/**
+ *  \brief fit line by OpenCV
+ */
+bool GraphFit::FitStraightLine(const std::vector<Point2d>& points, cv::Vec2d& pb) {
+  const int n = int(points.size());
+  if (2 > n)
+    throw std::invalid_argument("FitStraightLine: must have 2+ points");
+
+  cv::Mat A(n, 2, CV_64FC1);
+  cv::Mat b(n, 1, CV_64FC1);
+  for (int i = 0; i < n; ++i) {
+    A.at<double>(i, 0) = points[i].x;
+    A.at<double>(i, 1) = 1.0;
+    b.at<double>(i, 0) = points[i].y;
+  }
+
+  cv::Mat x;
+  const bool ret = cv::solve(A, b, x, cv::DECOMP_SVD);
+  if (!ret) return false;
+
+  pb[0] = x.at<double>(0);
+  pb[1] = x.at<double>(1);
+  return true;
+}
+
+/**
+ *  \brief fit line by OpenCV
+ */
+bool GraphFit::FitStraightLine(const std::vector<Point2d>& points, std::array<double, 2>& pb) {
+  const int n = int(points.size());
+  if (2 > n)
+    throw std::invalid_argument("FitStraightLine: must have 2+ points");
+
+  cv::Vec4d line;
+  cv::fitLine(points, line, cv::DIST_L2, 0, 0.01, 0.01);
+
+  if (std::numeric_limits<double>::epsilon() < fabs(line[0]))
+    return false;
+
+  pb[0] = line[1] / line[0];
+  pb[1] = line[3] - pb[0] * line[2];
+  return true;
+}
+
+/**
  *  \breif fit a parameterized stright line to a sequence of 3D points.
  *  The line equation is defined by
  *
@@ -98,31 +172,13 @@ bool FitStraightLine(const std::vector<Point3d>& points,
 }
 
 /**
- *  \brief fit line by Eigen Solver
+ *  \brief fit line by OpenCV
  */
-bool GraphFit::FitStraightLine(const std::vector<Point2d>& points, std::vector<double>& pb) {
-  const int n = int(points.size());
-  if (2 > n)
+bool FitStraightLine(const std::vector<Point3d>& points, cv::Vec6d& pb) {
+  if (2 > points.size())
     throw std::invalid_argument("FitStraightLine: must have 2+ points");
 
-  if (pb.empty()) {
-    pb.resize(2, 0.0);
-  }
-
-  MatrixXd A(n, 2);
-  VectorXd b(n);
-  for (int i = 0; i < n; ++i) {
-    A(i, 0) = points[i].x;
-    A(i, 1) = 1.0;
-    b[i] = points[i].y;
-  }
-
-  //const auto& x = A.colPivHouseholderQr().solve(b);
-  const auto& x = A.bdcSvd(ComputeThinU | ComputeThinV).solve(b);
-  // if () return false;
-
-  pb[0] = x[0];
-  pb[1] = x[1];
+  cv::fitLine(points, pb, cv::DIST_L2, 0, 0.01, 0.01);
   return true;
 }
 
