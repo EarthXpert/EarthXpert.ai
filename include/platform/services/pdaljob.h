@@ -70,33 +70,33 @@ public:
   int Run() override;
 
 private:
-  std::ostream& m_out;
+  std::ostream& mOut;
 
-  StringList m_cmdArgs;
-  ProgramArgs m_args;
+  StringList mCmdArgs;
+  ProgramArgs mArgs;
   
-  bool m_help{};
-  bool m_debug{};
-  bool m_showVersion{};
-  bool m_showCommands{};
-  bool m_showDrivers{};
-  bool m_showJSON{};
-  bool m_logtiming{};
+  bool mHelp{};
+  bool mDebug{};
+  bool mShowVersion{};
+  bool mShowCommands{};
+  bool mShowDrivers{};
+  bool mShowJSON{};
+  bool mLogtiming{};
 
-  LogLevel m_logLevel{ LogLevel::Error };
-  pdal::LogPtr m_logger;
+  LogLevel mLogLevel{ LogLevel::Error };
+  pdal::LogPtr mLogger;
 
-  std::string m_command;
-  std::string m_showOptions;
-  std::string m_log;
-  std::string m_headline;
+  std::string mCommand;
+  std::string mShowOptions;
+  std::string mLog;
+  std::string mHeadline;
 
-  void addArgs();
-  void outputVersion();
-  void outputHelp();
-  void outputCommands(const std::string& leader);
-  void outputDrivers();
-  void outputOptions();
-  void outputOptions(const std::string& stageName, std::ostream& strm);
+  void AddArgs();
+  void OutputVersion();
+  void OutputHelp();
+  void OutputCommands(const std::string& leader);
+  void OutputDrivers();
+  void OutputOptions();
+  void OutputOptions(const std::string& stageName, std::ostream& strm);
 };
 } // namespace earthxpert::thirdparty

@@ -1,3 +1,7 @@
+/* -----------------------------------------------------------------------------
+ *  Copyright (c) 2019.  All rights reserved.
+ * -----------------------------------------------------------------------------
+ */
 /******************************************************************************
 * Copyright (c) 2013, Howard Butler (hobu.inc@gmail.com)
 * Copyright (c) 2014-2015, Bradley J Chambers (brad.chambers@gmail.com)
@@ -56,41 +60,41 @@
 using earthxpert::PdalJob;
 using namespace pdal;
 
-PdalJob::PdalJob(std::ostream& out) : m_out(out) {
-  m_headline = std::string(Utils::screenWidth(), '-');
-  addArgs();
-  m_logger.reset( new pdal::Log("PDAL", "stderr") );
+PdalJob::PdalJob(std::ostream& out) : mOut(out) {
+  mHeadline = std::string(Utils::screenWidth(), '-');
+  AddArgs();
+  mLogger.reset( new pdal::Log("PDAL", "stderr") );
 }
 
 int PdalJob::SetArgs(const StringList& cmdArgs) {
-  m_cmdArgs = cmdArgs;
+  mCmdArgs = cmdArgs;
 
   try {
-    m_args.parseSimple(m_cmdArgs);
+    mArgs.parseSimple(mCmdArgs);
   }
   catch (arg_val_error const& e) {
     Utils::printError(e.what());
     return -1;
   }
 
-  m_logger.reset(new Log("PDAL", m_log, m_logtiming));
-  if (m_logLevel != LogLevel::None)
-    m_logger->setLevel(m_logLevel);
-  else if (m_debug)
-    m_logger->setLevel(LogLevel::Debug);
+  mLogger.reset(new Log("PDAL", mLog, mLogtiming));
+  if (mLogLevel != LogLevel::None)
+    mLogger->setLevel(mLogLevel);
+  else if (mDebug)
+    mLogger->setLevel(LogLevel::Debug);
 
-  m_logger->get(LogLevel::Debug) << "Debugging..." << std::endl;
-  PluginManager<Stage>::setLog(m_logger);
-  PluginManager<Kernel>::setLog(m_logger);
+  mLogger->get(LogLevel::Debug) << "Debugging..." << std::endl;
+  PluginManager<Stage>::setLog(mLogger);
+  PluginManager<Kernel>::setLog(mLogger);
 
 #ifndef _WIN32
-  if (m_debug) {
+  if (mDebug) {
     signal(SIGSEGV, [](int sig) {
-      m_logger->get(LogLevel::Debug) << "Segmentation fault (signal 11)\n";
+      mLogger->get(LogLevel::Debug) << "Segmentation fault (signal 11)\n";
       StringList lines = Utils::backtrace();
 
       for (const auto& l : lines)
-        m_logger->get(LogLevel::Debug) << l << std::endl;
+        mLogger->get(LogLevel::Debug) << l << std::endl;
       exit(1); });
   }
 #endif
@@ -98,20 +102,20 @@ int PdalJob::SetArgs(const StringList& cmdArgs) {
 }
 
 int PdalJob::Run() {
-  m_command = Utils::tolower(m_command);
-  if (!m_command.empty()) {
+  mCommand = Utils::tolower(mCommand);
+  if (!mCommand.empty()) {
     int ret = 0;
-    std::string name("kernels." + m_command);
+    std::string name("kernels." + mCommand);
 
     std::unique_ptr<Kernel> kernel{ PluginManager<Kernel>::createObject(name) };
     if (kernel) {
-      if (m_help)
-        m_cmdArgs.push_back("--help");
+      if (mHelp)
+        mCmdArgs.push_back("--help");
 
       // This shouldn't throw.  If it does, it's something awful, so
       // not cleaning up seems inconsequential.
-      m_logger->setLeader("pdal " + m_command);
-      ret = kernel->run(m_cmdArgs, m_logger);
+      mLogger->setLeader("pdal " + mCommand);
+      ret = kernel->run(mCmdArgs, mLogger);
 
       // IMPORTANT - The kernel must be destroyed before GDAL
       //  drivers are unregistered or GDAL will attempt to destroy
@@ -119,72 +123,72 @@ int PdalJob::Run() {
       gdal::unregisterDrivers();
     }
     else
-      m_logger->get(LogLevel::Error) << "Command '" << m_command <<
+      mLogger->get(LogLevel::Error) << "Command '" << mCommand <<
       "' not recognized" << std::endl << std::endl;
     return ret;
   }
 
-  if (m_showVersion)
-    outputVersion();
-  else if (m_showDrivers)
-    outputDrivers();
-  else if (m_showOptions.size()) {
-    if (m_showOptions == "all")
-      outputOptions();
+  if (mShowVersion)
+    OutputVersion();
+  else if (mShowDrivers)
+    OutputDrivers();
+  else if (mShowOptions.size()) {
+    if (mShowOptions == "all")
+      OutputOptions();
     else
-      outputOptions(m_showOptions, m_out);
+      OutputOptions(mShowOptions, mOut);
   }
   else
-    outputHelp();
+    OutputHelp();
   return 0;
 }
 
-void PdalJob::addArgs() {
-  m_args.add("command", "The PDAL command", m_command).setPositional();
-  m_args.add("debug", "Sets the output level to 3 (option deprecated)",
-    m_debug);
-  m_args.add("verbose,v", "Sets the output level (0-8)", m_logLevel,
+void PdalJob::AddArgs() {
+  mArgs.add("command", "The PDAL command", mCommand).setPositional();
+  mArgs.add("debug", "Sets the output level to 3 (option deprecated)",
+    mDebug);
+  mArgs.add("verbose,v", "Sets the output level (0-8)", mLogLevel,
     LogLevel::None);
-  m_args.add("drivers", "List available drivers", m_showDrivers);
-  m_args.add("help,h", "Display help text", m_help);
-  m_args.add("list-commands", "List available commands", m_showCommands);
-  m_args.add("version", "Show program version", m_showVersion);
-  m_args.add("options", "Show options for specified driver (or 'all')",
-    m_showOptions);
-  m_args.add("log", "Log filename (accepts stderr, stdout, stdlog, devnull"
-    " as special cases)", m_log, "stderr");
-  m_args.add("logtiming", "Turn on timing for log messages", m_logtiming);
-  Arg& json = m_args.add("showjson", "List options or drivers as JSON output",
-    m_showJSON);
+  mArgs.add("drivers", "List available drivers", mShowDrivers);
+  mArgs.add("help,h", "Display help text", mHelp);
+  mArgs.add("list-commands", "List available commands", mShowCommands);
+  mArgs.add("version", "Show program version", mShowVersion);
+  mArgs.add("options", "Show options for specified driver (or 'all')",
+    mShowOptions);
+  mArgs.add("log", "Log filename (accepts stderr, stdout, stdlog, devnull"
+    " as special cases)", mLog, "stderr");
+  mArgs.add("logtiming", "Turn on timing for log messages", mLogtiming);
+  Arg& json = mArgs.add("showjson", "List options or drivers as JSON output",
+    mShowJSON);
   json.setHidden();
 }
 
-void PdalJob::outputVersion() {
-  m_out << m_headline << std::endl;
-  m_out << "pdal " << Config::fullVersionString() << std::endl;
-  m_out << m_headline << std::endl;
-  m_out << std::endl;
+void PdalJob::OutputVersion() {
+  mOut << mHeadline << std::endl;
+  mOut << "pdal " << Config::fullVersionString() << std::endl;
+  mOut << mHeadline << std::endl;
+  mOut << std::endl;
 }
 
-void PdalJob::outputHelp() {
-  m_out << "Usage:" << std::endl;
-  m_out << "  pdal <options>" << std::endl;
-  m_out << "  pdal <command> <command options>" << std::endl;
+void PdalJob::OutputHelp() {
+  mOut << "Usage:" << std::endl;
+  mOut << "  pdal <options>" << std::endl;
+  mOut << "  pdal <command> <command options>" << std::endl;
 
-  m_args.dump(m_out, 2, 80);
-  m_out << std::endl;
+  mArgs.dump(mOut, 2, 80);
+  mOut << std::endl;
 
-  m_out << "The following commands are available:" << std::endl;
+  mOut << "The following commands are available:" << std::endl;
 
   // Load all kernels so that we can report the names.
   StageFactory f;
   PluginManager<Kernel>::loadAll();
-  outputCommands("  - ");
-  m_out << std::endl;
-  m_out << "See http://pdal.io/apps/ for more detail" << std::endl;
+  OutputCommands("  - ");
+  mOut << std::endl;
+  mOut << "See http://pdal.io/apps/ for more detail" << std::endl;
 }
 
-void PdalJob::outputCommands(const std::string& leader) {
+void PdalJob::OutputCommands(const std::string& leader) {
   StageFactory f;
   PluginManager<Kernel>::loadAll();
   std::string kernelbase("kernels.");
@@ -192,41 +196,41 @@ void PdalJob::outputCommands(const std::string& leader) {
   for (auto name : PluginManager<Kernel>::names()) {
     if (Utils::startsWith(name, kernelbase))
       name = name.substr(kernelbase.size());
-    m_out << leader << name << std::endl;
+    mOut << leader << name << std::endl;
   }
 }
 
-void PdalJob::outputDrivers() {
+void PdalJob::OutputDrivers() {
   // Force plugin loading.
   StageFactory f;
   PluginManager<Stage>::loadAll();
   StringList stages = PluginManager<Stage>::names();
 
-  if (!m_showJSON) {
+  if (!mShowJSON) {
     int nameColLen(28);
     int descripColLen(Utils::screenWidth() - nameColLen - 1);
 
     std::string tablehead(std::string(nameColLen, '=') + ' ' +
       std::string(descripColLen, '='));
 
-    m_out << std::endl;
-    m_out << tablehead << std::endl;
-    m_out << std::left << std::setw(nameColLen) << "Name" <<
+    mOut << std::endl;
+    mOut << tablehead << std::endl;
+    mOut << std::left << std::setw(nameColLen) << "Name" <<
       " Description" << std::endl;
-    m_out << tablehead << std::endl;
-    m_out << std::left;
+    mOut << tablehead << std::endl;
+    mOut << std::left;
 
     for (auto name : stages) {
       std::string descrip = PluginManager<Stage>::description(name);
       StringList lines = Utils::wordWrap(descrip, descripColLen - 1);
       for (size_t i = 0; i < lines.size(); ++i) {
-        m_out << std::setw(nameColLen) << name << " " <<
+        mOut << std::setw(nameColLen) << name << " " <<
           lines[i] << std::endl;
         name.clear();
       }
     }
 
-    m_out << tablehead << std::endl << std::endl;
+    mOut << tablehead << std::endl << std::endl;
   }
   else {
     nlohmann::json j;
@@ -237,11 +241,11 @@ void PdalJob::outputDrivers() {
                     {"description", description},
                     {"link", link} });
     }
-    m_out << j;
+    mOut << j;
   }
 }
 
-void PdalJob::outputOptions(std::string const& stageName, std::ostream& strm) {
+void PdalJob::OutputOptions(std::string const& stageName, std::ostream& strm) {
   // Force plugin loading.
   StageFactory f(false);
 
@@ -251,18 +255,18 @@ void PdalJob::outputOptions(std::string const& stageName, std::ostream& strm) {
     return;
   }
 
-  s->addAllArgs(m_args);
+  s->addAllArgs(mArgs);
 
-  if (!m_showJSON) {
+  if (!mShowJSON) {
     strm << stageName << " -- " << PluginManager<Stage>::link(stageName) <<
       std::endl;
-    strm << m_headline << std::endl;
+    strm << mHeadline << std::endl;
 
-    m_args.dump2(strm, 2, 6, m_headline.size());
+    mArgs.dump2(strm, 2, 6, mHeadline.size());
   }
   else {
     std::ostringstream ostr;
-    m_args.dump3(ostr);
+    mArgs.dump3(ostr);
 
     nlohmann::json array;
     try {
@@ -276,22 +280,22 @@ void PdalJob::outputOptions(std::string const& stageName, std::ostream& strm) {
   }
 }
 
-void PdalJob::outputOptions() {
+void PdalJob::OutputOptions() {
   // Force plugin loading.
   StageFactory f(false);
   StringList nv = PluginManager<Stage>::names();
 
-  if (!m_showJSON) {
+  if (!mShowJSON) {
     for (auto const& n : nv) {
-      outputOptions(n, m_out);
-      m_out << std::endl;
+      OutputOptions(n, mOut);
+      mOut << std::endl;
     }
   }
   else {
     std::stringstream strm;
     nlohmann::json options;
     for (auto const& n : nv) {
-      outputOptions(n, strm);
+      OutputOptions(n, strm);
       nlohmann::json j;
       try {
         strm >> j;
@@ -301,6 +305,6 @@ void PdalJob::outputOptions() {
       options.push_back(j);
       strm.str("");
     }
-    m_out << options;
+    mOut << options;
   }
 }
