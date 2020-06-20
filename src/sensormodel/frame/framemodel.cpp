@@ -401,9 +401,6 @@ Point2d FrameModel<ImageModelPolicy>::SensorApparantToActualPPA(
   const Point2d& sensor, const double height) const {
   auto sensorAct = sensor;
 
-  constexpr int maxIterG2I{ 10 };
-  constexpr double convergeTolMM{ 0.0001 }; // [mm]
-
   int nIter;
 
   // earth curvature
@@ -414,20 +411,20 @@ Point2d FrameModel<ImageModelPolicy>::SensorApparantToActualPPA(
     double rcP{ rcp }; // radius from previous iteration
     double rc{};     // new radius after correction
 
-    for (nIter = 0; nIter < maxIterG2I; ++nIter) {
+    for (nIter = 0; nIter < kMaxIterG2I; ++nIter) {
       const auto rcP2 = rcP * rcP;
       const auto f_rcP = rcP + Hh * mCurvFactor * rcP2 * rcP - rcp;
       const auto df_drcP = 1.0 + 3.0 * Hh * mCurvFactor * rcP2;
       const auto corr = f_rcP / df_drcP;
 
       rc = rcP - corr;
-      if (fabs(corr) < convergeTolMM)
+      if (fabs(corr) < kConvergeTolMM)
         break;
 
       rcP = rc;
     }
 
-    if (maxIterG2I == nIter)
+    if (kMaxIterG2I == nIter)
       return { 0.0, 0.0 };
 
     sensorAct *= rc / rcp;
@@ -443,20 +440,20 @@ Point2d FrameModel<ImageModelPolicy>::SensorApparantToActualPPA(
     double rcP{ rcp };
     double rc{};
 
-    for (nIter = 0; nIter < maxIterG2I; ++nIter) {
+    for (nIter = 0; nIter < kMaxIterG2I; ++nIter) {
       const auto rcP2 = rcP * rcP;
       const auto f_rcP = rcP - K * rcP * (1.0 + rcP2 * mInvF2) - rcp;
       const auto df_drcP = 1.0 - K * (1.0 + 3.0 * rcP2 * mInvF2);
       const auto corr = f_rcP / df_drcP;
 
       rc = rcP - corr;
-      if (fabs(corr) < convergeTolMM)
+      if (fabs(corr) < kConvergeTolMM)
         break;
 
       rcP = rc;
     }
 
-    if (maxIterG2I == nIter)
+    if (kMaxIterG2I == nIter)
       return { 0.0, 0.0 };
 
     sensorAct *= rc / rcp;
@@ -471,35 +468,31 @@ Point2d FrameModel<ImageModelPolicy>::SensorApparantToActualPPS(
   const Point2d& sensor) const {
   auto sensorAct = sensor;
 
-  constexpr int maxIterG2I{ 10 };
-  constexpr double convergeTolMM{ 0.0001 }; // [mm]
-
   int nIter;
-
   auto [hasRadialDist, hasDecentDist, hasGridDist] = mFrameIP->GetDistFlags();
 
   // distortion grid from added parameters
   if (hasGridDist) {
     const Point2d cRD{ sensorAct }; // fixed position
 
-    for (nIter = 0; nIter < maxIterG2I; ++nIter) {
+    for (nIter = 0; nIter < kMaxIterG2I; ++nIter) {
       const auto dGrd = mFrameIP->CalcGridCorr(sensorAct);
 
       const Point2d res{ cRD - (sensorAct + dGrd) };
       sensorAct += res;
 
-      if (fabs(res.x) < convergeTolMM && fabs(res.y) < convergeTolMM)
+      if (fabs(res.x) < kConvergeTolMM && fabs(res.y) < kConvergeTolMM)
         break;
     }
 
-    if (maxIterG2I == nIter)
+    if (kMaxIterG2I == nIter)
       return { 0.0, 0.0 };
   }
 
   if (hasRadialDist || hasDecentDist) {
     const Point2d cEarth{ sensorAct };
 
-    for (nIter = 0; nIter < maxIterG2I; ++nIter) {
+    for (nIter = 0; nIter < kMaxIterG2I; ++nIter) {
       const auto dRad = mFrameIP->CalcRadialCorr(sensorAct);
       const auto dDec = mFrameIP->CalcDecentCorr(sensorAct);
 
@@ -507,18 +500,18 @@ Point2d FrameModel<ImageModelPolicy>::SensorApparantToActualPPS(
       const auto corr = cEarth - (sensorAct + dRad + dDec);
       sensorAct += corr;
 
-      if (fabs(corr.x) < convergeTolMM && fabs(corr.y) < convergeTolMM) {
+      if (fabs(corr.x) < kConvergeTolMM && fabs(corr.y) < kConvergeTolMM) {
         break;
       }
 
       // if corrX or corrY is large, it is not converging. use the original value
-      if ((maxIterG2I - 1) == nIter || 10 < fabs(corr.x) || 10 < fabs(corr.y)) {
+      if ((kMaxIterG2I - 1) == nIter || 10 < fabs(corr.x) || 10 < fabs(corr.y)) {
         sensorAct = cEarth;
         break;
       }
     }
 
-    if (maxIterG2I == nIter)
+    if (kMaxIterG2I == nIter)
       return { 0.0, 0.0 };
   }
 

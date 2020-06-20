@@ -204,8 +204,8 @@ bool StereoModel::ImageToGroundNR(const Point2d& leftImage,
   ground.z = (mModels[0]->GetMeanHeight() + mModels[1]->GetMeanHeight()) / 2.0;
 
   int i;
-  for (i = 0; i < mMaxIters; ++i) {
-    Point3d grd{ 0.0, 0.0, ground.z + mH };
+  for (i = 0; i < kMaxIters; ++i) {
+    Point3d grd{ 0.0, 0.0, ground.z + kH };
 
     Point3d leftGrd{ 0.0, 0.0, ground.z };
     mModels[0]->ImageToGround(leftImage, grd);
@@ -217,7 +217,7 @@ bool StereoModel::ImageToGroundNR(const Point2d& leftImage,
     mModels[1]->ImageToGround(rightImage, rightGrd);
     const Point2d dRight_dz{ (grd.x - rightGrd.x), (grd.y - rightGrd.y) };
 
-    const Point2d A = (dRight_dz - dLeft_dz) * mInvH;
+    const Point2d A = (dRight_dz - dLeft_dz) * kInvH;
     const double den = cv::normL2Sqr<double>(A);
     if (std::numeric_limits<double>::epsilon() > den) {
       return false;
@@ -229,10 +229,10 @@ bool StereoModel::ImageToGroundNR(const Point2d& leftImage,
     const double dz = A.ddot(Point2d(leftGrd.x - rightGrd.x, leftGrd.y - rightGrd.y)) / den;
     ground.z += dz;
 
-    if (mTolZ > fabs(dz)) break;
+    if (kTolZ > fabs(dz)) break;
   }
 
-  if (mMaxIters == i) {
+  if (kMaxIters == i) {
     return false;
   }
 
@@ -245,8 +245,8 @@ bool StereoModel::ImageToGroundNR(const std::array<Point2d, 3>& images, Point3d&
     mModels[2]->GetMeanHeight()) / 3.0;
 
   int i;
-  for (i = 0; i < mMaxIters; ++i) {
-    const double hgtRange[2] = { ground.z + mH , ground.z };
+  for (i = 0; i < kMaxIters; ++i) {
+    const double hgtRange[2] = { ground.z + kH , ground.z };
 
     double dist[2];   // misclosure
     Point3d grds[3];
@@ -261,7 +261,7 @@ bool StereoModel::ImageToGroundNR(const std::array<Point2d, 3>& images, Point3d&
         normL2Sqr(grds[1] - grds[2]) + normL2Sqr(grds[2] - grds[0]);
     }
 
-    const double dd_dz = (dist[0] - dist[1]) * mInvH;
+    const double dd_dz = (dist[0] - dist[1]) * kInvH;
     if (std::numeric_limits<double>::epsilon() > dd_dz) {
       return false;
     }
@@ -272,10 +272,10 @@ bool StereoModel::ImageToGroundNR(const std::array<Point2d, 3>& images, Point3d&
     const double dz = - dist[1] / dd_dz;
     ground.z += dz;
 
-    if (mTolZ > fabs(dz)) break;
+    if (kTolZ > fabs(dz)) break;
   }
 
-  if (mMaxIters == i) {
+  if (kMaxIters == i) {
     return false;
   }
 
@@ -305,7 +305,7 @@ bool StereoModel::ImageToGroundX(const Point2d* images, const int numRays, Point
   Point3d lsr;
 
   for (int i = 0; i < 2; ++i) {
-    const double hgtRange[2] = { ground.z + mH, ground.z - mH };
+    const double hgtRange[2] = { ground.z + kH, ground.z - kH };
 
     for (int j = 0; j < 2; ++j) {
       Point3d grd{ 0.0, 0.0, hgtRange[j] };

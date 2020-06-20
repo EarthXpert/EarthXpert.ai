@@ -227,13 +227,14 @@ public:
                 std::vector<Point2d> &images) const override;
 
 private:
+  static constexpr int kMaxIters{ 8 };
+  static constexpr double kTolZ{ 1.0e-4 };  // [mm]
+  static constexpr double kH{ 10.0 };
+  static constexpr double kInvH{ 1.0 / kH };
+
   std::vector<const ISensorModel*> mModels;   // one model per ray
   std::shared_ptr<EarthEllipsoid> mEarthEllip;
   std::unique_ptr<math::IIntersect> mIntersect;
-
-  int mMaxIters{ 8 };
-  double mTolZ{ 1.0e-4 };  // [mm]
-  double mH{ 10.0 };
 
   bool ImageToGroundNR(const Point2d& leftImage, const Point2d& rightImage, Point3d& ground) const;
   bool ImageToGroundNR(const std::array<Point2d, 3>& images, Point3d& ground) const;
@@ -242,6 +243,5 @@ private:
   void ObtainModelsInfo();
 
   // cache
-  double mInvH{ 0.1 };
 };
 } // namespace earthxpert

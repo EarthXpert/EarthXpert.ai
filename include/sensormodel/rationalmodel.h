@@ -281,6 +281,10 @@ public:
                            CorrAlgo corrAlgo = eSTANDARD) const;
 
 private:
+  static constexpr int kMaxIterS2G = 10; // max. number of iterations allowed for SensorToGround
+  static constexpr double kTolPartialS2G = 0.05; // tolerance
+  static constexpr double kTol_d = 0.1; // tolerance proportional to ground range
+
   // rational polynomial coefficients
   std::array<double, NumFact>
       mNormalFators{}; // normalization factors including offsets & scales
@@ -308,8 +312,6 @@ private:
   std::array<double, NumCorr> mLineCorr{}; // polynomial for line correction
   std::array<double, NumCorr> mSampCorr{}; // polynomial for sample correction
   CorrAlgo mCorrAlgo{eSTANDARD};           // sensor correction method
-
-  int mMaxIterS2G{10}; // max. number of iterations allowed for SensorToGround
 
   bool EqualTo(const ISensorModel &rhs) const override;
   void CopyFrom(const RationalModel &rhs);
@@ -400,6 +402,9 @@ private:
                             double &v) const;
 
   // cached calculation for better performance
+  double mTol_c{ 1.0e-6 }; // tolerance proportional to image range
+  double mTol_r{ 1.0e-6 };
+    
   std::array<double, NumInvScl> mInvScale{1.0}; // reciprocal of scale factors
   std::unique_ptr<InterpCubeD>
       mCubeS2G; // interpolation cube to provide approximate X, Y coordinates

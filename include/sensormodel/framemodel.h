@@ -117,6 +117,9 @@ public:
   // block adjustment helpers
 
 private:
+  static constexpr int kMaxIterG2I{ 10 };
+  static constexpr double kConvergeTolMM{ 0.0001 }; // [mm]
+
   ImageModelPolicy mImageModel; // model defining the transformation between
                                 // focal plane and imagery
   std::shared_ptr<FrameIP>
