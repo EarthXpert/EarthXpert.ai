@@ -2,7 +2,7 @@
  *  Copyright (c) 2019.  All rights reserved.
  * -----------------------------------------------------------------------------
  */
-#include "platform/services/pdaljob.h"
+#include "platform/pdal/pdaljob.h"
 
 int main(int argc, char* argv[]) {
   earthxpert::PdalJob job;

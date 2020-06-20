@@ -12,7 +12,7 @@ earthxpert_add_executable(exgeoinfo "apps"
         ${GDAL_LIBRARY} ${GETTEXT_LIBRARY})
 earthxpert_add_executable(expdal "apps"
   SRCS "pdal.cpp"
-  ITEMS ex3rdparty core dataio platform
+  ITEMS ex3rdparty core dataio pfpdal
         Boost::filesystem Boost::program_options
         ${GDAL_LIBRARY} ${GETTEXT_LIBRARY} ${LASLIB_LIBRARY} ${PDAL_LIBRARIES})
 

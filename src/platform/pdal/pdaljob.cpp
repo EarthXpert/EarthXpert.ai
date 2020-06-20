@@ -37,7 +37,7 @@
 * OF SUCH DAMAGE.
 ****************************************************************************/
 
-#include "platform/services/pdaljob.h"
+#include "platform/pdal/pdaljob.h"
 
 #include <pdal/GDALUtils.hpp>
 #include <pdal/Kernel.hpp>

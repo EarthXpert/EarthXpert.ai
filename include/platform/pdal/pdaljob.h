@@ -36,8 +36,9 @@
  * OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY
  * OF SUCH DAMAGE.
  ****************************************************************************/
+#pragma once 
 
-#include "platform/explatform.h"
+#include "platform/pdal/expdal.h"
 #include "3rdparty/pdal/expdal.h"
 #include "core/parallel/ijob.h"
 #include <pdal/Log.hpp>
@@ -55,7 +56,7 @@ namespace earthxpert {
  *  \brief the PDAL tools pdal is a full featured CLI, and is copied here 
  *  for easier customization. The coding style is un-touched for upgrading.
  */
-class EXPLATFORM_EXPORTS PdalJob final : public IJob {
+class EXPDAL_EXPORTS PdalJob final : public IJob {
 public:
   PdalJob(std::ostream& out = std::cout);
   PdalJob(const PdalJob&) = delete;

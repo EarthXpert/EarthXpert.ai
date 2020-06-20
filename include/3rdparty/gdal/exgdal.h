@@ -32,7 +32,7 @@ inline bool operator!=(const SpatialReferenceSystem &lhs,
   return !(operator==(lhs, rhs));
 }
 
-// filed information
+// field information
 struct FieldInfo {
   OGRFieldType type{ OFTInteger };
   std::string name;
