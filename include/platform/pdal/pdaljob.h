@@ -70,6 +70,11 @@ public:
 
   int Run() override;
 
+  int operator()(const StringList& cmdArgs) {
+    SetArgs(cmdArgs);
+    return Run();
+  }
+
 private:
   std::ostream& mOut;
 

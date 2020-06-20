@@ -28,6 +28,11 @@ public:
 
   int Run() override;
 
+  int operator()() {
+    SetArgs();
+    return Run();
+  }
+
 private:
   std::string mCommand;
 };
