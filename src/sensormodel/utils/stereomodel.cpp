@@ -380,6 +380,9 @@ bool StereoModel::ImageToGroundX(const Point2d* images, const int numRays, Point
   return true;
 }
 
+/**
+ *  \todo how to set tolerances of different parameters, e.g., Lon/lat (arc degree, 1e-8) vs height (m, 1e-3)?
+ */
 void StereoModel::Initialize() {
   if (2 > mModels.size())
     throw std::exception(_("StereoModel: requires 2 or more models"));
@@ -403,9 +406,9 @@ void StereoModel::Initialize() {
 
   mOptions.max_num_iterations = 20;
   mOptions.num_threads = 1; // kNumPhysicalCores
-  //mOptions.function_tolerance = ;
-  //mOptions.gradient_tolerance = ;
-  //mOptions.parameter_tolerance = ;
+  //mOptions.function_tolerance = 1e-3;   // [pixel]
+  //mOptions.gradient_tolerance = 1e-7;
+  //mOptions.parameter_tolerance = 1e-8;  // [degree, degree, meter]
   mOptions.linear_solver_type = DENSE_QR; // DENSE_NORMAL_CHOLESKY
   //mOptions.preconditioner_type = JACOBI;  // SUBSET
   mOptions.minimizer_progress_to_stdout = false;

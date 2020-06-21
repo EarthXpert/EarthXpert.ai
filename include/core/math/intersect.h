@@ -234,7 +234,7 @@ template <typename PointTy> struct NumericLineIntersectResidual final : Intersec
 private:
   /**
    *  \param [in] pb two ratios {t1, t2}
-   *  \param [out] residual three differences in X, Y Z between the two rated points
+   *  \param [out] residual three differences in X, Y Z between the two pre-rated points
    *
    *  \remark 3x faster than calculating the L2 norm: residual[0] = cv::norm(p2 - p1);
    */

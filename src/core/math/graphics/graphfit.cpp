@@ -24,8 +24,8 @@ using namespace::Eigen;
 GraphFit::GraphFit() {
   mOptions.max_num_iterations = 20;
   mOptions.num_threads = 1; // kNumPhysicalCores
-  //mOptions.function_tolerance = ;
-  //mOptions.gradient_tolerance = ;
+  //mOptions.function_tolerance = 1e-3/1e-4; // [0.001 pixel/0.1mm]
+  //mOptions.gradient_tolerance = 1e-8;
   //mOptions.parameter_tolerance = ;
   mOptions.linear_solver_type = DENSE_QR; // DENSE_NORMAL_CHOLESKY
   //mOptions.preconditioner_type = JACOBI;  // SUBSET
