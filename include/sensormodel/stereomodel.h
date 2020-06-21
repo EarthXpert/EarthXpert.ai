@@ -55,7 +55,7 @@ public:
 
   StereoModel(const StereoModel&) = delete;
   StereoModel(StereoModel&&) = delete;
-  virtual ~StereoModel() {}
+  virtual ~StereoModel() = default;
 
   StereoModel& operator=(const StereoModel&) = delete;
   StereoModel& operator=(StereoModel&&) = delete;

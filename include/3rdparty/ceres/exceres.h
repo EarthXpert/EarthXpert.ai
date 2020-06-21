@@ -15,9 +15,10 @@ struct CeresTraits {
   static constexpr unsigned int kDynamic = 0; // size set at run time
   static constexpr unsigned int kSized = 1;   // Size-fixed at compile time
 
-  // differentation algorithm
-  static constexpr unsigned int kAutoDiff = 0;    // auto-differentiation framework
-  static constexpr unsigned int kNumericDiff = 1; // numeric differentiation
+  // differentation algorithm for CostFunction
+  static constexpr unsigned int kAnalyticDiff = 0;    // analytic-differentiation
+  static constexpr unsigned int kAutoDiff = 1;    // auto-differentiation framework
+  static constexpr unsigned int kNumericDiff = 2; // numeric differentiation
 
   // bit fields
   unsigned int sized : 1;  // 0: kDynamic;  1: kSized

@@ -17,7 +17,7 @@ using earthxpert::RationalModel;
 using earthxpert::SpatialReferenceSystem;
 using earthxpert::Tuple4d;
 
-static constexpr double tol = std::numeric_limits<double>::epsilon();
+static constexpr double kTol = std::numeric_limits<double>::epsilon();
 
 /**
  *  \brief Construct a standard third-order rational function model.
@@ -185,7 +185,7 @@ void RationalModel::CheckModel() const {
     throw std::invalid_argument("Line or Sample scale is too small.");
   if (nfc[eSLAT] < 0.0 || nfc[eSLONG] < 0.0)
     throw std::invalid_argument("Latitude or Longitude scale must not be negative.");
-  if (nfc[eSLAT] < tol || nfc[eSLONG] < tol)
+  if (nfc[eSLAT] < kTol || nfc[eSLONG] < kTol)
     throw std::invalid_argument("Latitude or Longitude scale is too small.");
   if (nfc[eSHEIGHT] < 0.0)
     throw std::invalid_argument("Height scale must not be negative.");
@@ -751,7 +751,7 @@ Tuple4d RationalModel::CalcPolynomials(const double L, const double P, const dou
     Sd += sdc[i] * LPH[i];
   }
 
-  if (fabs(Ld) < tol || fabs(Sd) < tol) {
+  if (fabs(Ld) < kTol || fabs(Sd) < kTol) {
     throw std::underflow_error("RationalModel: denominator is 0 in rational model");
   }
 

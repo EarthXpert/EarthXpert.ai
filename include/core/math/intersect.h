@@ -26,6 +26,16 @@ protected:
 };
 
 /**
+ *  \brief AnalyticDiff cost functors implements CostFunction
+ *
+ *  \param PointTy type of point: Point3f, Point3d, Vector3d, etc
+ */
+ // 3d line equation: p(x, y, z) = p0(x0, y0, z0) + t * v(a, b, c), where v = p1 - p0
+class  AnalyticLineIntersectCostFunc final : ceres::DynamicCostFunction {
+
+};
+
+/**
  *  \brief AutoDiff cost functors implements IResidual
  *
  *  \param PointTy type of point: Point3f, Point3d, Vector3d, etc
@@ -311,6 +321,16 @@ private:
     }
     return true;
   }
+};
+
+/**
+ *  \brief AnalyticDiff cost functors implements CostFunction
+ *
+ *  \param SphereType type of sphere: Circle3f, Circle3d, etc
+ */
+ // 3d sphere equation: r = distance(p(x, y, z), p0(x0, y0, z0))
+class  AnalyticSphereIntersectCostFunc final: ceres::DynamicCostFunction {
+
 };
 
 /**
