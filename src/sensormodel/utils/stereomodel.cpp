@@ -3,6 +3,7 @@
  * -----------------------------------------------------------------------------
  */
 #include "sensormodel/stereomodel.h"
+#include "sensormodel/intersecti2g.h"
 #include "3rdparty/gettext/exgettext.h"
 #include "core/exceptions/exexcept.h"
 #include "core/math/intersect.h"
@@ -17,6 +18,7 @@
 using namespace earthxpert;
 using namespace earthxpert::math;
 using namespace earthxpert::thirdparty;
+using namespace ceres;
 
 /**
  *  Constructor.
@@ -30,7 +32,7 @@ StereoModel::StereoModel(ISensorModel const* const leftModel, ISensorModel const
   mModels.resize(2);
   mModels[0] = leftModel;
   mModels[1] = rightModel;
-  ObtainModelsInfo();
+  Initialize();
 }
 
 /**
@@ -41,7 +43,7 @@ StereoModel::StereoModel(ISensorModel const* const leftModel, ISensorModel const
 StereoModel::StereoModel(const std::array<ISensorModel const*, 3>& sensorModels) {
   mModels.resize(3);
   std::copy_n(std::begin(sensorModels), 3, std::begin(mModels));
-  ObtainModelsInfo();
+  Initialize();
 }
 
 /**
@@ -53,7 +55,7 @@ StereoModel::StereoModel(const std::array<ISensorModel const*, 3>& sensorModels)
 StereoModel::StereoModel(const std::vector<ISensorModel const*>& sensorModels) {
   assert(2 <= sensorModels.size());
   mModels = sensorModels;
-  ObtainModelsInfo();
+  Initialize();
 }
 
 void StereoModel::SetEarthEllipsoid(std::shared_ptr<EarthEllipsoid> earthEllip) {
@@ -197,6 +199,22 @@ size_t StereoModel::GroundToImage(const std::vector<Point3d> &grounds, std::vect
   return ret;
 }
 
+// Ceres
+// \todo intial position
+bool StereoModel::ImageToGroundCeres(const Point2d& leftImage,
+  const Point2d& rightImage, Point3d& ground) const {
+  assert(2 == mModels.size());
+  ground.z = (mModels[0]->GetMeanHeight() + mModels[1]->GetMeanHeight()) / 2.0;
+  mModels[0]->ImageToGround(leftImage, ground);
+
+  const Point2d images[2] = { leftImage , rightImage };
+  Solver::Summary summary;
+  const auto ret = IntersectI2G<NumericG2IResidual>(images,
+    mModels.data(), 2, ground, mOptions, summary);
+  
+  return ret;
+}
+
 // Newton-Raphson
 bool StereoModel::ImageToGroundNR(const Point2d& leftImage,
   const Point2d& rightImage, Point3d& ground) const {
@@ -237,6 +255,21 @@ bool StereoModel::ImageToGroundNR(const Point2d& leftImage,
   }
 
   return true;
+}
+
+// Ceres
+// \todo intial position
+bool StereoModel::ImageToGroundCeres(const std::array<Point2d, 3>& images, Point3d& ground) const {
+  assert(3 == mModels.size());
+  ground.z = (mModels[0]->GetMeanHeight() + mModels[1]->GetMeanHeight() +
+    mModels[2]->GetMeanHeight()) / 3.0;
+  mModels[1]->ImageToGround(images[1], ground);
+
+  Solver::Summary summary;
+  const auto ret = IntersectI2G<NumericG2IResidual>(images.data(), 
+    mModels.data(), 3, ground, mOptions, summary);
+
+  return ret;
 }
 
 bool StereoModel::ImageToGroundNR(const std::array<Point2d, 3>& images, Point3d& ground) const {
@@ -280,6 +313,24 @@ bool StereoModel::ImageToGroundNR(const std::array<Point2d, 3>& images, Point3d&
   }
 
   return true;
+}
+
+// Ceres
+// \todo intial position
+bool StereoModel::ImageToGroundCeres(const Point2d* images, int numRays, Point3d& ground) const {
+  assert(2 <= mModels.size());
+  ground.z = 0.0;
+  for (int k = 0; k < numRays; ++k) {
+    ground.z += mModels[k]->GetMeanHeight();
+  }
+  ground.z /= double(numRays);
+  mModels[numRays/2]->ImageToGround(images[numRays/2], ground);
+
+  Solver::Summary summary;
+  const auto ret = IntersectI2G<NumericG2IResidual>(images,
+    mModels.data(), numRays, ground, mOptions, summary);
+
+  return ret;
 }
 
 /**
@@ -329,7 +380,7 @@ bool StereoModel::ImageToGroundX(const Point2d* images, const int numRays, Point
   return true;
 }
 
-void StereoModel::ObtainModelsInfo() {
+void StereoModel::Initialize() {
   if (2 > mModels.size())
     throw std::exception(_("StereoModel: requires 2 or more models"));
 
@@ -349,4 +400,15 @@ void StereoModel::ObtainModelsInfo() {
       }
     }
   }
+
+  mOptions.max_num_iterations = 20;
+  mOptions.num_threads = 1; // kNumPhysicalCores
+  //mOptions.function_tolerance = ;
+  //mOptions.gradient_tolerance = ;
+  //mOptions.parameter_tolerance = ;
+  mOptions.linear_solver_type = DENSE_QR; // DENSE_NORMAL_CHOLESKY
+  //mOptions.preconditioner_type = JACOBI;  // SUBSET
+  mOptions.minimizer_progress_to_stdout = false;
+  //mOptions.update_state_every_iteration = true;
+  //mOptions.callbacks = {};
 }

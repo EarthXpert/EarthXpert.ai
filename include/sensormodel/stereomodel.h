@@ -145,7 +145,7 @@ public:
     assert(numRays == images.size());
 
     if (!mEarthEllip || !mIntersect) {    // 
-      return false; // ImageToGroundNR(image, ground)
+      return false; // ImageToGroundNR(images, ground)
     }
     assert(eGEO == mModels[0]->GetSrsType());
 
@@ -226,9 +226,17 @@ public:
   virtual size_t GroundToImage(const std::vector<Point3d> &grounds,
                 std::vector<Point2d> &images) const override;
 
-private:
+  void SetOptions(const Solver::Options& options) { mOptions = options; }
+
+  auto& GetOptions() noexcept { return mOptions; }
+
+protected:
   static constexpr int kMaxIters{ 8 };
   static constexpr double kTolZ{ 1.0e-4 };  // [mm]
+
+  Solver::Options mOptions;   // the options to control ceres solver
+
+private:
   static constexpr double kH{ 10.0 };
   static constexpr double kInvH{ 1.0 / kH };
 
@@ -236,11 +244,16 @@ private:
   std::shared_ptr<EarthEllipsoid> mEarthEllip;
   std::unique_ptr<math::IIntersect> mIntersect;
 
+  bool ImageToGroundCeres(const Point2d& leftImage, const Point2d& rightImage, Point3d& ground) const;
   bool ImageToGroundNR(const Point2d& leftImage, const Point2d& rightImage, Point3d& ground) const;
+
+  bool ImageToGroundCeres(const std::array<Point2d, 3>& images, Point3d& ground) const;
   bool ImageToGroundNR(const std::array<Point2d, 3>& images, Point3d& ground) const;
+
+  bool ImageToGroundCeres(const Point2d* images, int numRays, Point3d& ground) const;
   bool ImageToGroundX(const Point2d* images, int numRays, Point3d& ground) const;
 
-  void ObtainModelsInfo();
+  void Initialize();
 
   // cache
 };
