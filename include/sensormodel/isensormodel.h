@@ -35,7 +35,7 @@ class EXSENSORMODEL_EXPORTS ISensorModel {
 public:
   virtual ~ISensorModel() = default;
 
-  enum class ModelType {
+  enum ModelType {
     eUNDEFINED = -1,
     // physical sensor models
     eADS,       ///< Indicates an aerial push-broom sensor
@@ -48,7 +48,6 @@ public:
     eRATIONAL, ///< Indicates a rational polynomial model
     NumSensorTypes
   };
-  using mt = ModelType;
 
   virtual bool operator==(const ISensorModel &rhs) const = 0;
   virtual bool operator!=(const ISensorModel &rhs) const = 0;

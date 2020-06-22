@@ -32,7 +32,15 @@ class ISensorModel;
  */
 class EXSENSORMODEL_EXPORTS IStereoModel {
 public:
-  virtual ~IStereoModel() {}
+  // algorithm of forward intersection of rays
+  enum ForwardAlgo {
+    eCA_INTERSECT,    // intersect in 3d Cartisian space
+    eSM_CERES,        // re-project residual via sensor model by ceres
+    eSM_EXAI,         // analytic solution via physical sensor model
+    eSM_NR            // re-project residual via sensor model by Newton-Raphson iteration
+  };
+
+  virtual ~IStereoModel() = default;
 
   /**
    *  Image-to-ground backward projection (fixed).

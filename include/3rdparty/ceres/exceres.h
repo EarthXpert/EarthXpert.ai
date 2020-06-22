@@ -8,6 +8,9 @@
 #include "ceres/ceres.h"
 #include "ceres/tiny_solver.h"
 
+/**
+ *  \todo memory pool for small objects
+ */
 namespace earthxpert::thirdparty {
 // CostFunction categary
 struct CeresTraits {

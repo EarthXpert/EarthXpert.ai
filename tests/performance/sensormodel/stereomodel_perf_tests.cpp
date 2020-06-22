@@ -47,6 +47,7 @@ void StereoModel_I2G_Intersect() {
  
   StereoModel smI(leftModel.get(), rightModel.get());    // intersect
   smI.SetEarthEllipsoid(std::move(ee));
+  smI.SetForwardAlgorithm(StereoModel::eCA_INTERSECT);
   I2G_Cube(smI, cube);
 }
 
@@ -59,6 +60,7 @@ void StereoModel_I2G_NR() {
   auto cube = CreateCube(leftModel.get(), rightModel.get());
 
   StereoModel smN(leftModel.get(), rightModel.get());    // NR
+  smN.SetForwardAlgorithm(StereoModel::eSM_NR);
   I2G_Cube(smN, cube);
 }
 
@@ -77,6 +79,7 @@ void StereoModel_I2G_IntersectOMP() {
 
   StereoModel smI(leftModel.get(), rightModel.get());    // intersect
   smI.SetEarthEllipsoid(std::move(ee));
+  smI.SetForwardAlgorithm(StereoModel::eCA_INTERSECT);
   I2G_CubeOMP(smI, cube);
 }
 
@@ -89,6 +92,7 @@ void StereoModel_I2G_NROMP() {
   auto cube = CreateCube(leftModel.get(), rightModel.get());
 
   StereoModel smN(leftModel.get(), rightModel.get());    // NR
+  smN.SetForwardAlgorithm(StereoModel::eSM_NR);
   I2G_CubeOMP(smN, cube);
 }
 

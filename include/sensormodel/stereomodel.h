@@ -82,13 +82,23 @@ public:
   virtual bool ImageToGround(const Point2d &leftImage,
     const Point2d &rightImage, Point3d &ground) const override {
     assert(2 == mModels.size());
-    if (!mEarthEllip || !mIntersect) {    // 
+    switch (mFwdAlgo) {
+    case eCA_INTERSECT: {
+      assert(eGEO == mModels[0]->GetSrsType());
+      assert(mEarthEllip && mIntersect);
+      Point2d images[2] = { leftImage, rightImage };
+      return ImageToGroundX(images, 2, ground);
+    }
+    case eSM_CERES: {
+      return ImageToGroundCeres(leftImage, rightImage, ground);
+    }
+    case eSM_NR: {
       return ImageToGroundNR(leftImage, rightImage, ground);
     }
-    assert(eGEO == mModels[0]->GetSrsType());
-
-    Point2d images[2] = { leftImage, rightImage };
-    return ImageToGroundX(images, 2, ground);
+    default: {
+      return false;
+    }
+    }
   }
 
   /**
@@ -121,12 +131,22 @@ public:
   virtual bool
   ImageToGround(const std::array<Point2d, 3> &images, Point3d &ground) const override {
     assert(3 == mModels.size());
-    if (!mEarthEllip || !mIntersect) {    // 
+    switch (mFwdAlgo) {
+    case eCA_INTERSECT: {
+      assert(eGEO == mModels[0]->GetSrsType());
+      assert(mEarthEllip && mIntersect);
+      return ImageToGroundX(images.data(), 3, ground);
+    }
+    case eSM_CERES: {
+      return ImageToGroundCeres(images, ground);
+    }
+    case eSM_NR: {
       return ImageToGroundNR(images, ground);
     }
-    assert(eGEO == mModels[0]->GetSrsType());
-
-    return ImageToGroundX(images.data(), 3, ground);
+    default: {
+      return false;
+    }
+    }
   }
 
   /**
@@ -141,15 +161,25 @@ public:
    */
   virtual bool
   ImageToGround(const std::vector<Point2d> &images, Point3d &ground) const override {
-    const size_t numRays = mModels.size();
+    const int numRays = int(mModels.size());
     assert(numRays == images.size());
-
-    if (!mEarthEllip || !mIntersect) {    // 
-      return false; // ImageToGroundNR(images, ground)
+    switch (mFwdAlgo) {
+    case eCA_INTERSECT: {
+      assert(eGEO == mModels[0]->GetSrsType());
+      assert(mEarthEllip && mIntersect);
+      return ImageToGroundX(images.data(), numRays, ground);
     }
-    assert(eGEO == mModels[0]->GetSrsType());
-
-    return ImageToGroundX(images.data(), numRays, ground);
+    case eSM_CERES: {
+      return ImageToGroundCeres(images.data(), numRays, ground);
+    }
+    case eSM_NR: {
+      //return ImageToGroundNR(images, numRays, ground);
+      throw std::exception("StereoModel: not implemented");
+    }
+    default: {
+        return false;
+    }
+    }
   }
 
   /**
@@ -226,14 +256,17 @@ public:
   virtual size_t GroundToImage(const std::vector<Point3d> &grounds,
                 std::vector<Point2d> &images) const override;
 
+  void SetForwardAlgorithm(const ForwardAlgo fwdAlgo);
   void SetOptions(const Solver::Options& options) { mOptions = options; }
 
+  auto GetForwardAlgorithm() const noexcept { return mFwdAlgo; }
   auto& GetOptions() noexcept { return mOptions; }
 
 protected:
   static constexpr int kMaxIters{ 8 };
   static constexpr double kTolZ{ 1.0e-4 };  // [mm]
 
+  ForwardAlgo mFwdAlgo{ eSM_NR };
   Solver::Options mOptions;   // the options to control ceres solver
 
 private:
@@ -244,6 +277,8 @@ private:
   std::shared_ptr<EarthEllipsoid> mEarthEllip;
   std::unique_ptr<math::IIntersect> mIntersect;
 
+  void Initialize();
+
   bool ImageToGroundCeres(const Point2d& leftImage, const Point2d& rightImage, Point3d& ground) const;
   bool ImageToGroundNR(const Point2d& leftImage, const Point2d& rightImage, Point3d& ground) const;
 
@@ -252,8 +287,6 @@ private:
 
   bool ImageToGroundCeres(const Point2d* images, int numRays, Point3d& ground) const;
   bool ImageToGroundX(const Point2d* images, int numRays, Point3d& ground) const;
-
-  void Initialize();
 
   // cache
 };

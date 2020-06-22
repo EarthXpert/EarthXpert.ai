@@ -6,6 +6,10 @@
 
 using namespace earthxpert;
 
+void RationalStereoModel::Initialize() {
+  mFwdAlgo = eSM_EXAI;
+}
+
 /**
  *  Image-to-ground backward projection (fixed).
  *

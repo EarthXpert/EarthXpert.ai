@@ -58,6 +58,56 @@ StereoModel::StereoModel(const std::vector<ISensorModel const*>& sensorModels) {
   Initialize();
 }
 
+/**
+ *  \todo how to set tolerances of different parameters, e.g., Lon/lat (arc degree, 1e-8) vs height (m, 1e-3)?
+ *  \todo verify consitency among all sensor models
+ */
+void StereoModel::Initialize() {
+  if (2 > mModels.size())
+    throw std::exception(_("StereoModel: requires 2 or more models"));
+
+  // default forward intersection algorithm
+  const auto modelType = mModels[0]->GetModelType();
+  switch (modelType) {
+  case ISensorModel::eFRAME:
+    break;
+  case ISensorModel::eRATIONAL:
+    mFwdAlgo = eSM_NR;
+    break;
+  default:
+    mFwdAlgo = eSM_NR;
+    break;
+  }
+
+  // verify the datum be compatible
+  if (mEarthEllip) {
+    EqualD eq;
+    const auto semiMajor = mEarthEllip->GetSemiMajor();
+    const auto eccSq = mEarthEllip->GetEccSquared();
+
+    for (auto sm : mModels) {
+      auto srs = sm->GetCoordinateSystem();
+      const auto a = srs->GetSemiMajor();
+      const auto ecc2 = srs->GetSquaredEccentricity();
+
+      if (!eq(semiMajor, a) || !eq(eccSq, ecc2)) {
+        throw std::exception(_("StereoModel: in-compatible datum"));
+      }
+    }
+  }
+
+  mOptions.max_num_iterations = 20;
+  mOptions.num_threads = 1; // kNumPhysicalCores
+  //mOptions.function_tolerance = 1e-3;   // [pixel]
+  //mOptions.gradient_tolerance = 1e-7;
+  //mOptions.parameter_tolerance = 1e-8;  // [degree, degree, meter]
+  mOptions.linear_solver_type = DENSE_QR; // DENSE_NORMAL_CHOLESKY
+  //mOptions.preconditioner_type = JACOBI;  // SUBSET
+  mOptions.minimizer_progress_to_stdout = false;
+  //mOptions.update_state_every_iteration = true;
+  //mOptions.callbacks = {};
+}
+
 void StereoModel::SetEarthEllipsoid(std::shared_ptr<EarthEllipsoid> earthEllip) {
   if (!earthEllip)
     throw std::invalid_argument("StereoModel: earthEllip");
@@ -74,6 +124,12 @@ void StereoModel::SetEarthEllipsoid(std::shared_ptr<EarthEllipsoid> earthEllip) 
     //mIntersect = std::make_unique<XMultipleLines>();
     throw std::exception(_("StereoModel: not implemented for four or more rays"));
   }
+}
+
+void StereoModel::SetForwardAlgorithm(const ForwardAlgo fwdAlgo) {
+  mFwdAlgo = fwdAlgo; 
+
+  // verify consistency
 }
 
 /**
@@ -378,40 +434,4 @@ bool StereoModel::ImageToGroundX(const Point2d* images, const int numRays, Point
   }
 
   return true;
-}
-
-/**
- *  \todo how to set tolerances of different parameters, e.g., Lon/lat (arc degree, 1e-8) vs height (m, 1e-3)?
- */
-void StereoModel::Initialize() {
-  if (2 > mModels.size())
-    throw std::exception(_("StereoModel: requires 2 or more models"));
-
-  // verify the datum be compatible
-  if (mEarthEllip) {
-    EqualD eq;
-    const auto semiMajor = mEarthEllip->GetSemiMajor();
-    const auto eccSq = mEarthEllip->GetEccSquared();
-
-    for (auto sm : mModels) {
-      auto srs = sm->GetCoordinateSystem();
-      const auto a = srs->GetSemiMajor();
-      const auto ecc2 = srs->GetSquaredEccentricity();
-
-      if (!eq(semiMajor, a) || !eq(eccSq, ecc2)) {
-        throw std::exception(_("StereoModel: in-compatible datum"));
-      }
-    }
-  }
-
-  mOptions.max_num_iterations = 20;
-  mOptions.num_threads = 1; // kNumPhysicalCores
-  //mOptions.function_tolerance = 1e-3;   // [pixel]
-  //mOptions.gradient_tolerance = 1e-7;
-  //mOptions.parameter_tolerance = 1e-8;  // [degree, degree, meter]
-  mOptions.linear_solver_type = DENSE_QR; // DENSE_NORMAL_CHOLESKY
-  //mOptions.preconditioner_type = JACOBI;  // SUBSET
-  mOptions.minimizer_progress_to_stdout = false;
-  //mOptions.update_state_every_iteration = true;
-  //mOptions.callbacks = {};
 }

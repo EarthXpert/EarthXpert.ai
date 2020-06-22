@@ -18,7 +18,6 @@ class RationalModel;
  */
 class EXSENSORMODEL_EXPORTS RationalStereoModel final : public StereoModel {
 public:
-
   /**
    *  Image-to-ground backward projection (fixed).
    *
@@ -38,6 +37,7 @@ public:
     const Point2d& rightImage, Point3d& ground) const override;
 
 private:
+  void Initialize();
 
   // cached for convenience/performance
   std::vector<const RationalModel*> mModels;   // one model per ray
