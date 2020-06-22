@@ -16,7 +16,7 @@ using namespace earthxpert;
 using earthxpert::RegionLayoutD;
 using fgt = FieldGroup;
 
-static constexpr double tol = 1.0e-6; // [um]
+static constexpr double kTol = 1.0e-6; // [um]
 
 /**
  *  \brief PointcloudReader test cases, zero offsets in .las
@@ -39,15 +39,15 @@ TEST(pointcloudreader, ReadPointcloud_LAS_XYZ) {
   ASSERT_FALSE(fg.test(fgt::kPOSCLA));
 
   const auto origin = pc->GetOrigin();
-  ASSERT_NEAR(0, origin.x, tol) << "difference > 1 um";
-  ASSERT_NEAR(0, origin.y, tol) << "difference > 1 um";
-  ASSERT_NEAR(0, origin.z, tol) << "difference > 1 um";
+  ASSERT_NEAR(0, origin.x, kTol) << "difference > 1 um";
+  ASSERT_NEAR(0, origin.y, kTol) << "difference > 1 um";
+  ASSERT_NEAR(0, origin.z, kTol) << "difference > 1 um";
 
   const auto bbox = pc->ObtainBoundingBox2D();
-  ASSERT_NEAR(539836, bbox.minX, tol) << "difference > 1 um";
-  ASSERT_NEAR(1384288.75, bbox.minY, tol) << "difference > 1 um";
-  ASSERT_NEAR(1205, bbox.width, tol) << "difference > 1 um";
-  ASSERT_NEAR(873, bbox.height, tol) << "difference > 1 um";
+  ASSERT_NEAR(539836, bbox.minX, kTol) << "difference > 1 um";
+  ASSERT_NEAR(1384288.75, bbox.minY, kTol) << "difference > 1 um";
+  ASSERT_NEAR(1205, bbox.width, kTol) << "difference > 1 um";
+  ASSERT_NEAR(873, bbox.height, kTol) << "difference > 1 um";
 }
 
 /**
@@ -71,15 +71,15 @@ TEST(pointcloudreader, ReadPointcloud_LAS_XYZC) {
   ASSERT_TRUE(fg.test(fgt::kPOSCLA));
 
   const auto origin = pc->GetOrigin();
-  ASSERT_NEAR(424996.503, origin.x, tol) << "difference > 1 um";
-  ASSERT_NEAR(5132320.247, origin.y, tol) << "difference > 1 um";
-  ASSERT_NEAR(0, origin.z, tol) << "difference > 1 um";
+  ASSERT_NEAR(424996.503, origin.x, kTol) << "difference > 1 um";
+  ASSERT_NEAR(5132320.247, origin.y, kTol) << "difference > 1 um";
+  ASSERT_NEAR(0, origin.z, kTol) << "difference > 1 um";
 
   const auto bbox = pc->ObtainBoundingBox2D();
-  ASSERT_NEAR(424854.93700573733, bbox.minX, tol) << "difference > 1 um";
-  ASSERT_NEAR(5132303.1900007939, bbox.minY, tol) << "difference > 1 um";
-  ASSERT_NEAR(292.94400024414062, bbox.width, tol) << "difference > 1 um";
-  ASSERT_NEAR(17.056999206542969, bbox.height, tol) << "difference > 1 um";
+  ASSERT_NEAR(424854.93700573733, bbox.minX, kTol) << "difference > 1 um";
+  ASSERT_NEAR(5132303.1900007939, bbox.minY, kTol) << "difference > 1 um";
+  ASSERT_NEAR(292.94400024414062, bbox.width, kTol) << "difference > 1 um";
+  ASSERT_NEAR(17.056999206542969, bbox.height, kTol) << "difference > 1 um";
 }
 
 /**
@@ -104,22 +104,22 @@ TEST(pointcloudreader, ReadPointcloud_LAZ_XYZ) {
   ASSERT_FALSE(fg.test(fgt::kPOSRGB));
 
   const auto origin = pc->GetOrigin();
-  ASSERT_NEAR(0, origin.x, tol) << "difference > 1 um";
-  ASSERT_NEAR(0, origin.y, tol) << "difference > 1 um";
-  ASSERT_NEAR(0, origin.z, tol) << "difference > 1 um";
+  ASSERT_NEAR(0, origin.x, kTol) << "difference > 1 um";
+  ASSERT_NEAR(0, origin.y, kTol) << "difference > 1 um";
+  ASSERT_NEAR(0, origin.z, kTol) << "difference > 1 um";
 
   const size_t i = filePointCount / 2;
 
   const auto xyz = pc->GetField<XYZF>(i);
-  ASSERT_NEAR(-11.8599997, xyz.x, tol) << "difference > 1 um";
-  ASSERT_NEAR( 99.4300003, xyz.y, tol) << "difference > 1 um";
-  ASSERT_NEAR( 11.9899998, xyz.z, tol) << "difference > 1 um";
+  ASSERT_NEAR(-11.8599997, xyz.x, kTol) << "difference > 1 um";
+  ASSERT_NEAR( 99.4300003, xyz.y, kTol) << "difference > 1 um";
+  ASSERT_NEAR( 11.9899998, xyz.z, kTol) << "difference > 1 um";
 
   const auto bbox = pc->ObtainBoundingBox2D();
-  ASSERT_NEAR(-244.16000366210938, bbox.minX, tol) << "difference > 1 um";
-  ASSERT_NEAR(-320.20001220703125, bbox.minY, tol) << "difference > 1 um";
-  ASSERT_NEAR(512, bbox.width, tol) << "difference > 1 um";
-  ASSERT_NEAR(0.850006103515625, bbox.height, tol) << "difference > 1 um";
+  ASSERT_NEAR(-244.16000366210938, bbox.minX, kTol) << "difference > 1 um";
+  ASSERT_NEAR(-320.20001220703125, bbox.minY, kTol) << "difference > 1 um";
+  ASSERT_NEAR(512, bbox.width, kTol) << "difference > 1 um";
+  ASSERT_NEAR(0.850006103515625, bbox.height, kTol) << "difference > 1 um";
 }
 
 /**
@@ -144,16 +144,16 @@ TEST(pointcloudreader, ReadPointcloud_LAZ_XYZCRGB) {
   ASSERT_TRUE(fg.test(fgt::kPOSRGB));
 
   const auto origin = pc->GetOrigin();
-  ASSERT_NEAR(0, origin.x, tol) << "difference > 1 um";
-  ASSERT_NEAR(0, origin.y, tol) << "difference > 1 um";
-  ASSERT_NEAR(0, origin.z, tol) << "difference > 1 um";
+  ASSERT_NEAR(0, origin.x, kTol) << "difference > 1 um";
+  ASSERT_NEAR(0, origin.y, kTol) << "difference > 1 um";
+  ASSERT_NEAR(0, origin.z, kTol) << "difference > 1 um";
 
   const size_t i = 823560 / 2;
 
   const auto xyz = pc->GetField<XYZF>(i);
-  ASSERT_NEAR(-11.8599997, xyz.x, tol) << "difference > 1 um";
-  ASSERT_NEAR( 99.4300003, xyz.y, tol) << "difference > 1 um";
-  ASSERT_NEAR( 11.9899998, xyz.z, tol) << "difference > 1 um";
+  ASSERT_NEAR(-11.8599997, xyz.x, kTol) << "difference > 1 um";
+  ASSERT_NEAR( 99.4300003, xyz.y, kTol) << "difference > 1 um";
+  ASSERT_NEAR( 11.9899998, xyz.z, kTol) << "difference > 1 um";
 
   const auto c = pc->GetField<Classification>(i);
   ASSERT_EQ(0, c.c);
@@ -193,9 +193,9 @@ TEST(pointcloudreader, ReadPointcloud_LAS_XYZC_CHUNKS) {
     ASSERT_EQ(chunkNumPts4[j], readNumPts);
 
     const auto xyz = pc.GetField<XYZF>(0);
-    ASSERT_NEAR(xyz4[j].x, xyz.x, tol) << "difference > 1 um";
-    ASSERT_NEAR(xyz4[j].y, xyz.y, tol) << "difference > 1 um";
-    ASSERT_NEAR(xyz4[j].z, xyz.z, tol) << "difference > 1 um";
+    ASSERT_NEAR(xyz4[j].x, xyz.x, kTol) << "difference > 1 um";
+    ASSERT_NEAR(xyz4[j].y, xyz.y, kTol) << "difference > 1 um";
+    ASSERT_NEAR(xyz4[j].z, xyz.z, kTol) << "difference > 1 um";
   }
 }
 
@@ -267,9 +267,9 @@ TEST(pointcloudreader, ReadPointcloud_LAS_XYZC_TILES) {
     ASSERT_EQ(tileNumPts4[i], pc->GetPointCount()) << "#points";
 
     const auto xyz = pc->GetField<XYZF>(0);
-    ASSERT_NEAR(xyz4[i].x, xyz.x, tol) << "difference > 1 um";
-    ASSERT_NEAR(xyz4[i].y, xyz.y, tol) << "difference > 1 um";
-    ASSERT_NEAR(xyz4[i].z, xyz.z, tol) << "difference > 1 um";
+    ASSERT_NEAR(xyz4[i].x, xyz.x, kTol) << "difference > 1 um";
+    ASSERT_NEAR(xyz4[i].y, xyz.y, kTol) << "difference > 1 um";
+    ASSERT_NEAR(xyz4[i].z, xyz.z, kTol) << "difference > 1 um";
 
     const auto tile2 = pc->ObtainBoundingBox2D();
     if (!(tile >= tile2)) {
