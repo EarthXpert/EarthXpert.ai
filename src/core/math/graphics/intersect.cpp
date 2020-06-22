@@ -16,9 +16,9 @@ using namespace::Eigen;
 Intersect::Intersect() {
   mOptions.max_num_iterations = 20;
   mOptions.num_threads = 1; // kNumPhysicalCores
-  //mOptions.function_tolerance = ;
-  //mOptions.gradient_tolerance = ;
-  //mOptions.parameter_tolerance = ;
+  //mOptions.function_tolerance = 1e-4;  // [0.1mm]
+  //mOptions.gradient_tolerance = 1e-8;
+  //mOptions.parameter_tolerance = 1e-4;  // [0.1mm]
   mOptions.linear_solver_type = DENSE_QR; // DENSE_NORMAL_CHOLESKY
   //mOptions.preconditioner_type = JACOBI;  // SUBSET
   mOptions.minimizer_progress_to_stdout = false;
@@ -35,7 +35,7 @@ Intersect::Intersect() {
  *  \param [out] summary the report of ceres solver.
  *  \return Return true if successful, false if parallel.
  */
-bool XTwoLines::Intersect(const Point3d* segs, Point3d& p, 
+bool XTwoLines::IntersectCeres(const Point3d* segs, Point3d& p, 
   Solver::Summary& summary, const int) const {
   std::vector<double> pb(2, 0.5);
   const bool ret = IntersectGeometries<Point3d, AutoLineIntersectResidual>(
@@ -56,7 +56,7 @@ bool XTwoLines::Intersect(const Point3d* segs, Point3d& p,
  *  \param [in] s2 the second line segment defined by two end points
  *  \return Return true if successful, false if parallel.
  */
-bool XTwoLines::Intersect(const Point3d* s1, const Point3d* s2, Point3d& p) const {
+bool XTwoLines::IntersectEigen(const Point3d* s1, const Point3d* s2, Point3d& p) const {
   const Point3d v1 = s1[1] - s1[0];
   const Point3d v2 = s2[1] - s2[0];
 
@@ -87,7 +87,7 @@ bool XTwoLines::Intersect(const Point3d* s1, const Point3d* s2, Point3d& p) cons
  *  \param [out] summary the report of ceres solver.
  *  \return Return true if successful, false if parallel.
  */
-bool XThreeLines::Intersect(const Point3d* segs, 
+bool XThreeLines::IntersectCeres(const Point3d* segs, 
   Point3d& p, Solver::Summary& summary, const int) const {
   std::vector<double> pb(3, 0.5);
   const bool ret = IntersectGeometries<Point3d, NumericLineIntersectResidual>(
@@ -111,7 +111,7 @@ bool XThreeLines::Intersect(const Point3d* segs,
  *  \param [in] s3 the second line segment defined by two end points
  *  \return Return true if successful, false if parallel.
  */
-bool XThreeLines::Intersect(const Point3d* s1, const Point3d* s2, 
+bool XThreeLines::IntersectEigen(const Point3d* s1, const Point3d* s2, 
   const Point3d* s3, Point3d& p) const {
   const Point3d v1 = s1[1] - s1[0];
   const Point3d v2 = s2[1] - s2[0];
@@ -149,7 +149,7 @@ bool XThreeLines::Intersect(const Point3d* s1, const Point3d* s2,
  *  \param [in] numSegs number of line segments given by segs, must be 2+
  *  \return Return true if successful, false if parallel.
  */
-bool XMultipleLines::Intersect(const Point3d* segs, Point3d& p,
+bool XMultipleLines::IntersectCeres(const Point3d* segs, Point3d& p,
   Solver::Summary& summary, const int numSegs) const {
   assert(2 <= numSegs);
   std::vector<double> pb(numSegs, 0.5);
@@ -174,7 +174,7 @@ bool XMultipleLines::Intersect(const Point3d* segs, Point3d& p,
  *  \param [in] numSegs number of line segments given by segs, must be 2+
  *  \return Return true if successful, false if parallel.
  */
-bool XMultipleLines::Intersect(const Point3d* segs, 
+bool XMultipleLines::IntersectEigen(const Point3d* segs, 
   Point3d& p, const int numSegs) const {
   assert(2 <= numSegs);
   return true;

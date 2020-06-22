@@ -17,7 +17,7 @@ using earthxpert::RationalModel;
 using earthxpert::SpatialReferenceSystem;
 using earthxpert::Tuple4d;
 
-static constexpr double tol = std::numeric_limits<double>::epsilon();
+static constexpr double kTol = std::numeric_limits<double>::epsilon();
 
 /**
  *  \brief Construct a standard third-order rational function model.
@@ -59,6 +59,9 @@ RationalModel::RationalModel(const int numCols, const int numRows,
   mInvScale[eISLAT] = 1.0 / nfc[eSLAT];
   mInvScale[eISLONG] = 1.0 / nfc[eSLONG];
   mInvScale[eISHEIGHT] = 1.0 / nfc[eSHEIGHT];
+
+  mTol_c = mInvScale[eISSAMP] * 0.001;
+  mTol_r = mInvScale[eISLINE] * 0.001;
 
   BuildCubeS2G();
 }
@@ -182,7 +185,7 @@ void RationalModel::CheckModel() const {
     throw std::invalid_argument("Line or Sample scale is too small.");
   if (nfc[eSLAT] < 0.0 || nfc[eSLONG] < 0.0)
     throw std::invalid_argument("Latitude or Longitude scale must not be negative.");
-  if (nfc[eSLAT] < tol || nfc[eSLONG] < tol)
+  if (nfc[eSLAT] < kTol || nfc[eSLONG] < kTol)
     throw std::invalid_argument("Latitude or Longitude scale is too small.");
   if (nfc[eSHEIGHT] < 0.0)
     throw std::invalid_argument("Height scale must not be negative.");
@@ -334,7 +337,8 @@ void RationalModel::CopyFrom(const RationalModel &rhs) {
   mSampCorr = rhs.mSampCorr;
   mCorrAlgo = rhs.mCorrAlgo;
 
-  mMaxIterS2G = rhs.mMaxIterS2G;
+  mTol_c = rhs.mTol_c;
+  mTol_r = rhs.mTol_r;
 
   mInvScale = rhs.mInvScale;
   mCubeS2G = rhs.mCubeS2G->Clone();
@@ -364,7 +368,9 @@ void RationalModel::MoveFrom(RationalModel &&rhs) noexcept {
   mSampCorr = rhs.mSampCorr;
   mCorrAlgo = rhs.mCorrAlgo;
 
-  mMaxIterS2G = rhs.mMaxIterS2G;
+  mTol_c = rhs.mTol_c;
+  mTol_r = rhs.mTol_r;
+
   mInvScale = rhs.mInvScale;
   mCubeS2G = std::move(rhs.mCubeS2G);
 
@@ -520,12 +526,10 @@ Point2d RationalModel::CalcCorrection(const Point2d& image) const {
  */
 bool RationalModel::SensorToGround(const double x, const double y,
   const double w, double& u, double& v) const {
-  if (mCubeS2G)
-  {
+  if (mCubeS2G) {
     std::tie(u, v) = mCubeS2G->GetVal2(x, y, w);
   }
-  else
-  { // direct estimates for u, v
+  else { // direct estimates for u, v
     if (!SensorToGroundLinear(x, y, w, u, v))
       return false;
   }
@@ -539,14 +543,7 @@ bool RationalModel::SensorToGround(const double x, const double y,
   auto ldc = mLineDenCoef.data(); // Line denominator coefficients
 
   // refine the estimated ground horizontal position iteratively
-  bool recalcFlag{
-      true }; // Flag indicating whether partial derivatives should be recomputed
-  const double tolPartialS2G{ 0.05 }; // tolerance
-
-  const double tol_d{ 0.1 }; // tolerance proportional to ground range
-  const double tol_c =
-    0.001 * mInvScale[eISSAMP]; // tolerance proportional to image range
-  const double tol_r = 0.001 * mInvScale[eISLINE];
+  bool recalcFlag{ true }; // Flag indicating whether partial derivatives should be recomputed
 
   // Partial derivatives of Fc = (Sn/Sd) and Fr = (Ln/Ld) w.r.t. u and v
   // A[2][2] = | dFc_du  dFc_dv |
@@ -558,7 +555,7 @@ bool RationalModel::SensorToGround(const double x, const double y,
   double invDet{}; // Inverse of determinant of the partial derivative matrix
 
   int iter{};
-  for (iter = 0; iter < mMaxIterS2G; ++iter) {
+  for (iter = 0; iter < kMaxIterS2G; ++iter) {
     const auto[Ln, Ld, Sn, Sd] = CalcPolynomials(u, v, w);
 
     const auto invSd = 1.0 / Sd;
@@ -661,7 +658,7 @@ bool RationalModel::SensorToGround(const double x, const double y,
 
     // do not re-compute the partial derivatives when being pretty close to
     // final position
-    if (fabs(dc) < tolPartialS2G && fabs(dr) < tolPartialS2G) {
+    if (fabs(dc) < kTolPartialS2G && fabs(dr) < kTolPartialS2G) {
       recalcFlag = false;
     }
 
@@ -675,16 +672,16 @@ bool RationalModel::SensorToGround(const double x, const double y,
     v -= dv;
 
     // check if still diverging after several iterations
-    if (5 < iter && (tol_d < fabs(du) || tol_d < fabs(dv)))
+    if (5 < iter && (kTol_d < fabs(du) || kTol_d < fabs(dv)))
       return false;
 
     // terminate if converged
-    if (fabs(dc) < tol_c && fabs(dr) < tol_r)
+    if (fabs(dc) < mTol_c && fabs(dr) < mTol_r)
       break;
   }
 
   // return false if reaching max. iterations
-  if (mMaxIterS2G == iter) {
+  if (kMaxIterS2G == iter) {
     return false;
   }
 
@@ -754,7 +751,7 @@ Tuple4d RationalModel::CalcPolynomials(const double L, const double P, const dou
     Sd += sdc[i] * LPH[i];
   }
 
-  if (fabs(Ld) < tol || fabs(Sd) < tol) {
+  if (fabs(Ld) < kTol || fabs(Sd) < kTol) {
     throw std::underflow_error("RationalModel: denominator is 0 in rational model");
   }
 

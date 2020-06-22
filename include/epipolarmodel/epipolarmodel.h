@@ -116,15 +116,15 @@ public:
   Point3d GetOrigin() const noexcept { return mOrigin; }
 
 private:
+  static constexpr int kMaxIters{ 5 };
+  static constexpr double kHgtTol{ 0.0001 }; // Height tolerance [0.1mm]?
+
   std::shared_ptr<ISensorModel>
       mLeftModel; // left image composing of the stereo model
   std::unique_ptr<EpipolarRect> mLeftRect;   // left epipolar rectification
   std::shared_ptr<ISensorModel> mRightModel; // right image
   std::unique_ptr<EpipolarRect> mRightRect;  // right epipolar rectification
   std::unique_ptr<GroundPolicy> mGroundPolicy;
-
-  int mMaxIters{ 5 };
-  double mHgtTol{ 0.0001 }; // Height tolerance [0.1mm]?
 
   /**
    *  Image-to-rect transform.

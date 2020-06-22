@@ -53,11 +53,18 @@ public:
    *  \param [in/out] pb the parameter block holding all unknown parameters
    *                  optionally with initial values.
    *  \param [out] summary the report of ceres solver.
+   *
+   *  \todo vertical line: x = constant
    */
-  bool FitStraightLine(const std::vector<Point2d>& points, 
+  bool FitLineCeres(const std::vector<Point2d>& points, 
     std::vector<double>& pb, Solver::Summary& summary);
-  bool FitStraightLineRobust(const std::vector<Point2d>& points, 
+  bool FitLineRobustCeres(const std::vector<Point2d>& points, 
     std::vector<double>& pb, Solver::Summary& summary);
+
+  bool FitLineEigen(const std::vector<Point2d>& points, std::vector<double>& pb);
+  bool FitLineCv(const std::vector<Point2d>& points, cv::Vec2d& pb);
+
+  bool FitLineCv(const std::vector<Point2d>& points, std::array<double, 2>& pb);
 
   /**
    *  \breif fit a parameterized stright line to a sequence of 3D points.
@@ -77,10 +84,10 @@ public:
    *                  optionally with initial values.
    *  \param [out] summary the report of ceres solver.
    */
-  bool FitStraightLine(const std::vector<Point3d>& points,
+  bool FitLineCeres(const std::vector<Point3d>& points,
     std::vector<double>& pb, Solver::Summary& summary);
 
-  bool FitStraightLine(const std::vector<Point2d>& points, std::vector<double>& pb);
+  bool FitLineCv(const std::vector<Point3d>& points, cv::Vec6d& pb);
 
   /**
    *  \breif fit a parameterized exponential curve to a sequence of 2D points.
@@ -100,7 +107,7 @@ public:
    *                  optionally with initial values.
    *  \param [out] summary the report of ceres solver.
    */
-  bool FitExponentialCurve(const std::vector<Point2d>& points, 
+  bool FitCurveCeres(const std::vector<Point2d>& points,
     std::vector<double>& pb, Solver::Summary& summary);
 
   /**
@@ -121,7 +128,7 @@ public:
    *                  optionally with initial values.
    *  \param [out] summary the report of ceres solver.
    */
-  bool FitPlane(const std::vector<Point3d>& points,
+  bool FitPlaneCeres(const std::vector<Point3d>& points,
     std::vector<double>& pb, Solver::Summary& summary);
 
 private:

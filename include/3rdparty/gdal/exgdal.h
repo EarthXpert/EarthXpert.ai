@@ -6,6 +6,7 @@
 
 #include "3rdparty/ex3rdparty.h"
 #include "gdal_priv.h"
+#include "gdal_utils.h"
 #include "ogr_core.h"
 #include "ogr_spatialref.h"
 
@@ -31,7 +32,7 @@ inline bool operator!=(const SpatialReferenceSystem &lhs,
   return !(operator==(lhs, rhs));
 }
 
-// filed information
+// field information
 struct FieldInfo {
   OGRFieldType type{ OFTInteger };
   std::string name;

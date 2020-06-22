@@ -14,11 +14,11 @@ using thirdparty::IResidual;
 namespace math {
 // residual base for fitting points
 template <typename PointTy> struct FitResidual : IResidual {
-  FitResidual(const PointTy& point) : pt(point) {}
+  FitResidual(const PointTy* const point) : pt(point) {}
   virtual ~FitResidual() = default;
 
 protected:
-  const PointTy pt; // observation
+  const PointTy* const pt; // observation
 };
 
 /**
@@ -33,7 +33,7 @@ template <typename PointTy> struct LinearFitResidual final : FitResidual<PointTy
   /**
    *  \param [in] point the observation data.
    */
-  LinearFitResidual(const PointTy& point) : FitResidual<PointTy>(point) {}
+  LinearFitResidual(const PointTy* const point) : FitResidual<PointTy>(point) {}
   ~LinearFitResidual() = default;
 
   /**
@@ -46,10 +46,10 @@ template <typename PointTy> struct LinearFitResidual final : FitResidual<PointTy
     static_assert(sizeof(Ty) >= sizeof(PointTy::value_type), "Parameter precision must be not lowert than observation's");
     
     if constexpr (2 == kDim) {
-      residual[0] = pt.y - pb[0] * pt.x - pb[1];
+      residual[0] = pt->y - pb[0] * pt->x - pb[1];
     }
     else if constexpr (3 == kDim) {
-      residual[0] = pt.z - pb[0] * pt.x - pb[1] * pt.y - pb[2];
+      residual[0] = pt->z - pb[0] * pt->x - pb[1] * pt->y - pb[2];
     }
     else {
       return false;
@@ -67,7 +67,7 @@ template <typename PointTy> struct ExponentialFitResidual final : FitResidual<Po
   /**
    *  \param [in] point the observation data.
    */
-  ExponentialFitResidual(const PointTy& point) : FitResidual<PointTy>(point) {}
+  ExponentialFitResidual(const PointTy* const point) : FitResidual<PointTy>(point) {}
   ~ExponentialFitResidual() = default;
 
   /**
@@ -77,10 +77,10 @@ template <typename PointTy> struct ExponentialFitResidual final : FitResidual<Po
    */
   template <typename Ty = double> bool operator()(const Ty* const pb, Ty* residual) const {
     if constexpr (2 == kDim) {
-      residual[0] = pt.y - exp(pb[0] * pt.x + pb[1]);
+      residual[0] = pt->y - exp(pb[0] * pt->x + pb[1]);
     }
     else if constexpr (3 == kDim) {
-      residual[0] = pt.z - exp(pb[0] * pt.x + pb[1] * pt.y + pb[2]);
+      residual[0] = pt->z - exp(pb[0] * pt->x + pb[1] * pt->y + pb[2]);
     }
     else {
       return false;
@@ -152,7 +152,7 @@ bool FitPoints(const std::vector<PointTy>& points, std::vector<double>& pb,
   Problem problem;
   for (auto& point : points) {
     auto costFunc = new AutoDiffCostFunction<CostFunctor, 1, CostFunctor::kDim>(
-      new CostFunctor(point));
+      new CostFunctor(&point));
 
     problem.AddResidualBlock(costFunc, lossF, pb.data());
   }

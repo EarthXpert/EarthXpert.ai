@@ -5,6 +5,7 @@
 #pragma once
 
 #include "core/math/iintersect.h"
+#include "core/math/geomtypes.h"
 #include "core/coretypes.h"
 #include "3rdparty/eigen/exeigen.h"
 
@@ -22,6 +23,16 @@ template <typename GeomTy> struct IntersectResidual : IResidual {
 protected:
   const GeomTy* segs;  // pointer to an array of geometries
   const int numSegs;
+};
+
+/**
+ *  \brief AnalyticDiff cost functors implements CostFunction
+ *
+ *  \param PointTy type of point: Point3f, Point3d, Vector3d, etc
+ */
+ // 3d line equation: p(x, y, z) = p0(x0, y0, z0) + t * v(a, b, c), where v = p1 - p0
+class  AnalyticLineIntersectCostFunc final : ceres::DynamicCostFunction {
+
 };
 
 /**
@@ -44,8 +55,8 @@ template <typename PointTy> struct AutoLineIntersectResidual final : IntersectRe
   /**
    *  \brief Size-fixed functor
    *
-   *  \param [in] pb the ratios {t1, t2, ...} used to determine the postions.
-   *  \param [out] residual discrepency between the two positions on the two line segments.
+   *  \param [in] pb the parameter block determined by the algorithms.
+   *  \param [out] residual discrepency determined by the algorithms.
    */
   template <typename Ty = double> bool operator()(const Ty* const pb, Ty* residual) const {
     static_assert(sizeof(Ty) >= sizeof(PointTy::value_type), "Parameter precision must be not lowert than observation's");
@@ -77,44 +88,19 @@ template <typename PointTy> struct AutoLineIntersectResidual final : IntersectRe
 
 private:
   /**
+   *  \param [in] pb two ratios {t1, t2}
+   *  \param [out] residual three differences in X, Y Z between the two rated points
+   *
+   *  \remark 3x faster than calculating the L2 norm: residual[0] = cv::norm(p2 - p1);
    *  \issue AutoDiff compiling error: binary '*': no operator found which takes a right-hand operand of type 'const JetT' (Point3d)
    *  \issue AutoDiff compiling error: cannot convert from 'ceres::Jet<double,2>' to 'double'
-   *  \remark 3x faster than calculating the L2 norm: residual[0] = cv::norm(p2 - p1);
    */
   template <typename Ty> bool TwoLines(const Ty* const pb, Ty* residual) const {
     assert(2 == numSegs);
-    //const Point3d v1 = segs[1] - segs[0];
-    const Ty v1x = Ty(segs[1].x - segs[0].x);
-    const Ty v1y = Ty(segs[1].y - segs[0].y);
-    const Ty v1z = Ty(segs[1].z - segs[0].z);
-
-    //const Point3d v2 = segs[3] - segs[2];
-    const Ty v2x = Ty(segs[3].x - segs[2].x);
-    const Ty v2y = Ty(segs[3].y - segs[2].y);
-    const Ty v2z = Ty(segs[3].z - segs[2].z);
-
-    //const Point3d p1 = segs[0] + v1 * pb[0];
-    const Ty p1x = Ty(segs[0].x + v1x * pb[0]);
-    const Ty p1y = Ty(segs[0].y + v1y * pb[0]);
-    const Ty p1z = Ty(segs[0].z + v1z * pb[0]);
-
-    //const Point3d p2 = segs[2] + v2 * pb[1];
-    const Ty p2x = Ty(segs[2].x + v2x * pb[1]);
-    const Ty p2y = Ty(segs[2].y + v2y * pb[1]);
-    const Ty p2z = Ty(segs[2].z + v2z * pb[1]);
-
-    residual[0] = p2x - p1x;
-    residual[1] = p2y - p1y;
-    residual[2] = p2z - p1z;
-    return true;
-  }
-
-  template <typename Ty> bool TwoLines(Ty const* const* pb, Ty* residual) const {
-    assert(2 == numSegs);
-    const Point3d v1 = segs[1] - segs[0];
-    const Point3d v2 = segs[3] - segs[2];
-    const Point3d p1 = segs[0] + v1 * (*pb[0]);
-    const Point3d p2 = segs[2] + v2 * (*pb[1]);
+    const Point3<Ty> v1 = segs[1] - segs[0];
+    const Point3<Ty> v2 = segs[3] - segs[2];
+    const Point3<Ty> p1 = segs[0] + v1 * pb[0];
+    const Point3<Ty> p2 = segs[2] + v2 * pb[1];
 
     residual[0] = p2.x - p1.x;
     residual[1] = p2.y - p1.y;
@@ -122,66 +108,73 @@ private:
     return true;
   }
 
+  template <typename Ty> bool TwoLines(Ty const* const* pb, Ty* residual) const {
+    assert(2 == numSegs);
+    const Point3<Ty> v1 = segs[1] - segs[0];
+    const Point3<Ty> v2 = segs[3] - segs[2];
+    const Point3<Ty> p1 = segs[0] + v1 * (*pb[0]);
+    const Point3<Ty> p2 = segs[2] + v2 * (*pb[1]);
+
+    residual[0] = p2.x - p1.x;
+    residual[1] = p2.y - p1.y;
+    residual[2] = p2.z - p1.z;
+    return true;
+  }
+
+  /**
+   *  \param [in] pb three ratios {t1,t2, t3}
+   *  \param [out] residual six differences in X, Y Z  between the three rated points
+   */
   template <typename Ty> bool ThreeLines(const Ty* const pb, Ty* residual) const {
     assert(3 == numSegs);
-    /*const auto v1 = segs[1] - segs[0];
-    const auto v2 = segs[3] - segs[2];
-    const auto v3 = segs[5] - segs[4];
-    const auto p1 = segs[0] + v1 * pb[0]; // t1
-    const auto p2 = segs[2] + v2 * pb[1]; // t2
-    const auto p3 = segs[4] + v3 * pb[2]; // t3
+    const Point3<Ty> v1 = segs[1] - segs[0];
+    const Point3<Ty> v2 = segs[3] - segs[2];
+    const Point3<Ty> v3 = segs[5] - segs[4];
+    const Point3<Ty> p1 = segs[0] + v1 * pb[0]; // t1
+    const Point3<Ty> p2 = segs[2] + v2 * pb[1]; // t2
+    const Point3<Ty> p3 = segs[4] + v3 * pb[2]; // t3
 
-    // point to line distance
-    const auto d1Sq = 0;  //dist(p1, segs)
-    const auto d2Sq = 0;  //dist(p2, segs + 2)
-    const auto d3Sq = 0;  //dist(p3, segs + 4)
-
-    residual[0] = d1Sq + d2Sq + d3Sq;*/
+    residual[0] = norm(p2 - p1);
+    residual[1] = norm(p3 - p2);
+    residual[2] = norm(p1 - p3); 
     return true;
   }
 
   template <typename Ty> bool ThreeLines(Ty const* const* pb, Ty* residual) const {
     assert(3 == numSegs);
-    const auto v1 = segs[1] - segs[0];
-    const auto v2 = segs[3] - segs[2];
-    const auto v3 = segs[5] - segs[4];
-    const auto p1 = segs[0] + v1 * (*pb[0]); // t1
-    const auto p2 = segs[2] + v2 * (*pb[1]); // t2
-    const auto p3 = segs[4] + v3 * (*pb[2]); // t3
+    const Point3<Ty> v1 = segs[1] - segs[0];
+    const Point3<Ty> v2 = segs[3] - segs[2];
+    const Point3<Ty> v3 = segs[5] - segs[4];
+    const Point3<Ty> p1 = segs[0] + v1 * (*pb[0]); // t1
+    const Point3<Ty> p2 = segs[2] + v2 * (*pb[1]); // t2
+    const Point3<Ty> p3 = segs[4] + v3 * (*pb[2]); // t3
 
-    // point to line distance
-    const auto d1Sq = 0;  //dist(p1, segs)
-    const auto d2Sq = 0;  //dist(p2, segs + 2)
-    const auto d3Sq = 0;  //dist(p3, segs + 4)
-
-    residual[0] = d1Sq + d2Sq + d3Sq;
+    residual[0] = norm(p2 - p1);
+    residual[1] = norm(p3 - p2);
+    residual[2] = norm(p1 - p3);
     return true;
   }
 
+  /**
+   *  \param [in] pb three coordinates X,Y,Z of the intersection point
+   *  \param [out] residual NumSegs distances between the pb and the segments
+   */
   template <typename Ty> bool MultipleLines(const Ty* const pb, Ty* residual) const {
     assert(2 <= numSegs);
-    residual[0] = Ty(0.0);
-    /*
-    for (int i = 0; i < numSegs; ++i) {
-      const auto v = segs[i * 2 + 1] - segs[i * 2];
-      const auto p = segs[i * 2] + v * pb[i]; // t
-      const auto dSq = 0; //dist(p, segs + i*2)
+    const Point3<Ty> p{ pb[0], pb[1], pb[2] };
 
-      residual[0] += dSq;
-    }*/
+    for (int i = 0; i < numSegs; ++i) {
+      residual[i] = distance(p, segs + i * 2);
+    }
     return true;
   }
 
   template <typename Ty> bool MultipleLines(Ty const* const* pb, Ty* residual) const {
     assert(2 <= numSegs);
-    residual[0] = Ty(0.0);
+    const Point3<Ty> p{ *pb[0], *pb[1], *pb[2] };
 
     for (int i = 0; i < numSegs; ++i) {
-      const auto v = segs[i * 2 + 1] - segs[i * 2];
-      const auto p = segs[i * 2] + v * (*pb[i]); // t
-      const auto dSq = 0; //dist(p, segs + i*2)
-
-      residual[0] += dSq;
+      residual[i] = distance(p, segs + i * 2);
     }
     return true;
   }
@@ -207,8 +200,8 @@ template <typename PointTy> struct NumericLineIntersectResidual final : Intersec
   /**
    *  \brief Size-fixed functor
    *
-   *  \param [in] pb the ratios {t1, t2, ...} used to determine the postions.
-   *  \param [out] residual discrepency between the two positions on the two line segments.
+   *  \param [in] pb parameter block determined by the algorithms.
+   *  \param [out] residual discrepency determined by the algorithms.
    */
   bool operator()(const double* const pb, double* residual) const {
     static_assert(sizeof(double) >= sizeof(PointTy::value_type), "Parameter precision must be not lowert than observation's");
@@ -240,6 +233,9 @@ template <typename PointTy> struct NumericLineIntersectResidual final : Intersec
 
 private:
   /**
+   *  \param [in] pb two ratios {t1, t2}
+   *  \param [out] residual three differences in X, Y Z between the two pre-rated points
+   *
    *  \remark 3x faster than calculating the L2 norm: residual[0] = cv::norm(p2 - p1);
    */
   bool TwoLines(const double* const pb, double* residual) const {
@@ -268,6 +264,10 @@ private:
     return true;
   }
 
+  /**
+   *  \param [in] pb three ratios {t1,t2, t3}
+   *  \param [out] residual three distances between the three rated points
+   */
   bool ThreeLines(const double* const pb, double* residual) const {
     assert(3 == numSegs);
     const auto v1 = segs[1] - segs[0];
@@ -277,12 +277,9 @@ private:
     const auto p2 = segs[2] + v2 * pb[1]; // t2
     const auto p3 = segs[4] + v3 * pb[2]; // t3
 
-    // point to line distance
-    const auto d1Sq = 0;  //dist(p1, segs)
-    const auto d2Sq = 0;  //dist(p2, segs + 2)
-    const auto d3Sq = 0;  //dist(p3, segs + 4)
-
-    residual[0] = d1Sq + d2Sq + d3Sq;
+    residual[0] = cv::norm(p2 - p1);
+    residual[1] = cv::norm(p3 - p2);
+    residual[2] = cv::norm(p1 - p3);
     return true;
   }
 
@@ -295,42 +292,45 @@ private:
     const auto p2 = segs[2] + v2 * (*pb[1]); // t2
     const auto p3 = segs[4] + v3 * (*pb[2]); // t3
 
-    // point to line distance
-    const auto d1Sq = 0;  //dist(p1, segs)
-    const auto d2Sq = 0;  //dist(p2, segs + 2)
-    const auto d3Sq = 0;  //dist(p3, segs + 4)
-
-    residual[0] = d1Sq + d2Sq + d3Sq;
+    residual[0] = cv::norm(p2 - p1);
+    residual[1] = cv::norm(p3 - p2);
+    residual[2] = cv::norm(p1 - p3);
     return true;
   }
 
+  /**
+   *  \param [in] pb three coordinates X,Y,Z of the intersection point
+   *  \param [out] residual NumSegs distances between the pb and the segments
+   */
   bool MultipleLines(const double* const pb, double* residual) const {
     assert(2 <= numSegs);
-    residual[0] = 0.0;
+    const Point3<double> p{ pb[0], pb[1], pb[2] };
 
     for (int i = 0; i < numSegs; ++i) {
-      const auto v = segs[i * 2 + 1] - segs[i * 2];
-      const auto p = segs[i * 2] + v * pb[i]; // t
-      const auto dSq = 0; //dist(p, segs + i*2)
-
-      residual[0] += dSq;
+      residual[i] = distance(p, segs + i * 2);
     }
     return true;
   }
 
   bool MultipleLines(double const* const* pb, double* residual) const {
     assert(2 <= numSegs);
-    residual[0] = 0.0;
+    const Point3<double> p{ *pb[0], *pb[1], *pb[2] };
 
     for (int i = 0; i < numSegs; ++i) {
-      const auto v = segs[i * 2 + 1] - segs[i * 2];
-      const auto p = segs[i * 2] + v * (*pb[i]); // t
-      const auto dSq = 0; //dist(p, segs + i*2)
-
-      residual[0] += dSq;
+      residual[i] = distance(p, segs + i * 2);
     }
     return true;
   }
+};
+
+/**
+ *  \brief AnalyticDiff cost functors implements CostFunction
+ *
+ *  \param SphereType type of sphere: Circle3f, Circle3d, etc
+ */
+ // 3d sphere equation: r = distance(p(x, y, z), p0(x0, y0, z0))
+class  AnalyticSphereIntersectCostFunc final: ceres::DynamicCostFunction {
+
 };
 
 /**
@@ -458,7 +458,7 @@ public:
    *  \param [out] summary the report of ceres solver.
    *  \return Return true if successful, false if parallel.
    */
-  bool Intersect(const Point3d* segs, Point3d& p, 
+  bool IntersectCeres(const Point3d* segs, Point3d& p, 
     Solver::Summary& summary, int = 2) const override;
 
   /**
@@ -470,8 +470,8 @@ public:
    *  \param [in] numSegs number of line segments given by segs, must be 2
    *  \return Return true if successful, false if parallel.
    */
-  inline bool Intersect(const Point3d* segs, Point3d& p, const int = 2) const override {
-    return Intersect(segs, segs + 2, p);
+  inline bool IntersectEigen(const Point3d* segs, Point3d& p, const int = 2) const override {
+    return IntersectEigen(segs, segs + 2, p);
   }
 
   /**
@@ -482,7 +482,7 @@ public:
    *  \param [out] p the intersection point.
    *  \return Return true if successful, false if parallel.
    */
-  bool Intersect(const Point3d* s1, const Point3d* s2, Point3d& p) const;
+  bool IntersectEigen(const Point3d* s1, const Point3d* s2, Point3d& p) const;
 };
 
 //using XTwoLinesEigen = XTwoLines<kST_EIGEN>;
@@ -507,7 +507,7 @@ public:
    *  \param [in] numSegs number of line segments given by segs, must be 3
    *  \return Return true if successful, false if parallel.
    */
-  bool Intersect(const Point3d* segs, Point3d& p, 
+  bool IntersectCeres(const Point3d* segs, Point3d& p, 
     Solver::Summary& summary, int = 3) const override;
 
   /**
@@ -519,8 +519,8 @@ public:
    *  \param [in] numSegs number of line segments given by segs, must be 3
    *  \return Return true if successful, false if parallel.
    */
-  inline bool Intersect(const Point3d * segs, Point3d & p, const int = 3) const override {
-    return Intersect(segs, segs + 2, segs + 4, p);
+  inline bool IntersectEigen(const Point3d * segs, Point3d & p, const int = 3) const override {
+    return IntersectEigen(segs, segs + 2, segs + 4, p);
   }
 
   /**
@@ -532,7 +532,7 @@ public:
    *  \param [out] p the intersection point.
    *  \return Return true if successful, false if parallel.
    */
-  bool Intersect(const Point3d* s1, const Point3d* s2, const Point3d* s3, Point3d& p) const;
+  bool IntersectEigen(const Point3d* s1, const Point3d* s2, const Point3d* s3, Point3d& p) const;
 };
 
 /**
@@ -556,7 +556,7 @@ public:
    *  \param [in] numSegs number of line segments given by segs, must be 2+
    *  \return Return true if successful, false if parallel.
    */
-  bool Intersect(const Point3d* segs, Point3d& p,
+  bool IntersectCeres(const Point3d* segs, Point3d& p,
     Solver::Summary& summary, const int numSegs) const override;
 
   /**
@@ -568,7 +568,7 @@ public:
    *  \param [in] numSegs number of line segments given by segs, must be 2+
    *  \return Return true if successful, false if parallel.
    */
-  bool Intersect(const Point3d* segs, Point3d& p, const int numSegs) const override;
+  bool IntersectEigen(const Point3d* segs, Point3d& p, const int numSegs) const override;
 };
 
 // helper free functions
@@ -580,7 +580,7 @@ public:
 inline EXCORE_EXPORTS bool IntersectTwoLines(const Point3d* segs, 
   Point3d& p, Solver::Summary& summary) {
   XTwoLines xl;
-  return xl.Intersect(segs, p, summary);
+  return xl.IntersectCeres(segs, p, summary);
 }
 
 /**
@@ -590,7 +590,7 @@ inline EXCORE_EXPORTS bool IntersectTwoLines(const Point3d* segs,
  */
 inline EXCORE_EXPORTS bool IntersectTwoLines(const Point3d* s1, const Point3d* s2, Point3d& p) {
   XTwoLines xl;
-  return xl.Intersect(s1, s2, p);
+  return xl.IntersectEigen(s1, s2, p);
 }
 
 /**
@@ -601,7 +601,7 @@ inline EXCORE_EXPORTS bool IntersectTwoLines(const Point3d* s1, const Point3d* s
 inline EXCORE_EXPORTS bool IntersectThreeLines(const Point3d* s1, const Point3d* s2,
   const Point3d* s3, Point3d& p) {
   XThreeLines xl;
-  return xl.Intersect(s1, s2, s3, p);
+  return xl.IntersectEigen(s1, s2, s3, p);
 }
 
 /**
@@ -612,7 +612,7 @@ inline EXCORE_EXPORTS bool IntersectThreeLines(const Point3d* s1, const Point3d*
 inline EXCORE_EXPORTS bool IntersectMultipleLines(const Point3d* segs, 
   Point3d& p, const int numSegs) {
   XMultipleLines xl;
-  return xl.Intersect(segs, p, numSegs);
+  return xl.IntersectEigen(segs, p, numSegs);
 }
 }
 } // namespace earthxpert

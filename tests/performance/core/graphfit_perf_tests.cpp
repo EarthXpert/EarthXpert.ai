@@ -40,7 +40,7 @@ void GraphFit_Line_Ceres() {
 
   std::vector<double> pb;  // zero initial parameter valus
   for (int i = 0; i < 1000; ++i)
-    graphFit.FitStraightLine(points, pb, summary);
+    graphFit.FitLineCeres(points, pb, summary);
 }
 
 /**
@@ -53,7 +53,7 @@ void GraphFit_Line_Eigen() {
 
   std::vector<double> pb;  // zero initial parameter valus
   for (int i = 0; i < 1000; ++i)
-    graphFit.FitStraightLine(points, pb);
+    graphFit.FitLineEigen(points, pb);
 }
 
 /**
@@ -71,7 +71,7 @@ void GraphFit_Line_CeresOMP() {
 
 #pragma omp for
     for (int i = 0; i < 1000; ++i) {
-      graphFit.FitStraightLine(points, pb, summary);
+      graphFit.FitLineCeres(points, pb, summary);
     }
   }
 }
@@ -90,7 +90,7 @@ void GraphFit_Line_EigenOMP() {
 
 #pragma omp for
     for (int i = 0; i < 1000; ++i) {
-      graphFit.FitStraightLine(points, pb);
+      graphFit.FitLineEigen(points, pb);
     }
   }
 }

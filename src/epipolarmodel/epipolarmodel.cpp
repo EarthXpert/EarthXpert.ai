@@ -218,7 +218,7 @@ std::optional<double> EpipolarModel<GroundPolicy>::ImageToRect(const Point2d &im
     ground.z += interpGrid->GetVal1(float(img.x), float(img.y));
 
   Point3d rect3{ 0, 0, 0 };
-  for (int i = 0; i < mMaxIters; ++i) {
+  for (int i = 0; i < kMaxIters; ++i) {
     if (!sensorModel->ImageToGround(img, ground))
       return std::nullopt;
     
@@ -226,7 +226,7 @@ std::optional<double> EpipolarModel<GroundPolicy>::ImageToRect(const Point2d &im
     const double delta = mHeight - rect3.z;
     ground.z += delta;
 
-    if (mHgtTol > delta)
+    if (kHgtTol > delta)
       break;
   }
 
