@@ -14,7 +14,6 @@
 
 using namespace earthxpert;
 using namespace earthxpert::epipolar;
-using SensorType = ISensorModel::ModelType;
 namespace bpo = boost::program_options;
 
 /**

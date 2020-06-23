@@ -67,11 +67,13 @@ void StereoModel::Initialize() {
     throw std::exception(_("StereoModel: requires 2 or more models"));
 
   // default forward intersection algorithm
-  const auto modelType = mModels[0]->GetModelType();
-  switch (modelType) {
-  case ISensorModel::eFRAME:
+  mSensorType = mModels[0]->GetModelType();
+  mSrsType = mModels[0]->GetSrsType();
+
+  switch (mSensorType) {
+  case SensorType::eFRAME:
     break;
-  case ISensorModel::eRATIONAL:
+  case SensorType::eRATIONAL:
     mFwdAlgo = eSM_NR;
     break;
   default:
@@ -127,9 +129,26 @@ void StereoModel::SetEarthEllipsoid(std::shared_ptr<EarthEllipsoid> earthEllip) 
 }
 
 void StereoModel::SetForwardAlgorithm(const ForwardAlgo fwdAlgo) {
-  mFwdAlgo = fwdAlgo; 
-
   // verify consistency
+  switch (fwdAlgo) {
+  case eCA_INTERSECT: {
+    if (eGEO == mSrsType && !(mEarthEllip && mIntersect)) {
+      throw std::exception("StereoModel: SetForwardAlgorithm");
+    }
+    break;
+  }
+  case eSM_CERES: {
+    break;
+  }
+  case eSM_NR: {
+    break;
+  }
+  default: {
+    break;
+  }
+  }
+
+  mFwdAlgo = fwdAlgo; 
 }
 
 /**
@@ -415,11 +434,13 @@ bool StereoModel::ImageToGroundX(const Point2d* images, const int numRays, Point
     const double hgtRange[2] = { ground.z + kH, ground.z - kH };
 
     for (int j = 0; j < 2; ++j) {
-      Point3d grd{ 0.0, 0.0, hgtRange[j] };
-
       for (int k = 0; k < numRays; ++k) {
-        mModels[k]->ImageToGround(images[k], grd);
-        segs[j + k * 2] = mEarthEllip->LPHToLSR(Deg2Rad(grd));
+        const int pi = j + k * 2;   // point index
+        segs[pi].z = hgtRange[j];
+
+        mModels[k]->ImageToGround(images[k], segs[pi]);
+        if (eGEO == mSrsType)
+          segs[pi] = mEarthEllip->LPHToLSR(Deg2Rad(segs[pi]));
       }
     }
 
@@ -430,7 +451,10 @@ bool StereoModel::ImageToGroundX(const Point2d* images, const int numRays, Point
     //const bool ret = mIntersect->IntersectEigen(segs.data(), lsr, numRays);   // IntersectTwoLines(segs.data(), lsr, numRays)
     
     if (!ret) return false;
-    ground = Rad2Deg(mEarthEllip->LSRToLPH(lsr));
+    if (eGEO == mSrsType)
+      ground = Rad2Deg(mEarthEllip->LSRToLPH(lsr));
+    else
+      ground = lsr;
   }
 
   return true;

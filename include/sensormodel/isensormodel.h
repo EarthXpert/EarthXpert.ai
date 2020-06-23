@@ -163,4 +163,6 @@ public:
    */
   virtual double GetMeanHeight() const noexcept = 0;
 };
+
+using SensorType = ISensorModel::ModelType;
 } // namespace earthxpert

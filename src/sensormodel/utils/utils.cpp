@@ -7,8 +7,6 @@
 #include <map>
 
 namespace earthxpert {
-using SensorType = ISensorModel::ModelType;
-
 namespace detail {
   // sensor names & types
   static std::map<std::string, SensorType> sSensorN2T = {

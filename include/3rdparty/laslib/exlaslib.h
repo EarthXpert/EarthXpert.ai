@@ -112,6 +112,10 @@ struct PointDataTraits {
   }
 };
 
+/**
+ *  \todo .LAY: layer of .las dataset
+ */
+
 std::unique_ptr<LASfilter> EX3RDPARTY_EXPORTS CreateLasFilter(
    double minX, double minY, double width, double height);
 std::string EX3RDPARTY_EXPORTS CreateLAX(const std::string& lasFile);

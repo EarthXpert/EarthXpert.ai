@@ -6,10 +6,10 @@
 
 #include "sensormodel/istereomodel.h"
 #include "sensormodel/isensormodel.h"
+#include "core/exceptions/exexcept.h"
 #include "core/math/iintersect.h"
 #include "core/spatialref/earthellipsoid.h"
 #include "core/spatialref/spatialdef.h"
-#include "core/exceptions/exexcept.h"
 
 #include <cassert>
 
@@ -84,8 +84,6 @@ public:
     assert(2 == mModels.size());
     switch (mFwdAlgo) {
     case eCA_INTERSECT: {
-      assert(eGEO == mModels[0]->GetSrsType());
-      assert(mEarthEllip && mIntersect);
       Point2d images[2] = { leftImage, rightImage };
       return ImageToGroundX(images, 2, ground);
     }
@@ -133,8 +131,6 @@ public:
     assert(3 == mModels.size());
     switch (mFwdAlgo) {
     case eCA_INTERSECT: {
-      assert(eGEO == mModels[0]->GetSrsType());
-      assert(mEarthEllip && mIntersect);
       return ImageToGroundX(images.data(), 3, ground);
     }
     case eSM_CERES: {
@@ -165,8 +161,6 @@ public:
     assert(numRays == images.size());
     switch (mFwdAlgo) {
     case eCA_INTERSECT: {
-      assert(eGEO == mModels[0]->GetSrsType());
-      assert(mEarthEllip && mIntersect);
       return ImageToGroundX(images.data(), numRays, ground);
     }
     case eSM_CERES: {
@@ -289,5 +283,7 @@ private:
   bool ImageToGroundX(const Point2d* images, int numRays, Point3d& ground) const;
 
   // cache
+  SensorType mSensorType{ SensorType::eUNDEFINED };
+  SrsType mSrsType{ eUNKNOWN };
 };
 } // namespace earthxpert

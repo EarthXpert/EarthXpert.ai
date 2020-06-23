@@ -27,7 +27,7 @@ public:
 
   enum PathType {
     ePT8,     // 8 pathes
-    ePY16     // 16 pathes
+    ePT16     // 16 pathes
   };
 
   virtual ~IDenseMatch() = default;
