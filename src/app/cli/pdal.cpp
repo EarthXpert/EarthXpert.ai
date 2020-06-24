@@ -3,6 +3,7 @@
  * -----------------------------------------------------------------------------
  */
 #include "platform/pdal/pdaljob.h"
+#include <boost/program_options.hpp>
 
 int main(int argc, char* argv[]) {
   earthxpert::PdalJob job;

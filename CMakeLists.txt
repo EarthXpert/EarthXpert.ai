@@ -128,6 +128,29 @@ if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
                   optimized "${OpenCV_LIBRARY_DIR}/opencv_img_hash410.lib"
                   optimized "${OpenCV_LIBRARY_DIR}/opencv_world410.lib")
 
+  set(OpenEXR_ROOT "${EX_THIRD_PARTY}/openexr_2.3.0")
+  set(OpenEXR_DIR "${OpenEXR_ROOT}/share/openexr")
+  set(OpenEXR_INCLUDE_DIR "${OpenEXR_ROOT}/include")
+  set(OpenEXR_LIBRARY_DIR "${OpenEXR_ROOT}/lib/${CDEGREL}")
+  set(OpenEXR_LIBS debug "${OpenEXR_LIBRARY_DIR}/Half-2_3_d.lib"
+                   debug "${OpenEXR_LIBRARY_DIR}/Iex-2_3_d.lib"
+                   debug "${OpenEXR_LIBRARY_DIR}/IexMath-2_3_d.lib"
+                   debug "${OpenEXR_LIBRARY_DIR}/IlmImf-2_3_d.lib"
+                   debug "${OpenEXR_LIBRARY_DIR}/IlmImfUtil-2_3_d.lib"
+                   debug "${OpenEXR_LIBRARY_DIR}/IlmThread-2_3_d.lib"
+                   debug "${OpenEXR_LIBRARY_DIR}/Imath-2_3_d.lib"
+                   optimized "${OpenEXR_LIBRARY_DIR}/Half-2_3.lib"
+                   optimized "${OpenEXR_LIBRARY_DIR}/Iex-2_3.lib"
+                   optimized "${OpenEXR_LIBRARY_DIR}/IexMath-2_3.lib"
+                   optimized "${OpenEXR_LIBRARY_DIR}/IlmImf-2_3.lib"
+                   optimized "${OpenEXR_LIBRARY_DIR}/IlmImfUtil-2_3.lib"
+                   optimized "${OpenEXR_LIBRARY_DIR}/IlmThread-2_3.lib"
+                   optimized "${OpenEXR_LIBRARY_DIR}/Imath-2_3.lib")
+
+  set(OpenImageIO_ROOT "${EX_THIRD_PARTY}/openimageio_2.1.9")
+  set(OpenImageIO_DIR "${OpenImageIO_ROOT}/share/openimageio")
+  set(OpenImageIO_INCLUDE_DIR "${OpenImageIO_ROOT}/include")
+
   set(OPENNI_ROOT "${EX_THIRD_PARTY}/openni_2.2.0")
   set(OPENNI_BIN_DIR "${OPENNI_ROOT}/Redist")
 
@@ -200,6 +223,8 @@ find_package(GTest REQUIRED)
 find_package(nlohmann_json REQUIRED)
 find_package(OpenCV REQUIRED)
 #find_package(OpenCL REQUIRED)
+#find_package(OpenEXR REQUIRED)
+find_package(OpenImageIO REQUIRED)
 find_package(PDAL REQUIRED)
 find_package(pybind11 REQUIRED)
 find_package(Qt5 5.11.2 COMPONENTS Core Gui Widgets REQUIRED)
@@ -235,6 +260,8 @@ message(STATUS "LASLIB_INCLUDE_DIR: ${LASLIB_INCLUDE_DIR}")
 message(STATUS "nlohmann_json_INCLUDE_DIR: ${nlohmann_json_INCLUDE_DIR}")
 message(STATUS "OpenCL_INCLUDE_DIR: ${OpenCL_INCLUDE_DIR}")
 message(STATUS "OpenCV_INCLUDE_DIR: ${OpenCV_INCLUDE_DIR}")
+message(STATUS "OpenEXR_INCLUDE_DIR: ${OpenEXR_INCLUDE_DIR}")
+message(STATUS "OpenImageIO_INCLUDE_DIR: ${OpenImageIO_INCLUDE_DIR}")
 message(STATUS "PDAL_INCLUDE_DIRS: ${PDAL_INCLUDE_DIRS}")
 message(STATUS "SLTBENCH_INCLUDE_DIRS: ${SLTBENCH_INCLUDE_DIRS}")
 
@@ -253,6 +280,8 @@ include_directories(${LASLIB_INCLUDE_DIR})
 include_directories(${nlohmann_json_INCLUDE_DIR})
 include_directories(${OpenCL_INCLUDE_DIR})
 include_directories(${OpenCV_INCLUDE_DIR})
+include_directories(${OpenEXR_INCLUDE_DIR})
+include_directories(${OpenImageIO_INCLUDE_DIR})
 include_directories(${PDAL_INCLUDE_DIRS})
 include_directories(${SLTBENCH_INCLUDE_DIRS})
 

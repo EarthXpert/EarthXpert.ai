@@ -83,12 +83,12 @@ public:
     const Point2d &rightImage, Point3d &ground) const override {
     assert(2 == mModels.size());
     switch (mFwdAlgo) {
+    case eSM_CERES: {
+      return ImageToGroundCeres(leftImage, rightImage, ground);
+    }
     case eCA_INTERSECT: {
       Point2d images[2] = { leftImage, rightImage };
       return ImageToGroundX(images, 2, ground);
-    }
-    case eSM_CERES: {
-      return ImageToGroundCeres(leftImage, rightImage, ground);
     }
     case eSM_NR: {
       return ImageToGroundNR(leftImage, rightImage, ground);
@@ -130,11 +130,11 @@ public:
   ImageToGround(const std::array<Point2d, 3> &images, Point3d &ground) const override {
     assert(3 == mModels.size());
     switch (mFwdAlgo) {
-    case eCA_INTERSECT: {
-      return ImageToGroundX(images.data(), 3, ground);
-    }
     case eSM_CERES: {
       return ImageToGroundCeres(images, ground);
+    }
+    case eCA_INTERSECT: {
+      return ImageToGroundX(images.data(), 3, ground);
     }
     case eSM_NR: {
       return ImageToGroundNR(images, ground);
@@ -160,11 +160,11 @@ public:
     const int numRays = int(mModels.size());
     assert(numRays == images.size());
     switch (mFwdAlgo) {
-    case eCA_INTERSECT: {
-      return ImageToGroundX(images.data(), numRays, ground);
-    }
     case eSM_CERES: {
       return ImageToGroundCeres(images.data(), numRays, ground);
+    }
+    case eCA_INTERSECT: {
+      return ImageToGroundX(images.data(), numRays, ground);
     }
     case eSM_NR: {
       //return ImageToGroundNR(images, numRays, ground);

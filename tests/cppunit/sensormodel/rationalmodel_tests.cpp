@@ -11,8 +11,8 @@
 using namespace earthxpert;
 using rfm = earthxpert::RationalModel;
 
-static constexpr int num{ 10 };
-static constexpr double tol = 1.0e-8; // [mm]
+static constexpr int kNum{ 10 };
+static constexpr double kTol = 1.0e-8; // [mm]
 
 static std::unique_ptr<RationalModel> CreateRationalModelA();
 static std::unique_ptr<RationalModel> CreateRationalModelB();
@@ -57,8 +57,8 @@ TEST(rationalmodel, CornerI2G) {
     Point3d grdI2G{ 0, 0, ground.z };
     rationalModel->ImageToGround(image, grdI2G);
 
-    ASSERT_NEAR(ground.x, grdI2G.x, tol) << "Longitude difference > 1 mm";
-    ASSERT_NEAR(ground.y, grdI2G.y, tol) << "Latitude difference > 1 mm";
+    ASSERT_NEAR(ground.x, grdI2G.x, kTol) << "Longitude difference > 1 mm";
+    ASSERT_NEAR(ground.y, grdI2G.y, kTol) << "Latitude difference > 1 mm";
   }
 }
 
@@ -82,8 +82,8 @@ TEST(rationalmodel, CornerI2G_Functor) {
     Point3d grdI2G{ 0, 0, ground.z };
     (*rationalModel)(image, grdI2G);
 
-    ASSERT_NEAR(ground.x, grdI2G.x, tol) << "Longitude difference > 1 mm";
-    ASSERT_NEAR(ground.y, grdI2G.y, tol) << "Latitude difference > 1 mm";
+    ASSERT_NEAR(ground.x, grdI2G.x, kTol) << "Longitude difference > 1 mm";
+    ASSERT_NEAR(ground.y, grdI2G.y, kTol) << "Latitude difference > 1 mm";
   }
 }
 
@@ -236,9 +236,9 @@ void TestCubeI2G(const RationalModel* rationalModel) {
   const auto minHgt = nfc[rfm::eOHEIGHT] - nfc[rfm::eSHEIGHT];
   const auto maxHgt = nfc[rfm::eOHEIGHT] + nfc[rfm::eSHEIGHT];
 
-  const auto stepLon = (maxLon - minLon) / num;
-  const auto stepLat = (maxLat - minLat) / num;
-  const auto stepHgt = (maxHgt - minHgt) / num;
+  const auto stepLon = (maxLon - minLon) / kNum;
+  const auto stepLat = (maxLat - minLat) / kNum;
+  const auto stepHgt = (maxHgt - minHgt) / kNum;
 
   double maxDiffLon{-1.0};
   double maxDiffLat{-1.0};
@@ -269,8 +269,8 @@ void TestCubeI2G(const RationalModel* rationalModel) {
   }
 
   ASSERT_LT(0, n) << "Number of test points";
-  ASSERT_LE(maxDiffLon, tol) << "Max. longitude difference > 1 mm";
-  ASSERT_LE(maxDiffLat, tol) << "Max. latitude difference > 1 mm";
+  ASSERT_LE(maxDiffLon, kTol) << "Max. longitude difference > 1 mm";
+  ASSERT_LE(maxDiffLat, kTol) << "Max. latitude difference > 1 mm";
 }
 
 void TestCubeI2G_Functor(const RationalModel* rationalModel) {
@@ -282,9 +282,9 @@ void TestCubeI2G_Functor(const RationalModel* rationalModel) {
   const auto minHgt = nfc[rfm::eOHEIGHT] - nfc[rfm::eSHEIGHT];
   const auto maxHgt = nfc[rfm::eOHEIGHT] + nfc[rfm::eSHEIGHT];
 
-  const auto stepLon = (maxLon - minLon) / num;
-  const auto stepLat = (maxLat - minLat) / num;
-  const auto stepHgt = (maxHgt - minHgt) / num;
+  const auto stepLon = (maxLon - minLon) / kNum;
+  const auto stepLat = (maxLat - minLat) / kNum;
+  const auto stepHgt = (maxHgt - minHgt) / kNum;
 
   double maxDiffLon{-1.0};
   double maxDiffLat{-1.0};
@@ -315,6 +315,6 @@ void TestCubeI2G_Functor(const RationalModel* rationalModel) {
   }
 
   ASSERT_LT(0, n) << "Number of test points";
-  ASSERT_LE(maxDiffLon, tol) << "Max. longitude difference > 1 mm";
-  ASSERT_LE(maxDiffLat, tol) << "Max. latitude difference > 1 mm";
+  ASSERT_LE(maxDiffLon, kTol) << "Max. longitude difference > 1 mm";
+  ASSERT_LE(maxDiffLat, kTol) << "Max. latitude difference > 1 mm";
 }

@@ -14,8 +14,8 @@
 using namespace earthxpert;
 using rfm = earthxpert::RationalModel;
 
-static constexpr int num = 15;
-static constexpr double factor = 0.75;
+static constexpr int kNum = 15;
+static constexpr double kFactor = 0.75;
 
 static void I2G_Cube(const StereoModel& sm, const std::vector<Point3d>& cube);
 static void I2G_CubeOMP(const StereoModel& sm, const std::vector<Point3d>& cube);
@@ -35,6 +35,19 @@ void StereoModel_Cube() {
 /**
  *  TestCase 1: stereo via intersection
  */
+void StereoModel_I2G_Ceres() {
+  const auto leftModel = CreateLeftRationalModel();
+  const auto rightModel = CreateRightRationalModel();
+  auto cube = CreateCube(leftModel.get(), rightModel.get());
+
+  StereoModel smC(leftModel.get(), rightModel.get()); 
+  smC.SetForwardAlgorithm(StereoModel::eSM_CERES);
+  I2G_Cube(smC, cube);
+}
+
+/**
+ *  TestCase 2: stereo via intersection
+ */
 void StereoModel_I2G_Intersect() {
   const auto leftModel = CreateLeftRationalModel();
   const auto rightModel = CreateRightRationalModel();
@@ -44,7 +57,7 @@ void StereoModel_I2G_Intersect() {
   Point3d origin(nfcL[rfm::eOLONG], nfcL[rfm::eOLAT], nfcL[rfm::eOHEIGHT]);
   auto ee = std::make_shared<EarthEllipsoid>();
   ee->SetLsrOrigin(Deg2Rad(origin));
- 
+
   StereoModel smI(leftModel.get(), rightModel.get());    // intersect
   smI.SetEarthEllipsoid(std::move(ee));
   smI.SetForwardAlgorithm(StereoModel::eCA_INTERSECT);
@@ -52,7 +65,7 @@ void StereoModel_I2G_Intersect() {
 }
 
 /**
- *  TestCase 2: stereo via NR
+ *  TestCase 3: stereo via NR
  */
 void StereoModel_I2G_NR() {
   const auto leftModel = CreateLeftRationalModel();
@@ -65,7 +78,20 @@ void StereoModel_I2G_NR() {
 }
 
 /**
- *  TestCase 3: OMP stereo via intersection
+ *  TestCase 4: OMP stereo via Ceres
+ */
+void StereoModel_I2G_CeresOMP() {
+  const auto leftModel = CreateLeftRationalModel();
+  const auto rightModel = CreateRightRationalModel();
+  auto cube = CreateCube(leftModel.get(), rightModel.get());
+
+  StereoModel smC(leftModel.get(), rightModel.get());    // Ceres
+  smC.SetForwardAlgorithm(StereoModel::eSM_CERES);
+  I2G_CubeOMP(smC, cube);
+}
+
+/**
+ *  TestCase 5: OMP stereo via intersection
  */
 void StereoModel_I2G_IntersectOMP() {
   const auto leftModel = CreateLeftRationalModel();
@@ -84,7 +110,7 @@ void StereoModel_I2G_IntersectOMP() {
 }
 
 /**
- *  TestCase 4: OMP stereo via NR
+ *  TestCase 6: OMP stereo via NR
  */
 void StereoModel_I2G_NROMP() {
   const auto leftModel = CreateLeftRationalModel();
@@ -135,20 +161,20 @@ void I2G_CubeOMP(const StereoModel& sm, const std::vector<Point3d>& cube) {
 
 std::vector<Point3d> CreateCube(const RationalModel* leftModel, const RationalModel* rightModel) {
   auto nfcL = leftModel->GetNormalFators();
-  const auto minLonL = nfcL[rfm::eOLONG] - nfcL[rfm::eSLONG] * factor;
-  const auto maxLonL = nfcL[rfm::eOLONG] + nfcL[rfm::eSLONG] * factor;
-  const auto minLatL = nfcL[rfm::eOLAT] - nfcL[rfm::eSLAT] * factor;
-  const auto maxLatL = nfcL[rfm::eOLAT] + nfcL[rfm::eSLAT] * factor;
-  const auto minHgtL = nfcL[rfm::eOHEIGHT] - nfcL[rfm::eSHEIGHT] * factor;
-  const auto maxHgtL = nfcL[rfm::eOHEIGHT] + nfcL[rfm::eSHEIGHT] * factor;
+  const auto minLonL = nfcL[rfm::eOLONG] - nfcL[rfm::eSLONG] * kFactor;
+  const auto maxLonL = nfcL[rfm::eOLONG] + nfcL[rfm::eSLONG] * kFactor;
+  const auto minLatL = nfcL[rfm::eOLAT] - nfcL[rfm::eSLAT] * kFactor;
+  const auto maxLatL = nfcL[rfm::eOLAT] + nfcL[rfm::eSLAT] * kFactor;
+  const auto minHgtL = nfcL[rfm::eOHEIGHT] - nfcL[rfm::eSHEIGHT] * kFactor;
+  const auto maxHgtL = nfcL[rfm::eOHEIGHT] + nfcL[rfm::eSHEIGHT] * kFactor;
 
   auto nfcR = rightModel->GetNormalFators();
-  const auto minLonR = nfcR[rfm::eOLONG] - nfcR[rfm::eSLONG] * factor;
-  const auto maxLonR = nfcR[rfm::eOLONG] + nfcR[rfm::eSLONG] * factor;
-  const auto minLatR = nfcR[rfm::eOLAT] - nfcR[rfm::eSLAT] * factor;
-  const auto maxLatR = nfcR[rfm::eOLAT] + nfcR[rfm::eSLAT] * factor;
-  const auto minHgtR = nfcR[rfm::eOHEIGHT] - nfcR[rfm::eSHEIGHT] * factor;
-  const auto maxHgtR = nfcR[rfm::eOHEIGHT] + nfcR[rfm::eSHEIGHT] * factor;
+  const auto minLonR = nfcR[rfm::eOLONG] - nfcR[rfm::eSLONG] * kFactor;
+  const auto maxLonR = nfcR[rfm::eOLONG] + nfcR[rfm::eSLONG] * kFactor;
+  const auto minLatR = nfcR[rfm::eOLAT] - nfcR[rfm::eSLAT] * kFactor;
+  const auto maxLatR = nfcR[rfm::eOLAT] + nfcR[rfm::eSLAT] * kFactor;
+  const auto minHgtR = nfcR[rfm::eOHEIGHT] - nfcR[rfm::eSHEIGHT] * kFactor;
+  const auto maxHgtR = nfcR[rfm::eOHEIGHT] + nfcR[rfm::eSHEIGHT] * kFactor;
 
   const auto minLon = std::max(minLonL, minLonR);
   const auto maxLon = std::min(maxLonL, maxLonR);
@@ -157,12 +183,12 @@ std::vector<Point3d> CreateCube(const RationalModel* leftModel, const RationalMo
   const auto minHgt = std::max(minHgtL, minHgtR);
   const auto maxHgt = std::min(maxHgtL, maxHgtR);
 
-  const auto stepLon = (maxLon - minLon) / num;
-  const auto stepLat = (maxLat - minLat) / num;
-  const auto stepHgt = (maxHgt - minHgt) / num;
+  const auto stepLon = (maxLon - minLon) / kNum;
+  const auto stepLat = (maxLat - minLat) / kNum;
+  const auto stepHgt = (maxHgt - minHgt) / kNum;
 
   std::vector<Point3d> cube;
-  cube.reserve(pow(num+1, 3));
+  cube.reserve(pow(kNum+1, 3));
 
   for (auto lon = minLon; lon <= maxLon; lon += stepLon) {
     for (auto lat = minLat; lat <= maxLat; lat += stepLat) {
@@ -248,7 +274,9 @@ std::unique_ptr<RationalModel> CreateRightRationalModel() {
 }
 
 SLTBENCH_FUNCTION(StereoModel_Cube);
+SLTBENCH_FUNCTION(StereoModel_I2G_Ceres);
 SLTBENCH_FUNCTION(StereoModel_I2G_Intersect);
 SLTBENCH_FUNCTION(StereoModel_I2G_NR);
+SLTBENCH_FUNCTION(StereoModel_I2G_CeresOMP);
 SLTBENCH_FUNCTION(StereoModel_I2G_IntersectOMP);
 SLTBENCH_FUNCTION(StereoModel_I2G_NROMP);

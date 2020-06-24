@@ -14,8 +14,8 @@ using namespace earthxpert;
 using namespace earthxpert::math;
 using namespace ceres;
 
-static constexpr auto rngMax = static_cast<double>(std::mt19937::max());
-static constexpr auto scale = 1.0 / rngMax;
+static constexpr auto kRngMax = static_cast<double>(std::mt19937::max());
+static constexpr auto kScale = 1.0 / kRngMax;
 
 static std::vector<Point2d> ObtainLinePoints();
 static std::vector<Point2d> ObtainCurvePoints();
@@ -281,7 +281,7 @@ std::vector<Point3d> ObtainPlanePoints() {
 
   for (double x = 0.0; x <= 5.0; x += 0.5) {
     for (double y = -2.5; y <= 2.5; y += 0.5) {
-      const double dz = 0.05 * (rng() * scale - 0.5);
+      const double dz = 0.05 * (rng() * kScale - 0.5);
       const double z = m * x + n * y + c + dz;
 
       points.emplace_back<Point3d>({ x, y, z });

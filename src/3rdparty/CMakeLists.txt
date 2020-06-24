@@ -27,6 +27,7 @@ earthxpert_add_library(ex3rdparty "api"
        "thrust/exthrust.cpp"
   ITEMS Boost::boost Boost::filesystem ${CERES_LIBRARY} ${CGAL_LIBRARIES} ${GDAL_LIBRARY} 
         ${GETTEXT_LIBRARY} glog::glog ${GTEST_BOTH_LIBRARIES} ${LASLIB_LIBRARY} ${OpenCV_LIBS} 
+        ${OpenEXR_LIBS} OpenImageIO::OpenImageIO OpenImageIO::OpenImageIO_Util 
         ${PDAL_LIBRARIES} Qt5::Widgets ${SLTBENCH_LIBS})
 
 earthxpert_install_target(ex3rdparty)
