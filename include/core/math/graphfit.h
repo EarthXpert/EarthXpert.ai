@@ -61,10 +61,10 @@ public:
   bool FitLineRobustCeres(const std::vector<Point2d>& points, 
     std::vector<double>& pb, Solver::Summary& summary);
 
-  bool FitLineEigen(const std::vector<Point2d>& points, std::vector<double>& pb);
   bool FitLineCv(const std::vector<Point2d>& points, cv::Vec2d& pb);
-
   bool FitLineCv(const std::vector<Point2d>& points, std::array<double, 2>& pb);
+
+  bool FitLineEigen(const std::vector<Point2d>& points, std::vector<double>& pb);
 
   /**
    *  \breif fit a parameterized stright line to a sequence of 3D points.

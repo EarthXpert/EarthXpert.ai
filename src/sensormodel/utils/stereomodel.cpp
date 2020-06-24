@@ -131,13 +131,13 @@ void StereoModel::SetEarthEllipsoid(std::shared_ptr<EarthEllipsoid> earthEllip) 
 void StereoModel::SetForwardAlgorithm(const ForwardAlgo fwdAlgo) {
   // verify consistency
   switch (fwdAlgo) {
+  case eSM_CERES: {
+    break;
+  }
   case eCA_INTERSECT: {
     if (eGEO == mSrsType && !(mEarthEllip && mIntersect)) {
       throw std::exception("StereoModel: SetForwardAlgorithm");
     }
-    break;
-  }
-  case eSM_CERES: {
     break;
   }
   case eSM_NR: {

@@ -73,9 +73,13 @@ TEST(stereomodel, ImageToGround) {
   leftModel->GroundToImage(grdH, imageL);
   rightModel->GroundToImage(grdH, imageR);
 
+  smC.ImageToGround(imageL, imageR, grdC);
   smI.ImageToGround(imageL, imageR, grdI);
   smN.ImageToGround(imageL, imageR, grdN);
 
+  ASSERT_LE(fabs(grdC.x - grdH.x), kTol) << "Max. longitude difference > 1 mm";
+  ASSERT_LE(fabs(grdC.y - grdH.y), kTol) << "Max.  latitude difference > 1 mm";
+  ASSERT_LE(fabs(grdC.z - grdH.z), kTolH) << "Max.    height difference > 1 mm";
   ASSERT_LE(fabs(grdI.x - grdH.x), kTol) << "Max. longitude difference > 1 mm";
   ASSERT_LE(fabs(grdI.y - grdH.y), kTol) << "Max.  latitude difference > 1 mm";
   ASSERT_LE(fabs(grdI.z - grdH.z), kTolH) << "Max.    height difference > 1 mm";
