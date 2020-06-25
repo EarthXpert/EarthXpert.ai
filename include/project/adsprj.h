@@ -13,6 +13,12 @@ namespace earthxpert {
  */
 class EXPROJECT_EXPORTS AdsProject final : public Project {
 public:
+  enum {
+    ProjectType = ePT_ADS
+  };
+
   ~AdsProject() = default;
+
+  PrjType GetProjectType() const noexcept override { return ePT_ADS; }
 };
 }

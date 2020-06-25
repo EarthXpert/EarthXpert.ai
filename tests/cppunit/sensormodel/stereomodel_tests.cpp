@@ -34,17 +34,17 @@ TEST(stereomodel, ImageToGround) {
   const auto rightModel = CreateRightRationalModelA();
 
   StereoModel smC(leftModel.get(), rightModel.get());    // Ceres
-  smC.SetForwardAlgorithm(StereoModel::eSM_CERES);
+  smC.SetForwardAlgorithm(IStereoModel::eSM_CERES);
 
   StereoModel smI(leftModel.get(), rightModel.get());    // intersect
   Point3d origin(109.2114, 34.6557, 396);
   auto ee = std::make_shared<EarthEllipsoid>();
   ee->SetLsrOrigin(Deg2Rad(origin));
   smI.SetEarthEllipsoid(ee);
-  smI.SetForwardAlgorithm(StereoModel::eCA_INTERSECT);
+  smI.SetForwardAlgorithm(IStereoModel::eCA_INTERSECT);
 
   StereoModel smN(leftModel.get(), rightModel.get());    // NR 
-  smN.SetForwardAlgorithm(StereoModel::eSM_NR);
+  smN.SetForwardAlgorithm(IStereoModel::eSM_NR);
 
   Point2d imageL, imageR;
   Point3d grdC, grdI, grdN;
@@ -134,17 +134,17 @@ void TestImageToGround_Cube(const RationalModel* leftModel, const RationalModel*
   double maxDiffLonN{ -1.0 }, maxDiffLatN{ -1.0 }, maxDiffHgtN{ -1.0 };
 
   StereoModel smC(leftModel, rightModel);    // Ceres 
-  smC.SetForwardAlgorithm(StereoModel::eSM_CERES);
+  smC.SetForwardAlgorithm(IStereoModel::eSM_CERES);
 
   Point3d origin((minLon + maxLon) / 2, (minLat + maxLat) / 2, (minHgt + maxHgt) / 2);
   auto ee = std::make_shared<EarthEllipsoid>();
   ee->SetLsrOrigin(Deg2Rad(origin));
   StereoModel smI(leftModel, rightModel);    // intersect
   smI.SetEarthEllipsoid(ee);
-  smI.SetForwardAlgorithm(StereoModel::eCA_INTERSECT);
+  smI.SetForwardAlgorithm(IStereoModel::eCA_INTERSECT);
 
   StereoModel smN(leftModel, rightModel);    // NR 
-  smN.SetForwardAlgorithm(StereoModel::eSM_NR);
+  smN.SetForwardAlgorithm(IStereoModel::eSM_NR);
 
   auto [leftNumCols, leftNumRows] = leftModel->GetImageSize();
   auto [rightNumCols, rightNumRows] = rightModel->GetImageSize();

@@ -413,4 +413,6 @@ private:
 
   bool mHasCorrection{false};
 };
+
+using rnf = RationalModel::NormalizationFactor;
 } // namespace earthxpert

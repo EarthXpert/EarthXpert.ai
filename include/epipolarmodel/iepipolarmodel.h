@@ -93,4 +93,7 @@ public:
    */
   virtual EpipolarAlgo GetEpipolarAlgorithm() const noexcept = 0;
 };
+
+using EpiAlgo = IEpipolarModel::EpipolarAlgo;
+using EpiStereoPos = IEpipolarModel::StereoPos;
 } // namespace earthxpert

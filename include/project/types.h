@@ -1,0 +1,54 @@
+/* -----------------------------------------------------------------------------
+ *  Copyright (c) 2019.  All rights reserved.
+ * -----------------------------------------------------------------------------
+ */
+#pragma once
+
+#include "3rdparty/opencv/exopencv.h"
+
+#include <string>
+
+namespace earthxpert {
+//
+enum ExPointType {
+  eUNUSED = -1,
+  eGCP,
+  eICP,
+  eTP
+};
+
+// GroundPoint represents a multi-ray observation
+struct GroundPoint {
+  unsigned int id;
+  Point3d point;      // XYZ, LPH position
+};
+
+struct ControlPoint : GroundPoint {
+  ExPointType pt{ eGCP };
+};
+
+struct TiePoint : GroundPoint {
+  ExPointType pt{ eTP };
+};
+
+struct ImagePoint {
+  Point2f point;        // col, row position
+  unsigned int gpId;    // ID of GroundPoint
+};
+
+// camera infomation
+struct SensorInfo {
+  std::string name;
+  double fl;    // focal length/principal distance
+  Point2d pp;   // PPA
+};
+
+struct ExImage {
+  std::string sensor;   // camera
+  std::string name;
+  std::string path;   // path relative to the .epj
+  bool enabled{ true };   // flag indicating if used
+
+  std::vector<ImagePoint> mIPs;
+};
+}

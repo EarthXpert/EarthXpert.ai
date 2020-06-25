@@ -22,7 +22,6 @@ using earthxpert::ISensorModel;
 using earthxpert::InterpGridF;
 using earthxpert::Point2d;
 using earthxpert::Point3d;
-using EpiStereoPos = IEpipolarModel::StereoPos;
 
 /**
  *  Constructor.
