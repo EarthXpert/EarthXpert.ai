@@ -1,0 +1,17 @@
+/* -----------------------------------------------------------------------------
+ *  Copyright (c) 2018.  All rights reserved.
+ * -----------------------------------------------------------------------------
+ */
+#pragma once
+
+#include "platform/explatform.h"
+
+namespace earthxpert {
+/**
+ *
+ */
+class EXPLATFORM_EXPORTS ICommand {
+public:
+  virtual ~ICommand() = default;
+};
+}

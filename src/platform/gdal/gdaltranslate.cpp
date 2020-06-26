@@ -59,6 +59,7 @@
    * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    * DEALINGS IN THE SOFTWARE.
    ****************************************************************************/
+#include "platform/gdal/gdalcmds.h"
 
 #include "commonutils.h"
 #include "cpl_string.h"
@@ -71,8 +72,8 @@ CPL_CVSID("$Id: gdal_translate_bin.cpp 5da1c4d1b6c7e38f7f5917fff3ddbc8ad42af7aa 
 
 namespace earthxpert {
 namespace detail {
-void Usage(const char* pszErrorMsg = nullptr, int bShort = TRUE) {
-  printf("Usage: gdal translate [--help-general] [--long-usage]\n"
+void HelpTranslate(const char* pszErrorMsg = nullptr, int bShort = TRUE) {
+  printf("\nUsage: gdal translate [--help-general] [--long-usage]\n"
     "       [-ot {Byte/Int16/UInt16/UInt32/Int32/Float32/Float64/\n"
     "             CInt16/CInt32/CFloat32/CFloat64}] [-strict]\n"
     "       [-of format] [-b band] [-mask band] [-expand {gray|rgb|rgba}]\n"
@@ -158,10 +159,10 @@ int GdalTranslate(int argc, char** argv) {
       return 0;
     }
     else if (EQUAL(argv[i], "--help")) {
-      detail::Usage(nullptr);
+      detail::HelpTranslate(nullptr);
     }
     else if (EQUAL(argv[i], "--long-usage")) {
-      detail::Usage(nullptr, FALSE);
+      detail::HelpTranslate(nullptr, FALSE);
     }
   }
 
@@ -188,13 +189,13 @@ int GdalTranslate(int argc, char** argv) {
   CSLDestroy(argv);
 
   if (!psOptions)
-    detail::Usage(nullptr);
+    detail::HelpTranslate(nullptr);
 
   if (!psOptionsForBinary->pszSource)
-    detail::Usage("No source dataset specified.");
+    detail::HelpTranslate("No source dataset specified.");
 
   if (!psOptionsForBinary->pszDest)
-    detail::Usage("No target dataset specified.");
+    detail::HelpTranslate("No target dataset specified.");
 
   if (strcmp(psOptionsForBinary->pszDest, "/vsistdout/") == 0)
     psOptionsForBinary->bQuiet = TRUE;
@@ -291,7 +292,7 @@ int GdalTranslate(int argc, char** argv) {
         printf("Input file size is %d, %d\n", GDALGetRasterXSize(hDataset), GDALGetRasterYSize(hDataset));
       hOutDS = GDALTranslate(pszDest, hDataset, psOptions, &bUsageError);
       if (bUsageError == TRUE)
-        detail::Usage();
+        detail::HelpTranslate();
       if (hOutDS == nullptr)
         break;
       GDALClose(hOutDS);
@@ -311,7 +312,7 @@ int GdalTranslate(int argc, char** argv) {
 
   hOutDS = GDALTranslate(psOptionsForBinary->pszDest, hDataset, psOptions, &bUsageError);
   if (bUsageError == TRUE)
-    detail::Usage();
+    detail::HelpTranslate();
   int nRetCode = hOutDS ? 0 : 1;
 
   /* Close hOutDS before hDataset for the -f VRT case */

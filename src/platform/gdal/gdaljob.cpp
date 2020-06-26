@@ -16,7 +16,5 @@ int GdalJob::SetArgs() {
 }
 
 int GdalJob::Run() {
-  GdalInfo(0, nullptr);
-  GdalTranslate(0, nullptr);
   return 0;
 }

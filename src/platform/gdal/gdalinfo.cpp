@@ -30,6 +30,8 @@
   * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
   * DEALINGS IN THE SOFTWARE.
   ****************************************************************************/
+#include "platform/gdal/gdalinfo.h"
+#include "platform/gdal/gdalcmds.h"
 
 #include "gdal_version.h"
 #include "gdal.h"
@@ -42,8 +44,8 @@ CPL_CVSID("$Id: gdalinfo_bin.cpp 5da1c4d1b6c7e38f7f5917fff3ddbc8ad42af7aa 2018-0
 
 namespace earthxpert {
 namespace detail {
-void Usage(const char* pszErrorMsg = nullptr) {
-  printf("Usage: gdalinfo [--help-general] [-json] [-mm] [-stats] [-hist] [-nogcp] [-nomd]\n"
+void HelpGdalInfo(const char* pszErrorMsg = nullptr) {
+  printf("\nUsage: gdalinfo [--help-general] [-json] [-mm] [-stats] [-hist] [-nogcp] [-nomd]\n"
     "                [-norat] [-noct] [-nofl] [-checksum] [-proj4]\n"
     "                [-listmdd] [-mdd domain|`all`]*\n"
     "                [-sd subdataset] [-oo NAME=VALUE]* datasetname\n");
@@ -86,7 +88,7 @@ int GdalInfo(int argc, char**argv) {
       return 0;
     }
     else if (EQUAL(argv[i], "--help")) {
-      detail::Usage();
+      detail::HelpGdalInfo();
     }
   }
   argv = CSLAddString(argv, "-stdout");
@@ -95,10 +97,10 @@ int GdalInfo(int argc, char**argv) {
 
   auto psOptions = GDALInfoOptionsNew(argv + 1, psOptionsForBinary);
   if (!psOptions)
-    detail::Usage();
+    detail::HelpGdalInfo();
 
   if (psOptionsForBinary->pszFilename == nullptr)
-    detail::Usage("No datasource specified.");
+    detail::HelpGdalInfo("No datasource specified.");
 
   /* -------------------------------------------------------------------- */
   /*      Open dataset.                                                   */

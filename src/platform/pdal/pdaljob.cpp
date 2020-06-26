@@ -171,19 +171,18 @@ void PdalJob::OutputVersion() {
 }
 
 void PdalJob::OutputHelp() {
-  mOut << "Usage:" << std::endl;
-  mOut << "  pdal <options>" << std::endl;
-  mOut << "  pdal <command> <command options>" << std::endl;
+  mOut << "Usage: pdal <options>" << std::endl;
+  mOut << "       pdal <command> <command options>" << std::endl;
 
   mArgs.dump(mOut, 2, 80);
   mOut << std::endl;
 
-  mOut << "The following commands are available:" << std::endl;
+  mOut << "Commands:" << std::endl;
 
   // Load all kernels so that we can report the names.
   StageFactory f;
   PluginManager<Kernel>::loadAll();
-  OutputCommands("  - ");
+  OutputCommands("    ");
   mOut << std::endl;
   mOut << "See http://pdal.io/apps/ for more detail" << std::endl;
 }
