@@ -36,7 +36,6 @@ void GenerateEpipolar(RasterReader* leftReader, const ISensorModel* leftModel,
   epiGen.Process(rightReader, rightEpiWriter, epiModel, IEpipolarModel::eRIGHT);
 }
 
-
 /**
  *  \brief Generate epipolar images for a pair of stereo image having frame models.
  */

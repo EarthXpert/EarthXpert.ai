@@ -5,6 +5,7 @@
 #include "platform/gdal/gdaljob.h"
 #include "platform/gdal/gdalmanager.h"
 
+using namespace earthxpert;
 using earthxpert::GdalJob;
 
 GdalJob::GdalJob() {
@@ -15,5 +16,7 @@ int GdalJob::SetArgs() {
 }
 
 int GdalJob::Run() {
+  GdalInfo(0, nullptr);
+  GdalTranslate(0, nullptr);
   return 0;
 }
