@@ -233,15 +233,16 @@ TEST(pointcloudreader, ReadPointcloudOMP_LAS_XYZ_CHUNKS) {
  *  \brief PointcloudReader test cases
  *
  *  TestCase 7: read tiles of points in .las
+ *  \todo examine extent of reader
  */
 TEST(pointcloudreader, ReadPointcloud_LAS_XYZC_TILES) {
   constexpr size_t filePointCount{ 20680 };
   const std::array<size_t, 4> tileNumPts4{
     6680, 4257, 6390, 3249 };
-  const std::array<XYZF, 4> xyz4{ XYZF{539841.125f, 1384727.0f, 42.07f},
-                                  XYZF{540472.625f, 1384715.5f, 46.25f},
-                                  XYZF{539859.5625f, 1385157.5f, 38.87f},
-                                  XYZF{540459.75f, 1384731.125f, 45.82f} };
+  const std::array<XYZF, 4> xyz4{ XYZF{539852.6875f, 1384727.875f, 41.35f},
+                                  XYZF{540465.5f, 1384716.5f, 45.89f},
+                                  XYZF{539838.8125f, 1385144.0f, 38.21f},
+                                  XYZF{540464.625f, 1384732.75f, 45.82f} };
 
   const std::string lasFile(TestConfig::DataPath("PointClouds/points_small.las"));
   PointcloudReader reader(lasFile, { fgt::kBITXC });
@@ -276,7 +277,7 @@ TEST(pointcloudreader, ReadPointcloud_LAS_XYZC_TILES) {
       ++j;
     }
   }
-  ASSERT_EQ(2, j) << "#tiles";
+  ASSERT_EQ(4, j) << "#tiles";
 }
 
 /**
