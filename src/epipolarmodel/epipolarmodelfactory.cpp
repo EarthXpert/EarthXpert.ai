@@ -100,8 +100,6 @@ std::unique_ptr<IEpipolarModel> EpipolarModelFactory::CreateFrameEpiModel(
 std::unique_ptr<IEpipolarModel> EpipolarModelFactory::CreateRationalEpiModel(
   std::shared_ptr<ISensorModel> leftModel, 
   std::shared_ptr<ISensorModel> rightModel, const int sample) {
-  using rnf = RationalModel::NormalizationFactor;
-
   auto leftRM = dynamic_cast<const RationalModel*>(leftModel.get());
   auto rightRM = dynamic_cast<const RationalModel*>(rightModel.get());
 

@@ -116,7 +116,7 @@ TEST(rationalmodel, CubeI2G_Functor) {
  * Create an instance of rational model
  */
 std::unique_ptr<RationalModel> CreateRationalModelA() {
-  std::array<double, rfm::NumFact> normalFators{
+  std::array<double, rnf::NumFact> normalFators{
       14521, 18751, 45.0429, 82.3670, 686, 14522, 18752, 0.0727, 0.1175, 501};
   std::array<double, rfm::NumCoef> lineNumCoef{
       +2.048296E-02, -1.444756E-01, -1.166505E+00, +2.179594E-02,
@@ -153,7 +153,7 @@ std::unique_ptr<RationalModel> CreateRationalModelA() {
  * Create an instance of rational model of left image
  */
 std::unique_ptr<RationalModel> CreateRationalModelB() {
-  std::array<double, rfm::NumFact> normalFators{
+  std::array<double, rnf::NumFact> normalFators{
     15069, 13790, 43.8664, -79.5300, 196, 15210, 13930, 0.0900, 0.1109, 500 };
   std::array<double, rfm::NumCoef> lineNumCoef{
     -2.283325E-03, -3.637293E-02, -1.028037E+00, +8.541168E-03,
@@ -192,7 +192,7 @@ std::unique_ptr<RationalModel> CreateRationalModelB() {
  * Create an instance of rational model of right image
  */
 std::unique_ptr<RationalModel> CreateRationalModelC() {
-  std::array<double, rfm::NumFact> normalFators{
+  std::array<double, rnf::NumFact> normalFators{
       15073, 13790, 43.7319, -79.5313, 110, 15198, 13940, 0.0893, 0.1106, 500 };
   std::array<double, rfm::NumCoef> lineNumCoef{
     -1.736510E-03, -3.255581E-02, -1.024674E+00, +7.518102E-03,
@@ -229,12 +229,12 @@ std::unique_ptr<RationalModel> CreateRationalModelC() {
 
 void TestCubeI2G(const RationalModel* rationalModel) {
   auto nfc = rationalModel->GetNormalFators();
-  const auto minLon = nfc[rfm::eOLONG] - nfc[rfm::eSLONG];
-  const auto maxLon = nfc[rfm::eOLONG] + nfc[rfm::eSLONG];
-  const auto minLat = nfc[rfm::eOLAT] - nfc[rfm::eSLAT];
-  const auto maxLat = nfc[rfm::eOLAT] + nfc[rfm::eSLAT];
-  const auto minHgt = nfc[rfm::eOHEIGHT] - nfc[rfm::eSHEIGHT];
-  const auto maxHgt = nfc[rfm::eOHEIGHT] + nfc[rfm::eSHEIGHT];
+  const auto minLon = nfc[rnf::eOLONG] - nfc[rnf::eSLONG];
+  const auto maxLon = nfc[rnf::eOLONG] + nfc[rnf::eSLONG];
+  const auto minLat = nfc[rnf::eOLAT] - nfc[rnf::eSLAT];
+  const auto maxLat = nfc[rnf::eOLAT] + nfc[rnf::eSLAT];
+  const auto minHgt = nfc[rnf::eOHEIGHT] - nfc[rnf::eSHEIGHT];
+  const auto maxHgt = nfc[rnf::eOHEIGHT] + nfc[rnf::eSHEIGHT];
 
   const auto stepLon = (maxLon - minLon) / kNum;
   const auto stepLat = (maxLat - minLat) / kNum;
@@ -275,12 +275,12 @@ void TestCubeI2G(const RationalModel* rationalModel) {
 
 void TestCubeI2G_Functor(const RationalModel* rationalModel) {
   auto nfc = rationalModel->GetNormalFators();
-  const auto minLon = nfc[rfm::eOLONG] - nfc[rfm::eSLONG];
-  const auto maxLon = nfc[rfm::eOLONG] + nfc[rfm::eSLONG];
-  const auto minLat = nfc[rfm::eOLAT] - nfc[rfm::eSLAT];
-  const auto maxLat = nfc[rfm::eOLAT] + nfc[rfm::eSLAT];
-  const auto minHgt = nfc[rfm::eOHEIGHT] - nfc[rfm::eSHEIGHT];
-  const auto maxHgt = nfc[rfm::eOHEIGHT] + nfc[rfm::eSHEIGHT];
+  const auto minLon = nfc[rnf::eOLONG] - nfc[rnf::eSLONG];
+  const auto maxLon = nfc[rnf::eOLONG] + nfc[rnf::eSLONG];
+  const auto minLat = nfc[rnf::eOLAT] - nfc[rnf::eSLAT];
+  const auto maxLat = nfc[rnf::eOLAT] + nfc[rnf::eSLAT];
+  const auto minHgt = nfc[rnf::eOHEIGHT] - nfc[rnf::eSHEIGHT];
+  const auto maxHgt = nfc[rnf::eOHEIGHT] + nfc[rnf::eSHEIGHT];
 
   const auto stepLon = (maxLon - minLon) / kNum;
   const auto stepLat = (maxLat - minLat) / kNum;

@@ -154,7 +154,7 @@ std::unique_ptr<ISensorModel>
 RationalModelMarshaller::DeserializeRpb(std::istream& inStream) {
   double errBias{};
   double errRand{};
-  std::array<double, RationalModel::NumFact> normalFators{};
+  std::array<double, rnf::NumFact> normalFators{};
   std::array<double, RationalModel::NumCoef> lineNumCoef{};
   std::array<double, RationalModel::NumCoef> lineDenCoef{};
   std::array<double, RationalModel::NumCoef> sampNumCoef{};
@@ -232,7 +232,7 @@ RationalModelMarshaller::DeserializeRpb(std::istream& inStream) {
  */
 std::unique_ptr<ISensorModel>
 RationalModelMarshaller::DeserializeRpc(std::istream& inStream) {
-  std::array<double, RationalModel::NumFact> normalFators{};
+  std::array<double, rnf::NumFact> normalFators{};
   std::array<double, RationalModel::NumCoef> lineNumCoef{};
   std::array<double, RationalModel::NumCoef> lineDenCoef{};
   std::array<double, RationalModel::NumCoef> sampNumCoef{};

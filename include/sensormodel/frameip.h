@@ -127,6 +127,15 @@ private:
   std::array<double, NumLinCoef> mLinearDist{};  // linear distortion for non-square, non-orthogonality [B1 B2]
   std::unique_ptr<DistortionGridF> mGridDist;   // grid distortion
 
+  // uncertainties
+  double mStdFL{};
+  std::array<double, 2> mStdPPA{};
+  std::array<double, 3> mStdPC{};
+  std::array<double, 3> mStdIMU{};
+  std::array<double, NumRadCoef> mStdRadialDist{};
+  std::array<double, NumDecCoef> mStdDecentDist{};
+  std::array<double, NumLinCoef> mStdLinearDist{};
+
   // self-calibration model with added parameters
 
   void CheckCamParms() const;

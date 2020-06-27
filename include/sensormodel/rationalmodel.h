@@ -5,6 +5,7 @@
 #pragma once
 
 #include "core/math/interpcube.h"
+#include "sensormodel/datatypes.h"
 #include "sensormodel/sensormodel.h"
 
 #include <array>
@@ -47,20 +48,7 @@ namespace earthxpert {
 class EXSENSORMODEL_EXPORTS RationalModel final : public SensorModel {
 public:
   // index of normalization factors
-  enum NormalizationFactor {
-    eOLINE = 0,   // line offset
-    eOSAMP = 1,   // sample offset
-    eOLAT = 2,    // latitude offset
-    eOLONG = 3,   // longitude offset
-    eOHEIGHT = 4, // height offset
-    eSLINE = 5,   // line scale
-    eSSAMP = 6,   // sample scale
-    eSLAT = 7,    // latitude scale
-    eSLONG = 8,   // longitude scale
-    eSHEIGHT = 9, // height scale
-    NumFact = 10  // number of factors
-  };
-  using nf = NormalizationFactor;
+  using NormalizationFactor = NormalizationFactor;
 
   // index of inversed scale factors
   enum InvScaleFactor {
@@ -414,5 +402,5 @@ private:
   bool mHasCorrection{false};
 };
 
-using rnf = RationalModel::NormalizationFactor;
+using rnf = NormalizationFactor;
 } // namespace earthxpert

@@ -25,7 +25,7 @@ public:
 
   FrameEP(const FrameEP &rhs);
   FrameEP(FrameEP &&rhs) noexcept;
-  ~FrameEP() {}
+  ~FrameEP() = default;
 
   FrameEP &operator=(const FrameEP &rhs);
   FrameEP &operator=(FrameEP &&rhs) noexcept;
@@ -51,11 +51,14 @@ public:
 
 private:
   // std::chrono::time_point mTimeStamp{};   // GPS time
-  std::array<double, 3>
-      mPosition{}; // position of body in world coordinate system
+  std::array<double, 3> mPosition{}; // position of body in world coordinate system
   std::array<double, 3> mRotation{}; // rotation angles of body in world
                                      // coordinate system [unit: degree]
   std::shared_ptr<SpatialReferenceSystem> mGroundSRS;
+
+  // uncertainties
+  std::array<double, 3> mStdPosition{};
+  std::array<double, 3> mStdRotation{};
 
   void CheckSRS() const;
 
