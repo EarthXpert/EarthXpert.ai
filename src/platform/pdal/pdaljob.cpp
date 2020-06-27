@@ -95,7 +95,7 @@ int PdalJob::SetArgs(const StringList& cmdArgs) {
 
       for (const auto& l : lines)
         mLogger->get(LogLevel::Debug) << l << std::endl;
-      exit(1); });
+      return -1; });
   }
 #endif
   return 0;
@@ -129,17 +129,17 @@ int PdalJob::Run() {
   }
 
   if (mShowVersion)
-    OutputVersion();
+    HelpVersion();
   else if (mShowDrivers)
-    OutputDrivers();
+    HelpDrivers();
   else if (mShowOptions.size()) {
     if (mShowOptions == "all")
-      OutputOptions();
+      HelpOptions();
     else
-      OutputOptions(mShowOptions, mOut);
+      HelpOptions(mShowOptions, mOut);
   }
   else
-    OutputHelp();
+    Help();
   return 0;
 }
 
@@ -163,16 +163,9 @@ void PdalJob::AddArgs() {
   json.setHidden();
 }
 
-void PdalJob::OutputVersion() {
-  mOut << mHeadline << std::endl;
-  mOut << "pdal " << Config::fullVersionString() << std::endl;
-  mOut << mHeadline << std::endl;
-  mOut << std::endl;
-}
-
-void PdalJob::OutputHelp() {
-  mOut << "Usage: pdal <options>" << std::endl;
-  mOut << "       pdal <command> <command options>" << std::endl;
+void PdalJob::Help() {
+  mOut << "Usage: expdal <options>" << std::endl;
+  mOut << "       expdal <command> <command options>" << std::endl;
 
   mArgs.dump(mOut, 2, 80);
   mOut << std::endl;
@@ -182,12 +175,19 @@ void PdalJob::OutputHelp() {
   // Load all kernels so that we can report the names.
   StageFactory f;
   PluginManager<Kernel>::loadAll();
-  OutputCommands("    ");
+  HelpCommands("    ");
   mOut << std::endl;
   mOut << "See http://pdal.io/apps/ for more detail" << std::endl;
 }
 
-void PdalJob::OutputCommands(const std::string& leader) {
+void PdalJob::HelpVersion() {
+  mOut << mHeadline << std::endl;
+  mOut << "pdal " << Config::fullVersionString() << std::endl;
+  mOut << mHeadline << std::endl;
+  mOut << std::endl;
+}
+
+void PdalJob::HelpCommands(const std::string& leader) {
   StageFactory f;
   PluginManager<Kernel>::loadAll();
   std::string kernelbase("kernels.");
@@ -199,7 +199,7 @@ void PdalJob::OutputCommands(const std::string& leader) {
   }
 }
 
-void PdalJob::OutputDrivers() {
+void PdalJob::HelpDrivers() {
   // Force plugin loading.
   StageFactory f;
   PluginManager<Stage>::loadAll();
@@ -244,7 +244,7 @@ void PdalJob::OutputDrivers() {
   }
 }
 
-void PdalJob::OutputOptions(std::string const& stageName, std::ostream& strm) {
+void PdalJob::HelpOptions(std::string const& stageName, std::ostream& strm) {
   // Force plugin loading.
   StageFactory f(false);
 
@@ -279,14 +279,14 @@ void PdalJob::OutputOptions(std::string const& stageName, std::ostream& strm) {
   }
 }
 
-void PdalJob::OutputOptions() {
+void PdalJob::HelpOptions() {
   // Force plugin loading.
   StageFactory f(false);
   StringList nv = PluginManager<Stage>::names();
 
   if (!mShowJSON) {
     for (auto const& n : nv) {
-      OutputOptions(n, mOut);
+      HelpOptions(n, mOut);
       mOut << std::endl;
     }
   }
@@ -294,7 +294,7 @@ void PdalJob::OutputOptions() {
     std::stringstream strm;
     nlohmann::json options;
     for (auto const& n : nv) {
-      OutputOptions(n, strm);
+      HelpOptions(n, strm);
       nlohmann::json j;
       try {
         strm >> j;

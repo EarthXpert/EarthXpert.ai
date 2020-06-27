@@ -32,22 +32,195 @@
 * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 * DEALINGS IN THE SOFTWARE.
 ****************************************************************************/
-#include "platform/gdal/gdalcmds.h"
+#include "platform/gdal/gdalsrsinfo.h"
 
 #include "commonutils.h"
 #include "cpl_string.h"
-#include "gdal_version.h"
-#include "gdal_priv.h"
-#include "ogr_spatialref.h"
-#include "ogr_api.h"
 #include "ogrsf_frmts.h"
 
 CPL_CVSID("$Id: gdalsrsinfo.cpp 6574497e5ddfd7c08c094a76756a0ef477cef6a1 2018-04-04 22:15:20 +0200 Even Rouault $")
 
-namespace earthxpert {
-namespace detail {
-void HelpSrsInfo(const char* pszErrorMsg = nullptr) {
-  printf("\nUsage: gdalsrsinfo [options] srs_def\n"
+using namespace earthxpert;
+
+/**
+ *
+ */
+#define CHECK_HAS_ENOUGH_ADDITIONAL_ARGS(nExtraArg) \
+    do { if (i + nExtraArg >= mArgc) \
+        Help(CPLSPrintf("%s option requires %d argument(s)", \
+                         mArgv[i], nExtraArg)); } while( false )
+
+int GdalSrsInfo::Execute() {
+  bool bGotSRS = false;
+  bool bPretty = false;
+  bool bValidate = false;
+  bool bFindEPSG = false;
+  int  nEPSGCode = -1;
+  const char* pszInput = nullptr;
+  const char* pszOutputType = "default";
+  OGRSpatialReference  oSRS;
+
+  /* Check strict compilation and runtime library version as we use C++ API */
+  if (!GDAL_CHECK_VERSION(mArgv[0]))
+    return -1;
+
+  EarlySetConfigOptions(mArgc, mArgv);
+
+  /* -------------------------------------------------------------------- */
+  /*      Register standard GDAL drivers, and process generic GDAL        */
+  /*      command options.                                                */
+  /* -------------------------------------------------------------------- */
+  mArgc = GDALGeneralCmdLineProcessor(mArgc, &mArgv, 0);
+  if (mArgc < 1)
+    return -1;
+
+  /* -------------------------------------------------------------------- */
+  /*      Parse arguments.                                                */
+  /* -------------------------------------------------------------------- */
+  for (int i = 1; i < mArgc; i++) {
+    CPLDebug("gdalsrsinfo", "got arg #%d : [%s]", i, mArgv[i]);
+
+    if (EQUAL(mArgv[i], "--utility_version")) {
+      printf("%s was compiled against GDAL %s and is running against GDAL %s\n",
+        mArgv[0], GDAL_RELEASE_NAME, GDALVersionInfo("RELEASE_NAME"));
+      CSLDestroy(mArgv);
+      return 0;
+    }
+    else if (EQUAL(mArgv[i], "-h") || EQUAL(mArgv[i], "--help")) {
+      Help();
+      return 0;
+    }
+    else if (EQUAL(mArgv[i], "-e"))
+      bFindEPSG = true;
+    else if (EQUAL(mArgv[i], "-o")) {
+      CHECK_HAS_ENOUGH_ADDITIONAL_ARGS(1);
+      pszOutputType = mArgv[++i];
+    }
+    else if (EQUAL(mArgv[i], "-p"))
+      bPretty = true;
+    else if (EQUAL(mArgv[i], "-V"))
+      bValidate = true;
+    else if (mArgv[i][0] == '-') {
+      Help(CPLSPrintf("Unknown option name '%s'", mArgv[i]));
+      return 0;
+    }
+    else
+      pszInput = mArgv[i];
+  }
+
+  if (!pszInput) {
+    CSLDestroy(mArgv);
+    Help("No input specified.");
+    return 0;
+  }
+
+  /* Search for SRS */
+  /* coverity[tainted_data] */
+  bGotSRS = FindSRS(pszInput, oSRS) == TRUE;
+
+  CPLDebug("gdalsrsinfo",
+    "bGotSRS: %d bValidate: %d pszOutputType: %s bPretty: %d",
+    static_cast<int>(bGotSRS),
+    static_cast<int>(bValidate),
+    pszOutputType,
+    static_cast<int>(bPretty));
+
+  /* Make sure we got a SRS */
+  if (!bGotSRS) {
+    CPLError(CE_Failure, CPLE_AppDefined,
+      "ERROR - failed to load SRS definition from %s",
+      pszInput);
+  }
+
+  else {
+    int nEntries = 0;
+    int* panConfidence = nullptr;
+    OGRSpatialReferenceH* pahSRS = nullptr;
+
+    /* Find EPSG code */
+    if (EQUAL(pszOutputType, "epsg"))
+      bFindEPSG = true;
+
+    if (bFindEPSG) {
+      pahSRS = OSRFindMatches(reinterpret_cast<OGRSpatialReferenceH>(
+        const_cast<OGRSpatialReference*>(&oSRS)),
+        nullptr, &nEntries, &panConfidence);
+    }
+
+    for (int i = 0; i < (nEntries ? nEntries : 1); i++) {
+      if (nEntries) {
+        oSRS = *reinterpret_cast<OGRSpatialReference*>(pahSRS[i]);
+        if (panConfidence[i] != 100) {
+          printf("Confidence in this match: %d %%\n",
+            panConfidence[i]);
+        }
+
+        const char* pszAuthorityCode =
+          oSRS.GetAuthorityCode(nullptr);
+        if (pszAuthorityCode)
+          nEPSGCode = atoi(pszAuthorityCode);
+      }
+
+      /* Validate - not well tested!*/
+      if (bValidate) {
+        OGRErr eErr = oSRS.Validate();
+        if (eErr != OGRERR_NONE) {
+          printf("\nValidate Fails");
+          if (eErr == OGRERR_CORRUPT_DATA)
+            printf(" - SRS is not well formed");
+          else if (eErr == OGRERR_UNSUPPORTED_SRS)
+            printf(" - contains non-standard PROJECTION[] values");
+          printf("\n");
+        }
+        else
+          printf("\nValidate Succeeds\n");
+      }
+
+      /* Output */
+      if (EQUAL("default", pszOutputType)) {
+        /* does this work in MSVC? */
+        const char* papszOutputTypes[] =
+        { "proj4", "wkt", nullptr };
+        if (bFindEPSG)
+          printf("\nEPSG:%d\n", nEPSGCode);
+        PrintSRSOutputTypes(oSRS, papszOutputTypes);
+      }
+      else if (EQUAL("all", pszOutputType)) {
+        if (bFindEPSG)
+          printf("\nEPSG:%d\n\n", nEPSGCode);
+        const char* papszOutputTypes[] = { "proj4","wkt","wkt_simple","wkt_noct","wkt_esri","mapinfo","xml",nullptr };
+        PrintSRSOutputTypes(oSRS, papszOutputTypes);
+      }
+      else if (EQUAL("wkt_all", pszOutputType)) {
+        const char* papszOutputTypes[] = { "wkt", "wkt_simple", "wkt_noct", "wkt_esri", nullptr };
+        PrintSRSOutputTypes(oSRS, papszOutputTypes);
+      }
+      else {
+        if (bPretty)
+          printf("\n");
+        if (EQUAL(pszOutputType, "epsg"))
+          printf("EPSG:%d\n", nEPSGCode);
+        else
+          PrintSRS(oSRS, pszOutputType, bPretty, FALSE);
+        if (bPretty)
+          printf("\n");
+      }
+    }
+
+    OSRFreeSRSArray(pahSRS);
+    CPLFree(panConfidence);
+  }
+
+  /* cleanup anything left */
+  GDALDestroyDriverManager();
+  OGRCleanupAll();
+  CSLDestroy(mArgv);
+
+  return 0;
+}
+
+void GdalSrsInfo::Help(const char* pszErrorMsg) {
+  printf("\nUsage: exgdal srsinfo [options] srs_def\n"
     "\n"
     "srs_def may be the filename of a dataset supported by GDAL/OGR "
     "from which to extract SRS information\n"
@@ -64,16 +237,14 @@ void HelpSrsInfo(const char* pszErrorMsg = nullptr) {
     "                                        wkt, wkt_simple, wkt_noct, wkt_esri,\n"
     "                                        mapinfo, xml }\n\n");
 
-  if (pszErrorMsg != nullptr)
+  if (pszErrorMsg)
     fprintf(stderr, "\nFAILURE: %s\n", pszErrorMsg);
-
-  exit(1);
 }
 
 /**
  *  \brief Search for SRS from pszInput, update oSRS.
  */
-bool FindSRS(const char* pszInput, OGRSpatialReference& oSRS) {
+bool GdalSrsInfo::FindSRS(const char* pszInput, OGRSpatialReference& oSRS) {
   bool bGotSRS = false;
   GDALDataset* poGDALDS = nullptr;
   OGRLayer* poLayer = nullptr;
@@ -102,7 +273,7 @@ bool FindSRS(const char* pszInput, OGRSpatialReference& oSRS) {
   }
   if (poGDALDS) {
     pszProjection = poGDALDS->GetProjectionRef();
-    if (pszProjection != nullptr && pszProjection[0] != '\0') {
+    if (pszProjection && pszProjection[0] != '\0') {
       if (oSRS.importFromWkt(pszProjection) == OGRERR_NONE) {
         CPLDebug("gdalsrsinfo", "got SRS from GDAL");
         bGotSRS = true;
@@ -110,9 +281,9 @@ bool FindSRS(const char* pszInput, OGRSpatialReference& oSRS) {
     }
     else if (poGDALDS->GetLayerCount() > 0) {
       poLayer = poGDALDS->GetLayer(0);
-      if (poLayer != nullptr) {
+      if (poLayer) {
         OGRSpatialReference* poSRS = poLayer->GetSpatialRef();
-        if (poSRS != nullptr) {
+        if (poSRS) {
           CPLDebug("gdalsrsinfo", "got SRS from OGR");
           bGotSRS = true;
           OGRSpatialReference* poSRSClone = poSRS->Clone();
@@ -132,7 +303,7 @@ bool FindSRS(const char* pszInput, OGRSpatialReference& oSRS) {
       "trying to get SRS from ESRI .prj file [%s]", pszInput);
 
     char** pszTemp;
-    if (strstr(pszInput, "ESRI::") != nullptr)
+    if (strstr(pszInput, "ESRI::"))
       pszTemp = CSLLoad(pszInput + 6);
     else
       pszTemp = CSLLoad(pszInput);
@@ -158,7 +329,7 @@ bool FindSRS(const char* pszInput, OGRSpatialReference& oSRS) {
     CPLDebug("gdalsrsinfo",
       "trying to get SRS from user input [%s]", pszInput);
 
-    if (CPLGetConfigOption("CPL_ALLOW_VSISTDIN", nullptr) == nullptr)
+    if (!CPLGetConfigOption("CPL_ALLOW_VSISTDIN", nullptr))
       CPLSetConfigOption("CPL_ALLOW_VSISTDIN", "YES");
 
     eErr = oSRS.SetFromUserInput(pszInput);
@@ -182,7 +353,7 @@ bool FindSRS(const char* pszInput, OGRSpatialReference& oSRS) {
 /**
  *  \brief Print spatial reference in specified format
  */
-CPLErr PrintSRS(const OGRSpatialReference& oSRS,
+CPLErr GdalSrsInfo::PrintSRS(const OGRSpatialReference& oSRS,
   const char* pszOutputType, bool bPretty, bool bPrintSep) {
   if (!pszOutputType || EQUAL(pszOutputType, ""))
     return CE_None;
@@ -265,7 +436,7 @@ CPLErr PrintSRS(const OGRSpatialReference& oSRS,
 /**
  *  \brief Print spatial reference in specified formats
  */
-void PrintSRSOutputTypes(const OGRSpatialReference& oSRS,
+void GdalSrsInfo::PrintSRSOutputTypes(const OGRSpatialReference& oSRS,
   const char* const* papszOutputTypes) {
   int nOutputTypes = CSLCount(papszOutputTypes);
   printf("\n");
@@ -273,179 +444,4 @@ void PrintSRSOutputTypes(const OGRSpatialReference& oSRS,
     PrintSRS(oSRS, papszOutputTypes[i], true, true);
     printf("\n");
   }
-}
-}
-
-/**
- *
- */
-#define CHECK_HAS_ENOUGH_ADDITIONAL_ARGS(nExtraArg) \
-    do { if (i + nExtraArg >= argc) \
-        detail::HelpSrsInfo(CPLSPrintf("%s option requires %d argument(s)", \
-                         argv[i], nExtraArg)); } while( false )
-
-int GdalSrsInfo(int argc, char** argv) {
-  bool bGotSRS = false;
-  bool bPretty = false;
-  bool bValidate = false;
-  bool bFindEPSG = false;
-  int  nEPSGCode = -1;
-  const char* pszInput = nullptr;
-  const char* pszOutputType = "default";
-  OGRSpatialReference  oSRS;
-
-  /* Check strict compilation and runtime library version as we use C++ API */
-  if (!GDAL_CHECK_VERSION(argv[0]))
-    exit(1);
-
-  EarlySetConfigOptions(argc, argv);
-
-  /* -------------------------------------------------------------------- */
-  /*      Register standard GDAL drivers, and process generic GDAL        */
-  /*      command options.                                                */
-  /* -------------------------------------------------------------------- */
-  argc = GDALGeneralCmdLineProcessor(argc, &argv, 0);
-  if (argc < 1)
-    exit(-argc);
-
-  /* -------------------------------------------------------------------- */
-  /*      Parse arguments.                                                */
-  /* -------------------------------------------------------------------- */
-  for (int i = 1; i < argc; i++) {
-    CPLDebug("gdalsrsinfo", "got arg #%d : [%s]", i, argv[i]);
-
-    if (EQUAL(argv[i], "--utility_version")) {
-      printf("%s was compiled against GDAL %s and is running against GDAL %s\n",
-        argv[0], GDAL_RELEASE_NAME, GDALVersionInfo("RELEASE_NAME"));
-      CSLDestroy(argv);
-      return 0;
-    }
-    else if (EQUAL(argv[i], "-h") || EQUAL(argv[i], "--help"))
-      detail::HelpSrsInfo();
-    else if (EQUAL(argv[i], "-e"))
-      bFindEPSG = true;
-    else if (EQUAL(argv[i], "-o")) {
-      CHECK_HAS_ENOUGH_ADDITIONAL_ARGS(1);
-      pszOutputType = argv[++i];
-    }
-    else if (EQUAL(argv[i], "-p"))
-      bPretty = true;
-    else if (EQUAL(argv[i], "-V"))
-      bValidate = true;
-    else if (argv[i][0] == '-') {
-      detail::HelpSrsInfo(CPLSPrintf("Unknown option name '%s'", argv[i]));
-    }
-    else
-      pszInput = argv[i];
-  }
-
-  if (pszInput == nullptr) {
-    CSLDestroy(argv);
-    detail::HelpSrsInfo("No input specified.");
-  }
-
-  /* Search for SRS */
-  /* coverity[tainted_data] */
-  bGotSRS = detail::FindSRS(pszInput, oSRS) == TRUE;
-
-  CPLDebug("gdalsrsinfo",
-    "bGotSRS: %d bValidate: %d pszOutputType: %s bPretty: %d",
-    static_cast<int>(bGotSRS),
-    static_cast<int>(bValidate),
-    pszOutputType,
-    static_cast<int>(bPretty));
-
-  /* Make sure we got a SRS */
-  if (!bGotSRS) {
-    CPLError(CE_Failure, CPLE_AppDefined,
-      "ERROR - failed to load SRS definition from %s",
-      pszInput);
-  }
-
-  else {
-    int nEntries = 0;
-    int* panConfidence = nullptr;
-    OGRSpatialReferenceH* pahSRS = nullptr;
-
-    /* Find EPSG code */
-    if (EQUAL(pszOutputType, "epsg"))
-      bFindEPSG = true;
-
-    if (bFindEPSG) {
-      pahSRS = OSRFindMatches(reinterpret_cast<OGRSpatialReferenceH>(
-          const_cast<OGRSpatialReference*>(&oSRS)),
-          nullptr, &nEntries, &panConfidence);
-    }
-
-    for (int i = 0; i < (nEntries ? nEntries : 1); i++) {
-      if (nEntries) {
-        oSRS = *reinterpret_cast<OGRSpatialReference*>(pahSRS[i]);
-        if (panConfidence[i] != 100) {
-          printf("Confidence in this match: %d %%\n",
-            panConfidence[i]);
-        }
-
-        const char* pszAuthorityCode =
-          oSRS.GetAuthorityCode(nullptr);
-        if (pszAuthorityCode)
-          nEPSGCode = atoi(pszAuthorityCode);
-      }
-
-      /* Validate - not well tested!*/
-      if (bValidate) {
-        OGRErr eErr = oSRS.Validate();
-        if (eErr != OGRERR_NONE) {
-          printf("\nValidate Fails");
-          if (eErr == OGRERR_CORRUPT_DATA)
-            printf(" - SRS is not well formed");
-          else if (eErr == OGRERR_UNSUPPORTED_SRS)
-            printf(" - contains non-standard PROJECTION[] values");
-          printf("\n");
-        }
-        else
-          printf("\nValidate Succeeds\n");
-      }
-
-      /* Output */
-      if (EQUAL("default", pszOutputType)) {
-        /* does this work in MSVC? */
-        const char* papszOutputTypes[] =
-        { "proj4", "wkt", nullptr };
-        if (bFindEPSG)
-          printf("\nEPSG:%d\n", nEPSGCode);
-        detail::PrintSRSOutputTypes(oSRS, papszOutputTypes);
-      }
-      else if (EQUAL("all", pszOutputType)) {
-        if (bFindEPSG)
-          printf("\nEPSG:%d\n\n", nEPSGCode);
-        const char* papszOutputTypes[] = { "proj4","wkt","wkt_simple","wkt_noct","wkt_esri","mapinfo","xml",nullptr };
-        detail::PrintSRSOutputTypes(oSRS, papszOutputTypes);
-      }
-      else if (EQUAL("wkt_all", pszOutputType)) {
-        const char* papszOutputTypes[] = { "wkt", "wkt_simple", "wkt_noct", "wkt_esri", nullptr };
-        detail::PrintSRSOutputTypes(oSRS, papszOutputTypes);
-      }
-      else {
-        if (bPretty)
-          printf("\n");
-        if (EQUAL(pszOutputType, "epsg"))
-          printf("EPSG:%d\n", nEPSGCode);
-        else
-          detail::PrintSRS(oSRS, pszOutputType, bPretty, FALSE);
-        if (bPretty)
-          printf("\n");
-      }
-    }
-
-    OSRFreeSRSArray(pahSRS);
-    CPLFree(panConfidence);
-  }
-
-  /* cleanup anything left */
-  GDALDestroyDriverManager();
-  OGRCleanupAll();
-  CSLDestroy(argv);
-
-  return 0;
-}
 }

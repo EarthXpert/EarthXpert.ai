@@ -5,6 +5,7 @@
 #pragma once
 
 #include "3rdparty/ex3rdparty.h"
+#include "gdal.h"
 #include "gdal_priv.h"
 #include "gdal_utils.h"
 #include "ogr_core.h"

@@ -31,76 +31,48 @@
   * DEALINGS IN THE SOFTWARE.
   ****************************************************************************/
 #include "platform/gdal/gdalinfo.h"
-#include "platform/gdal/gdalcmds.h"
 
-#include "gdal_version.h"
-#include "gdal.h"
+#include "commonutils.h"
 #include "cpl_string.h"
 #include "cpl_multiproc.h"
-#include "commonutils.h"
 #include "gdal_utils_priv.h"
 
 CPL_CVSID("$Id: gdalinfo_bin.cpp 5da1c4d1b6c7e38f7f5917fff3ddbc8ad42af7aa 2018-03-30 21:59:13 +0200 Even Rouault $")
 
-namespace earthxpert {
-namespace detail {
-void HelpGdalInfo(const char* pszErrorMsg = nullptr) {
-  printf("\nUsage: gdalinfo [--help-general] [-json] [-mm] [-stats] [-hist] [-nogcp] [-nomd]\n"
-    "                [-norat] [-noct] [-nofl] [-checksum] [-proj4]\n"
-    "                [-listmdd] [-mdd domain|`all`]*\n"
-    "                [-sd subdataset] [-oo NAME=VALUE]* datasetname\n");
+using namespace earthxpert;
 
-  if (pszErrorMsg != nullptr)
-    fprintf(stderr, "\nFAILURE: %s\n", pszErrorMsg);
+int GdalInfo::Execute() {
+  EarlySetConfigOptions(mArgc, mArgv);
 
-  exit(1);
-}
+  mArgc = GDALGeneralCmdLineProcessor(mArgc, &mArgv, 0);
+  if (mArgc < 1) return -mArgc;
 
-GDALInfoOptionsForBinary* GDALInfoOptionsForBinaryNew() {
-  return static_cast<GDALInfoOptionsForBinary*>(
-    CPLCalloc(1, sizeof(GDALInfoOptionsForBinary)));
-}
-
-void GDALInfoOptionsForBinaryFree(GDALInfoOptionsForBinary* psOptionsForBinary) {
-  if (psOptionsForBinary) {
-    CPLFree(psOptionsForBinary->pszFilename);
-    CSLDestroy(psOptionsForBinary->papszOpenOptions);
-    CPLFree(psOptionsForBinary);
-  }
-}
-}
-
-/**
- *
- */
-int GdalInfo(int argc, char**argv) {
-  EarlySetConfigOptions(argc, argv);
-
-  argc = GDALGeneralCmdLineProcessor(argc, &argv, 0);
-  if (argc < 1)
-    exit(-argc);
-
-  for (int i = 0; argv != nullptr && argv[i] != nullptr; i++) {
-    if (EQUAL(argv[i], "--utility_version")) {
+  for (int i = 0; mArgv && mArgv[i]; i++) {
+    if (EQUAL(mArgv[i], "--utility_version")) {
       printf("%s was compiled against GDAL %s and is running against GDAL %s\n",
-        argv[0], GDAL_RELEASE_NAME, GDALVersionInfo("RELEASE_NAME"));
-      CSLDestroy(argv);
+        mArgv[0], GDAL_RELEASE_NAME, GDALVersionInfo("RELEASE_NAME"));
+      CSLDestroy(mArgv);
       return 0;
     }
-    else if (EQUAL(argv[i], "--help")) {
-      detail::HelpGdalInfo();
+    else if (EQUAL(mArgv[i], "--help")) {
+      Help();
+      return 0;
     }
   }
-  argv = CSLAddString(argv, "-stdout");
+  mArgv = CSLAddString(mArgv, "-stdout");
 
-  auto psOptionsForBinary = detail::GDALInfoOptionsForBinaryNew();
+  auto psOptionsForBinary = GDALInfoOptionsForBinaryNew();
 
-  auto psOptions = GDALInfoOptionsNew(argv + 1, psOptionsForBinary);
-  if (!psOptions)
-    detail::HelpGdalInfo();
+  auto psOptions = GDALInfoOptionsNew(mArgv + 1, psOptionsForBinary);
+  if (!psOptions) {
+    Help();
+    return 0;
+  }
 
-  if (psOptionsForBinary->pszFilename == nullptr)
-    detail::HelpGdalInfo("No datasource specified.");
+  if (!psOptionsForBinary->pszFilename) {
+    Help("No datasource specified.");
+    return 0;
+  }
 
   /* -------------------------------------------------------------------- */
   /*      Open dataset.                                                   */
@@ -111,7 +83,7 @@ int GdalInfo(int argc, char**argv) {
     iIter++;
 #endif
 
-    GDALDatasetH hDataset = GDALOpenEx(psOptionsForBinary->pszFilename, 
+    GDALDatasetH hDataset = GDALOpenEx(psOptionsForBinary->pszFilename,
       GDAL_OF_READONLY | GDAL_OF_RASTER | GDAL_OF_VERBOSE_ERROR, nullptr,
       psOptionsForBinary->papszOpenOptions, nullptr);
 
@@ -141,14 +113,14 @@ int GdalInfo(int argc, char**argv) {
         }
       }
 
-      CSLDestroy(argv);
-      detail::GDALInfoOptionsForBinaryFree(psOptionsForBinary);
+      CSLDestroy(mArgv);
+      GDALInfoOptionsForBinaryFree(psOptionsForBinary);
       GDALInfoOptionsFree(psOptions);
       GDALDumpOpenDatasets(stderr);
       GDALDestroyDriverManager();
       CPLDumpSharedList(nullptr);
 
-      exit(1);
+      return -1;
 #endif
     }
 
@@ -173,7 +145,7 @@ int GdalInfo(int argc, char**argv) {
         CPLFree(pszSubdatasetName);
       }
       else {
-        fprintf(stderr,"gdalinfo warning: subdataset %d of %d requested. "
+        fprintf(stderr, "gdalinfo warning: subdataset %d of %d requested. "
           "Reading the main dataset.\n",
           psOptionsForBinary->nSubdataset, nSubdatasets);
       }
@@ -190,14 +162,36 @@ int GdalInfo(int argc, char**argv) {
   }
 #endif
 
-  detail::GDALInfoOptionsForBinaryFree(psOptionsForBinary);
+  GDALInfoOptionsForBinaryFree(psOptionsForBinary);
   GDALInfoOptionsFree(psOptions);
-  CSLDestroy(argv);
+  CSLDestroy(mArgv);
   GDALDumpOpenDatasets(stderr);
   GDALDestroyDriverManager();
   CPLDumpSharedList(nullptr);
   CPLCleanupTLS();
 
-  exit(0);
+  return 0;
 }
+
+void GdalInfo::Help(const char* pszErrorMsg) {
+  printf("\nUsage: exgdal info [--help-general] [-json] [-mm] [-stats] [-hist] [-nogcp] [-nomd]\n"
+    "                [-norat] [-noct] [-nofl] [-checksum] [-proj4]\n"
+    "                [-listmdd] [-mdd domain|`all`]*\n"
+    "                [-sd subdataset] [-oo NAME=VALUE]* datasetname\n");
+
+  if (pszErrorMsg)
+    fprintf(stderr, "\nFAILURE: %s\n", pszErrorMsg);
+}
+
+GDALInfoOptionsForBinary* GdalInfo::GDALInfoOptionsForBinaryNew() {
+  return static_cast<GDALInfoOptionsForBinary*>(
+    CPLCalloc(1, sizeof(GDALInfoOptionsForBinary)));
+}
+
+void GdalInfo::GDALInfoOptionsForBinaryFree(GDALInfoOptionsForBinary* psOptionsForBinary) {
+  if (psOptionsForBinary) {
+    CPLFree(psOptionsForBinary->pszFilename);
+    CSLDestroy(psOptionsForBinary->papszOpenOptions);
+    CPLFree(psOptionsForBinary);
+  }
 }

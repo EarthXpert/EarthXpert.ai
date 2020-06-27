@@ -13,5 +13,10 @@ namespace earthxpert {
 class EXPLATFORM_EXPORTS ICommand {
 public:
   virtual ~ICommand() = default;
+
+  /**
+   *  Entry point of a command
+   */
+  virtual int Execute() = 0;
 };
 }

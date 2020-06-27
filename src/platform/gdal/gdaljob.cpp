@@ -8,7 +8,7 @@
 using namespace earthxpert;
 using earthxpert::GdalJob;
 
-GdalJob::GdalJob() {
+GdalJob::GdalJob(std::ostream& out) : mOut(out) {
 }
 
 int GdalJob::SetArgs() {
@@ -17,4 +17,8 @@ int GdalJob::SetArgs() {
 
 int GdalJob::Run() {
   return 0;
+}
+
+void GdalJob::Help() {
+  mOut << "Usage: exgdal <command> <command options>" << std::endl;
 }

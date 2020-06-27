@@ -6,10 +6,9 @@
 
 #include "platform/gdal/exgdal.h"
 #include "platform/gdal/gdalinfo.h"
+#include "platform/gdal/gdalsrsinfo.h"
+#include "platform/gdal/gdaltranslate.h"
+#include "platform/gdal/ogrinfo.h"
 
 namespace earthxpert {
-int EXGDAL_EXPORTS GdalInfo(int, char**);
-int EXGDAL_EXPORTS GdalTranslate(int, char**);
-int EXGDAL_EXPORTS GdalSrsInfo(int, char**);
-int EXGDAL_EXPORTS OgrInfo(int, char**);
 }

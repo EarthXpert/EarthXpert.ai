@@ -98,11 +98,11 @@ private:
   std::string mHeadline;
 
   void AddArgs();
-  void OutputVersion();
-  void OutputHelp();
-  void OutputCommands(const std::string& leader);
-  void OutputDrivers();
-  void OutputOptions();
-  void OutputOptions(const std::string& stageName, std::ostream& strm);
+  void Help();
+  void HelpVersion();
+  void HelpCommands(const std::string& leader);
+  void HelpDrivers();
+  void HelpOptions();
+  void HelpOptions(const std::string& stageName, std::ostream& strm);
 };
 } // namespace earthxpert::thirdparty
