@@ -41,6 +41,9 @@ CPL_CVSID("$Id: gdalinfo_bin.cpp 5da1c4d1b6c7e38f7f5917fff3ddbc8ad42af7aa 2018-0
 
 using namespace earthxpert;
 
+GdalInfo::GdalInfo() {
+}
+
 int GdalInfo::Execute() {
   EarlySetConfigOptions(mArgc, mArgv);
 

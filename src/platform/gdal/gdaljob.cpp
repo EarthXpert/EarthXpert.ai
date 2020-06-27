@@ -9,6 +9,7 @@ using namespace earthxpert;
 using earthxpert::GdalJob;
 
 GdalJob::GdalJob(std::ostream& out) : mOut(out) {
+  GDALInitialize();
 }
 
 int GdalJob::SetArgs() {

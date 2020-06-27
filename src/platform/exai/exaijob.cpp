@@ -8,6 +8,7 @@
 using earthxpert::ExaiJob;
 
 ExaiJob::ExaiJob() {
+  GDALInitialize();
 }
 
 int ExaiJob::SetArgs() {

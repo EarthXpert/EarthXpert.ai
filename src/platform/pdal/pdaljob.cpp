@@ -116,6 +116,7 @@ int PdalJob::Run() {
       // not cleaning up seems inconsequential.
       mLogger->setLeader("pdal " + mCommand);
       ret = kernel->run(mCmdArgs, mLogger);
+      kernel.reset();
 
       // IMPORTANT - The kernel must be destroyed before GDAL
       //  drivers are unregistered or GDAL will attempt to destroy

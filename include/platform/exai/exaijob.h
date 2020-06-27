@@ -5,6 +5,7 @@
 #pragma once
 
 #include "platform/exai/exexai.h"
+#include "3rdparty/gdal/exgdal.h"
 #include "core/parallel/ijob.h"
 
 #include <string>

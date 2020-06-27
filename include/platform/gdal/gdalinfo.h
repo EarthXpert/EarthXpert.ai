@@ -13,7 +13,13 @@ namespace earthxpert {
  */
 class EXGDAL_EXPORTS GdalInfo final : public GdalCmd {
 public:
+  GdalInfo();
+  GdalInfo(const GdalInfo&) = delete;
+  GdalInfo(GdalInfo&&) = delete;
   ~GdalInfo() = default;
+
+  GdalInfo& operator=(const GdalInfo&) = delete;
+  GdalInfo& operator=(GdalInfo&&) = delete;
 
   void SetCmdArgs(const int argc, char** argv) {
     mArgc = argc;
