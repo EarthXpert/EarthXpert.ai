@@ -72,7 +72,8 @@ bool XTwoLines::IntersectEigen(const Point3d* s1, const Point3d* s2, Point3d& p)
   Map<Eigen::Matrix<double, 6, 1>> b(cv.data());
 
   const auto& x = A.bdcSvd(ComputeFullU | ComputeFullV).solve(b);
-  //if () return false;
+  //const double err = (A * x - b).norm() / b.norm(); // relative error
+  // if (kTol < err) return false;
 
   p = { x[0], x[1], x[2] };
   return true;

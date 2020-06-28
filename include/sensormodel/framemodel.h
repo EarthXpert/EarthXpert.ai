@@ -4,13 +4,13 @@
  */
 #pragma once
 
+#include "sensormodel/sensormodel.h"
 #include "sensormodel/framecp.h"
 #include "sensormodel/frameep.h"
 #include "sensormodel/frameepcorr.h"
 #include "sensormodel/frameip.h"
 #include "sensormodel/frameipcorr.h"
 #include "sensormodel/imagemodelpolicy.h"
-#include "sensormodel/sensormodel.h"
 
 #include "opencv2/core/mat.hpp"
 
@@ -112,7 +112,21 @@ public:
   std::shared_ptr<SpatialReferenceSystem> GetCoordinateSystem() const
       noexcept override;
 
+  /**
+   *  \return Returns type of SRS
+   */
+  SrsType GetSrsType() const noexcept override {
+    return eMAP;
+  }
+
   std::pair<int, int> GetImageSize() const noexcept override;
+
+  /**
+   *  \return Returns the middle height
+   */
+  double GetMeanHeight() const noexcept override {
+    return 0.0;
+  }
 
   // block adjustment helpers
 

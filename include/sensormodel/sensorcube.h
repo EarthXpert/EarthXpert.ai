@@ -6,22 +6,48 @@
 
 #include "sensormodel/exsensormodel.h"
 #include "sensormodel/datatypes.h"
+#include "3rdparty/opencv/exopencv.h"
 
 #include <array>
 #include <memory>
+#include <vector>
 
 namespace earthxpert {
+class ISensorModel;
+
 /**
  *  \brief the class SensorCube creates a 3d cube of image positions and
  *  corresponding ground positions at multiple elevation layers.
  */
 class EXSENSORMODEL_EXPORTS SensorCube {
 public:
+  SensorCube(const std::array<double, NumFact>& normalFators,
+    int numHoriz, int numVert, int numLayers);
   ~SensorCube() = default;
 
-  int CreateCube();
+  void SetNormalFators(const std::array<double, NumFact>& normalFators) {
+    mNormalFators = normalFators;
+    Initialize();
+  }
+
+  void SetLayout(const int numHoriz, const int numVert, const int numLayers) {
+    mNumHoriz = numHoriz;
+    mNumVert = numVert;
+    mNumLauers = numLayers;
+    Initialize();
+  }
+
+  int CreateCube(const ISensorModel* sensorModel, 
+    std::vector<Point2f>& images, std::vector<Point3d>& grounds) const;
 
 private:
+  static constexpr double kMarginRatio = 0.1;  // ratio of margin to extend beyound the scene
+
   std::array<double, NumFact> mNormalFators{}; // normalization factors including offsets & scales
+  int mNumHoriz{};
+  int mNumVert{};
+  int mNumLauers{};
+
+  void Initialize();
 };
 }

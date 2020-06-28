@@ -134,6 +134,7 @@ std::unique_ptr<IEpipolarModel> EpipolarModelFactory::CreateRationalEpiModel(
   auto geoGround = std::make_unique<GeographicGroundDeg>(std::move(earthEllip));
   assert(!earthEllip);
 
-  return std::make_unique<GeoEpipolarModel>(leftModel, std::move(leftRect),
-    rightModel, std::move(rightRect), std::move(geoGround));
+  return nullptr;
+//  return std::make_unique<GeoEpipolarModel>(leftModel, std::move(leftRect),
+//    rightModel, std::move(rightRect), std::move(geoGround));
 }

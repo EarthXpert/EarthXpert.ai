@@ -5,6 +5,7 @@ earthxpert_add_library(epipolarmodel "api"
   SRCS "epipolarmodel.cpp"
        "epipolarmodelfactory.cpp"
        "epipolarrect.cpp"
+       "epipolarsensormodel.cpp"
        "frameepipolarmodel.cpp"
        "groundpolicy.cpp"
   ITEMS ex3rdparty core sensormodel 
