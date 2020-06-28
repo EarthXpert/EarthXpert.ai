@@ -34,9 +34,9 @@ using earthxpert::Point3d;
  */
 template <class GroundPolicy>
 EpipolarModel<GroundPolicy>::EpipolarModel(std::shared_ptr<ISensorModel> sensorModel,
-  std::unique_ptr<EpipolarRect>&& epiRect, StereoPos pos, std::shared_ptr<GroundPolicy> groundPolicy)
-    : mSensorModel(sensorModel), mEpiRect(std::move(epiRect)), 
-      mPos(pos), mGroundPolicy(groundPolicy) {
+  StereoPos pos, std::unique_ptr<EpipolarRect>&& epiRect, std::shared_ptr<GroundPolicy> groundPolicy)
+    : EpipolarSensorModel(sensorModel, pos), 
+      mEpiRect(std::move(epiRect)), mGroundPolicy(groundPolicy) {
   assert(GroundPolicy::kGroundType == sensorModel->GetSrsType());
   mOrigin = mEpiRect->GetOrigin();
   mHeight = mEpiRect->GetHeight();
@@ -63,32 +63,6 @@ bool EpipolarModel<GroundPolicy>::EpiToRaw(const Point2d &epi, Point2d &raw) con
 }
 
 /**
- *  \brief Given a list of 2d poistions on epipolar, output the corresponding
- * positions on original image.
- *
- *  \param [in] epi List of 2d positions (col, row) in epipolar raster coordinate
- * system 
- *  \param [in] raw List of 2d positions (col, row) in image raster coordinate
- * system 
- *  \return Returns number of successful operations
- */
-template <class GroundPolicy>
-size_t EpipolarModel<GroundPolicy>::EpiToRaw(const std::vector<Point2d> &epi,
-                               std::vector<Point2d> &raw) const {
-  const long size = epi.size();
-  assert(size == raw.size());
-  size_t ret{};
-
-  #pragma omp parallel for reduction(+ : ret) //if()
-  for (long i = 0; i < size; ++i) {
-    if (EpiToRaw(epi[i], raw[i])) {
-      ++ret;
-    }
-  }
-  return ret;
-}
-
-/**
  *  Raw-to-epipolar transform.
  *
  *  \brief Given a 2d poistion on image, output the corresponding position on
@@ -106,100 +80,6 @@ bool EpipolarModel<GroundPolicy>::RawToEpi(const Point2d &raw, Point2d &epi) con
 
   epi = mEpiRect->RectToEpi(rect);
   return true;
-}
-
-/**
- *  \brief Given a list of 2d poistions on image, output the corresponding
- * positions on epipolar.
- *
- *  \param [in] raw List of 2d positions (col, row) in image raster coordinate
- * system 
- *  \param [in] epi List of 2d positions (col, row) in epipolar raster
- * coordinate system 
- *  \return Returns number of successful operations
- */
-template <class GroundPolicy> size_t
-EpipolarModel<GroundPolicy>::RawToEpi(const std::vector<Point2d> &raw, std::vector<Point2d> &epi) const {
-  const long size = raw.size();
-  assert(size == epi.size());
-  size_t ret{};
-
-  #pragma omp parallel for reduction(+ : ret)
-  for (long i = 0; i < size; ++i) {
-    if (RawToEpi(raw[i], epi[i])) {
-      ++ret;
-    }
-  }
-  return ret;
-}
-
-/**
- *  \brief Given a 2d position in image coordinate system and a list of
- *  heights, output ground horizontal positions in ground coordinate system.
- *
- *  \param [in] image 2d position (x, y) in imagery raster coordinate system
- *  \param [in/out] ground 3d ground positions (X, Y, Z) in ground coordinate
- * system
- */
-template <class GroundPolicy> size_t 
-EpipolarModel<GroundPolicy>::ImageToGround(const Point2d& image,
-  std::vector<Point3d>& ground) const {
-  size_t ret{};
-
-#pragma omp parallel for reduction(+ : ret)
-  for (long i = 0; i < ground.size(); ++i) {
-    if (ImageToGround(image, ground[i])) {
-      ++ret;
-    }
-  }
-  return ret;
-}
-
-/**
- *  \brief Given a list of 2d positions in image coordinate system and a
- * corresponding list of heights, output the ground horizontal positions in
- * ground coordinate system.
- *
- *  \param [in] image List of 2d positions (x, y) on image
- *  \param [in/out] ground List of 3d ground positions (X, Y, Z)
- */
-template <class GroundPolicy> size_t 
-EpipolarModel<GroundPolicy>::ImageToGround(const std::vector<Point2d>& image,
-  std::vector<Point3d>& ground) const {
-  const long size = static_cast<long>(image.size());
-  assert(size == ground.size());
-  size_t ret{};
-
-#pragma omp parallel for reduction(+ : ret)
-  for (long i = 0; i < size; ++i) {
-    if (ImageToGround(image[i], ground[i])) {
-      ++ret;
-    }
-  }
-  return ret;
-}
-
-/**
- *  \brief Given a list of 3d positions in ground coordinate system,
- *  output a list of 2d sensor positions in image coordinate system.
- *
- *  \param [in] ground List of 3d ground positions (X, Y, Z)
- *  \param [in/out] image List of 2d positions (x, y) on image
- */
-template <class GroundPolicy> size_t 
-EpipolarModel<GroundPolicy>::GroundToImage(const std::vector<Point3d>& ground,
-  std::vector<Point2d>& image) const {
-  const long size = static_cast<long>(ground.size());
-  assert(size == image.size());
-  size_t ret{};
-
-#pragma omp parallel for reduction(+ : ret)
-  for (long i = 0; i < size; ++i) {
-    if (GroundToImage(ground[i], image[i])) {
-      ++ret;
-    }
-  }
-  return ret;
 }
 
 /**

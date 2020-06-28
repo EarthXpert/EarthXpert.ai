@@ -203,10 +203,11 @@ public:
    */
   double GetMeanHeight() const noexcept override { return mSensorModel->GetMeanHeight(); }
 
-private:
+protected:
   std::shared_ptr<ISensorModel> mSensorModel; // image model composing of the stereo model
   StereoPos mPos{ eIGNORE };    // Component position of stereo model
 
+private:
   void Initialize();
 
   // cached data for convenience
