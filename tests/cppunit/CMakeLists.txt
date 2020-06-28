@@ -8,7 +8,7 @@ add_definitions(-D_USE_MATH_DEFINES)
 
 add_subdirectory(blockadjust)
 add_subdirectory(core)
-#add_subdirectory(epipolarmodel)
+add_subdirectory(epipolarmodel)
 #add_subdirectory(filter)
 add_subdirectory(io)
 #add_subdirectory(marshaller)
