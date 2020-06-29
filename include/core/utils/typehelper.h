@@ -9,11 +9,23 @@
 #include <tuple>
 
 namespace earthxpert {
-template <class Ty>
-using Tuple3 = std::tuple<Ty, Ty, Ty>;
+// sized tuple
+template <int N, typename Head, typename... Ty>
+struct Tuple {
+  using type = typename Tuple<N - 1, Head, Head, Ty...>::type;
+};
 
-using Tuple3d = Tuple3<double>;
-using Tuple4d = std::tuple<double, double, double, double>;
+template <typename... Ty>
+struct Tuple<1, Ty...> {
+  using type = std::tuple<Ty...>;
+};
+
+template <typename Ty>
+using Tuple3 = typename Tuple<3, Ty>::type;
+
+using Tuple3d = typename Tuple<3, double>::type;
+using Tuple4d = typename Tuple<4, double>::type;
+using Tuple6d = typename Tuple<6, double>::type;
 
 /**
  *  Cast scoped enum type to underlying type.

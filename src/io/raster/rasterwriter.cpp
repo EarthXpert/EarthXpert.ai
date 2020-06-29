@@ -66,6 +66,24 @@ void RasterWriter::SetMetadata(const RasterMetadata* metaData) {
 }
 
 /**
+ *  \brief Set metadata NODATA_VALUES.
+ */
+void RasterWriter::SetNodataValues(const double nodataValue) {
+  std::vector<double> nodataValues(mWriteNumBands, nodataValue);
+  SetNodataValues(nodataValues);
+}
+
+void RasterWriter::SetNodataValues(const std::vector<double>& nodataValues) {
+  assert(mWriteNumBands == nodataValues.size());
+  auto& ndValues = mReader->GetNodataValues();
+  ndValues = nodataValues;
+
+  for (int b = 0; b < mWriteNumBands; ++b) {
+    mDataset->GetRasterBand(mBands[b])->SetNoDataValue(ndValues[b]);
+  }
+}
+
+/**
  *  \brief Inject the ground coordinate system where the image file operates
  *
  *  \param [in] spatialref the coordinate system

@@ -315,14 +315,19 @@ void RasterReader::ObtainDatasetInfo() {
   mReadNumBands = static_cast<int>(mBands.size());
   mFileNumCols = mDataset->GetRasterXSize();
   mFileNumRows = mDataset->GetRasterYSize();
+  mNodataValues.resize(mReadNumBands);
 
-  mGdalDT = mDataset->GetRasterBand(mBands[0])->GetRasterDataType();
+  auto band = mDataset->GetRasterBand(mBands[0]);
+  mGdalDT = band->GetRasterDataType();
+  mNodataValues[0] = band->GetNoDataValue();
 
   // check if the data type is same for all read bands
   for (int b = 1; b < mReadNumBands; ++b) {
-    if (mGdalDT != mDataset->GetRasterBand(mBands[b])->GetRasterDataType()) {
+    band = mDataset->GetRasterBand(mBands[b]);
+    if (mGdalDT != band->GetRasterDataType()) {
       throw std::logic_error(_("Image bands should be of same data type"));
     }
+    mNodataValues[b] = band->GetNoDataValue();
   }
 
   mCvDT = ConvertPixelType(mGdalDT, mReadNumBands);

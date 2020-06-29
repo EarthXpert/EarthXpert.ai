@@ -255,9 +255,7 @@ bool RationalModel::GroundToImage(const Point3d &ground, Point2d &image) const {
   auto nfc = mNormalFators.data();
 
   // normalized ground coordinates
-  const Point3d uvw{ (ground.x - nfc[eOLONG]) * mInvScale[eISLONG],
-                     (ground.y - nfc[eOLAT]) * mInvScale[eISLAT],
-                     (ground.z - nfc[eOHEIGHT]) * mInvScale[eISHEIGHT] };
+  const Point3d uvw = GroundNormalize(ground);
   Point2d sensor{ 0.0, 0.0 };
   if (!GroundToSensor(uvw, sensor))
     return false;
@@ -568,73 +566,20 @@ bool RationalModel::SensorToGround(const double x, const double y,
     // recompute the partial derivatives of the sample & line w.r.t u, v
     if (recalcFlag) {
       // pre-compute partials TODO
-      const double duvw_du[NumCoef] = {
-          0.0,         1.0, 0.0, 0.0,         v,           w,     0.0,
-          2.0 * u,     0.0, 0.0, v * w,       3.0 * u * u, v * v, w * w,
-          2.0 * u * v, 0.0, 0.0, 2.0 * u * w, 0.0,         0.0 };
-      const double duvw_dv[NumCoef] = {
-          0.0,   0.0,         1.0,   0.0,   u,           0.0,         w,
-          0.0,   2.0 * v,     0.0,   u * w, 0.0,         2.0 * u * v, 0.0,
-          u * u, 3.0 * v * v, w * w, 0.0,   2.0 * v * w, 0.0 };
+      double duvw_du[NumCoef];
+      double duvw_dv[NumCoef];
+      Duvw_du(u, v, w, duvw_du);
+      Duvw_dv(u, v, w, duvw_dv);
 
-      // Partial derivatives of the numerators and denominators w.r.t u, v.
-      // unrolling the loop for performance with 10 out of the 20 terms
+      const double dSn_du = D_du(snc, duvw_du);      // Partial derivative of Sn w.r.t u
+      const double dSd_du = D_du(sdc, duvw_du);      // Partial derivative of Sd w.r.t u
+      const double dSn_dv = D_dv(snc, duvw_dv);      // Partial derivative of Sn w.r.t v
+      const double dSd_dv = D_dv(sdc, duvw_dv);      // Partial derivative of Sd w.r.t v
 
-      // Partial derivative of Sn w.r.t u
-      const double dSn_du = snc[1] + snc[4] * duvw_du[4] + snc[5] * duvw_du[5] +
-        snc[7] * duvw_du[7] + snc[10] * duvw_du[10] +
-        snc[11] * duvw_du[11] + snc[12] * duvw_du[12] +
-        snc[13] * duvw_du[13] + snc[14] * duvw_du[14] +
-        snc[17] * duvw_du[17];
-
-      // Partial derivative of Sd w.r.t u
-      const double dSd_du = sdc[1] + sdc[4] * duvw_du[4] + sdc[5] * duvw_du[5] +
-        sdc[7] * duvw_du[7] + sdc[10] * duvw_du[10] +
-        sdc[11] * duvw_du[11] + sdc[12] * duvw_du[12] +
-        sdc[13] * duvw_du[13] + sdc[14] * duvw_du[14] +
-        sdc[17] * duvw_du[17];
-
-      // Partial derivative of Sn w.r.t v
-      const double dSn_dv = snc[2] + snc[4] * duvw_dv[4] + snc[6] * duvw_dv[6] +
-        snc[8] * duvw_dv[8] + snc[10] * duvw_dv[10] +
-        snc[12] * duvw_dv[12] + snc[14] * duvw_dv[14] +
-        snc[15] * duvw_dv[15] + snc[16] * duvw_dv[16] +
-        snc[18] * duvw_dv[18];
-
-      // Partial derivative of Sd w.r.t v
-      const double dSd_dv = sdc[2] + sdc[4] * duvw_dv[4] + sdc[6] * duvw_dv[6] +
-        sdc[8] * duvw_dv[8] + sdc[10] * duvw_dv[10] +
-        sdc[12] * duvw_dv[12] + sdc[14] * duvw_dv[14] +
-        sdc[15] * duvw_dv[15] + sdc[16] * duvw_dv[16] +
-        sdc[18] * duvw_dv[18];
-
-      // Partial derivative of Ln w.r.t u
-      const double dLn_du = lnc[1] + lnc[4] * duvw_du[4] + lnc[5] * duvw_du[5] +
-        lnc[7] * duvw_du[7] + lnc[10] * duvw_du[10] +
-        lnc[11] * duvw_du[11] + lnc[12] * duvw_du[12] +
-        lnc[13] * duvw_du[13] + lnc[14] * duvw_du[14] +
-        lnc[17] * duvw_du[17];
-
-      // Partial derivative of Ld w.r.t u
-      const double dLd_du = ldc[1] + ldc[4] * duvw_du[4] + ldc[5] * duvw_du[5] +
-        ldc[7] * duvw_du[7] + ldc[10] * duvw_du[10] +
-        ldc[11] * duvw_du[11] + ldc[12] * duvw_du[12] +
-        ldc[13] * duvw_du[13] + ldc[14] * duvw_du[14] +
-        ldc[17] * duvw_du[17];
-
-      // Partial derivative of Ln w.r.t v
-      const double dLn_dv = lnc[2] + lnc[4] * duvw_dv[4] + lnc[6] * duvw_dv[6] +
-        lnc[8] * duvw_dv[8] + lnc[10] * duvw_dv[10] +
-        lnc[12] * duvw_dv[12] + lnc[14] * duvw_dv[14] +
-        lnc[15] * duvw_dv[15] + lnc[16] * duvw_dv[16] +
-        lnc[18] * duvw_dv[18];
-
-      // Partial derivative of Ld w.r.t v
-      const double dLd_dv = ldc[2] + ldc[4] * duvw_dv[4] + ldc[6] * duvw_dv[6] +
-        ldc[8] * duvw_dv[8] + ldc[10] * duvw_dv[10] +
-        ldc[12] * duvw_dv[12] + ldc[14] * duvw_dv[14] +
-        ldc[15] * duvw_dv[15] + ldc[16] * duvw_dv[16] +
-        ldc[18] * duvw_dv[18];
+      const double dLn_du = D_du(lnc, duvw_du);      // Partial derivative of Ln w.r.t u
+      const double dLd_du = D_du(ldc, duvw_du);      // Partial derivative of Ld w.r.t u
+      const double dLn_dv = D_dv(lnc, duvw_dv);      // Partial derivative of Ln w.r.t v
+      const double dLd_dv = D_dv(ldc, duvw_dv);      // Partial derivative of Ld w.r.t v
 
       // Partial derivatives of (Sn/Sd) and (Ln/Ld) w.r.t u, v
       dFc_du = (dSn_du - xp * dSd_du) * invSd; // (Sd * dSn_du - Sn * dSd_du) / (Sd * Sd)

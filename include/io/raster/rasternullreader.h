@@ -43,6 +43,11 @@ public:
 
   int GetNumBands() const noexcept override { return 0; }
 
+  std::vector<double>& GetNodataValues() noexcept {
+    static std::vector<double> nodataValues;
+    return nodataValues;
+  }
+
   void SetMargins(int, int, MarginKind) override {}
 
   std::pair<int, int> GetMargins() const noexcept override { return {0, 0}; }

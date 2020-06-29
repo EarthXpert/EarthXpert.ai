@@ -73,6 +73,11 @@ public:
   int GetNumBands() const noexcept override { return mFileNumBands; }
 
   /**
+   *  \return Returns metadata NODATA_VALUES.
+   */
+  std::vector<double>& GetNodataValues() noexcept override { return mNodataValues; }
+
+  /**
    *  \brief Set the margin size and kind.
    *
    *  \param [in] marginCols the horizontal margin size
@@ -179,6 +184,7 @@ private:
   int mReadNumBands{};  // number of bands to read from
   int mFileNumCols{};   // width of image file [unit: pixel]
   int mFileNumRows{};   // height of image file
+  std::vector<double> mNodataValues;
   GDALDataType mGdalDT{};
   int mCvDT{};
 

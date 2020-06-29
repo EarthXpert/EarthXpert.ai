@@ -29,14 +29,12 @@ class ISensorModel;
 class EXSENSORMODEL_EXPORTS StereoModel : public IStereoModel {
 public:
   /**
-   *  Constructor.
-   *
    *  \brief Form a stereo model by a pair of sensor models.
    *
    *  \param [in] leftModel left sensor model composing the stereo model
    *  \param [in] rightModel right sensor model composing the stereo model
    */
-  StereoModel(ISensorModel const* const leftModel, ISensorModel const* const rightModel);
+  StereoModel(ISensorModel const* leftModel, ISensorModel const* rightModel);
 
   /**
    *  \brief Form a triplet stereo model by three sensor models.

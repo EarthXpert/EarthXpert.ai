@@ -7,6 +7,7 @@
 
 #include "core/utils/unitutils.h"
 #include "sensormodel/rationalmodel.h"
+#include "sensormodel/rationalstereomodel.h"
 #include "sensormodel/stereomodel.h"
 
 #include <omp.h>
@@ -40,13 +41,25 @@ void StereoModel_I2G_Ceres() {
   const auto rightModel = CreateRightRationalModel();
   auto cube = CreateCube(leftModel.get(), rightModel.get());
 
-  StereoModel smC(leftModel.get(), rightModel.get()); 
+  StereoModel smC(leftModel.get(), rightModel.get());
   smC.SetForwardAlgorithm(StereoModel::eSM_CERES);
   I2G_Cube(smC, cube);
 }
 
 /**
- *  TestCase 2: stereo via intersection
+ *  TestCase 2: stereo via EXAI
+ */
+void StereoModel_I2G_Exai() {
+  const auto leftModel = CreateLeftRationalModel();
+  const auto rightModel = CreateRightRationalModel();
+  auto cube = CreateCube(leftModel.get(), rightModel.get());
+
+  RationalStereoModel smE(leftModel.get(), rightModel.get());
+  I2G_Cube(smE, cube);
+}
+
+/**
+ *  TestCase 3: stereo via intersection
  */
 void StereoModel_I2G_Intersect() {
   const auto leftModel = CreateLeftRationalModel();
@@ -65,7 +78,7 @@ void StereoModel_I2G_Intersect() {
 }
 
 /**
- *  TestCase 3: stereo via NR
+ *  TestCase 4: stereo via NR
  */
 void StereoModel_I2G_NR() {
   const auto leftModel = CreateLeftRationalModel();
@@ -78,7 +91,7 @@ void StereoModel_I2G_NR() {
 }
 
 /**
- *  TestCase 4: OMP stereo via Ceres
+ *  TestCase 5: OMP stereo via Ceres
  */
 void StereoModel_I2G_CeresOMP() {
   const auto leftModel = CreateLeftRationalModel();
@@ -91,7 +104,19 @@ void StereoModel_I2G_CeresOMP() {
 }
 
 /**
- *  TestCase 5: OMP stereo via intersection
+ *  TestCase 6: OMP stereo via Exai
+ */
+void StereoModel_I2G_ExaiOMP() {
+  const auto leftModel = CreateLeftRationalModel();
+  const auto rightModel = CreateRightRationalModel();
+  auto cube = CreateCube(leftModel.get(), rightModel.get());
+
+  RationalStereoModel smE(leftModel.get(), rightModel.get());    // Exai
+  I2G_CubeOMP(smE, cube);
+}
+
+/**
+ *  TestCase 7: OMP stereo via intersection
  */
 void StereoModel_I2G_IntersectOMP() {
   const auto leftModel = CreateLeftRationalModel();
@@ -110,7 +135,7 @@ void StereoModel_I2G_IntersectOMP() {
 }
 
 /**
- *  TestCase 6: OMP stereo via NR
+ *  TestCase 8: OMP stereo via NR
  */
 void StereoModel_I2G_NROMP() {
   const auto leftModel = CreateLeftRationalModel();
@@ -275,8 +300,10 @@ std::unique_ptr<RationalModel> CreateRightRationalModel() {
 
 SLTBENCH_FUNCTION(StereoModel_Cube);
 SLTBENCH_FUNCTION(StereoModel_I2G_Ceres);
+SLTBENCH_FUNCTION(StereoModel_I2G_Exai);
 SLTBENCH_FUNCTION(StereoModel_I2G_Intersect);
 SLTBENCH_FUNCTION(StereoModel_I2G_NR);
 SLTBENCH_FUNCTION(StereoModel_I2G_CeresOMP);
+SLTBENCH_FUNCTION(StereoModel_I2G_ExaiOMP);
 SLTBENCH_FUNCTION(StereoModel_I2G_IntersectOMP);
 SLTBENCH_FUNCTION(StereoModel_I2G_NROMP);

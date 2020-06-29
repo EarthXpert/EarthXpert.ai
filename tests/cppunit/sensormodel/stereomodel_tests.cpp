@@ -7,6 +7,7 @@
 
 #include "core/utils/unitutils.h"
 #include "sensormodel/rationalmodel.h"
+#include "sensormodel/rationalstereomodel.h"
 #include "sensormodel/stereomodel.h"
 
 //#include <iostream>
@@ -36,6 +37,8 @@ TEST(stereomodel, ImageToGround) {
   StereoModel smC(leftModel.get(), rightModel.get());    // Ceres
   smC.SetForwardAlgorithm(IStereoModel::eSM_CERES);
 
+  RationalStereoModel smE(leftModel.get(), rightModel.get()); // EXAI
+
   StereoModel smI(leftModel.get(), rightModel.get());    // intersect
   Point3d origin(109.2114, 34.6557, 396);
   auto ee = std::make_shared<EarthEllipsoid>();
@@ -47,7 +50,7 @@ TEST(stereomodel, ImageToGround) {
   smN.SetForwardAlgorithm(IStereoModel::eSM_NR);
 
   Point2d imageL, imageR;
-  Point3d grdC, grdI, grdN;
+  Point3d grdC, grdE, grdI, grdN;
 
   // low position
   Point3d grdL(109.2114, 34.6557, 396.0 - 375.0);
@@ -55,12 +58,16 @@ TEST(stereomodel, ImageToGround) {
   rightModel->GroundToImage(grdL, imageR);
 
   smC.ImageToGround(imageL, imageR, grdC);
+  smE.ImageToGround(imageL, imageR, grdE);
   smI.ImageToGround(imageL, imageR, grdI);
   smN.ImageToGround(imageL, imageR, grdN);
 
   ASSERT_LE(fabs(grdC.x - grdL.x), kTol) << "Max. longitude difference > 1 mm";
   ASSERT_LE(fabs(grdC.y - grdL.y), kTol) << "Max.  latitude difference > 1 mm";
   ASSERT_LE(fabs(grdC.z - grdL.z), kTolH) << "Max.    height difference > 1 mm";
+  ASSERT_LE(fabs(grdE.x - grdL.x), kTol) << "Max. longitude difference > 1 mm";
+  ASSERT_LE(fabs(grdE.y - grdL.y), kTol) << "Max.  latitude difference > 1 mm";
+  ASSERT_LE(fabs(grdE.z - grdL.z), kTolH) << "Max.    height difference > 1 mm";
   ASSERT_LE(fabs(grdI.x - grdL.x), kTol) << "Max. longitude difference > 1 mm";
   ASSERT_LE(fabs(grdI.y - grdL.y), kTol) << "Max.  latitude difference > 1 mm";
   ASSERT_LE(fabs(grdI.z - grdL.z), kTolH) << "Max.    height difference > 1 mm";
@@ -74,12 +81,16 @@ TEST(stereomodel, ImageToGround) {
   rightModel->GroundToImage(grdH, imageR);
 
   smC.ImageToGround(imageL, imageR, grdC);
+  smE.ImageToGround(imageL, imageR, grdE);
   smI.ImageToGround(imageL, imageR, grdI);
   smN.ImageToGround(imageL, imageR, grdN);
 
   ASSERT_LE(fabs(grdC.x - grdH.x), kTol) << "Max. longitude difference > 1 mm";
   ASSERT_LE(fabs(grdC.y - grdH.y), kTol) << "Max.  latitude difference > 1 mm";
   ASSERT_LE(fabs(grdC.z - grdH.z), kTolH) << "Max.    height difference > 1 mm";
+  ASSERT_LE(fabs(grdE.x - grdH.x), kTol) << "Max. longitude difference > 1 mm";
+  ASSERT_LE(fabs(grdE.y - grdH.y), kTol) << "Max.  latitude difference > 1 mm";
+  ASSERT_LE(fabs(grdE.z - grdH.z), kTolH) << "Max.    height difference > 1 mm";
   ASSERT_LE(fabs(grdI.x - grdH.x), kTol) << "Max. longitude difference > 1 mm";
   ASSERT_LE(fabs(grdI.y - grdH.y), kTol) << "Max.  latitude difference > 1 mm";
   ASSERT_LE(fabs(grdI.z - grdH.z), kTolH) << "Max.    height difference > 1 mm";
@@ -130,11 +141,14 @@ void TestImageToGround_Cube(const RationalModel* leftModel, const RationalModel*
   const auto stepHgt = (maxHgt - minHgt) / kNum;
 
   double maxDiffLonC{ -1.0 }, maxDiffLatC{ -1.0 }, maxDiffHgtC{ -1.0 };
+  double maxDiffLonE{ -1.0 }, maxDiffLatE{ -1.0 }, maxDiffHgtE{ -1.0 };
   double maxDiffLonI{ -1.0 }, maxDiffLatI{ -1.0 }, maxDiffHgtI{ -1.0 };
   double maxDiffLonN{ -1.0 }, maxDiffLatN{ -1.0 }, maxDiffHgtN{ -1.0 };
 
   StereoModel smC(leftModel, rightModel);    // Ceres 
   smC.SetForwardAlgorithm(IStereoModel::eSM_CERES);
+
+  StereoModel smE(leftModel, rightModel);    // EXAI 
 
   Point3d origin((minLon + maxLon) / 2, (minLat + maxLat) / 2, (minHgt + maxHgt) / 2);
   auto ee = std::make_shared<EarthEllipsoid>();
@@ -151,6 +165,7 @@ void TestImageToGround_Cube(const RationalModel* leftModel, const RationalModel*
 
   int n{};  // # of test points
   int nC{}; // # of successful Ceres
+  int nE{}; // # of successful EXAI
   int nI{}; // # of successful interactions
   int nN{}; // # of NR.
 
@@ -188,6 +203,24 @@ void TestImageToGround_Cube(const RationalModel* leftModel, const RationalModel*
             maxDiffHgtC = diffHgt;
 
           ++nC;
+        }
+
+        Point3d grdE{ ground };
+        ret = smE.ImageToGround(imageL, imageR, grdE);
+        if (ret) {
+          diffLon = fabs(grdE.x - ground.x);
+          if (maxDiffLonE < diffLon)
+            maxDiffLonE = diffLon;
+
+          diffLat = fabs(grdE.y - ground.y);
+          if (maxDiffLatE < diffLat)
+            maxDiffLatE = diffLat;
+
+          diffHgt = fabs(grdE.z - ground.z);
+          if (maxDiffHgtE < diffHgt)
+            maxDiffHgtE = diffHgt;
+
+          ++nE;
         }
 
         Point3d grdI{ ground };
@@ -232,12 +265,16 @@ void TestImageToGround_Cube(const RationalModel* leftModel, const RationalModel*
 
   ASSERT_LT(0, n)  << "Number of test points: " << n;
   ASSERT_EQ(nC, n) << "Number of Ceres points: " << nC;
+  ASSERT_EQ(nE, n) << "Number of Ceres points: " << nE;
   ASSERT_EQ(nI, n) << "Number of interaction points: " << nI;
   ASSERT_EQ(nN, n) << "Number of NR points: " << nN;
 
   ASSERT_LE(maxDiffLonC, kTol) << "Max. longitude difference > 1 mm: " << maxDiffLonC;
   ASSERT_LE(maxDiffLatC, kTol) << "Max.  latitude difference > 1 mm: " << maxDiffLatC;
   ASSERT_LE(maxDiffHgtC, kTolH) << "Max.    height difference > 1 mm: " << maxDiffHgtC;
+  ASSERT_LE(maxDiffLonE, kTol) << "Max. longitude difference > 1 mm: " << maxDiffLonE;
+  ASSERT_LE(maxDiffLatE, kTol) << "Max.  latitude difference > 1 mm: " << maxDiffLatE;
+  ASSERT_LE(maxDiffHgtE, kTolH) << "Max.    height difference > 1 mm: " << maxDiffHgtE;
   ASSERT_LE(maxDiffLonI, kTol) << "Max. longitude difference > 1 mm: " << maxDiffLonI;
   ASSERT_LE(maxDiffLatI, kTol) << "Max.  latitude difference > 1 mm: " << maxDiffLatI;
   ASSERT_LE(maxDiffHgtI, kTolH) << "Max.    height difference > 1 mm: " << maxDiffHgtI;

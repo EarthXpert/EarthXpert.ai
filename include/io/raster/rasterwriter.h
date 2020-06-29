@@ -51,6 +51,12 @@ public:
   void SetMetadata(const RasterMetadata* metaData) override;
 
   /**
+   *  \brief Set metadata NODATA_VALUES.
+   */
+  void SetNodataValues(double nodataValue) override;
+  void SetNodataValues(const std::vector<double>& nodataValues) override;
+
+  /**
    *  \brief Inject the ground coordinate system where the image file operates
    *
    *  \param [in] spatialref the coordinate system
@@ -101,6 +107,11 @@ public:
    *  \return Return the number of channels contained in the image file
    */
   int GetNumBands() const noexcept override { return mReader->GetNumBands(); }
+
+  /**
+   *  \return Returns metadata NODATA_VALUES.
+   */
+  std::vector<double>& GetNodataValues() noexcept override { return mReader->GetNodataValues(); }
 
   /**
    *  \brief Set the margin size and kind.
