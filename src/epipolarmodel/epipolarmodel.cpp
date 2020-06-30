@@ -34,7 +34,8 @@ using earthxpert::Point3d;
  */
 template <class GroundPolicy>
 EpipolarModel<GroundPolicy>::EpipolarModel(std::shared_ptr<ISensorModel> sensorModel,
-  StereoPos pos, std::unique_ptr<EpipolarRect>&& epiRect, std::shared_ptr<GroundPolicy> groundPolicy)
+  StereoPos pos, std::unique_ptr<EpipolarRect>&& epiRect, 
+  std::shared_ptr<GroundPolicy> groundPolicy)
     : EpipolarSensorModel(sensorModel, pos), 
       mEpiRect(std::move(epiRect)), mGroundPolicy(groundPolicy) {
   assert(GroundPolicy::kGroundType == sensorModel->GetSrsType());
@@ -104,10 +105,10 @@ EpipolarModel<GroundPolicy>::RawToRect(const Point2d &raw, Point2d &rect) const 
       return std::nullopt;
     
     rect3 = mGroundPolicy->GroundToRect(ground);
-    const double delta = mHeight - rect3.z;
-    ground.z += delta;
+    const double dz = mHeight - rect3.z;
+    ground.z += dz;
 
-    if (kHgtTol > delta) break;
+    if (kHgtTol > dz) break;
   }
 
   rect = { rect3.x, rect3.y };

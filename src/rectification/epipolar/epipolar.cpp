@@ -14,26 +14,22 @@
 
 using namespace earthxpert;
 using namespace earthxpert::utils;
-using FacEpiOpt = EpipolarModelFactory::EpiOpt;
-using SenType = ISensorModel::ModelType;
 
 namespace earthxpert::epipolar {
 /**
  *  \brief Generate epipolar images for a pair of stereo image having sensor models.
  */
-void GenerateEpipolar(RasterReader* leftReader, const ISensorModel* leftModel,
-  RasterReader* rightReader, const ISensorModel* rightModel,
-  const IEpipolarModel* epipolarModel,
+void GenerateEpipolar(RasterReader* leftReader, const IEpipolarModel* leftEpiModel,
+  RasterReader* rightReader, const IEpipolarModel* rightEpiModel,
   RasterWriter* leftEpiWriter, RasterWriter* rightEpiWriter,
   const IRasterResample* rasResample, const size_t memSize) {
-  auto epiModel = dynamic_cast<const GeoEpipolarModel*>(epipolarModel);
   EpipolarGenerator epiGen(rasResample, memSize);
 
   // generate left epipolar image
-  epiGen.Process(leftReader, leftEpiWriter, epiModel, IEpipolarModel::eLEFT);
+  epiGen.Process(leftReader, leftEpiModel, leftEpiWriter);
 
   // generate right epipolar image
-  epiGen.Process(rightReader, rightEpiWriter, epiModel, IEpipolarModel::eRIGHT);
+  epiGen.Process(rightReader, rightEpiModel, rightEpiWriter);
 }
 
 /**
@@ -66,10 +62,8 @@ void GenerateRationalEpipolar(const std::string& leftImgFile, const std::string&
   assert(SenType::eRATIONAL == rightModel->GetModelType());
 
   EpipolarModelFactory epiModelFac(FacEpiOpt::eFULL);
-  auto epipolarModel = epiModelFac.CreateEpipolarModel(leftModel, rightModel, sample); 
+  auto [leftEpiModel, rightEpiModel] = epiModelFac.CreateEpipolarModel(leftModel, rightModel, sample); 
   assert(IEpipolarModel::ePLANERECT == epipolarModel->GetEpipolarAlgorithm());
-
-  auto epiModel = dynamic_cast<GeoEpipolarModel*>(epipolarModel.get());
 
   auto format = leftReader.GetFileFormat();
   auto gdalDT = leftReader.GetDataType();
@@ -81,7 +75,7 @@ void GenerateRationalEpipolar(const std::string& leftImgFile, const std::string&
   if (fs::exists(leftEpiFile)) {
     fs::remove(leftEpiFile);
   }
-  auto leftEpiRect = epiModel->GetEpiRect(IEpipolarModel::eLEFT);
+  auto leftEpiRect = dynamic_cast<GeoEpipolarModel*>(leftEpiModel.get())->GetEpiRect();
   int leftEpiNumCols{ leftEpiRect->GetNumCols() };
   int leftEpiNumRows{ leftEpiRect->GetNumRows() };
   RasterWriter leftEpiWriter(leftEpiFile.string(), format, 
@@ -93,7 +87,7 @@ void GenerateRationalEpipolar(const std::string& leftImgFile, const std::string&
   if (fs::exists(rightEpiFile)) {
     fs::remove(rightEpiFile);
   }
-  auto rightEpiRect = epiModel->GetEpiRect(IEpipolarModel::eRIGHT);
+  auto rightEpiRect = dynamic_cast<GeoEpipolarModel*>(rightEpiModel.get())->GetEpiRect();
   int rightEpiNumCols{ rightEpiRect->GetNumCols() };
   int rightEpiNumRows{ rightEpiRect->GetNumRows() };
   RasterWriter rightEpiWriter(rightEpiFile.string(), format,
@@ -101,7 +95,7 @@ void GenerateRationalEpipolar(const std::string& leftImgFile, const std::string&
 
   auto rasResample = std::make_unique<RasterResample>(resample);
 
-  GenerateEpipolar(&leftReader, leftModel.get(), &rightReader, rightModel.get(),
-    epipolarModel.get(), &leftEpiWriter, &rightEpiWriter, rasResample.get(), memSize);
+  GenerateEpipolar(&leftReader, leftEpiModel.get(), &rightReader, rightEpiModel.get(),
+    &leftEpiWriter, &rightEpiWriter, rasResample.get(), memSize);
 }
 }

@@ -22,23 +22,21 @@ public:
   /**
    *  \brief
    */
-  EpipolarGenerator(const IRasterResample* rasResample,
-                    size_t memSize);
+  EpipolarGenerator(const IRasterResample* rasResample, size_t memSize);
 
   EpipolarGenerator(const EpipolarGenerator &) = delete;
   EpipolarGenerator(EpipolarGenerator &&) = delete;
   EpipolarGenerator &operator=(const EpipolarGenerator &) = delete;
   EpipolarGenerator &operator=(EpipolarGenerator &&) = delete;
-  ~EpipolarGenerator() {}
+  ~EpipolarGenerator() = default;
 
   /**
    *  \brief
    *
    *  \return Returns true if operation succeeds
    */
-  bool Process(IRasterReader *const img, IRasterWriter *const epi,
-               IEpipolarModel const *const epiModel,
-               IEpipolarModel::StereoPos pos);
+  bool Process(IRasterReader* img, 
+    IEpipolarModel const* epiModel, IRasterWriter* epi);
 
 private:
   const IRasterResample* mRasResample{};

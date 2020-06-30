@@ -6,22 +6,19 @@
 
 #include "rectification/epipolar/exepipolar.h"
 
-#include <memory>
 #include <string>
 #include <vector>
 
 namespace earthxpert {
 class IEpipolarModel;
 class IRasterResample;
-class ISensorModel;
 class RasterReader;
 class RasterWriter;
 
 namespace epipolar {
 void EXEPIPOLAR_EXPORTS GenerateEpipolar(
-  RasterReader* leftReader, const ISensorModel* leftModel,
-  RasterReader* rightReader, const ISensorModel* rightModel,
-  const IEpipolarModel* epipolarModel,
+  RasterReader* leftReader, const IEpipolarModel* leftEpiModel,
+  RasterReader* rightReader, const IEpipolarModel* rightEpiModel,
   RasterWriter* leftEpiWriter, RasterWriter* rightEpiWriter,
   const IRasterResample* rasResample, size_t memSize);
 

@@ -9,13 +9,14 @@
 #include "sensormodel/isensormodel.h"
 
 #include <array>
+#include <utility>
 
 namespace earthxpert {
-using SenType = ISensorModel::ModelType;
+using EpiModelPair = std::pair<std::unique_ptr<IEpipolarModel>, std::unique_ptr<IEpipolarModel>>;
 
 /**
  *  The class EpipolarModelFactory defines the behaviours for creating
- *  epipolar model from image products with sensor models.
+ *  epipolar models from image products with sensor models.
  */
 class EXEPIPOLARMODEL_EXPORTS EpipolarModelFactory {
 public:
@@ -35,23 +36,24 @@ public:
   ~EpipolarModelFactory() = default;
 
   /**
-   *  \brief create epipolar model from a pair of stereo images.
+   *  \brief create epipolar models from a pair of stereo images.
    */
-  std::unique_ptr<IEpipolarModel>
-  CreateEpipolarModel(std::shared_ptr<ISensorModel> leftModel,
+  EpiModelPair CreateEpipolarModel(std::shared_ptr<ISensorModel> leftModel,
     std::shared_ptr<ISensorModel> rightModel, int sample, double height=0);
 
   /**
-   *  \brief create epipolar model from a pair of stereo images.
+   *  \brief create epipolar models from a pair of stereo images.
    */
-  std::unique_ptr<IEpipolarModel> CreateEpipolarModel(
+  EpiModelPair CreateEpipolarModel(
     const std::array<std::shared_ptr<ISensorModel>, 2> sensorModels,
-    int sample, double height=0);
+    int sample, double height = 0) {
+    return CreateEpipolarModel(sensorModels[0], sensorModels[1], sample, height);
+  }
 
   /**
-   *  \brief create epipolar model from 2+ stereo images.
+   *  \brief create epipolar models from 2+ stereo images.
    */
-  std::unique_ptr<IEpipolarModel> CreateEpipolarModel(
+  std::vector<std::unique_ptr<IEpipolarModel>> CreateEpipolarModel(
     const std::vector<std::shared_ptr<ISensorModel>> &sensorModels,
     int sample, double height=0);
 
@@ -60,14 +62,14 @@ public:
 private:
   EpipolarOption mEpiOpt{ EpiOpt::eFULL };
 
-  std::unique_ptr<IEpipolarModel>
-    CreateFrameEpiModel(std::shared_ptr<ISensorModel> leftModel,
+  EpiModelPair CreateFrameEpiModel(std::shared_ptr<ISensorModel> leftModel,
       std::shared_ptr<ISensorModel> rightModel, int sample, double height);
-  std::unique_ptr<IEpipolarModel>
-    CreateRationalEpiModel(std::shared_ptr<ISensorModel> leftModel,
+  EpiModelPair CreateRationalEpiModel(std::shared_ptr<ISensorModel> leftModel,
       std::shared_ptr<ISensorModel> rightModel, int sample);
 
   // cached
-  SenType mSensorType{ SenType::eUNDEFINED };
+  SensorType mSensorType{ SensorType::eUNDEFINED };
 };
+
+using FacEpiOpt = EpipolarModelFactory::EpiOpt;
 } // namespace earthxpert

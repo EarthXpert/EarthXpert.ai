@@ -6,7 +6,6 @@
 #include "core/utils/typehelper.h"
 #include "epipolarmodel/epipolarmodel.h"
 #include "sensormodel/framemodel.h"
-#include "sensormodel/isensormodel.h"
 #include "sensormodel/rationalmodel.h"
 
 #include <cassert>
@@ -14,6 +13,7 @@
 #include <exception>
 
 using earthxpert::EpipolarModelFactory;
+using earthxpert::EpiModelPair;
 using earthxpert::FrameModel;
 using earthxpert::IEpipolarModel;
 using earthxpert::ISensorModel;
@@ -28,15 +28,15 @@ EpipolarModelFactory::EpipolarModelFactory(const EpipolarOption epiOpt)
   : mEpiOpt(epiOpt) {}
 
 /**
- *  \brief Create an epipolar model from two sensor models composing of a stereo pair.
+ *  \brief Create an epipolar models from two sensor models composing of a stereo pair.
  *
  *  \param [in] leftModel sensor model associated with the left image
  *  \param [in] rightModel sensor model associated with the right image
  *  \param [in] height the average height used for epipolar rectficiation
- *  \return Returns pointer to epipolar model object.
+ *  \return Returns pointers to epipolar model objects.
  *  \remark This implementation requires that the stereo pair are of the same sensro type.
  */
-std::unique_ptr<IEpipolarModel> EpipolarModelFactory::CreateEpipolarModel(
+EpiModelPair EpipolarModelFactory::CreateEpipolarModel(
   std::shared_ptr<ISensorModel> leftModel, 
   std::shared_ptr<ISensorModel> rightModel, 
   const int sample, const double height) {
@@ -45,59 +45,50 @@ std::unique_ptr<IEpipolarModel> EpipolarModelFactory::CreateEpipolarModel(
     throw std::exception("The stereo pair should be of the same sensor type.");
 
   switch (mSensorType) {
-  case SenType::eFRAME:
+  case SensorType::eFRAME:
     return CreateFrameEpiModel(leftModel, rightModel, sample, height);
-  case SenType::eRATIONAL:
+  case SensorType::eRATIONAL:
     return CreateRationalEpiModel(leftModel, rightModel, sample);
   default:
-    return nullptr; // model types not supported 
+    return { nullptr, nullptr }; // model types not supported 
   }
 }
 
 /**
  *  \brief
  */
-std::unique_ptr<IEpipolarModel> EpipolarModelFactory::CreateEpipolarModel(
-  const std::array<std::shared_ptr<ISensorModel>, 2> sensorModels,
-  const int sample, const double height) {
-  return std::unique_ptr<IEpipolarModel>();
-}
-
-/**
- *  \brief
- */
-std::unique_ptr<IEpipolarModel> EpipolarModelFactory::CreateEpipolarModel(
+std::vector<std::unique_ptr<IEpipolarModel>> EpipolarModelFactory::CreateEpipolarModel(
   const std::vector<std::shared_ptr<ISensorModel>> &sensorModels,
   const int sample, const double height) {
   if (sensorModels.size() < 2) {
     throw std::exception("Require a minimum of two images");
   }
-  return std::unique_ptr<IEpipolarModel>();
+  return std::vector<std::unique_ptr<IEpipolarModel>>{};
 }
 
 /**
- *  \brief Create an epipolar model for a stereo pair of frame images.
+ *  \brief Create an epipolar models for a stereo pair of frame images.
  *
  *  \param [in] leftModel sensor model associated with the left image
  *  \param [in] rightModel sensor model associated with the right image
  *  \param [in] height the optional average height used for epipolar rectficiation
- *  \return Returns pointer to epipolar model object.
+ *  \return Returns pointers to epipolar model objects.
  */
-std::unique_ptr<IEpipolarModel> EpipolarModelFactory::CreateFrameEpiModel(
+EpiModelPair EpipolarModelFactory::CreateFrameEpiModel(
   std::shared_ptr<ISensorModel> leftModel, 
   std::shared_ptr<ISensorModel> rightModel, 
   const int sample, const double height) {
-    return nullptr;
+  return { nullptr,nullptr };
   }
 
 /**
- *  \brief Create an epipolar model for a stereo pair of RPC images.
+ *  \brief Create an epipolar models for a stereo pair of RPC images.
  *
  *  \param [in] leftModel sensor model associated with the left image
  *  \param [in] rightModel sensor model associated with the right image
- *  \return Returns pointer to epipolar model object.
+ *  \return Returns pointer to epipolar model objects.
  */
-std::unique_ptr<IEpipolarModel> EpipolarModelFactory::CreateRationalEpiModel(
+EpiModelPair EpipolarModelFactory::CreateRationalEpiModel(
   std::shared_ptr<ISensorModel> leftModel, 
   std::shared_ptr<ISensorModel> rightModel, const int sample) {
   auto leftRM = dynamic_cast<const RationalModel*>(leftModel.get());
@@ -131,10 +122,12 @@ std::unique_ptr<IEpipolarModel> EpipolarModelFactory::CreateRationalEpiModel(
   auto rightRect = std::make_unique<EpipolarRect>(origin, height,
     xOffRight, yOffset, scale, rotation, numColsRight, numRows);
 
-  auto geoGround = std::make_unique<GeographicGroundDeg>(std::move(earthEllip));
+  auto geoGround = std::make_shared<GeographicGroundDeg>(std::move(earthEllip));
   assert(!earthEllip);
 
-  return nullptr;
-//  return std::make_unique<GeoEpipolarModel>(leftModel, std::move(leftRect),
-//    rightModel, std::move(rightRect), std::move(geoGround));
+  auto leftEpiModel = std::make_unique<GeoEpipolarModel>(
+    leftModel, EpiStereoPos::eLEFT, std::move(leftRect), geoGround);
+  auto rightEpiModel = std::make_unique<GeoEpipolarModel>(
+    rightModel, EpiStereoPos::eRIGHT, std::move(rightRect), geoGround);
+  return EpiModelPair{ std::move(leftEpiModel), std::move(rightEpiModel) };
 }

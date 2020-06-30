@@ -29,10 +29,10 @@ public:
    *  Constructor.
    *
    *  \param [in] sensorModel sensor model associated with the image
+   *  \param [in] pos Component position of stereo model
    *  \param [in] epiRect epipolar rectification defining the transform 
    *              between the epipolar model coordinate system and epipolar 
    *              raster coordinate system for the image.
-   *  \param [in] pos Component position of stereo model
    *  \param [in] groundPolicy ground policy
    */
   EpipolarModel(std::shared_ptr<ISensorModel> sensorModel, StereoPos pos,
@@ -70,7 +70,7 @@ public:
     return ePLANERECT;
   }
 
-  const EpipolarRect *GetEpiRect(StereoPos pos) const noexcept {
+  const EpipolarRect *GetEpiRect() const noexcept {
     return mEpiRect.get();
   }
 

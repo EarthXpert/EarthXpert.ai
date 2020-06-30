@@ -5,8 +5,8 @@
 #include "rectification/epipolar/epipolargenerator.h"
 #include "core/utils/irasterresample.h"
 #include "epipolarmodel/iepipolarmodel.h"
-#include "io/raster/rasterreader.h"
-#include "io/raster/rasterwriter.h"
+#include "io/raster/irasterreader.h"
+#include "io/raster/irasterwriter.h"
 
 using earthxpert::EpipolarGenerator;
 using earthxpert::IEpipolarModel;
@@ -28,8 +28,6 @@ EpipolarGenerator::EpipolarGenerator(
  *  \return Returns true if operation succeeds
  */
 bool EpipolarGenerator::Process(IRasterReader *const img,
-                                IRasterWriter *const epi,
-                                IEpipolarModel const *const epiModel,
-                                const IEpipolarModel::StereoPos pos) {
+  IEpipolarModel const *const epiModel, IRasterWriter *const epi) {
   return true;
 }
