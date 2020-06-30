@@ -62,7 +62,7 @@ bool GraphFit::FitLineCeres(const std::vector<Point2d>& points,
   return FitPoints<Point2d, LinearFitResidual>(points, pb, mOptions, summary);
 }
 
-bool GraphFit::FitLineRobustCeres(const std::vector<Point2d>& points, 
+bool GraphFit::FitLineCeresRobust(const std::vector<Point2d>& points, 
   std::vector<double>& pb, Solver::Summary& summary) {
   if (2 > points.size())
     throw std::invalid_argument("FitLine: must have 2+ points");

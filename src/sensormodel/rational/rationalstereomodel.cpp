@@ -3,6 +3,7 @@
  * -----------------------------------------------------------------------------
  */
 #include "sensormodel/rationalstereomodel.h"
+#include "3rdparty/eigen/exeigen.h"
 #include "sensormodel/rationalmodel.h"
 
 using namespace earthxpert;
@@ -48,8 +49,8 @@ void RationalStereoModel::Initialize() {
 bool RationalStereoModel::ImageToGround(const Point2d& leftImage,
   const Point2d& rightImage, Point3d& ground) const {
   assert(2 == mModels.size());
-  //std::vector<Point2d> images{ leftImage, rightImage };
-  //return ImageToGround(images, ground);
+  //std::vector<Point2d> imgs{ leftImage, rightImage };
+  //return ImageToGround(imgs, ground);
   
   Point2d imageApp = mModels[0]->ImageActualToApparant(Point2d{ leftImage.x - 0.5, leftImage.y - 0.5 });
   auto leftImg = mModels[0]->ImageToSensor(imageApp);
@@ -131,6 +132,8 @@ bool RationalStereoModel::ImageToGround(
  *  imagery raster coordinate systems, interleaved by sensor models.
  *  \param [in/out] ground 3d ground position (Lon, Lat, Height) in ground coordinate system
  *  \return Returns true if the operation succeeds
+ *  \todo regularization of normal matrix A.t() * A
+ *  \todo revist the stability of solve() for Dynamic Ax=b
  */
 bool RationalStereoModel::ImageToGround(
   const std::vector<Point2d>& images, Point3d& ground) const {
@@ -147,10 +150,10 @@ bool RationalStereoModel::ImageToGround(
     ground.z += mModels[i]->GetMeanHeight();
   }
   ground.z /= double(numRays);
-  mModels[numRays / 2]->ImageToGround(images[numRays / 2], ground);
+  mModels[numRays/2]->ImageToGround(images[numRays/2], ground);
 
-  MatrixXd A = MatrixXd::Zero(numRays*2, 3);
-  MatrixXd b = MatrixXd::Zero(numRays*2, 1);
+  MatrixXd A(numRays * 2, 3);
+  VectorXd b(numRays * 2);
 
   int iter{};
   for (iter = 0; iter < kMaxIters; ++iter) {
@@ -169,18 +172,20 @@ bool RationalStereoModel::ImageToGround(
       A(i2 + 1, 1) = dFr_dP * nfc[eSLINE];
       A(i2 + 1, 2) = dFr_dH * nfc[eSLINE];
 
-      b(i2, 0)     = (imgp.x - imgs[i].x) * nfc[eSSAMP];
-      b(i2 + 1, 0) = (imgp.y - imgs[i].y) * nfc[eSLINE];
+      b[i2]     = (imgp.x - imgs[i].x) * nfc[eSSAMP];
+      b[i2 + 1] = (imgp.y - imgs[i].y) * nfc[eSLINE];
     }
 
-    const auto& x = A.bdcSvd(ComputeFullU | ComputeFullV).solve(b);
+    // A.bdcSvd(ComputeThinU | ComputeThinV).solve(b)
+    // A.colPivHouseholderQr().solve(b)
+    const auto& x = (A.transpose() * A).inverse() * (A.transpose() * b);
     //if () return false;
 
-    ground.x -= x(0, 0);
-    ground.y -= x(1, 0);
-    ground.z -= x(2, 0);
+    ground.x -= x[0];
+    ground.y -= x[1];
+    ground.z -= x[2];
 
-    if (fabs(x(0, 0)) < kTolD && fabs(x(1, 0)) < kTolD && fabs(x(2, 0)) < kTolH)
+    if (fabs(x[0]) < kTolD && fabs(x[1]) < kTolD && fabs(x[2]) < kTolH)
       break;
   }
 

@@ -58,7 +58,7 @@ public:
    */
   bool FitLineCeres(const std::vector<Point2d>& points, 
     std::vector<double>& pb, Solver::Summary& summary);
-  bool FitLineRobustCeres(const std::vector<Point2d>& points, 
+  bool FitLineCeresRobust(const std::vector<Point2d>& points, 
     std::vector<double>& pb, Solver::Summary& summary);
 
   bool FitLineCv(const std::vector<Point2d>& points, cv::Vec2d& pb);
