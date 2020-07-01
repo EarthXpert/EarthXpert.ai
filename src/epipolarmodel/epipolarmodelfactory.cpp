@@ -186,11 +186,11 @@ double EpipolarModelFactory::CalcEpiRotation(const ISensorModel* leftModel,
     Point2d img;
     leftModel->GroundToImage(lph, img);
     PointXYd leftRect;
-    ImageToPlane(img, leftModel, ee, height - 10.0, leftRect);
+    ImageToPlane(img, leftModel, ee, height - 10.0, leftRect, 0.01);  // [1cm]
 
     rightModel->GroundToImage(lph, img);
     PointXYd rightRect;
-    ImageToPlane(img, rightModel, ee, height - 10.0, rightRect);
+    ImageToPlane(img, rightModel, ee, height - 10.0, rightRect, 0.01);
 
     const Point2d dir{ rightRect.x() - leftRect.x(), rightRect.y() - leftRect.y() };
     epiDir.push_back(dir);

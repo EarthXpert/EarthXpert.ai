@@ -12,7 +12,6 @@
 namespace earthxpert {
 namespace detail {
   static constexpr int kMaxIters = 5;
-  static constexpr double kHgtTol = 1.0e-4; // [0.1mm]
 
   // sensor names & types
   static std::map<std::string, SensorType> sSensorN2T = {
@@ -93,9 +92,10 @@ double CalcGsd(const ISensorModel* sensorModel, const double height) {
  *  Image-to-plane projection on ground.
  *
  *  \param [out] plane position on the tangential plane [meter].
+ *  \param [in] tolH tolerance for convergence, default to 0.1mm.
  */
 bool ImageToPlane(const Point2d& image, const ISensorModel* sensorModel, 
-  const EarthEllipsoid* ee, const double height, PointXYd& rect) {
+  const EarthEllipsoid* ee, const double height, PointXYd& rect, const double tolH) {
   assert(eGEO == sensorModel->GetSrsType());
   Point3d ground{ 0, 0, height };
 
@@ -108,7 +108,7 @@ bool ImageToPlane(const Point2d& image, const ISensorModel* sensorModel,
     const double dz = height - rect3.z;
     ground.z += dz;
 
-    if (detail::kHgtTol > dz) break;
+    if (tolH > dz) break;
   }
 
   rect.x(rect3.x);
@@ -118,17 +118,47 @@ bool ImageToPlane(const Point2d& image, const ISensorModel* sensorModel,
 
 /**
  *  \return Returns the scene footprint on the rectification plane [meter].
+ *
+ *  \todo use stride along image boundary
  */
 Polygon2d CalcFootprint(const ISensorModel* sensorModel,
   const EarthEllipsoid* ee, const double height) {
   assert(eGEO == sensorModel->GetSrsType());
   auto [numCols, numRows] = sensorModel->GetImageSize();
-  std::array<Point2d, 4> corners{ Point2d(0.0, 0.0), Point2d(numCols, 0.0),
-    Point2d(numCols, numRows), Point2d(0.0, numRows) };
+  std::array<Point2d, 8> corners{ Point2d(0.0, 0.0), Point2d(numCols / 2, 0.0),
+    Point2d(numCols, 0.0), Point2d(numCols, numRows / 2),
+    Point2d(numCols, numRows), Point2d(numCols / 2, numRows),
+    Point2d(0.0, numRows), Point2d(0.0, numRows / 2) };
 
-  std::array<PointXYd, 4> fpCorners;
-  for (int i = 0; i < 4; ++i) {
-    ImageToPlane(corners[i], sensorModel, ee, height, fpCorners[i]);
+  std::array<PointXYd, 8> fpCorners;
+  for (int i = 0; i < 8; ++i) {
+    ImageToPlane(corners[i], sensorModel, ee, height, fpCorners[i], 0.01);
+  }
+
+  Polygon2d fp;
+  bg::assign_points(fp, fpCorners);
+  return fp;
+}
+
+/**
+ *  \return Returns the scene footprint on the model plane.
+ *
+ *  \todo use stride along image boundary
+ */
+Polygon2d CalcFootprint(const ISensorModel* sensorModel, const double height) {
+  auto [numCols, numRows] = sensorModel->GetImageSize();
+  std::array<Point2d, 8> corners{ Point2d(0.0, 0.0), Point2d(numCols / 2, 0.0),
+    Point2d(numCols, 0.0), Point2d(numCols, numRows / 2),
+    Point2d(numCols, numRows), Point2d(numCols / 2, numRows),
+    Point2d(0.0, numRows), Point2d(0.0, numRows / 2) };
+
+  std::array<PointXYd, 8> fpCorners;
+
+  Point3d ground{ 0.0, 0.0, height };
+  for (int i = 0; i < 8; ++i) {
+    sensorModel->ImageToGround(corners[i], ground);
+    fpCorners[i].x(ground.x);
+    fpCorners[i].y(ground.y);
   }
 
   Polygon2d fp;

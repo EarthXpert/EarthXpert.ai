@@ -166,13 +166,13 @@ void PdalJob::AddCmdArgs() {
 }
 
 void PdalJob::Help() {
-  mOut << "Usage: expdal <options>" << std::endl;
+  mOut << "\nUsage: expdal <options>" << std::endl;
   mOut << "       expdal <command> <command options>" << std::endl;
 
   mArgs.dump(mOut, 2, 80);
   mOut << std::endl;
 
-  mOut << "Commands:" << std::endl;
+  mOut << "  Commands:" << std::endl;
 
   // Load all kernels so that we can report the names.
   StageFactory f;

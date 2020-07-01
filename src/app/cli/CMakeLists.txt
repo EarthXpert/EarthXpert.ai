@@ -26,6 +26,7 @@ earthxpert_add_executable(expdal "apps"
         Boost::filesystem Boost::program_options
         ${GDAL_LIBRARY} ${GETTEXT_LIBRARY} ${PDAL_LIBRARIES})
 
+earthxpert_install_target(exai)
 earthxpert_install_target(exepipolar)
 earthxpert_install_target(exgdal)
 earthxpert_install_target(exgeoinfo)

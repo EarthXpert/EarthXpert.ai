@@ -86,12 +86,13 @@ bool EpipolarModel<GroundPolicy>::RawToEpi(const Point2d &raw, Point2d &epi) con
 /**
  *  Raw-to-rect transform.
  *
-   *  \brief Given a 2d poistion on image, output the 2d position in
-   * rectification coordinate system.
-   *
-   *  \param [in] raw 2d position (col, row) in image raster coordinate system
-   *  \param [out] rect 2d position (x, y) in rectification coordinate system
-   *  \return Returns heihgt in model ground CRS if operation succeeds
+ *  \brief Given a 2d poistion on image, output the 2d position in
+ * rectification coordinate system.
+ *
+ *  \param [in] raw 2d position (col, row) in image raster coordinate system
+ *  \param [out] rect 2d position (x, y) in rectification coordinate system
+ *  \return Returns heihgt in model ground CRS if operation succeeds
+ *  \ref ImageToPlane in sensormodel/utils.h
  */
 template <class GroundPolicy> std::optional<double> 
 EpipolarModel<GroundPolicy>::RawToRect(const Point2d &raw, Point2d &rect) const {
