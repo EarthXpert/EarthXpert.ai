@@ -49,43 +49,40 @@ void GenerateFrameEpipolar() {
 /**
  *  \brief Generate epipolar images for a pair of stereo image having rational models.
  */
-void GenerateRationalEpipolar(const std::string& leftImgFile, const std::string& leftMdlFile, 
-  const std::string& rightImgFile, const std::string& rightMdlFile, 
-  const std::vector<int>& bands, const int sample, const std::string& outPath,
-  const std::string& resample, const size_t memSize) {
+void GenerateRationalEpipolar(const EpipolarOptions& epiOpt) {
   RationalModelMarshaller rmMarshaller;
 
-  RasterReader leftReader(leftImgFile, bands);
+  RasterReader leftReader(epiOpt.leftImgFile, epiOpt.bands);
   auto [leftNumCols, leftNumRows] = leftReader.GetSize();
   
   rmMarshaller.SetImageSize(leftNumCols, leftNumRows);
-  std::shared_ptr<ISensorModel> leftModel = rmMarshaller.Deserialize(leftMdlFile);
-  assert(SenType::eRATIONAL == leftModel->GetModelType());
+  std::shared_ptr<ISensorModel> leftModel = rmMarshaller.Deserialize(epiOpt.leftMdlFile);
+  assert(SensorType::eRATIONAL == leftModel->GetModelType());
 
-  RasterReader rightReader(rightImgFile, bands);
+  RasterReader rightReader(epiOpt.rightImgFile, epiOpt.bands);
   auto [rightNumCols, rightNumRows] = rightReader.GetSize();
 
   rmMarshaller.SetImageSize(rightNumCols, rightNumRows);
-  std::shared_ptr<ISensorModel> rightModel = rmMarshaller.Deserialize(rightMdlFile);
-  assert(SenType::eRATIONAL == rightModel->GetModelType());
+  std::shared_ptr<ISensorModel> rightModel = rmMarshaller.Deserialize(epiOpt.rightMdlFile);
+  assert(SensorType::eRATIONAL == rightModel->GetModelType());
 
   EpipolarModelFactory epiModelFac(FacEpiOpt::eFULL);
-  auto [leftEpiModel, rightEpiModel] = epiModelFac.CreateEpipolarModel(leftModel, rightModel, sample); 
-  assert(IEpipolarModel::ePLANERECT == epipolarModel->GetEpipolarAlgorithm());
+  auto [leftEpiModel, rightEpiModel] = epiModelFac.CreateEpipolarModel(leftModel, rightModel, epiOpt.sample);
+  assert(IEpipolarModel::ePLANERECT == leftEpiModel->GetEpipolarAlgorithm());
 
   auto format = leftReader.GetFileFormat();
   auto gdalDT = leftReader.GetDataType();
   auto numBands = leftReader.GetNumBands();
 
-  auto rasResample = std::make_unique<RasterResample>(resample);
-  EpipolarGenerator epiGen(rasResample.get(), memSize);
+  auto rasResample = std::make_unique<RasterResample>(epiOpt.resample);
+  EpipolarGenerator epiGen(rasResample.get(), epiOpt.memSize);
 
   // generate left epipolar image
-  detail::GenerateEpipolar(leftImgFile, &epiGen, &leftReader, 
-    leftEpiModel.get(), outPath, format, gdalDT, numBands);
+  detail::GenerateEpipolar(epiOpt.leftImgFile, &epiGen, &leftReader,
+    leftEpiModel.get(), epiOpt.outPath, format, gdalDT, numBands);
 
   // generate right epipolar image
-  detail::GenerateEpipolar(rightImgFile, &epiGen, &rightReader,
-    rightEpiModel.get(), outPath, format, gdalDT, numBands);
+  detail::GenerateEpipolar(epiOpt.rightImgFile, &epiGen, &rightReader,
+    rightEpiModel.get(), epiOpt.outPath, format, gdalDT, numBands);
 }
 }

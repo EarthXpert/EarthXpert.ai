@@ -2,17 +2,11 @@
  *  Copyright (c) 2020.  All rights reserved.
  * -----------------------------------------------------------------------------
  */
-#include "3rdparty/boost/exboost.h"
-#include "3rdparty/gdal/exgdal.h"
-#include "core/exceptions/exexcept.h"
-#include "core/utils/rasterresample.h"
-#include "rectification/epipolar/epipolar.h"
-#include "sensormodel/utils.h"
+#include "platform/exai/exaiepipolar.h"
 
 #include <boost/program_options.hpp>
 #include <iostream>
 
-using namespace earthxpert;
 namespace bpo = boost::program_options;
 
 /**
@@ -43,71 +37,9 @@ namespace bpo = boost::program_options;
  *    exepipolar.exe --sensorname="rational" --leftimg="D:/home/workspace/TestData/Imagery/Satellite/po_162796_pan/po_162796_pan_0000000.tif" --leftmdl="D:/home/workspace/TestData/Imagery/Satellite/po_162796_pan/po_162796_pan_0000000_rpc.txt" --rightimg="D:/home/workspace/TestData/Imagery/Satellite/po_162796_pan/po_162796_pan_0010000.tif" --rightmdl="D:/home/workspace/TestData/Imagery/Satellite/po_162796_pan/po_162796_pan_0010000_rpc.txt" --bands=1 --sample=1 --outdir="D:/home/workspace/build/windows/vs2019/tests/output/" --resample="cubic" --memsize=4000
  */
 int main(int argc, char** argv) {
-  bpo::options_description optDesc{ "Options" };
-  optDesc.add_options()
-    ("sensorname,t", bpo::value<std::string>()->required(), "sensor name: frame|rational")
-    ("prjdir,p", bpo::value<std::string>(), "project directory or file")
-    ("leftimg,i", bpo::value<std::string>()->required(), "left image file")
-    ("leftmdl,m", bpo::value<std::string>(), "left model file")
-    ("rightimg,j", bpo::value<std::string>()->required(), "right image file")
-    ("rightmdl,n", bpo::value<std::string>(), "right model file")
-    ("bands,b", bpo::value<std::vector<int>>()->multitoken(), "list of bands")
-    ("sample,s", bpo::value<int>()->default_value(1), "downsample factor")
-    ("outdir,o", bpo::value<std::string>()->required(), "output directory")
-    ("resample,r", bpo::value<std::string>()->default_value("cubic"), "resample algorithm: bilinear|cubic|gausian")
-    ("memsize,e", bpo::value<int>()->default_value(4000), "memory size in MB")
-    ("help,h", "Usage help");
+  earthxpert::ExaiEpipolar cmd;
 
-  bpo::variables_map vm;
-  bpo::store(bpo::parse_command_line(argc, argv, optDesc), vm);
-
-  if (vm.count("help")) {
-    std::cout << optDesc << std::endl;
-    return 0;
-  }
-
-  try {
-    bpo::notify(vm);
-  }
-  catch (...) {
-    std::cout << optDesc << std::endl;
-    return 0;
-  }
-
-  auto sn = vm["sensorname"].as<std::string>();
-  const auto st = SensorNameToType(sn);
-  if (SensorType::eRATIONAL != st && SensorType::eFRAME != st) {
-    throw std::invalid_argument("Epipolar not implemented fro sensor: " + sn);
-  }
-
-  std::string leftImgFile = vm["leftimg"].as<std::string>();
-  std::string leftMdlFile;
-  std::string rightImgFile = vm["rightimg"].as<std::string>();
-  std::string rightMdlFile;
-
-  std::vector<int> bands = vm["bands"].as<std::vector<int>>();
-  int sample = vm["sample"].as<int>();
-  std::string outPath = vm["outdir"].as<std::string>();
-  std::string resample = vm["resample"].as<std::string>();
-  size_t memSize = size_t(vm["memsize"].as<int>()) * 1000;  // [unit: bytes]
-
-  GDALInitialize();   // register GDAL drivers
-
-  switch (st)
-  {
-  case SensorType::eRATIONAL:
-  {
-    leftMdlFile = vm["leftmdl"].as<std::string>();
-    rightMdlFile = vm["rightmdl"].as<std::string>();
-
-    GenerateRationalEpipolar(leftImgFile, leftMdlFile,
-      rightImgFile, rightMdlFile, bands, sample, outPath, resample, memSize);
-    break;
-  }
-
-  default:
-    assert(false && "sensor is not supported");
-  }
-
+  cmd.SetCmdArgs(argc, argv);
+  cmd.Execute();
   return 0;
 }

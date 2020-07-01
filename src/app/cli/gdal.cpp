@@ -8,6 +8,6 @@
 int main(int argc, char* argv[]) {
   earthxpert::GdalJob job;
 
-  job.SetArgs();
+  job.SetCmdArgs(argc, argv);
   return job.Run();
 }

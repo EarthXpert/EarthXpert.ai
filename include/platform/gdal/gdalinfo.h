@@ -21,9 +21,10 @@ public:
   GdalInfo& operator=(const GdalInfo&) = delete;
   GdalInfo& operator=(GdalInfo&&) = delete;
 
-  void SetCmdArgs(const int argc, char** argv) {
+  int SetCmdArgs(const int argc, char** argv) {
     mArgc = argc;
     mArgv = argv;
+    return 0;
   }
 
   /**

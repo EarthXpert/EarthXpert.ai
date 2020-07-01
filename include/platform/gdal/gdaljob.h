@@ -25,17 +25,23 @@ public:
   GdalJob& operator=(const GdalJob&) = delete;
   GdalJob& operator=(GdalJob&&) = delete;
 
-  int SetArgs();
+  int SetCmdArgs(int argc, char** argv) {
+    mArgc = argc;
+    mArgv = argv;
+    return 0;
+  }
 
   int Run() override;
 
-  int operator()() {
-    SetArgs();
+  int operator()(int argc, char** argv) {
+    SetCmdArgs(argc, argv);
     return Run();
   }
 
 private:
   std::ostream& mOut;
+  int mArgc;
+  char** mArgv;
 
   std::string mCommand;
 

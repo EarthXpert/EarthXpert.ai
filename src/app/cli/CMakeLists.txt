@@ -7,7 +7,7 @@ earthxpert_add_executable(exai "apps"
         ${GDAL_LIBRARY} ${GETTEXT_LIBRARY} ${PDAL_LIBRARIES})
 earthxpert_add_executable(exepipolar "apps"
   SRCS "epipolar.cpp"
-  ITEMS ex3rdparty core dataio epipolar epipolarmodel marshaller
+  ITEMS ex3rdparty core dataio epipolar epipolarmodel marshaller pfexai
         Boost::filesystem Boost::program_options
         ${GDAL_LIBRARY})
 earthxpert_add_executable(exgdal "apps"

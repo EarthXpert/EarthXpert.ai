@@ -36,7 +36,6 @@
 * OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY
 * OF SUCH DAMAGE.
 ****************************************************************************/
-
 #include "platform/pdal/pdaljob.h"
 
 #include <pdal/GDALUtils.hpp>
@@ -62,12 +61,14 @@ using namespace pdal;
 
 PdalJob::PdalJob(std::ostream& out) : mOut(out) {
   mHeadline = std::string(Utils::screenWidth(), '-');
-  AddArgs();
+  AddCmdArgs();
   mLogger.reset( new pdal::Log("PDAL", "stderr") );
 }
 
-int PdalJob::SetArgs(const StringList& cmdArgs) {
-  mCmdArgs = cmdArgs;
+int PdalJob::SetCmdArgs(int argc, char** argv) {
+  mCmdArgs.clear();
+  for (int i = 1; i < argc; ++i)
+    mCmdArgs.push_back(argv[i]);
 
   try {
     mArgs.parseSimple(mCmdArgs);
@@ -144,7 +145,7 @@ int PdalJob::Run() {
   return 0;
 }
 
-void PdalJob::AddArgs() {
+void PdalJob::AddCmdArgs() {
   mArgs.add("command", "The PDAL command", mCommand).setPositional();
   mArgs.add("debug", "Sets the output level to 3 (option deprecated)",
     mDebug);

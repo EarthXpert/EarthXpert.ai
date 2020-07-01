@@ -12,10 +12,6 @@ GdalJob::GdalJob(std::ostream& out) : mOut(out) {
   GDALInitialize();
 }
 
-int GdalJob::SetArgs() {
-  return 0;
-}
-
 int GdalJob::Run() {
   return 0;
 }

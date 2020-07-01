@@ -8,10 +8,6 @@
 int main(int argc, char* argv[]) {
   earthxpert::PdalJob job;
 
-  pdal::StringList cmdArgs;
-  for (int i = 1; i < argc; ++i)
-    cmdArgs.push_back(argv[i]);
-
-  job.SetArgs(std::move(cmdArgs));
+  job.SetCmdArgs(argc, argv);
   return job.Run();
 }

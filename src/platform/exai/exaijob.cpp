@@ -7,14 +7,14 @@
 
 using earthxpert::ExaiJob;
 
-ExaiJob::ExaiJob() {
+ExaiJob::ExaiJob(std::ostream& out) : mOut(out) {
   GDALInitialize();
-}
-
-int ExaiJob::SetArgs() {
-  return 0;
 }
 
 int ExaiJob::Run() {
   return 0;
+}
+
+void ExaiJob::Help() {
+  mOut << "Usage: exai <command> <command options>" << std::endl;
 }

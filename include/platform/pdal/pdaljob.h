@@ -66,12 +66,12 @@ public:
   PdalJob& operator=(const PdalJob&) = delete;
   PdalJob& operator=(PdalJob&&) = delete;
 
-  int SetArgs(const StringList& cmdArgs);
+  int SetCmdArgs(int argc, char** argv);
 
   int Run() override;
 
-  int operator()(const StringList& cmdArgs) {
-    SetArgs(cmdArgs);
+  int operator()(int argc, char** argv) {
+    SetCmdArgs(argc, argv);
     return Run();
   }
 
@@ -97,7 +97,7 @@ private:
   std::string mLog;
   std::string mHeadline;
 
-  void AddArgs();
+  void AddCmdArgs();
   void Help();
   void HelpVersion();
   void HelpCommands(const std::string& leader);
