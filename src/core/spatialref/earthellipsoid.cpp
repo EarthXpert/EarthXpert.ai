@@ -112,8 +112,7 @@ Point3d EarthEllipsoid::XYZToLPH(const double X, const double Y,
   double hgt{};    // Height from previous iteration.
   double delta{ 1.0 };
 
-  while (mHgtTol < fabs(delta))
-  {
+  while (mHgtTol < fabs(delta)) {
     const double cp = cos(lat);
     const double sp = sin(lat);
     const double N = RadiusInPrimeVertical(cp, sp);

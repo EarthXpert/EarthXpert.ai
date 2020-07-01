@@ -38,7 +38,7 @@ public:
   /**
    *  \brief Constructor.
    *
-   *  \param [in]
+   *  \param [in] earthEllip the local space rectangular system
    */
   GeographicGround(std::unique_ptr<EarthEllipsoid>&& earthEllip)
     : mEarthEllip(std::move(earthEllip)) {
@@ -98,10 +98,10 @@ public:
    */
   Point3d GroundToRect(const Point3d &ground) const override {
     if constexpr (kAU_DEGREE == angleUnit) {
-      return mEarthEllip->LSRToLPH(Deg2Rad(ground));
+      return mEarthEllip->LPHToLSR(Deg2Rad(ground));
     }
     else if constexpr (kAU_GON == angleUnit) {
-      return mEarthEllip->LSRToLPH(Gon2Rad(ground));
+      return mEarthEllip->LPHToLSR(Gon2Rad(ground));
     }
     else {
       return mEarthEllip->LPHToLSR(ground);

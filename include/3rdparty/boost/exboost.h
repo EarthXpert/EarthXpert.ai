@@ -5,9 +5,30 @@
 #pragma once
 
 #include "3rdparty/ex3rdparty.h"
-#include <string>
 
-namespace earthxpert::thirdparty {
+#include <boost/filesystem.hpp>
+#include <boost/geometry.hpp>
+#include <boost/geometry/geometries/point_xy.hpp>
+#include <boost/geometry/geometries/polygon.hpp>
+
+#include <string>
+#include <type_traits>
+
+namespace bfs = boost::filesystem;
+namespace bg = boost::geometry;
+namespace bgm = boost::geometry::model;
+
+namespace earthxpert {
+template <typename Ty, typename = std::enable_if_t<std::is_arithmetic_v<Ty>, void>>
+using PointXY = bgm::d2::point_xy<Ty>;
+
+template <typename Ty, typename = std::enable_if_t<std::is_arithmetic_v<Ty>, void>>
+using Polygon2 = bgm::polygon<PointXY<Ty>>;
+
+using PointXYd = PointXY<double>;
+using Polygon2d = Polygon2<double>;
+
+namespace thirdparty{
 /**
  *  \brief insert prefix for filename component
  *
@@ -17,4 +38,5 @@ namespace earthxpert::thirdparty {
  */
 std::string EX3RDPARTY_EXPORTS PathPrefixFilename(
   const std::string& fileName, const std::string& prefix);
-} // namespace earthxpert::thirdparty
+}
+} // namespace earthxpert

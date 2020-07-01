@@ -6,12 +6,14 @@
 
 #include "epipolarmodel/epipolarrect.h"
 #include "epipolarmodel/iepipolarmodel.h"
+#include "3rdparty/boost/exboost.h"
 #include "sensormodel/isensormodel.h"
 
 #include <array>
 #include <utility>
 
 namespace earthxpert {
+class EarthEllipsoid;
 using EpiModelPair = std::pair<std::unique_ptr<IEpipolarModel>, std::unique_ptr<IEpipolarModel>>;
 
 /**
@@ -26,8 +28,8 @@ public:
   // will be minimized; while with eCOMPACT option, the average X-parallax has
   // to be calculated for have the epipolar images aligned approximately.
   enum class EpipolarOption {
-    eFULL,     // the largest width for a union of epipolar images
     eCOMPACT,  // the smallest width for each epipolar image
+    eFULL,     // the largest width for a union of epipolar images
     eINTERSECT // the smallest width for intersection of epipolar images
   };
   using EpiOpt = EpipolarOption;
@@ -60,12 +62,21 @@ public:
   void SetEpipolarOption(const EpipolarOption epiOpt) { mEpiOpt = epiOpt; }
 
 private:
+  static constexpr int kMaxIters{ 5 };
+  static constexpr double kHgtTol{ 0.01 }; // Height tolerance [1cm]: good enough
+
   EpipolarOption mEpiOpt{ EpiOpt::eFULL };
 
   EpiModelPair CreateFrameEpiModel(std::shared_ptr<ISensorModel> leftModel,
       std::shared_ptr<ISensorModel> rightModel, int sample, double height);
   EpiModelPair CreateRationalEpiModel(std::shared_ptr<ISensorModel> leftModel,
       std::shared_ptr<ISensorModel> rightModel, int sample);
+
+  double EpipolarModelFactory::CalcEpiRotation(const ISensorModel* leftModel,
+    const ISensorModel* rightModel, const EarthEllipsoid* ee, double height, 
+    const Polygon2d& leftFp, const Polygon2d& rightFp) const;
+  std::pair<Point2d, Point2d> CalcEpiBound(const Polygon2d& fp,
+    double scale, double cosRot, double sinRot) const;
 
   // cached
   SensorType mSensorType{ SensorType::eUNDEFINED };

@@ -15,8 +15,8 @@ namespace earthxpert {
  */
 class EXEPIPOLARMODEL_EXPORTS EpipolarRect {
 public:
-  EpipolarRect(Point3d origin, double height, double xOffset, double yOffset,
-    double scale, double rotation, int numCols, int numRows);
+  EpipolarRect(Point3d origin, double height, double scale, double rotation, 
+    const Point2d& offset, int numCols, int numRows);
   EpipolarRect(const EpipolarRect &rhs) = default;
   EpipolarRect(EpipolarRect &&rhs) = default;
   ~EpipolarRect() = default;
@@ -52,25 +52,23 @@ public:
 
   Point3d GetOrigin() const noexcept { return mOrigin; }
   double GetHeight() const noexcept { return mHeight; }
-  double GetXOffset() const noexcept { return mXOffset; }
-  double GetYOffset() const noexcept { return mYOffset; }
   double GetScale() const noexcept { return mScale; }
   double GetRotation() const noexcept { return mRotation; }
+  Point2d GetOffset() const noexcept { return mOffset; }
   int GetNumCols() const noexcept { return mNumCols; }
   int GetNumRows() const noexcept { return mNumRows; }
 
 protected:
   Point3d mOrigin{0, 0, 0};     // Origin of epi coordinate system
-  double mHeight{0.0};   // Rectification height
-  double mXOffset{};     // Rectification X-offset
-  double mYOffset{};     // Rectification Y-offset
-  double mScale{1.0};    // Rectification scale
-  double mRotation{0.0}; // Rectification rotation (unit: rad)
+  double mHeight{0.0};   // Rectification height [meter]
+  double mScale{1.0};    // Rectification scale: metric -> pixel
+  double mRotation{0.0}; // Rectification rotation [rad]
+  Point2d mOffset{};     // Rectification XY-offset [pixel]
   int mNumCols{ 0 };       // Number of cols of epipolar image
   int mNumRows{ 0 };       // Number of rows of epipolar image
 
   // cached data for better perforamnce
-  double mInvScale{1.0};
+  double mInvScale{1.0};    // GSD: pixel -> 
   double mCosRot{};
   double mSinRot{};
 };

@@ -3,11 +3,17 @@
  * -----------------------------------------------------------------------------
  */
 #include "sensormodel/utils.h"
+#include "core/utils/unitutils.h"
+#include "core/spatialref/earthellipsoid.h"
 
+#include <cmath>
 #include <map>
 
 namespace earthxpert {
 namespace detail {
+  static constexpr int kMaxIters = 5;
+  static constexpr double kHgtTol = 1.0e-4; // [0.1mm]
+
   // sensor names & types
   static std::map<std::string, SensorType> sSensorN2T = {
   {"undefined", SensorType::eUNDEFINED},
@@ -60,5 +66,73 @@ std::string SensorTypeToName(const SensorType type) {
   }
 
   return name;
+}
+
+/**
+ *  \brief estimate GSD at the given height
+ *
+ *  \param [in] sensorModel
+ *  \param [in] height
+ *  \return Retruns GSD at image center
+ */
+double CalcGsd(const ISensorModel* sensorModel, const double height) {
+  auto [numCols, numRows] = sensorModel->GetImageSize();
+  const Point2d ic{ numCols * 0.5, numRows * 0.5 };
+
+  // image center at height
+  Point3d gc{ 0.0, 0.0, height };
+  sensorModel->ImageToGround(ic, gc);
+
+  Point3d gc2{ 0.0, 0.0, height };
+  sensorModel->ImageToGround(ic + Point2d(1.0, 1.0), gc2);
+
+  return cv::norm(gc2 - gc) * M_SQRT1_2;
+}
+
+/**
+ *  Image-to-plane projection on ground.
+ *
+ *  \param [out] plane position on the tangential plane [meter].
+ */
+bool ImageToPlane(const Point2d& image, const ISensorModel* sensorModel, 
+  const EarthEllipsoid* ee, const double height, PointXYd& rect) {
+  assert(eGEO == sensorModel->GetSrsType());
+  Point3d ground{ 0, 0, height };
+
+  Point3d rect3{ 0, 0, 0 };
+  for (int i = 0; i < detail::kMaxIters; ++i) {
+    if (!sensorModel->ImageToGround(image, ground))
+      return false;
+
+    rect3 = ee->LPHToLSR(Deg2Rad(ground));
+    const double dz = height - rect3.z;
+    ground.z += dz;
+
+    if (detail::kHgtTol > dz) break;
+  }
+
+  rect.x(rect3.x);
+  rect.y(rect3.y);
+  return true;
+}
+
+/**
+ *  \return Returns the scene footprint on the rectification plane [meter].
+ */
+Polygon2d CalcFootprint(const ISensorModel* sensorModel,
+  const EarthEllipsoid* ee, const double height) {
+  assert(eGEO == sensorModel->GetSrsType());
+  auto [numCols, numRows] = sensorModel->GetImageSize();
+  std::array<Point2d, 4> corners{ Point2d(0.0, 0.0), Point2d(numCols, 0.0),
+    Point2d(numCols, numRows), Point2d(0.0, numRows) };
+
+  std::array<PointXYd, 4> fpCorners;
+  for (int i = 0; i < 4; ++i) {
+    ImageToPlane(corners[i], sensorModel, ee, height, fpCorners[i]);
+  }
+
+  Polygon2d fp;
+  bg::assign_points(fp, fpCorners);
+  return fp;
 }
 }

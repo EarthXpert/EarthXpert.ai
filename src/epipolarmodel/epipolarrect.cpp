@@ -17,18 +17,17 @@ using earthxpert::Point3d;
  *
  *  \param [in] origin Origin of epi coordinate system
  *  \param [in] height Rectification height
- *  \param [in] xOffset Rectification X-offset
- *  \param [in] yOffset Rectification Y-offset
  *  \param [in] scale Rectification scale
  *  \param [in] rotation Rectification rotation (unit: rad)
+ *  \param [in] offset Rectification XY-offset
  *  \param [in] numCols Number of cols of epipolar image
  *  \param [in] numRows Number of rows of epipolar image
  */
 EpipolarRect::EpipolarRect(const Point3d origin, const double height, 
-  const double xOffset, const double yOffset, const double scale, 
-  const double rotation, const int numCols, const int numRows)
-    : mOrigin(origin), mHeight(height), mXOffset(xOffset), mYOffset(yOffset), 
-  mScale(scale), mRotation(rotation), mNumCols(numCols), mNumRows(numRows) {
+  const double scale, const double rotation, const Point2d& offset, 
+  const int numCols, const int numRows)
+    : mOrigin(origin), mHeight(height), mScale(scale), mRotation(rotation), 
+      mOffset(offset), mNumCols(numCols), mNumRows(numRows) {
   mInvScale = 1.0 / mScale;
   mCosRot = cos(mRotation);
   mSinRot = sin(mRotation);
@@ -44,7 +43,7 @@ bool EpipolarRect::operator==(const EpipolarRect &rhs) const {
   if (this != &rhs) {
     const Equal<double> Eq;
 
-    if (!Eq(mXOffset, rhs.mXOffset) || !Eq(mYOffset, rhs.mYOffset))
+    if (!Eq(mOffset.x, rhs.mOffset.x) || !Eq(mOffset.y, rhs.mOffset.y))
       return false;
 
     if (!Eq(mHeight, rhs.mHeight) || !Eq(mScale, rhs.mScale) ||
@@ -80,7 +79,10 @@ bool EpipolarRect::operator!=(const EpipolarRect &rhs) const {
  *  \details 
  */
 Point2d EpipolarRect::EpiToRect(const Point2d &epi) const {
-  return {0, 0};
+  const Point2d e{ mOffset.x + epi.x, mOffset.y + mNumRows - epi.y };
+  const Point2d rect{ mCosRot * e.x - mSinRot * e.y, 
+                      mSinRot * e.x + mCosRot * e.y };
+  return rect * mInvScale;
 }
 
 /**
@@ -95,5 +97,7 @@ Point2d EpipolarRect::EpiToRect(const Point2d &epi) const {
  *  \details 
  */
 Point2d EpipolarRect::RectToEpi(const Point2d &rect) const {
-  return { 0, 0 };
+  const Point2d r{ mCosRot * rect.x + mSinRot * rect.y,
+                   - mSinRot * rect.x + mCosRot * rect.y };
+  return { r.x * mScale - mOffset.x, mNumRows - r.y * mScale + mOffset.y };
 }

@@ -12,7 +12,6 @@
 
 namespace pb = pybind11;
 using namespace earthxpert;
-using namespace earthxpert::epipolar;
 
 // wrapper definitions
 #include "core.hpp"

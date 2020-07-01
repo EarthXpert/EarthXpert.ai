@@ -8,4 +8,3 @@
 #include "sensormodel/rationalmodel.h"
 
 using namespace earthxpert;
-using namespace earthxpert::epipolar;

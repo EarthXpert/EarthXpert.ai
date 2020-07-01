@@ -13,7 +13,6 @@
 #include <iostream>
 
 using namespace earthxpert;
-using namespace earthxpert::epipolar;
 namespace bpo = boost::program_options;
 
 /**
