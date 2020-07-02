@@ -32,8 +32,8 @@ public:
   };
 
   void SetImageSize(const int numCols, const int numRows) {
-    imgNumCols = numCols;
-    imgNumRows = numRows;
+    mNumCols = numCols;
+    mNumRows = numRows;
   }
 
   /**
@@ -42,8 +42,7 @@ public:
    *  \param[in] modelFile the file to insert model coefficients
    *  \param[in] rationalModel the rational model to be seralized
    */
-  void Serialize(const std::string& modelFile,
-    const RationalModel* const rationalModel);
+  void Serialize(const std::string& modelFile, const RationalModel* rationalModel);
 
   /**
    *  \brief deserialize rational model from a .RPB or rpc.txt file
@@ -58,8 +57,8 @@ public:
    *  \brief GeoTIFF/NITF tags
    */
 private:
-  int imgNumCols{};
-  int imgNumRows{};
+  int mNumCols{};
+  int mNumRows{};
 
   CoefFormat GetCoefFormat(const std::string& modelFile) const;
 
@@ -69,8 +68,7 @@ private:
    *  \param[in] outStream output stream
    *  \param[in] rationalModel the rational model to be seralized
    */
-  void SerializeRpb(std::ostream& outStream,
-    const RationalModel* const rationalModel);
+  void SerializeRpb(std::ostream& outStream, const RationalModel* rationalModel);
 
   /**
    *  \brief seralize a rational model into a rpc.txt file
@@ -78,8 +76,7 @@ private:
    *  \param[in] outStream output stream
    *  \param[in] rationalModel the rational model to be seralized
    */
-  void SerializeRpc(std::ostream& outStream,
-    const RationalModel* const rationalModel);
+  void SerializeRpc(std::ostream& outStream, const RationalModel* rationalModel);
 
   /**
    *  \brief Deserialize .RPB file

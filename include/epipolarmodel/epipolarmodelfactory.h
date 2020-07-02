@@ -41,7 +41,7 @@ public:
    *  \brief create epipolar models from a pair of stereo images.
    */
   EpiModelPair CreateEpipolarModel(std::shared_ptr<ISensorModel> leftModel,
-    std::shared_ptr<ISensorModel> rightModel, int sample, double height=0);
+    std::shared_ptr<ISensorModel> rightModel, int sample=1, double height=0);
 
   /**
    *  \brief create epipolar models from a pair of stereo images.
@@ -70,7 +70,7 @@ private:
   EpiModelPair CreateFrameEpiModel(std::shared_ptr<ISensorModel> leftModel,
       std::shared_ptr<ISensorModel> rightModel, int sample, double height);
   EpiModelPair CreateRationalEpiModel(std::shared_ptr<ISensorModel> leftModel,
-      std::shared_ptr<ISensorModel> rightModel, int sample);
+      std::shared_ptr<ISensorModel> rightModel, int sample=1);
 
   double EpipolarModelFactory::CalcEpiRotation(const ISensorModel* leftModel,
     const ISensorModel* rightModel, const EarthEllipsoid* ee, double height, 

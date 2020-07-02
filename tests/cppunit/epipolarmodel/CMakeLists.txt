@@ -1,8 +1,11 @@
 project(tests_cppunit_epimodel CXX)
 
 add_cppunit_test(epipolarmodel_tests 
-  ex3rdparty core dataio epipolarmodel
-  ${GDAL_LIBRARY} ${LASLIB_LIBRARY})
+  ex3rdparty core dataio epipolarmodel marshaller sensormodel
+  ${GDAL_LIBRARY} ${OpenCV_LIBS})
+add_cppunit_test(epipolarmodelfactory_tests 
+  ex3rdparty core dataio epipolarmodel marshaller sensormodel
+  ${GDAL_LIBRARY} ${OpenCV_LIBS})
 if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
   get_filename_component(BOOST_BIN_DIR "${Boost_DIR}/../.." ABSOLUTE)
   set(TESTS_EPIMODEL_PATH "PATH=$<TARGET_FILE_DIR:ex3rdparty>;$<TARGET_FILE_DIR:core>;\
@@ -18,4 +21,5 @@ endif()
 
 if(EARTHXPERT_INSTALL_TESTS_CPPUNIT)
   earthxpert_install_test(epipolarmodel_tests)
+  earthxpert_install_test(epipolarmodelfactory_tests)
 endif()

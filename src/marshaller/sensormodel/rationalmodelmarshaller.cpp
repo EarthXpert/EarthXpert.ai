@@ -216,9 +216,15 @@ RationalModelMarshaller::DeserializeRpb(std::istream& inStream) {
     }
   }
 
-  auto groundSRS = std::make_shared<SpatialReferenceSystem>("WGS84");
+  if (0 == mNumCols) {
+    mNumCols = normalFators[eSSAMP] * 2;
+  }
+  if (0 == mNumRows) {
+    mNumRows = normalFators[eSLINE] * 2;
+  }
 
-  auto rationalModel = std::make_unique<RationalModel>(imgNumCols, imgNumRows, 
+  auto groundSRS = std::make_shared<SpatialReferenceSystem>("WGS84");
+  auto rationalModel = std::make_unique<RationalModel>(mNumCols, mNumRows,
     normalFators, lineNumCoef, lineDenCoef, sampNumCoef, sampDenCoef, groundSRS);
   rationalModel->SetErrors(errBias, errRand);
 
@@ -288,9 +294,15 @@ RationalModelMarshaller::DeserializeRpc(std::istream& inStream) {
     }
   }
 
-  auto groundSRS = std::make_shared<SpatialReferenceSystem>("WGS84");
+  if (0 == mNumCols) {
+    mNumCols = normalFators[eSSAMP] * 2;
+  }
+  if (0 == mNumRows) {
+    mNumRows = normalFators[eSLINE] * 2;
+  }
 
-  return std::make_unique<RationalModel>(imgNumCols, imgNumRows, normalFators,
+  auto groundSRS = std::make_shared<SpatialReferenceSystem>("WGS84");
+  return std::make_unique<RationalModel>(mNumCols, mNumRows, normalFators,
       lineNumCoef, lineDenCoef, sampNumCoef, sampDenCoef, groundSRS);
 }
 

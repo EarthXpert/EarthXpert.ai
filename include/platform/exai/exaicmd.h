@@ -14,6 +14,7 @@ namespace earthxpert {
  */
 class EXEXAI_EXPORTS ExaiCmd : public ICommand {
 public:
+  ExaiCmd();
   virtual ~ExaiCmd() = default;
 
 protected:

@@ -33,8 +33,7 @@ EpipolarModelFactory::EpipolarModelFactory(const EpipolarOption epiOpt)
  *  \remark This implementation requires that the stereo pair are of the same sensro type.
  */
 EpiModelPair EpipolarModelFactory::CreateEpipolarModel(
-  std::shared_ptr<ISensorModel> leftModel, 
-  std::shared_ptr<ISensorModel> rightModel, 
+  std::shared_ptr<ISensorModel> leftModel, std::shared_ptr<ISensorModel> rightModel, 
   const int sample, const double height) {
   mSensorType = leftModel->GetModelType();
   if (mSensorType != rightModel->GetModelType())
@@ -181,7 +180,7 @@ double EpipolarModelFactory::CalcEpiRotation(const ISensorModel* leftModel,
   std::vector<double> dirLen;  // length of direction vectors
   for (auto& point : points) {
     Point3d lsr{ point.x(), point.y(), height };
-    auto lph = ee->LSRToLPH(lsr);
+    auto lph = Rad2Deg(ee->LSRToLPH(lsr));
 
     Point2d img;
     leftModel->GroundToImage(lph, img);
@@ -199,14 +198,14 @@ double EpipolarModelFactory::CalcEpiRotation(const ISensorModel* leftModel,
 
   const auto index = std::distance(std::begin(dirLen),
     std::max_element(std::begin(dirLen), std::end(dirLen)));
-  Point2d dir{ epiDir[index] };
+  Point2d ed{ epiDir[index] };
 
-  if ((fabs(dir.x) > fabs(dir.y) && 0 > dir.x) ||
-    (fabs(dir.x) < fabs(dir.y) && 0 < dir.y)) {
-    dir = -dir;
+  if ((fabs(ed.x) > fabs(ed.y) && 0 > ed.x) ||
+    (fabs(ed.x) < fabs(ed.y) && 0 < ed.y)) {
+    ed = -ed;
   }
 
-  return atan2(dir.y, dir.x);
+  return atan2(ed.y, ed.x);
 }
 
 /**

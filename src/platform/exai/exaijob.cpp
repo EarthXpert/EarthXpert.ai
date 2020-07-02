@@ -8,7 +8,6 @@
 using earthxpert::ExaiJob;
 
 ExaiJob::ExaiJob(std::ostream& out) : mOut(out) {
-  GDALInitialize();
 }
 
 int ExaiJob::Run() {

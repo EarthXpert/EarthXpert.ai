@@ -85,7 +85,26 @@ double CalcGsd(const ISensorModel* sensorModel, const double height) {
   Point3d gc2{ 0.0, 0.0, height };
   sensorModel->ImageToGround(ic + Point2d(1.0, 1.0), gc2);
 
-  return cv::norm(gc2 - gc) * M_SQRT1_2;
+  double gsd = cv::norm(gc2 - gc) * M_SQRT1_2;
+  if (eGEO == sensorModel->GetSrsType()) {
+    gsd = kWGS84_A * Deg2Rad(gsd);
+  }
+  return gsd;
+}
+
+double CalcGsd(const ISensorModel* sensorModel, 
+  const EarthEllipsoid* ee, const double height) {
+  auto [numCols, numRows] = sensorModel->GetImageSize();
+  const Point2d ic{ numCols * 0.5, numRows * 0.5 };
+
+  // image center at height
+  PointXYd rc;
+  ImageToPlane(ic, sensorModel, ee, height, rc);
+
+  PointXYd rc2;
+  ImageToPlane(ic + Point2d(1.0, 1.0), sensorModel, ee, height, rc);
+
+  return cv::norm(Point2d(rc2.x() - rc.x(), rc2.y() - rc.y())) * M_SQRT1_2;
 }
 
 /**

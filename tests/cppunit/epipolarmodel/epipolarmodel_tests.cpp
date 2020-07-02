@@ -7,9 +7,9 @@
 
 #include "epipolarmodel/epipolarmodel.h"
 
-using namespace earthxpert;
-
 #include <iostream>
+
+using namespace earthxpert;
 
 TEST(epipolarmodel, DUMMY) {
   std::cout << "[   EXAI   ]" << std::endl;
