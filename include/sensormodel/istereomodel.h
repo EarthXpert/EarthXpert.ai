@@ -173,4 +173,6 @@ public:
 };
 
 using StereoFwdAlgo = IStereoModel::ForwardAlgo;
+using UPIStereoModel = std::unique_ptr<IStereoModel>;
+using SPIStereoModel = std::shared_ptr<IStereoModel>;
 } // namespace earthxpert

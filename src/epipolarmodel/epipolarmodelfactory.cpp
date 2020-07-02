@@ -52,7 +52,8 @@ EpiModelPair EpipolarModelFactory::CreateEpipolarModel(
 /**
  *  \brief
  */
-std::vector<std::unique_ptr<IEpipolarModel>> EpipolarModelFactory::CreateEpipolarModel(
+std::vector<std::unique_ptr<IEpipolarModel>> 
+EpipolarModelFactory::CreateEpipolarModel(
   const std::vector<std::shared_ptr<ISensorModel>> &sensorModels,
   const int sample, const double height) {
   if (sensorModels.size() < 2) {
@@ -175,6 +176,12 @@ double EpipolarModelFactory::CalcEpiRotation(const ISensorModel* leftModel,
   const Polygon2d& leftFp, const Polygon2d& rightFp) const {
   std::vector<PointXYd> points;
   bool ret = bg::intersection(leftFp, rightFp, points);
+  if (!ret) {
+    PointXYd lc, rc;
+    bg::centroid(leftFp, lc);
+    bg::centroid(rightFp, rc);
+    points.emplace_back((lc.x() + rc.x()) / 2, (lc.y() + rc.y()) / 2);
+  }
 
   std::vector<Point2d> epiDir;  // epipolar direction vectors at corners
   std::vector<double> dirLen;  // length of direction vectors
@@ -209,7 +216,7 @@ double EpipolarModelFactory::CalcEpiRotation(const ISensorModel* leftModel,
 }
 
 /**
- *  \return Returns the lower-left and upper-right epiolar bound [pixel].
+ *  \return Returns the lower-left and upper-right epiolar bounding box [pixel].
  */
 std::pair<Point2d, Point2d> EpipolarModelFactory::CalcEpiBound(
   const Polygon2d& fp, const double scale, 

@@ -143,14 +143,15 @@ bool ImageToPlane(const Point2d& image, const ISensorModel* sensorModel,
 Polygon2d CalcFootprint(const ISensorModel* sensorModel,
   const EarthEllipsoid* ee, const double height) {
   assert(eGEO == sensorModel->GetSrsType());
+  static constexpr size_t kNP = 9;
   auto [numCols, numRows] = sensorModel->GetImageSize();
-  std::array<Point2d, 8> corners{ Point2d(0.0, 0.0), Point2d(numCols / 2, 0.0),
+  std::array<Point2d, kNP> corners{ Point2d(0.0, 0.0), Point2d(numCols / 2, 0.0),
     Point2d(numCols, 0.0), Point2d(numCols, numRows / 2),
     Point2d(numCols, numRows), Point2d(numCols / 2, numRows),
-    Point2d(0.0, numRows), Point2d(0.0, numRows / 2) };
+    Point2d(0.0, numRows), Point2d(0.0, numRows / 2), Point2d(0.0, 0.0) };
 
-  std::array<PointXYd, 8> fpCorners;
-  for (int i = 0; i < 8; ++i) {
+  std::array<PointXYd, kNP> fpCorners;
+  for (int i = 0; i < kNP; ++i) {
     ImageToPlane(corners[i], sensorModel, ee, height, fpCorners[i], 0.01);
   }
 

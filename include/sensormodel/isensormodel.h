@@ -155,4 +155,6 @@ public:
 };
 
 using SensorType = ISensorModel::ModelType;
+using UPISensorModel = std::unique_ptr<ISensorModel>;
+using SPISensorModel = std::shared_ptr<ISensorModel>;
 } // namespace earthxpert

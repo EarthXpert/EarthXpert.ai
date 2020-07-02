@@ -59,4 +59,7 @@ public:
    */
   virtual void BuildPyramids() = 0;
 };
+
+using UPIRasterWriter = std::unique_ptr<IRasterWriter>;
+using SPIRasterWriter = std::shared_ptr<IRasterWriter>;
 } // namespace earthxpert

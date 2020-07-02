@@ -49,7 +49,7 @@ void TestRationalEpipolarModel(const std::string& leftMdlFile,
   auto lRot = lEpiRect->GetRotation();
   auto rRot = rEpiRect->GetRotation();
   ASSERT_DOUBLE_EQ(lRot, rRot) << "Epipolar rotation";
-  std::cout << "Epipolar Rotation: " << Rad2Deg(lRot) << std::endl;
+  std::cout << "Epipolar Rotation [deg]: " << Rad2Deg(lRot) << std::endl;
 
   auto lNumRows = lEpiRect->GetNumRows();
   auto rNumRows = rEpiRect->GetNumRows();

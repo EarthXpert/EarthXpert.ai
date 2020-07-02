@@ -118,4 +118,7 @@ public:
    */
   virtual int64 GetImagePixelOffset() const noexcept = 0;
 };
+
+using UPIRaster = std::unique_ptr<IRaster>;
+using SPIRaster = std::shared_ptr<IRaster>;
 } // namespace earthxpert

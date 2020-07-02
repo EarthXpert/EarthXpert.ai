@@ -89,4 +89,6 @@ public:
 
 using EpiAlgo = IEpipolarModel::EpipolarAlgo;
 using EpiStereoPos = IEpipolarModel::StereoPos;
+using UPIEpipolarModel = std::unique_ptr<IEpipolarModel>;
+using SPIEpipolarModel = std::shared_ptr<IEpipolarModel>;
 } // namespace earthxpert

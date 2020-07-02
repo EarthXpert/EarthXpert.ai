@@ -5,6 +5,7 @@
 #pragma once
 
 #include "platform/explatform.h"
+#include <memory>
 
 namespace earthxpert {
 /**
@@ -19,4 +20,7 @@ public:
    */
   virtual int Execute() = 0;
 };
+
+using UPICommand = std::unique_ptr<ICommand>;
+using SPICommand = std::shared_ptr<ICommand>;
 }

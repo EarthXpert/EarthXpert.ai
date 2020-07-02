@@ -249,9 +249,9 @@ Tuple6d RationalStereoModel::CalcJacobian(RationalModel const* ratModel,
   const double dFr_dw = (dLn_dw - image.y * dLd_dw) * invLd;
 
   auto nfc = ratModel->GetNormalFators();
-  const double du_dL = 1.0 / nfc[rnf::eSLONG];    // Lon
-  const double dv_dP = 1.0 / nfc[rnf::eSLAT];     // Lat
-  const double dw_dH = 1.0 / nfc[rnf::eSHEIGHT];  // Hgt
+  const double du_dL = 1.0 / nfc[rnf::eSLONG];    // u = (Lon - nfc[rnf::eOLONG]) / nfc[rnf::eSLONG]
+  const double dv_dP = 1.0 / nfc[rnf::eSLAT];     // v = (Lat - nfc[rnf::eOLAT])/ nfc[rnf::eSLAT]
+  const double dw_dH = 1.0 / nfc[rnf::eSHEIGHT];  // w = (Hgt - nfc[rnf::eOHEIGHT]) / nfc[rnf::eSHEIGHT]
 
   return { dFc_du * du_dL, dFc_dv * dv_dP, dFc_dw * dw_dH, 
            dFr_du * du_dL, dFr_dv * dv_dP, dFr_dw * dw_dH };

@@ -72,4 +72,7 @@ public:
    */
   //virtual std::unique_ptr<ILodReader> GetLodReader() = 0;
 };
+
+using UPIVectorReader = std::unique_ptr<IVectorReader>;
+using SPIVectorReader = std::shared_ptr<IVectorReader>;
 } // namespace earthxpert

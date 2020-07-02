@@ -527,4 +527,6 @@ private:
   std::tuple<std::vector<XYZF>*, std::vector<Classification>*, std::vector<Intensity>*, 
     std::vector<RGB16>*> mData{ &mXYZ, &mCla, &mIntensity, &mRGB }; // indexed by kPOS
 };
+using UPPointcloud = std::unique_ptr<Pointcloud>;
+using SPPointcloud = std::shared_ptr<Pointcloud>;
 }

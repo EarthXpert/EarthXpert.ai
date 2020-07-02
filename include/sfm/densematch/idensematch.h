@@ -42,4 +42,7 @@ public:
 
   virtual MatchType GetMatchType() const noexcept = 0;
 };
+
+using UPIDenseMatch = std::unique_ptr<IDenseMatch>;
+using SPIDenseMatch = std::shared_ptr<IDenseMatch>;
 }

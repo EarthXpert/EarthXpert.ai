@@ -45,4 +45,7 @@ public:
    */
   virtual void BuildLods() = 0;
 };
+
+using UPIVectorWriter = std::unique_ptr<IVectorWriter>;
+using SPIVectorWriter = std::shared_ptr<IVectorWriter>;
 } // namespace earthxpert

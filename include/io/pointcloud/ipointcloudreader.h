@@ -101,4 +101,7 @@ public:
    */
   virtual std::unique_ptr<Pointcloud> ReadPointcloud(const SpatialTileD& tile) = 0;
 };
+
+using UPIPointcloudReader = std::unique_ptr<IPointcloudReader>;
+using SPIPointcloudReader = std::shared_ptr<IPointcloudReader>;
 } // namespace earthxpert

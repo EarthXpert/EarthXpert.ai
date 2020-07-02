@@ -108,4 +108,7 @@ public:
    */
   //virtual std::unique_ptr<IPyramidReader> GetPyramidReader() = 0;
 };
+
+using UPIRasterReader = std::unique_ptr<IRasterReader>;
+using SPIRasterReader = std::shared_ptr<IRasterReader>;
 } // namespace earthxpert

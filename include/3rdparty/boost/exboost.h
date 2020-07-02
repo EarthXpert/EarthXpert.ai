@@ -22,6 +22,7 @@ namespace earthxpert {
 template <typename Ty, typename = std::enable_if_t<std::is_arithmetic_v<Ty>, void>>
 using PointXY = bgm::d2::point_xy<Ty>;
 
+// defaults: clock-wise, closed, std::vector 
 template <typename Ty, typename = std::enable_if_t<std::is_arithmetic_v<Ty>, void>>
 using Polygon2 = bgm::polygon<PointXY<Ty>>;
 
