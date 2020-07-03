@@ -17,6 +17,7 @@ using rfm = earthxpert::RationalModel;
 
 static constexpr double kTol = 1.0e-8; // [mm]
 static constexpr double kTolH = 1.0e-3; // [mm]
+static constexpr double kTolP = 1.0e-2; // [0.01 pixel]
 static constexpr int kNum = 5;
 static constexpr double kFactor = 0.75;
 
@@ -29,6 +30,7 @@ static std::unique_ptr<RationalModel> CreateRightRationalModelB();
 
 /**
  * Test 1: center at top and bottom
+ * \todo put algorithms in an array
  */
 TEST(stereomodel, ImageToGround) {
   const auto leftModel = CreateLeftRationalModelA();
@@ -51,52 +53,58 @@ TEST(stereomodel, ImageToGround) {
 
   Point2d imageL, imageR;
   Point3d grdC, grdE, grdI, grdN;
+  std::vector<Point2d> imgC, imgE, imgI, imgN;
 
-  // low position
-  Point3d grdL(109.2114, 34.6557, 396.0 - 375.0);
-  leftModel->GroundToImage(grdL, imageL);
-  rightModel->GroundToImage(grdL, imageR);
+  // low and high positions
+  std::array<Point3d, 2> grd{Point3d(109.2114, 34.6557, 396.0 - 375.0), 
+                             Point3d(109.2114, 34.6557, 396.0 + 375.0) };
+  
+  for (int i = 0; i < 2; ++i) {
+    leftModel->GroundToImage(grd[i], imageL);
+    rightModel->GroundToImage(grd[i], imageR);
 
-  smC.ImageToGround(imageL, imageR, grdC);
-  smE.ImageToGround(imageL, imageR, grdE);
-  smI.ImageToGround(imageL, imageR, grdI);
-  smN.ImageToGround(imageL, imageR, grdN);
+    // forward intersection
+    smC.ImageToGround(imageL, imageR, grdC);
+    smE.ImageToGround(imageL, imageR, grdE);
+    smI.ImageToGround(imageL, imageR, grdI);
+    smN.ImageToGround(imageL, imageR, grdN);
 
-  ASSERT_LE(fabs(grdC.x - grdL.x), kTol) << "Max. longitude difference > 1 mm";
-  ASSERT_LE(fabs(grdC.y - grdL.y), kTol) << "Max.  latitude difference > 1 mm";
-  ASSERT_LE(fabs(grdC.z - grdL.z), kTolH) << "Max.    height difference > 1 mm";
-  ASSERT_LE(fabs(grdE.x - grdL.x), kTol) << "Max. longitude difference > 1 mm";
-  ASSERT_LE(fabs(grdE.y - grdL.y), kTol) << "Max.  latitude difference > 1 mm";
-  ASSERT_LE(fabs(grdE.z - grdL.z), kTolH) << "Max.    height difference > 1 mm";
-  ASSERT_LE(fabs(grdI.x - grdL.x), kTol) << "Max. longitude difference > 1 mm";
-  ASSERT_LE(fabs(grdI.y - grdL.y), kTol) << "Max.  latitude difference > 1 mm";
-  ASSERT_LE(fabs(grdI.z - grdL.z), kTolH) << "Max.    height difference > 1 mm";
-  ASSERT_LE(fabs(grdN.x - grdL.x), kTol) << "Max. longitude difference > 1 mm";
-  ASSERT_LE(fabs(grdN.y - grdL.y), kTol) << "Max.  latitude difference > 1 mm";
-  ASSERT_LE(fabs(grdN.z - grdL.z), kTolH)  << "Max.    height difference > 1 mm";
+    ASSERT_LE(fabs(grdC.x - grd[i].x), kTol) << "Max. longitude difference > 1 mm";
+    ASSERT_LE(fabs(grdC.y - grd[i].y), kTol) << "Max.  latitude difference > 1 mm";
+    ASSERT_LE(fabs(grdC.z - grd[i].z), kTolH) << "Max.    height difference > 1 mm";
+    ASSERT_LE(fabs(grdE.x - grd[i].x), kTol) << "Max. longitude difference > 1 mm";
+    ASSERT_LE(fabs(grdE.y - grd[i].y), kTol) << "Max.  latitude difference > 1 mm";
+    ASSERT_LE(fabs(grdE.z - grd[i].z), kTolH) << "Max.    height difference > 1 mm";
+    ASSERT_LE(fabs(grdI.x - grd[i].x), kTol) << "Max. longitude difference > 1 mm";
+    ASSERT_LE(fabs(grdI.y - grd[i].y), kTol) << "Max.  latitude difference > 1 mm";
+    ASSERT_LE(fabs(grdI.z - grd[i].z), kTolH) << "Max.    height difference > 1 mm";
+    ASSERT_LE(fabs(grdN.x - grd[i].x), kTol) << "Max. longitude difference > 1 mm";
+    ASSERT_LE(fabs(grdN.y - grd[i].y), kTol) << "Max.  latitude difference > 1 mm";
+    ASSERT_LE(fabs(grdN.z - grd[i].z), kTolH) << "Max.    height difference > 1 mm";
 
-  // hight position
-  Point3d grdH(109.2114, 34.6557, 396.0 + 375.0);
-  leftModel->GroundToImage(grdH, imageL);
-  rightModel->GroundToImage(grdH, imageR);
+    // reprojection for consistency check
+    smC.GroundToImage(grdC, imgC);
+    smE.GroundToImage(grdE, imgE);
+    smI.GroundToImage(grdI, imgI);
+    smN.GroundToImage(grdN, imgN);
 
-  smC.ImageToGround(imageL, imageR, grdC);
-  smE.ImageToGround(imageL, imageR, grdE);
-  smI.ImageToGround(imageL, imageR, grdI);
-  smN.ImageToGround(imageL, imageR, grdN);
-
-  ASSERT_LE(fabs(grdC.x - grdH.x), kTol) << "Max. longitude difference > 1 mm";
-  ASSERT_LE(fabs(grdC.y - grdH.y), kTol) << "Max.  latitude difference > 1 mm";
-  ASSERT_LE(fabs(grdC.z - grdH.z), kTolH) << "Max.    height difference > 1 mm";
-  ASSERT_LE(fabs(grdE.x - grdH.x), kTol) << "Max. longitude difference > 1 mm";
-  ASSERT_LE(fabs(grdE.y - grdH.y), kTol) << "Max.  latitude difference > 1 mm";
-  ASSERT_LE(fabs(grdE.z - grdH.z), kTolH) << "Max.    height difference > 1 mm";
-  ASSERT_LE(fabs(grdI.x - grdH.x), kTol) << "Max. longitude difference > 1 mm";
-  ASSERT_LE(fabs(grdI.y - grdH.y), kTol) << "Max.  latitude difference > 1 mm";
-  ASSERT_LE(fabs(grdI.z - grdH.z), kTolH) << "Max.    height difference > 1 mm";
-  ASSERT_LE(fabs(grdN.x - grdH.x), kTol) << "Max. longitude difference > 1 mm";
-  ASSERT_LE(fabs(grdN.y - grdH.y), kTol) << "Max.  latitude difference > 1 mm";
-  ASSERT_LE(fabs(grdN.z - grdH.z), kTolH) << "Max.    height difference > 1 mm";
+    ASSERT_NEAR(imageL.x, imgC[0].x, kTolP);
+    ASSERT_NEAR(imageL.y, imgC[0].y, kTolP);
+    ASSERT_NEAR(imageR.x, imgC[1].x, kTolP);
+    ASSERT_NEAR(imageR.y, imgC[1].y, kTolP);
+    ASSERT_NEAR(imageL.x, imgE[0].x, kTolP);
+    ASSERT_NEAR(imageL.y, imgE[0].y, kTolP);
+    ASSERT_NEAR(imageR.x, imgE[1].x, kTolP);
+    ASSERT_NEAR(imageR.y, imgE[1].y, kTolP);
+    ASSERT_NEAR(imageL.x, imgI[0].x, kTolP);
+    ASSERT_NEAR(imageL.y, imgI[0].y, kTolP);
+    ASSERT_NEAR(imageR.x, imgI[1].x, kTolP);
+    ASSERT_NEAR(imageR.y, imgI[1].y, kTolP);
+    ASSERT_NEAR(imageL.x, imgN[0].x, kTolP);
+    ASSERT_NEAR(imageL.y, imgN[0].y, kTolP);
+    ASSERT_NEAR(imageR.x, imgN[1].x, kTolP);
+    ASSERT_NEAR(imageR.y, imgN[1].y, kTolP);
+  }
 }
 
 /**

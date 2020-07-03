@@ -74,6 +74,13 @@ public:
   size_t RawToEpi(const std::vector<Point2d>& raw, std::vector<Point2d>& epi) const override;
 
   /**
+   *  \return Returns the internal sensor model
+   */
+  virtual const ISensorModel* GetSensorModel() const noexcept {
+    return mSensorModel.get();
+  }
+
+  /**
    *  \brief compare the equality of two models.
    *
    *  \param [in] rhs the other model to compare with

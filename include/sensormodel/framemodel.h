@@ -54,7 +54,7 @@ public:
 
   FrameModel(const FrameModel &model);
   FrameModel(FrameModel &&model) noexcept;
-  ~FrameModel() {}
+  ~FrameModel() = default;
 
   FrameModel &operator=(const FrameModel &model);
   FrameModel &operator=(FrameModel &&model) noexcept;
@@ -131,6 +131,9 @@ public:
   // block adjustment helpers
 
 private:
+  template<typename> friend class FrameEpipolarModel;
+  friend class FrameStereoModel;
+
   static constexpr int kMaxIterG2I{ 10 };
   static constexpr double kConvergeTolMM{ 0.0001 }; // [mm]
 
@@ -244,4 +247,8 @@ private:
  */
 using DigitalFrameModel = FrameModel<DigitalImageModel>;
 using FilmFrameModel = FrameModel<FilmImageModel>;
+using UPDigitalFrameModel = std::unique_ptr<DigitalFrameModel>;
+using SPDigitalFrameModel = std::shared_ptr<DigitalFrameModel>;
+using UPFilmFrameModel = std::unique_ptr<FilmFrameModel>;
+using SPFilmFrameModel = std::shared_ptr<FilmFrameModel>;
 } // namespace earthxpert

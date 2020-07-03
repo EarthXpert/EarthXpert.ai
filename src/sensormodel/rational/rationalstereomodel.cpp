@@ -21,9 +21,9 @@ RationalStereoModel::RationalStereoModel(
   RationalModel const* const leftModel, RationalModel const* const rightModel) 
   : StereoModel(static_cast<const ISensorModel*>(leftModel),
                 static_cast<const ISensorModel*>(rightModel)) {
-  mModels.resize(2);
-  mModels[0] = leftModel;
-  mModels[1] = rightModel;
+  mRatModels.resize(2);
+  mRatModels[0] = leftModel;
+  mRatModels[1] = rightModel;
   Initialize();
 }
 
@@ -48,29 +48,29 @@ void RationalStereoModel::Initialize() {
  */
 bool RationalStereoModel::ImageToGround(const Point2d& leftImage,
   const Point2d& rightImage, Point3d& ground) const {
-  assert(2 == mModels.size());
+  assert(2 == mRatModels.size());
   //std::vector<Point2d> imgs{ leftImage, rightImage };
   //return ImageToGround(imgs, ground);
   
-  Point2d imageApp = mModels[0]->ImageActualToApparant(Point2d{ leftImage.x - 0.5, leftImage.y - 0.5 });
-  auto leftImg = mModels[0]->ImageToSensor(imageApp);
-  imageApp = mModels[1]->ImageActualToApparant(Point2d{ rightImage.x - 0.5, rightImage.y - 0.5 });
-  auto rightImg = mModels[1]->ImageToSensor(imageApp);
+  Point2d imageApp = mRatModels[0]->ImageActualToApparant(Point2d{ leftImage.x - 0.5, leftImage.y - 0.5 });
+  auto leftImg = mRatModels[0]->ImageToSensor(imageApp);
+  imageApp = mRatModels[1]->ImageActualToApparant(Point2d{ rightImage.x - 0.5, rightImage.y - 0.5 });
+  auto rightImg = mRatModels[1]->ImageToSensor(imageApp);
 
-  ground.z = (mModels[0]->GetMeanHeight() + mModels[1]->GetMeanHeight()) / 2.0;
-  mModels[0]->ImageToGround(leftImage, ground);
+  ground.z = (mRatModels[0]->GetMeanHeight() + mRatModels[1]->GetMeanHeight()) / 2.0;
+  mRatModels[0]->ImageToGround(leftImage, ground);
 
   int iter{};
   for (iter = 0; iter < kMaxIters; ++iter) {
     Point2d imgp0;
     auto [dFc_dL0, dFc_dP0, dFc_dH0, dFr_dL0, dFr_dP0, dFr_dH0] =
-      CalcJacobian(mModels[0], ground, imgp0);
-    auto nfc0 = mModels[0]->GetNormalFators();
+      CalcJacobian(mRatModels[0], ground, imgp0);
+    auto nfc0 = mRatModels[0]->GetNormalFators();
 
     Point2d imgp1;
     auto [dFc_dL1, dFc_dP1, dFc_dH1, dFr_dL1, dFr_dP1, dFr_dH1] =
-      CalcJacobian(mModels[1], ground, imgp1);
-    auto nfc1 = mModels[1]->GetNormalFators();
+      CalcJacobian(mRatModels[1], ground, imgp1);
+    auto nfc1 = mRatModels[1]->GetNormalFators();
 
     std::array<double, 12> dm = { 
       dFc_dL0* nfc0[eSSAMP], dFc_dP0* nfc0[eSSAMP], dFc_dH0* nfc0[eSSAMP],
@@ -117,7 +117,7 @@ bool RationalStereoModel::ImageToGround(const Point2d& leftImage,
  */
 bool RationalStereoModel::ImageToGround(
   const std::array<Point2d, 3>& images, Point3d& ground) const {
-  assert(3 == mModels.size());
+  assert(3 == mRatModels.size());
   std::vector<Point2d> imgs(images.cbegin(), images.cend());
 
   return ImageToGround(imgs, ground);
@@ -137,20 +137,20 @@ bool RationalStereoModel::ImageToGround(
  */
 bool RationalStereoModel::ImageToGround(
   const std::vector<Point2d>& images, Point3d& ground) const {
-  const int numRays = int(mModels.size());
+  const int numRays = int(mRatModels.size());
   assert(numRays == images.size());
   ground.z = 0.0;
 
   std::vector<Point2d> imgs(numRays);
   for (int i = 0; i < numRays; ++i) {
     Point2d imageAct{ images[i].x - 0.5, images[i].y - 0.5 };
-    const auto imageApp = mModels[i]->ImageActualToApparant(imageAct);
-    imgs[i] = mModels[i]->ImageToSensor(imageApp);
+    const auto imageApp = mRatModels[i]->ImageActualToApparant(imageAct);
+    imgs[i] = mRatModels[i]->ImageToSensor(imageApp);
 
-    ground.z += mModels[i]->GetMeanHeight();
+    ground.z += mRatModels[i]->GetMeanHeight();
   }
   ground.z /= double(numRays);
-  mModels[numRays/2]->ImageToGround(images[numRays/2], ground);
+  mRatModels[numRays/2]->ImageToGround(images[numRays/2], ground);
 
   MatrixXd A(numRays * 2, 3);
   VectorXd b(numRays * 2);
@@ -161,9 +161,9 @@ bool RationalStereoModel::ImageToGround(
     {
       Point2d imgp;
       auto [dFc_dL, dFc_dP, dFc_dH, dFr_dL, dFr_dP, dFr_dH] =
-        CalcJacobian(mModels[i], ground, imgp);
+        CalcJacobian(mRatModels[i], ground, imgp);
 
-      auto nfc = mModels[i]->GetNormalFators();
+      auto nfc = mRatModels[i]->GetNormalFators();
       const int i2 = i * 2;
       A(i2, 0) = dFc_dL * nfc[eSSAMP];
       A(i2, 1) = dFc_dP * nfc[eSSAMP];

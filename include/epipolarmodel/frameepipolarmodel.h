@@ -5,19 +5,24 @@
 #pragma once
 
 #include "epipolarmodel/epipolarsensormodel.h"
+#include "sensormodel/framemodel.h"
 
 namespace earthxpert {
 /**
  *  The class FrameEpipolarModel defines the rigorous algorithm
  *  for generating epipolar images from image products with frame models.
+ *
+ *  \param ImageModelPolicy defines the relationship between
+ * the image raster coordinate system and the focal plane coordinate system
  */
+template <class ImageModelPolicy>
 class EXEPIPOLARMODEL_EXPORTS FrameEpipolarModel final : public EpipolarSensorModel {
 public:
   /**
    *  \param [in] sensorModel sensor model associated with the image
    *  \param [in] pos Component position of stereo model
    */
-  FrameEpipolarModel(std::shared_ptr<ISensorModel> sensorModel, StereoPos pos);
+  FrameEpipolarModel(std::shared_ptr<FrameModel<ImageModelPolicy>> sensorModel, StereoPos pos);
   ~FrameEpipolarModel() = default;
 
   /**
@@ -51,9 +56,20 @@ public:
     return eCOPLANAR;
   }
 
+  /**
+   *  \return Returns the internal sensor model
+   */
+  const FrameModel<ImageModelPolicy>* GetSensorModel() const noexcept {
+    return mFrameModel;
+  }
+
 private:
   void Initialize();
 
   // cached data for convenience
+  const FrameModel<ImageModelPolicy>* mFrameModel{};
 };
+
+using DigitalFrameEpipolarModel = FrameEpipolarModel<DigitalImageModel>;
+using FilmFrameEpipolarModel = FrameEpipolarModel<FilmImageModel>;
 } // namespace earthxpert

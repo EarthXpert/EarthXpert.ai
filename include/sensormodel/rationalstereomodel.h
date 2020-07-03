@@ -114,6 +114,6 @@ private:
     const Point3d& ground, Point2d& image) const;
     
   // cached for convenience/performance
-  std::vector<const RationalModel*> mModels;   // one model per ray
+  std::vector<const RationalModel*> mRatModels;   // one model per ray
 };
 }

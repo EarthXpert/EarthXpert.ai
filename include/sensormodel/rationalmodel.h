@@ -269,6 +269,8 @@ public:
                            CorrAlgo corrAlgo = eSTANDARD) const;
 
 private:
+  friend class RationalStereoModel;
+
   static constexpr int kMaxIterS2G = 10; // max. number of iterations allowed for SensorToGround
   static constexpr double kTolPartialS2G = 0.05; // tolerance
   static constexpr double kTol_d = 0.1; // tolerance proportional to ground range
@@ -407,8 +409,6 @@ private:
   void BuildCubeS2G();
 
   bool mHasCorrection{false};
-
-  friend class RationalStereoModel;
 };
 
 // Partial derivatives of the polynomial terms w.r.t u, v, w.
