@@ -389,9 +389,13 @@ bool IntersectGeometries(const GeomTy* geoms, const int numGeoms, std::vector<do
     pb.resize(numGeoms, 0.5); // initial middle point
   }
 
-  CostFunction* costFunc{};
+  Problem::Options popt;
+  //popt.cost_function_ownership = DO_NOT_TAKE_OWNERSHIP;
+  popt.loss_function_ownership = DO_NOT_TAKE_OWNERSHIP;
+  Problem problem(popt);
+
   LossFunction* lossF = (lossFunc) ? static_cast<LossFunction*>(lossFunc) : nullptr;
-  Problem problem;
+  CostFunction* costFunc{};
 
   // Dynamic parameter blocks
   //costFunc = new DynamicAutoDiffCostFunction<CostFunctor>(
@@ -400,7 +404,7 @@ bool IntersectGeometries(const GeomTy* geoms, const int numGeoms, std::vector<do
   //costFunc->AddParameterBlock(numGeoms);
 
   //costFunc = new DynamicNumericDiffCostFunction<CostFunctor, ceres::CENTRAL>(
-  //  new CostFunctor(geoms, numGeoms));
+  //  new CostFunctor(geoms, numGeoms));  // DO_NOT_TAKE_OWNERSHIP, ndopt
   //costFunc->SetNumResiduals(3);
   //costFunc->AddParameterBlock(numGeoms);
 
@@ -410,8 +414,9 @@ bool IntersectGeometries(const GeomTy* geoms, const int numGeoms, std::vector<do
       new CostFunctor(geoms, numGeoms));
   }
   else {
+    //NumericDiffOptions ndopt;
     costFunc = new NumericDiffCostFunction<CostFunctor, ceres::CENTRAL, 3, 2>(
-      new CostFunctor(geoms, numGeoms));
+      new CostFunctor(geoms, numGeoms));  // DO_NOT_TAKE_OWNERSHIP, 3, ndopt
   }
 
   problem.AddResidualBlock(costFunc, lossF, pb.data()); 

@@ -67,9 +67,9 @@ bool GraphFit::FitLineCeresRobust(const std::vector<Point2d>& points,
   if (2 > points.size())
     throw std::invalid_argument("FitLine: must have 2+ points");
 
-  auto* lossFunc = new CauchyLoss(0.5);
+  auto lossFunc = std::make_unique<CauchyLoss>(0.5);
   return FitPoints<Point2d, LinearFitResidual, CauchyLoss>(points,
-    pb, mOptions, summary, lossFunc);
+    pb, mOptions, summary, lossFunc.get());
 }
 
 /**

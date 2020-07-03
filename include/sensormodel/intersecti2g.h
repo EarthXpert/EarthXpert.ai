@@ -72,9 +72,13 @@ bool IntersectI2G(const Point2d* images, const ISensorModel* const* sensorModels
   static_assert(std::is_base_of_v<LossFunction, LossPolicy> || std::is_void_v<LossPolicy>, "LossFunction");
   assert(images && sensorModels && 2 <= num);
 
-  LossFunction* lossF = (lossFunc) ? static_cast<LossFunction*>(lossFunc) : nullptr;
-  Problem problem;
+  Problem::Options popt;
+  //popt.cost_function_ownership = DO_NOT_TAKE_OWNERSHIP;
+  popt.loss_function_ownership = DO_NOT_TAKE_OWNERSHIP;
+  Problem problem(popt);
 
+  LossFunction* lossF = (lossFunc) ? static_cast<LossFunction*>(lossFunc) : nullptr;
+  
   for (int i = 0; i < num; ++i) {
     auto costFunc = new NumericDiffCostFunction<CostFunctor, ceres::CENTRAL, 2, 3>(
       new CostFunctor(images + i, sensorModels[i]));

@@ -147,9 +147,13 @@ bool FitPoints(const std::vector<PointTy>& points, std::vector<double>& pb,
   }
   assert(CostFunctor::kDim == pb.size());
 
+  Problem::Options popt;
+  //popt.cost_function_ownership = DO_NOT_TAKE_OWNERSHIP;
+  popt.loss_function_ownership = DO_NOT_TAKE_OWNERSHIP;
+  Problem problem(popt);
+
   LossFunction* lossF = (lossFunc) ? static_cast<LossFunction*>(lossFunc) : nullptr;
 
-  Problem problem;
   for (auto& point : points) {
     auto costFunc = new AutoDiffCostFunction<CostFunctor, 1, CostFunctor::kDim>(
       new CostFunctor(&point));
