@@ -20,8 +20,9 @@ namespace earthxpert {
 class EXCORE_EXPORTS EarthEllipsoid
 {
 public:
-  EarthEllipsoid(const std::string& wkt);
-  EarthEllipsoid(double semiMajor = kWGS84_A, double eccSq = kWGS84_ECCSQ);
+  EarthEllipsoid(const std::string& wkt, const Point3d& origin=Point3d());
+  EarthEllipsoid(double semiMajor = kWGS84_A, 
+    double eccSq = kWGS84_ECCSQ, const Point3d& origin=Point3d());
   //EarthEllipsoid(double semiMajor = kWGS84_A, double semiMinor = kWGS84_B);
   ~EarthEllipsoid() = default;
 
@@ -75,19 +76,14 @@ public:
    * \param [in] lph Longitude [rad], Latitude [rad], Ellipsoidal height [m]
    * \return Returns LSR XYZ coordinates [m]
    */
-  Point3d LPHToLSR(const Point3d& lph) const {
-    const Point3d xyz = LPHToXYZ(lph);
-    return XYZToLSR(xyz);
-  }
+  Point3d LPHToLSR(const Point3d& lph) const { return XYZToLSR(LPHToXYZ(lph)); }
 
   inline Point3d LPHToLSR(double lon, double lat, double height) const {
     return LPHToLSR(Point3d(lon, lat, height));
   }
 
   void SetLsrOrigin(const Point3d& origin);
-  inline Point3d GetLsrOrigin() const {
-    return mLsrOrigin;
-  }
+  inline Point3d GetLsrOrigin() const { return mLsrOrigin; }
 
 private:
   double mA{kWGS84_A};          // Semi-major axis length [m]
@@ -95,6 +91,8 @@ private:
 
   Point3d mLsrOrigin{0.0, 0.0, 0.0}; // LSR origin Longitude/Latitude/Height
   double mHgtTol{1.0e-4}; // Height tolerance
+
+  void Initialize(const Point3d& origin);
 
   double RadiusInPrimeMeridian(double) const;
   double RadiusInPrimeVertical(double) const;
@@ -110,10 +108,10 @@ private:
   }
 
   // cahced qunatities for perforamnce
-  double mAsq;  // Semi-major axis length squared [m^2]
-  double mB;    // Semi-minor axis length [m]
-  double mBsq;  // Semi-minor axis length squared [m^2]
-  double mBsq_Asq;  // B^2 / A^2
+  double mAsq{};  // Semi-major axis length squared [m^2]
+  double mB{};    // Semi-minor axis length [m]
+  double mBsq{};  // Semi-minor axis length squared [m^2]
+  double mBsq_Asq{};  // B^2 / A^2
 
   Point3d mLsrOriginXYZ{0.0, 0.0, 0.0}; // LSR origin XYZ position
   cv::Mat1d mL2E{ cv::Mat1d::eye(3, 3) }; // 3x3 rotation matrix from LSR to ECEF

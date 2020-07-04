@@ -23,14 +23,14 @@ namespace earthxpert {
  *  The class DisparityMatch implements a binocunar view semi-global matching algorithm.
  *  The algorithm computes the disparity map in image space. The input images determined
  *  the GeometryModel policy, respectively, for epipolar images with epipolar model, or
- *  for raw images with sensor models, or for ortho images with geocoding models. 
- *  The latter also includes satellite OrthoReady images that are 
+ *  for raw images with sensor models, or for ortho images with geocoding models.
+ *  The latter also includes satellite OrthoReady images that are
  *  resampled epipolar images but with an RPC model.
  *
- *  \param GeometryModel defines the behaviour of geometry model of the imagery: 
+ *  \tparam GeometryModel defines the behaviour of geometry model of the imagery:
  *  epipolar model, sensor model, affine model
- *  \param CostFunction defines the behaviour of calculating cost
- *  \param Neighborhood defines the behaviour of neighborhood selection
+ *  \tparam CostFunction defines the behaviour of calculating cost
+ *  \tparam Neighborhood defines the behaviour of neighborhood selection
  */
 template <class GeometryModel, class CostFunc, class Neighborhood>
 class EXSFM_EXPORTS DisparityMatch final : public DenseMatch {

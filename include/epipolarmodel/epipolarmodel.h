@@ -17,7 +17,7 @@ namespace earthxpert {
  *  The class EpipolarModel defines a sensor-independent algorithm
  *  for generating epipolar images from image products with sensor models.
  *
- *  \param GroundPolicy defines the behaviour of and relationshp between
+ *  \tparam GroundPolicy defines the behaviour of and relationshp between
  * the model coordinate system and the rectification coordinate system
  */
 template <class GroundPolicy>
@@ -30,8 +30,8 @@ public:
    *
    *  \param [in] sensorModel sensor model associated with the image
    *  \param [in] pos Component position of stereo model
-   *  \param [in] epiRect epipolar rectification defining the transform 
-   *              between the epipolar model coordinate system and epipolar 
+   *  \param [in] epiRect epipolar rectification defining the transform
+   *              between the epipolar model coordinate system and epipolar
    *              raster coordinate system for the image.
    *  \param [in] groundPolicy ground policy
    */

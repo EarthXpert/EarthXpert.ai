@@ -15,8 +15,7 @@ using earthxpert::Point3d;
  *
  * \param [in] wkt parse ellipsoid from a datum, default to be WGS84 ellipsoid if empty.
  */
-EarthEllipsoid::EarthEllipsoid(const std::string& wkt) {
-
+EarthEllipsoid::EarthEllipsoid(const std::string& wkt, const Point3d& origin) {
 }
 
 /**
@@ -27,12 +26,17 @@ EarthEllipsoid::EarthEllipsoid(const std::string& wkt) {
  *
  * \remark default to be WGS84 ellipsoid
  */
-EarthEllipsoid::EarthEllipsoid(const double semiMajor, const double eccSq) :
-  mA(semiMajor), mEccSq(eccSq) {
+EarthEllipsoid::EarthEllipsoid(const double semiMajor, const double eccSq,
+  const Point3d& origin) : mA(semiMajor), mEccSq(eccSq) {
+  Initialize(origin);
+}
+
+void EarthEllipsoid::Initialize(const Point3d& origin) {
   mAsq = mA * mA;
   mBsq_Asq = 1.0 - mEccSq;
   mBsq = mAsq * mBsq_Asq;
   mB = sqrt(mBsq);
+  SetLsrOrigin(origin);
 }
 
 /**
@@ -102,7 +106,6 @@ Point3d EarthEllipsoid::LPHToXYZ(const double lon, const double lat,
  */
 Point3d EarthEllipsoid::XYZToLPH(const double X, const double Y,
   const double Z) const {
-
   const double p = sqrt(X * X + Y * Y);
 
   double lon = 2.0 * atan2(Y, X + p);

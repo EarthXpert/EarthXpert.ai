@@ -27,8 +27,8 @@ constexpr int kLU_USFEET = 3;
  *  The class GeographicGround offers the ground transformation
  *  between the geographic and LSR coordinates.
  *
- *  \param angleUnit angle unit of horizontal coordinates in ground: degree, gon, radian
- *  \param linearUnit linear unit of vertical coordinate in ground: feet, meter, us_survey_feet
+ *  \tparam angleUnit angle unit of horizontal coordinates in ground: degree, gon, radian
+ *  \tparam linearUnit linear unit of vertical coordinate in ground: feet, meter, us_survey_feet
  */
 template <int angleUnit = kAU_RADIAN, int linearUnit = kLU_METER>
 class EXEPIPOLARMODEL_EXPORTS GeographicGround final : public IGroundPolicy {
@@ -131,7 +131,7 @@ using GeographicGroundRad = GeographicGround<kAU_RADIAN>;
  *  The class LocalGround offers the ground transformation
  *  between the model LSR and the rectification LSR coordinates.
  *
- *  \param linearUnit linear unit of vertical coordinate in ground: feet, meter, us_survey_feet
+ *  \tparam linearUnit linear unit of vertical coordinate in ground: feet, meter, us_survey_feet
  */
 template <int linearUnit = kLU_METER>
 class EXEPIPOLARMODEL_EXPORTS LocalGround final : public IGroundPolicy{
@@ -143,7 +143,7 @@ public:
    *
    *  \param [in]
    */
-  LocalGround();
+  LocalGround(const Point3d& origin);
 
   LocalGround(const LocalGround& rhs);
   LocalGround(LocalGround&& rhs) noexcept;
@@ -183,6 +183,8 @@ public:
   }
 
 private:
+  Point3d mOrigin{ 0.0, 0.0, 0.0 }; // origin XYZ
+
   void CopyFrom(const LocalGround& rhs);
   void MoveFrom(LocalGround&& rhs) noexcept;
 };
@@ -195,7 +197,7 @@ using LocalGroundUf = LocalGround<kLU_USFEET>;
  *  The class MapGround offers the ground transformation
  *  between the model map and the rectification map coordinates.
  *
- *  \param linearUnit linear unit of vertical coordinate in ground: feet, meter, us_survey_feet
+ *  \tparam linearUnit linear unit of vertical coordinate in ground: feet, meter, us_survey_feet
  */
 template <int linearUnit = kLU_METER>
 class EXEPIPOLARMODEL_EXPORTS MapGround final : public IGroundPolicy {
@@ -207,7 +209,7 @@ public:
    *
    *  \param [in]
    */
-  MapGround();
+  MapGround(const Point3d& origin);
 
   MapGround(const MapGround& rhs);
   MapGround(MapGround&& rhs) noexcept;
@@ -247,6 +249,8 @@ public:
   }
 
 private:
+  Point3d mOrigin{ 0.0, 0.0, 0.0 }; // origin XYZ
+
   void CopyFrom(const MapGround& rhs);
   void MoveFrom(MapGround&& rhs) noexcept;
 };

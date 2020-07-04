@@ -24,8 +24,8 @@ namespace earthxpert {
  *  represented by sensor models. A depth is considered valid iff the object point
  *  occured on N-view (N >= 2) and is validated.
  *
- *  \param CostFunc defines the behaviour of calculating cost
- *  \param Neighborhood defines the behaviour of neighborhood selection
+ *  \tparam CostFunc defines the behaviour of calculating cost
+ *  \tparam Neighborhood defines the behaviour of neighborhood selection
  *
  *  \remark the terms depth and elevation are used interchangably here.
  */

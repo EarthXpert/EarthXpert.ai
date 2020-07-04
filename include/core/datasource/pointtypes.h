@@ -104,7 +104,7 @@ struct FieldGroup : std::bitset<8> {
 /**
  *  \brief XYZ field
  *
- *  \param CoordTy the type of point coordinates, such as int, float, double.
+ *  \tparam CoordTy the type of point coordinates, such as int, float, double.
  */
 template <typename CoordTy>
 struct XYZ /*: public cv::Point3_<CoordTy>*/{
@@ -158,7 +158,7 @@ struct Intensity {
  *
  *  The structure RGB stores the group of color fields.
  *
- *  \param ColorTy the type of point color, such as uchar, ushort.
+ *  \tparam ColorTy the type of point color, such as uchar, ushort.
  */
 template <typename ColorTy>
 struct RGB {
@@ -175,7 +175,7 @@ struct RGB {
 /**
  *  The structure RGBN stores the group of color fields.
  *
- *  \param ColorTy the type of point color, such as uchar, ushort.
+ *  \tparam ColorTy the type of point color, such as uchar, ushort.
  */
 template <typename ColorTy>
 struct RGBN : RGB<ColorTy> {
@@ -200,7 +200,7 @@ struct GPSTime {
  *  The structure WxPoint stores 3D coordinates, classification, and
  *  optional relevant fields of laser point record.
  *
- *  \param Fields the pack of fields group.
+ *  \tparam Fields the pack of fields group.
  */
 template <typename... Fields>
 struct WxPoint : Fields... {

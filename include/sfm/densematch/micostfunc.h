@@ -10,7 +10,7 @@ namespace earthxpert {
 /**
  *  The class MICostFunc defines the MI method used to calculate cost/difference.
  *
- *  \param LossFunc defines the behaviour of converting cost to loss
+ *  \tparam LossFunc defines the behaviour of converting cost to loss
  */
 template <class LossFunc = IdentityLossFunc>
 class EXSFM_EXPORTS MICostFunc final : public CostFunc<LossFunc> {

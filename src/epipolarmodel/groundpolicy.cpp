@@ -16,7 +16,8 @@ using earthxpert::Point3d;
  *
  *  \param [in]
  */
-template <int linearUnit> LocalGround<linearUnit>::LocalGround() {
+template <int linearUnit> LocalGround<linearUnit>::LocalGround(const Point3d& origin) 
+  : mOrigin(origin) {
 }
 
 template <int linearUnit> 
@@ -30,8 +31,8 @@ LocalGround<linearUnit>::operator=(const LocalGround<linearUnit>&rhs) {
   return *this;
 }
 
-template <int linearUnit> 
-LocalGround<linearUnit>& LocalGround<linearUnit>::operator=(LocalGround<linearUnit>&&rhs) noexcept {
+template <int linearUnit> LocalGround<linearUnit>& 
+LocalGround<linearUnit>::operator=(LocalGround<linearUnit>&&rhs) noexcept {
   return *this;
 }
 
@@ -54,7 +55,7 @@ bool LocalGround<linearUnit>::operator!=(const LocalGround<linearUnit>&rhs) cons
  */
 template <int linearUnit> 
 Point3d LocalGround<linearUnit>::RectToGround(const Point3d &rect) const {
-  return rect;
+  return (mOrigin + rect);
 }
 
 /**
@@ -66,7 +67,7 @@ Point3d LocalGround<linearUnit>::RectToGround(const Point3d &rect) const {
  */
 template <int linearUnit> 
 Point3d LocalGround<linearUnit>::GroundToRect(const Point3d &ground) const {
-  return ground;
+  return (ground - mOrigin);
 }
 
 /**
@@ -94,7 +95,8 @@ template class earthxpert::LocalGround<earthxpert::kLU_USFEET>;
  *
  *  \param [in]
  */
-template <int linearUnit> MapGround<linearUnit>::MapGround() {
+template <int linearUnit> MapGround<linearUnit>::MapGround(const Point3d& origin) 
+  : mOrigin(origin) {
 }
 
 template <int linearUnit> 
@@ -103,14 +105,13 @@ MapGround<linearUnit>::MapGround(const MapGround<linearUnit>&rhs) {}
 template <int linearUnit> 
 MapGround<linearUnit>::MapGround(MapGround<linearUnit>&&rhs) noexcept {}
 
-template <int linearUnit> 
-MapGround<linearUnit>& 
+template <int linearUnit> MapGround<linearUnit>& 
 MapGround<linearUnit>::operator=(const MapGround<linearUnit>&rhs) {
   return *this;
 }
 
-template <int linearUnit> 
-MapGround<linearUnit>& MapGround<linearUnit>::operator=(MapGround<linearUnit>&&rhs) noexcept {
+template <int linearUnit> MapGround<linearUnit>& 
+MapGround<linearUnit>::operator=(MapGround<linearUnit>&&rhs) noexcept {
   return *this;
 }
 
@@ -133,7 +134,7 @@ bool MapGround<linearUnit>::operator!=(const MapGround<linearUnit>&rhs) const {
  */
 template <int linearUnit> 
 Point3d MapGround<linearUnit>::RectToGround(const Point3d &rect) const {
-  return Point3d(0, 0, 0);
+  return (mOrigin + rect);
 }
 
 /**
@@ -145,7 +146,7 @@ Point3d MapGround<linearUnit>::RectToGround(const Point3d &rect) const {
  */
 template <int linearUnit> 
 Point3d MapGround<linearUnit>::GroundToRect(const Point3d &ground) const {
-  return Point3d(0, 0, 0);
+  return (ground - mOrigin);
 }
 
 /**

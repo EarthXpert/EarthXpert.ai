@@ -19,7 +19,7 @@ namespace earthxpert {
  *  The class FrameModel implements the projective geometry of
  *  the pin-hole model for the global-shutter frame camera.
  *
- *  \param ImageModelPolicy defines the relationship between
+ *  \tparam ImageModelPolicy defines the relationship between
  * the image raster coordinate system and the focal plane coordinate system
  */
 template <class ImageModelPolicy>
