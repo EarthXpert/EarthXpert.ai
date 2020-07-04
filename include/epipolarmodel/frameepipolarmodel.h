@@ -59,11 +59,21 @@ public:
   /**
    *  \return Returns the internal sensor model
    */
-  const FrameModel<ImageModelPolicy>* GetSensorModel() const noexcept {
+  const FrameModel<ImageModelPolicy>* GetSensorModel() const noexcept override {
     return mFrameModel;
   }
 
+  /**
+   *  \return Returns raster columns & rows of epipolar image [unit: pixel]
+   */
+  std::pair<int, int> GetImageSize() const noexcept override {
+    return { mNumCols, mNumRows };
+  }
+
 private:
+  int mNumCols{ 0 };       // Number of cols of epipolar image
+  int mNumRows{ 0 };       // Number of rows of epipolar image
+
   void Initialize();
 
   // cached data for convenience

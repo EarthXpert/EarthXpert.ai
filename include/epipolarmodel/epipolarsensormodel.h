@@ -76,7 +76,7 @@ public:
   /**
    *  \return Returns the internal sensor model
    */
-  virtual const ISensorModel* GetSensorModel() const noexcept {
+  virtual const ISensorModel* GetSensorModel() const noexcept override {
     return mSensorModel.get();
   }
 
@@ -194,16 +194,16 @@ public:
   }
 
   /**
+   *  \return Returns raster columns & rows of raw image [unit: pixel]
+   */
+  std::pair<int, int> GetRawImageSize() const noexcept {
+    return mSensorModel->GetImageSize();
+  }
+
+  /**
    *  \return Returns type of SRS
    */
   SrsType GetSrsType() const noexcept override { return mSensorModel->GetSrsType(); }
-
-  /**
-   *  \return Returns raster columns & rows [unit: pixel]
-   */
-  std::pair<int, int> GetImageSize() const noexcept override {
-    return mSensorModel->GetImageSize();
-  }
 
   /**
    *  \return Returns the middle height

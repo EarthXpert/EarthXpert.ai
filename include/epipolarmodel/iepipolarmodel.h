@@ -10,6 +10,8 @@
 #include <vector>
 
 namespace earthxpert {
+class ISensorModel;
+
 /**
  *  The interface IEpipolarModel defines the geometric transform
  *  between the epipolar image and the associated image product
@@ -85,6 +87,21 @@ public:
    *  \return Returns algorithm of epipolar model
    */
   virtual EpipolarAlgo GetEpipolarAlgorithm() const noexcept = 0;
+
+  /**
+   *  \return Returns raster columns & rows of epipolar image [unit: pixel]
+   */
+  virtual std::pair<int, int> GetImageSize() const noexcept = 0;
+
+  /**
+   *  \return Returns the internal sensor model
+   */
+  virtual const ISensorModel* GetSensorModel() const noexcept = 0;
+
+  /**
+   *  \return Returns raster columns & rows of raw image [unit: pixel]
+   */
+  virtual std::pair<int, int> GetRawImageSize() const noexcept = 0;
 };
 
 using EpiAlgo = IEpipolarModel::EpipolarAlgo;

@@ -36,7 +36,8 @@ public:
    *  \param [in] groundPolicy ground policy
    */
   EpipolarModel(std::shared_ptr<ISensorModel> sensorModel, StereoPos pos,
-    std::unique_ptr<EpipolarRect> &&epiRect, std::shared_ptr<GroundPolicy> groundPolicy);
+    std::unique_ptr<EpipolarRect> &&epiRect, 
+    std::shared_ptr<GroundPolicy> groundPolicy);
   ~EpipolarModel() = default;
 
   /**
@@ -75,6 +76,13 @@ public:
   }
 
   Point3d GetOrigin() const noexcept { return mOrigin; }
+
+  /**
+   *  \return Returns raster columns & rows of epipolar image [unit: pixel]
+   */
+  std::pair<int, int> GetImageSize() const noexcept override {
+    return { mEpiRect->mNumCols, mEpiRect->mNumRows };
+  }
 
 private:
   static constexpr int kMaxIters{ 5 };

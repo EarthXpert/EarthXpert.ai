@@ -39,8 +39,8 @@ EpipolarModel<GroundPolicy>::EpipolarModel(std::shared_ptr<ISensorModel> sensorM
     : EpipolarSensorModel(sensorModel, pos), 
       mEpiRect(std::move(epiRect)), mGroundPolicy(groundPolicy) {
   assert(GroundPolicy::kGroundType == sensorModel->GetSrsType());
-  mOrigin = mEpiRect->GetOrigin();
-  mHeight = mEpiRect->GetHeight();
+  mOrigin = mEpiRect->mOrigin;
+  mHeight = mEpiRect->mHeight;
 
   const auto[numCols, numRows] = sensorModel->GetImageSize();
   mGridI2G = BuildGridI2G(numCols, numRows);

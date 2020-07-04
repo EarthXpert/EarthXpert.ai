@@ -21,15 +21,15 @@ static constexpr double kFactor = 0.75;
 static void I2G_Cube(const StereoModel& sm, const std::vector<Point3d>& cube);
 static void I2G_CubeOMP(const StereoModel& sm, const std::vector<Point3d>& cube);
 static std::vector<Point3d> CreateCube(const RationalModel* leftModel, const RationalModel* rightModel);
-static std::unique_ptr<RationalModel> CreateLeftRationalModel();
-static std::unique_ptr<RationalModel> CreateRightRationalModel();
+static std::unique_ptr<RationalModel> CreateRationalModelLeft();
+static std::unique_ptr<RationalModel> CreateRationalModelRight();
 
 /**
  *  TestCase 0: timing cube creation
  */
 void StereoModel_Cube() {
-  const auto leftModel = CreateLeftRationalModel();
-  const auto rightModel = CreateRightRationalModel();
+  const auto leftModel = CreateRationalModelLeft();
+  const auto rightModel = CreateRationalModelRight();
   auto cube = CreateCube(leftModel.get(), rightModel.get());
 }
 
@@ -37,8 +37,8 @@ void StereoModel_Cube() {
  *  TestCase 1: stereo via intersection
  */
 void StereoModel_I2G_Ceres() {
-  const auto leftModel = CreateLeftRationalModel();
-  const auto rightModel = CreateRightRationalModel();
+  const auto leftModel = CreateRationalModelLeft();
+  const auto rightModel = CreateRationalModelRight();
   auto cube = CreateCube(leftModel.get(), rightModel.get());
 
   StereoModel smC(leftModel.get(), rightModel.get());
@@ -50,8 +50,8 @@ void StereoModel_I2G_Ceres() {
  *  TestCase 2: stereo via EXAI
  */
 void StereoModel_I2G_Exai() {
-  const auto leftModel = CreateLeftRationalModel();
-  const auto rightModel = CreateRightRationalModel();
+  const auto leftModel = CreateRationalModelLeft();
+  const auto rightModel = CreateRationalModelRight();
   auto cube = CreateCube(leftModel.get(), rightModel.get());
 
   RationalStereoModel smE(leftModel.get(), rightModel.get());
@@ -62,8 +62,8 @@ void StereoModel_I2G_Exai() {
  *  TestCase 3: stereo via intersection
  */
 void StereoModel_I2G_Intersect() {
-  const auto leftModel = CreateLeftRationalModel();
-  const auto rightModel = CreateRightRationalModel();
+  const auto leftModel = CreateRationalModelLeft();
+  const auto rightModel = CreateRationalModelRight();
   auto cube = CreateCube(leftModel.get(), rightModel.get());
 
   auto nfcL = leftModel->GetNormalFators();
@@ -81,8 +81,8 @@ void StereoModel_I2G_Intersect() {
  *  TestCase 4: stereo via NR
  */
 void StereoModel_I2G_NR() {
-  const auto leftModel = CreateLeftRationalModel();
-  const auto rightModel = CreateRightRationalModel();
+  const auto leftModel = CreateRationalModelLeft();
+  const auto rightModel = CreateRationalModelRight();
   auto cube = CreateCube(leftModel.get(), rightModel.get());
 
   StereoModel smN(leftModel.get(), rightModel.get());    // NR
@@ -94,8 +94,8 @@ void StereoModel_I2G_NR() {
  *  TestCase 5: OMP stereo via Ceres
  */
 void StereoModel_I2G_CeresOMP() {
-  const auto leftModel = CreateLeftRationalModel();
-  const auto rightModel = CreateRightRationalModel();
+  const auto leftModel = CreateRationalModelLeft();
+  const auto rightModel = CreateRationalModelRight();
   auto cube = CreateCube(leftModel.get(), rightModel.get());
 
   StereoModel smC(leftModel.get(), rightModel.get());    // Ceres
@@ -107,8 +107,8 @@ void StereoModel_I2G_CeresOMP() {
  *  TestCase 6: OMP stereo via Exai
  */
 void StereoModel_I2G_ExaiOMP() {
-  const auto leftModel = CreateLeftRationalModel();
-  const auto rightModel = CreateRightRationalModel();
+  const auto leftModel = CreateRationalModelLeft();
+  const auto rightModel = CreateRationalModelRight();
   auto cube = CreateCube(leftModel.get(), rightModel.get());
 
   RationalStereoModel smE(leftModel.get(), rightModel.get());    // Exai
@@ -119,8 +119,8 @@ void StereoModel_I2G_ExaiOMP() {
  *  TestCase 7: OMP stereo via intersection
  */
 void StereoModel_I2G_IntersectOMP() {
-  const auto leftModel = CreateLeftRationalModel();
-  const auto rightModel = CreateRightRationalModel();
+  const auto leftModel = CreateRationalModelLeft();
+  const auto rightModel = CreateRationalModelRight();
   auto cube = CreateCube(leftModel.get(), rightModel.get());
 
   auto nfcL = leftModel->GetNormalFators();
@@ -138,8 +138,8 @@ void StereoModel_I2G_IntersectOMP() {
  *  TestCase 8: OMP stereo via NR
  */
 void StereoModel_I2G_NROMP() {
-  const auto leftModel = CreateLeftRationalModel();
-  const auto rightModel = CreateRightRationalModel();
+  const auto leftModel = CreateRationalModelLeft();
+  const auto rightModel = CreateRationalModelRight();
   auto cube = CreateCube(leftModel.get(), rightModel.get());
 
   StereoModel smN(leftModel.get(), rightModel.get());    // NR
@@ -226,7 +226,7 @@ std::vector<Point3d> CreateCube(const RationalModel* leftModel, const RationalMo
   return cube;
 }
 
-std::unique_ptr<RationalModel> CreateLeftRationalModel() {
+std::unique_ptr<RationalModel> CreateRationalModelLeft() {
   std::array<double, rnf::NumFact> normalFators{
     11086, 9371, 34.6557, 109.2114, 396, 11524, 9637, 0.0508, 0.0522, 501 };
   std::array<double, rfm::NumCoef> lineNumCoef{
@@ -262,7 +262,7 @@ std::unique_ptr<RationalModel> CreateLeftRationalModel() {
   return rm;
 }
 
-std::unique_ptr<RationalModel> CreateRightRationalModel() {
+std::unique_ptr<RationalModel> CreateRationalModelRight() {
   std::array<double, rnf::NumFact> normalFators{
       11064, 9370, 34.6557, 109.2114, 396, 11596, 9879, 0.0508, 0.0522, 501 };
   std::array<double, rfm::NumCoef> lineNumCoef{

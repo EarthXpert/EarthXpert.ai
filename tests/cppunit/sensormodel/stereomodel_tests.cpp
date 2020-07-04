@@ -23,18 +23,18 @@ static constexpr double kFactor = 0.75;
 
 static void TestImageToGround_Cube(const RationalModel* leftModel, const RationalModel* rightModel);
 
-static std::unique_ptr<RationalModel> CreateLeftRationalModelA();
-static std::unique_ptr<RationalModel> CreateRightRationalModelA();
-static std::unique_ptr<RationalModel> CreateLeftRationalModelB();
-static std::unique_ptr<RationalModel> CreateRightRationalModelB();
+static std::unique_ptr<RationalModel> CreateRationalModelALeft();
+static std::unique_ptr<RationalModel> CreateRationalModelARight();
+static std::unique_ptr<RationalModel> CreateRationalModelBLeft();
+static std::unique_ptr<RationalModel> CreateRationalModelBRight();
 
 /**
  * Test 1: center at top and bottom
  * \todo put algorithms in an array
  */
 TEST(stereomodel, ImageToGround) {
-  const auto leftModel = CreateLeftRationalModelA();
-  const auto rightModel = CreateRightRationalModelA();
+  const auto leftModel = CreateRationalModelALeft();
+  const auto rightModel = CreateRationalModelARight();
 
   StereoModel smC(leftModel.get(), rightModel.get());    // Ceres
   smC.SetForwardAlgorithm(IStereoModel::eSM_CERES);
@@ -111,12 +111,12 @@ TEST(stereomodel, ImageToGround) {
  * Test 2: cube
  */
 TEST(stereomodel, ImageToGround_Cube) {
-  const auto leftModelA = CreateLeftRationalModelA();
-  const auto rightModelA = CreateRightRationalModelA();
+  const auto leftModelA = CreateRationalModelALeft();
+  const auto rightModelA = CreateRationalModelARight();
   TestImageToGround_Cube(leftModelA.get(), rightModelA.get());
 
-  //const auto leftModelB = CreateLeftRationalModelB();
-  //const auto rightModelB = CreateRightRationalModelB();
+  //const auto leftModelB = CreateRationalModelBLeft();
+  //const auto rightModelB = CreateRationalModelBRight();
   //TestImageToGround_Cube(leftModelB.get(), rightModelB.get());
 }
 
@@ -294,7 +294,7 @@ void TestImageToGround_Cube(const RationalModel* leftModel, const RationalModel*
 /**
  * Create an instance of rational model of left image
  */
-std::unique_ptr<RationalModel> CreateLeftRationalModelA() {
+std::unique_ptr<RationalModel> CreateRationalModelALeft() {
   std::array<double, rnf::NumFact> normalFators{
     11086, 9371, 34.6557, 109.2114, 396, 11524, 9637, 0.0508, 0.0522, 501 };
   std::array<double, rfm::NumCoef> lineNumCoef{
@@ -333,7 +333,7 @@ std::unique_ptr<RationalModel> CreateLeftRationalModelA() {
 /**
  * Create an instance of rational model of right image
  */
-std::unique_ptr<RationalModel> CreateRightRationalModelA() {
+std::unique_ptr<RationalModel> CreateRationalModelARight() {
   std::array<double, rnf::NumFact> normalFators{
       11064, 9370, 34.6557, 109.2114, 396, 11596, 9879, 0.0508, 0.0522, 501 };
   std::array<double, rfm::NumCoef> lineNumCoef{
@@ -373,7 +373,7 @@ std::unique_ptr<RationalModel> CreateRightRationalModelA() {
 /**
  * Create an instance of rational model of left image
  */
-std::unique_ptr<RationalModel> CreateLeftRationalModelB() {
+std::unique_ptr<RationalModel> CreateRationalModelBLeft() {
   std::array<double, rnf::NumFact> normalFators{
     15069, 13790, 43.8664, -79.5300, 196, 15210, 13930, 0.0900, 0.1109, 500 };
   std::array<double, rfm::NumCoef> lineNumCoef{ 
@@ -412,7 +412,7 @@ std::unique_ptr<RationalModel> CreateLeftRationalModelB() {
 /**
  * Create an instance of rational model of right image
  */
-std::unique_ptr<RationalModel> CreateRightRationalModelB() {
+std::unique_ptr<RationalModel> CreateRationalModelBRight() {
   std::array<double, rnf::NumFact> normalFators{
       15073, 13790, 43.7319, -79.5313, 110, 15198, 13940, 0.0893, 0.1106, 500 };
   std::array<double, rfm::NumCoef> lineNumCoef{

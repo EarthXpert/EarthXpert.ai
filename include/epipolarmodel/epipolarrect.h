@@ -58,7 +58,9 @@ public:
   int GetNumCols() const noexcept { return mNumCols; }
   int GetNumRows() const noexcept { return mNumRows; }
 
-protected:
+private:
+  template<typename> friend class EpipolarModel;
+
   Point3d mOrigin{0, 0, 0};     // Origin of epi coordinate system
   double mHeight{0.0};   // Rectification height [meter]
   double mScale{1.0};    // Rectification scale: metric -> pixel

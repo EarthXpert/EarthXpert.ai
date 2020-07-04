@@ -29,12 +29,9 @@ void GenerateEpipolar(const std::string& imgFile, EpipolarGenerator* epiGen,
     fs::remove(epiFile);
   }
 
-  auto leftEpiRect = dynamic_cast<GeoEpipolarModel*>(epiModel)->GetEpiRect();
-  int leftEpiNumCols{ leftEpiRect->GetNumCols() };
-  int leftEpiNumRows{ leftEpiRect->GetNumRows() };
-
+  auto [epiNumCols, epiNumRows] = epiModel->GetImageSize();
   RasterWriter epiWriter(epiFile.string(), format,
-    leftEpiNumCols, leftEpiNumRows, gdalDT, numBands);
+    epiNumCols, epiNumRows, gdalDT, numBands);
 
   epiGen->Process(reader, epiModel, &epiWriter);
 }
@@ -56,18 +53,21 @@ void GenerateRationalEpipolar(const EpipolarOptions& epiOpt) {
   auto [leftNumCols, leftNumRows] = leftReader.GetSize();
   
   rmMarshaller.SetImageSize(leftNumCols, leftNumRows);
-  std::shared_ptr<ISensorModel> leftModel = rmMarshaller.Deserialize(epiOpt.leftMdlFile);
+  std::shared_ptr<ISensorModel> leftModel = 
+    rmMarshaller.Deserialize(epiOpt.leftMdlFile);
   assert(SensorType::eRATIONAL == leftModel->GetModelType());
 
   RasterReader rightReader(epiOpt.rightImgFile, epiOpt.bands);
   auto [rightNumCols, rightNumRows] = rightReader.GetSize();
 
   rmMarshaller.SetImageSize(rightNumCols, rightNumRows);
-  std::shared_ptr<ISensorModel> rightModel = rmMarshaller.Deserialize(epiOpt.rightMdlFile);
+  std::shared_ptr<ISensorModel> rightModel = 
+    rmMarshaller.Deserialize(epiOpt.rightMdlFile);
   assert(SensorType::eRATIONAL == rightModel->GetModelType());
 
   EpipolarModelFactory epiModelFac(FacEpiOpt::eFULL);
-  auto [leftEpiModel, rightEpiModel] = epiModelFac.CreateEpipolarModel(leftModel, rightModel, epiOpt.sample);
+  auto [leftEpiModel, rightEpiModel] = 
+    epiModelFac.CreateEpipolarModel(leftModel, rightModel, epiOpt.sample);
   assert(IEpipolarModel::ePLANERECT == leftEpiModel->GetEpipolarAlgorithm());
 
   auto format = leftReader.GetFileFormat();
