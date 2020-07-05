@@ -8,7 +8,7 @@
 #include "epipolarmodel/epipolarmodel.h"
 #include "epipolarmodel/epipolarmodelfactory.h"
 #include "marshaller/rationalmodelmarshaller.h"
-#include "sensormodel/stereomodel.h"
+#include "sensormodel/utils/stereomodel.h"
 
 #include <algorithm>
 #include <iostream>

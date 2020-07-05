@@ -4,7 +4,7 @@
  */
 #pragma once
 
-#include "sensormodel/stereomodel.h"
+#include "sensormodel/utils/stereomodel.h"
 #include "core/utils//typehelper.h"
 
 namespace earthxpert {

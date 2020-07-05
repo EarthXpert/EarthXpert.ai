@@ -4,7 +4,7 @@
  */
 #pragma once
 
-#include "sensormodel/distortiongrid.h"
+#include "sensormodel/utils/distortiongrid.h"
 #include "3rdparty/opencv/exopencv.h"
 
 #include <array>

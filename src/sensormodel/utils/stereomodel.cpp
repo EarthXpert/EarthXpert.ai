@@ -2,8 +2,8 @@
  *  Copyright (c) 2018.  All rights reserved.
  * -----------------------------------------------------------------------------
  */
-#include "sensormodel/stereomodel.h"
-#include "sensormodel/intersecti2g.h"
+#include "sensormodel/utils/stereomodel.h"
+#include "sensormodel/utils/intersecti2g.h"
 #include "3rdparty/gettext/exgettext.h"
 #include "core/exceptions/exexcept.h"
 #include "core/math/intersect.h"

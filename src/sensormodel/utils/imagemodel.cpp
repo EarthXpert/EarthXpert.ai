@@ -2,7 +2,7 @@
  *  Copyright (c) 2018.  All rights reserved.
  * -----------------------------------------------------------------------------
  */
-#include "sensormodel/imagemodel.h"
+#include "sensormodel/utils/imagemodel.h"
 #include "core/utils/typehelper.h"
 
 #include <algorithm>

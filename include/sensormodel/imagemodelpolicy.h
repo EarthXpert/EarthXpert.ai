@@ -5,7 +5,7 @@
 #pragma once
 
 #include "sensormodel/iimagemodelpolicy.h"
-#include "sensormodel/imagemodel.h"
+#include "sensormodel/utils/imagemodel.h"
 
 #include <memory>
 

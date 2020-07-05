@@ -2,7 +2,7 @@
  *  Copyright (c) 2018.  All rights reserved.
  * -----------------------------------------------------------------------------
  */
-#include "sensormodel/sensorcube.h"
+#include "sensormodel/utils/sensorcube.h"
 #include "sensormodel/isensormodel.h"
 
 using namespace earthxpert;
@@ -10,7 +10,7 @@ using namespace earthxpert;
 SensorCube::SensorCube(const std::array<double, NumFact>& normalFators,
   const int numHoriz, const int numVert, const int numLayers)
   : mNormalFators(normalFators), mNumHoriz(numHoriz), 
-  mNumVert(numVert), mNumLauers(numLayers) {
+  mNumVert(numVert), mNumLayers(numLayers) {
   Initialize();
 }
 

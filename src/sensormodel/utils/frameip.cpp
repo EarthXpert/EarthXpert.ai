@@ -2,7 +2,7 @@
  *  Copyright (c) 2018.  All rights reserved.
  * -----------------------------------------------------------------------------
  */
-#include "sensormodel/frameip.h"
+#include "sensormodel/utils/frameip.h"
 #include "3rdparty/opencv/exopencv.h"
 
 #include <algorithm>

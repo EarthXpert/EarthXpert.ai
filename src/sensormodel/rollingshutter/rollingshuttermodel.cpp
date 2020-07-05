@@ -4,11 +4,11 @@
  */
 #include "sensormodel/rollingshuttermodel.h"
 #include "3rdparty/gdal/exgdal.h"
-#include "sensormodel/frameip.h"
-#include "sensormodel/imagemodel.h"
-#include "sensormodel/satellitedp.h"
 #include "sensormodel/scannerep.h"
 #include "sensormodel/scannerepcorr.h"
+#include "sensormodel/utils/frameip.h"
+#include "sensormodel/utils/imagemodel.h"
+#include "sensormodel/utils/satellitedp.h"
 
 using earthxpert::FrameIP;
 using earthxpert::DigitalImageModelImp;

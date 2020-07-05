@@ -8,9 +8,9 @@
 #include "sensormodel/framecp.h"
 #include "sensormodel/frameep.h"
 #include "sensormodel/frameepcorr.h"
-#include "sensormodel/frameip.h"
-#include "sensormodel/frameipcorr.h"
 #include "sensormodel/imagemodelpolicy.h"
+#include "sensormodel/utils/frameip.h"
+#include "sensormodel/utils/frameipcorr.h"
 
 #include "opencv2/core/mat.hpp"
 

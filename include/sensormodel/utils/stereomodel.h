@@ -4,7 +4,7 @@
  */
 #pragma once
 
-#include "sensormodel/istereomodel.h"
+#include "sensormodel/utils/istereomodel.h"
 #include "sensormodel/isensormodel.h"
 #include "core/exceptions/exexcept.h"
 #include "core/math/iintersect.h"

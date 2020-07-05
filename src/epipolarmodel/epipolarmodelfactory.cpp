@@ -7,7 +7,7 @@
 #include "epipolarmodel/epipolarmodel.h"
 #include "sensormodel/framemodel.h"
 #include "sensormodel/rationalmodel.h"
-#include "sensormodel/utils.h"
+#include "sensormodel/utils/utils.h"
 
 #include <algorithm>
 #include <cassert>

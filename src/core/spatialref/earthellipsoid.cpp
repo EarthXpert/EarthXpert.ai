@@ -81,6 +81,8 @@ EarthEllipsoid::operator==(const EarthEllipsoid& rhs) const {
  * \param [in] lat Geographic latitude [rad]
  * \param [in] height Height above ellipsoid [m]
  * \return Returns Cartesian XYZ coordinates [m]
+ *
+ * \remark how accurate in XYZ?
  */
 Point3d EarthEllipsoid::LPHToXYZ(const double lon, const double lat, 
   const double height) const {
@@ -103,6 +105,8 @@ Point3d EarthEllipsoid::LPHToXYZ(const double lon, const double lat,
  * \param [in] Y Cartesian Y-coordinate [m]
  * \param [in] Z Cartesian Z-coordinate [m]
  * \return Returns geographic longitude [rad], geographic latitude [rad], ellipsoidal height [m]
+ *
+ * \remark how accurate in LPH?
  */
 Point3d EarthEllipsoid::XYZToLPH(const double X, const double Y,
   const double Z) const {
@@ -112,10 +116,10 @@ Point3d EarthEllipsoid::XYZToLPH(const double X, const double Y,
   double lat = atan(Z / (p * (1.0 - mEccSq)));
   double height{};
 
-  double hgt{};    // Height from previous iteration.
-  double delta{ 1.0 };
+  double hgt{ -mA };  // Height from previous iteration, default to earth center.
+  double dh{ 1.0 };
 
-  while (mHgtTol < fabs(delta)) {
+  while (kTolH < fabs(dh)) {
     const double cp = cos(lat);
     const double sp = sin(lat);
     const double N = RadiusInPrimeVertical(cp, sp);
@@ -123,7 +127,7 @@ Point3d EarthEllipsoid::XYZToLPH(const double X, const double Y,
     height = p / cp - N;
     lat = atan(Z / (p * (1.0 - (N * mEccSq / (N + height)))));
 
-    delta = height - hgt;
+    dh = height - hgt;
     hgt = height;
   }
 

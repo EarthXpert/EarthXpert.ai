@@ -9,7 +9,7 @@
 #include "marshaller/rationalmodelmarshaller.h"
 #include "sensormodel/rationalmodel.h"
 #include "sensormodel/rationalstereomodel.h"
-#include "sensormodel/stereomodel.h"
+#include "sensormodel/utils/stereomodel.h"
 
 //#include <iostream>
 

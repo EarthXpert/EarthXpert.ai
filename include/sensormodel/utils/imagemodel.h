@@ -4,7 +4,7 @@
  */
 #pragma once
 
-#include "sensormodel/iimagemodel.h"
+#include "sensormodel/utils/iimagemodel.h"
 
 namespace earthxpert {
 /**

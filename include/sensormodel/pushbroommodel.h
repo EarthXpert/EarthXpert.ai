@@ -6,11 +6,11 @@
 
 #include "sensormodel/sensormodel.h"
 #include "sensormodel/craftpolicy.h"
-#include "sensormodel/satellitedp.h"
 #include "sensormodel/scannerep.h"
 #include "sensormodel/scannerepcorr.h"
 #include "sensormodel/scannerimagemodel.h"
 #include "sensormodel/scannerip.h"
+#include "sensormodel/utils/satellitedp.h"
 
 #include <array>
 #include <chrono>

@@ -21,6 +21,13 @@ class ISensorModel;
  */
 class EXSENSORMODEL_EXPORTS SensorCube {
 public:
+  // option of layers in ground
+  enum LayerType {
+    eFLAT,   // vertical layers that are flat planar in ground
+    eMODEL   // vertical layers in model SRS, that are spherical for geographic SRS, 
+             // flat for local SRS, pseudo-flat for map projection
+  };
+
   SensorCube(const std::array<double, NumFact>& normalFators,
     int numHoriz, int numVert, int numLayers);
   ~SensorCube() = default;
@@ -33,7 +40,7 @@ public:
   void SetLayout(const int numHoriz, const int numVert, const int numLayers) {
     mNumHoriz = numHoriz;
     mNumVert = numVert;
-    mNumLauers = numLayers;
+    mNumLayers = numLayers;
     Initialize();
   }
 
@@ -46,7 +53,7 @@ private:
   std::array<double, NumFact> mNormalFators{}; // normalization factors including offsets & scales
   int mNumHoriz{};
   int mNumVert{};
-  int mNumLauers{};
+  int mNumLayers{};
 
   void Initialize();
 };

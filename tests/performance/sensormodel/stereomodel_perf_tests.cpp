@@ -8,7 +8,7 @@
 #include "core/utils/unitutils.h"
 #include "sensormodel/rationalmodel.h"
 #include "sensormodel/rationalstereomodel.h"
-#include "sensormodel/stereomodel.h"
+#include "sensormodel/utils/stereomodel.h"
 
 #include <omp.h>
 

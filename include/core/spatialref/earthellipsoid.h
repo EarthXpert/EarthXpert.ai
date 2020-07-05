@@ -86,11 +86,12 @@ public:
   inline Point3d GetLsrOrigin() const { return mLsrOrigin; }
 
 private:
+  static constexpr double kTolH{1.0e-5}; // Height tolerance
+
   double mA{kWGS84_A};          // Semi-major axis length [m]
   double mEccSq{kWGS84_ECCSQ};  // first Eccentricity squared
 
   Point3d mLsrOrigin{0.0, 0.0, 0.0}; // LSR origin Longitude/Latitude/Height
-  double mHgtTol{1.0e-4}; // Height tolerance
 
   void Initialize(const Point3d& origin);
 
