@@ -45,8 +45,8 @@ TEST(epipolarmodel, zy302a_006911_258169_20170827) {
   EpiModelPair epiModels;
   CreateRationalEpipolarModel(leftMdlFile, rightMdlFile, epiModels);
 
-  TestRaw2Epi_Epi2Raw_Grid(epiModels.first.get(), 0.01);  // [1cm]
-  TestRaw2Epi_Epi2Raw_Grid(epiModels.second.get(), 0.01);
+  TestRaw2Epi_Epi2Raw_Grid(epiModels.first.get(), 0.001);  // [1cm]
+  TestRaw2Epi_Epi2Raw_Grid(epiModels.second.get(), 0.001);
 }
 
 // ref epipolarmodelfactory_tests

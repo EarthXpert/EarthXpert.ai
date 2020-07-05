@@ -4,7 +4,7 @@ add_cppunit_test(framemodel_tests
   core sensormodel 
   ${GDAL_LIBRARY} ${OpenCV_LIBS})
 add_cppunit_test(rationalmodel_tests 
-  core sensormodel 
+  core marshaller sensormodel 
   ${GDAL_LIBRARY})
 add_cppunit_test(stereomodel_tests 
   core marshaller sensormodel 

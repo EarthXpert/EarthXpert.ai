@@ -5,6 +5,7 @@
 #include "3rdparty/gtest/gtest_main.h"
 #include "testconfig.h"
 
+#include "marshaller/rationalmodelmarshaller.h"
 #include "sensormodel/rationalmodel.h"
 #include <cmath>
 
@@ -17,6 +18,7 @@ static constexpr double kTol = 1.0e-8; // [mm]
 static std::unique_ptr<RationalModel> CreateRationalModelA();
 static std::unique_ptr<RationalModel> CreateRationalModelB();
 static std::unique_ptr<RationalModel> CreateRationalModelC();
+static std::unique_ptr<RationalModel> CreateRationalModelD();
 static void TestCubeI2G(const RationalModel* rationalModel);
 static void TestCubeI2G_Functor(const RationalModel* rationalModel);
 
@@ -99,6 +101,9 @@ TEST(rationalmodel, CubeI2G) {
 
   const auto rationalModelC = CreateRationalModelC();
   TestCubeI2G(rationalModelC.get());
+
+  const auto rationalModelD = CreateRationalModelD();
+  TestCubeI2G(rationalModelD.get());
 }
 
 TEST(rationalmodel, CubeI2G_Functor) {
@@ -110,6 +115,9 @@ TEST(rationalmodel, CubeI2G_Functor) {
 
   const auto rationalModelC = CreateRationalModelC();
   TestCubeI2G_Functor(rationalModelC.get());
+
+  const auto rationalModelD = CreateRationalModelD();
+  TestCubeI2G_Functor(rationalModelD.get());
 }
 
 /**
@@ -225,6 +233,13 @@ std::unique_ptr<RationalModel> CreateRationalModelC() {
   rm->SetErrors(227.34, 0.13);
 
   return rm;
+}
+
+std::unique_ptr<RationalModel> CreateRationalModelD() {
+  //std::string mdlFile = TestConfig::DataPath("Imagery/Satellite/zy302a_006911_258169_20170827/zy302a_fwd_006911_258169_20170827181359_01_sec_0001_1709018015_rpc.txt");
+  std::string mdlFile = TestConfig::DataPath("Imagery/Satellite/zy302a_006911_258169_20170827/zy302a_bwd_006911_258169_20170827181359_01_sec_0001_1709011888_rpc.txt");
+  RationalModelMarshaller rmMarshaller;
+  return rmMarshaller.Deserialize(mdlFile);
 }
 
 void TestCubeI2G(const RationalModel* rationalModel) {
