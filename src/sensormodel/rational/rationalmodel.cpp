@@ -60,8 +60,8 @@ RationalModel::RationalModel(const int numCols, const int numRows,
   mInvScale[eISLONG] = 1.0 / nfc[eSLONG];
   mInvScale[eISHEIGHT] = 1.0 / nfc[eSHEIGHT];
 
-  mTol_c = mInvScale[eISSAMP] * 0.001;
-  mTol_r = mInvScale[eISLINE] * 0.001;
+  mTol_c = mInvScale[eISSAMP] * kRatio;
+  mTol_r = mInvScale[eISLINE] * kRatio;
 
   BuildCubeS2G();
 }
@@ -601,17 +601,14 @@ bool RationalModel::SensorToGround(const double x, const double y,
     const double dc = xp - x; // Normalized column misclosure
     const double dr = yp - y; // Normalized row misclosure
 
-    // do not re-compute the partial derivatives when being pretty close to
-    // final position
-    if (fabs(dc) < kTolPartialS2G && fabs(dr) < kTolPartialS2G) {
+    // do not re-compute the partial derivatives within 1 pixel
+    if (fabs(dc) < mInvScale[eISSAMP] && fabs(dr) < mInvScale[eISLINE]) {
       recalcFlag = false;
     }
 
     // delta of u and v by solving Ax = b
-    const double du = (dFr_dv * dc - dFc_dv * dr) *
-      invDet; // Normalized longitude error estimate
-    const double dv = (-dFr_du * dc + dFc_du * dr) *
-      invDet; // Normalized latitude error estimate
+    const double du = (dFr_dv * dc - dFc_dv * dr) * invDet; // Normalized longitude error
+    const double dv = (-dFr_du * dc + dFc_du * dr) * invDet; // Normalized latitude error
 
     u -= du;
     v -= dv;

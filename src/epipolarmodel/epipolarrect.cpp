@@ -75,8 +75,6 @@ bool EpipolarRect::operator!=(const EpipolarRect &rhs) const {
  *
  *  \param [in] image 2d image position (col, row)
  *  \return Returns 2d rectified ground position (X, Y)
- *
- *  \details 
  */
 Point2d EpipolarRect::EpiToRect(const Point2d &epi) const {
   const Point2d e{ mOffset.x + epi.x, mOffset.y + mNumRows - epi.y };
@@ -93,8 +91,6 @@ Point2d EpipolarRect::EpiToRect(const Point2d &epi) const {
  *
  *  \param [in] rect 2d rectified ground position (X, Y)
  *  \return Returns 2d image position (col, row)
- *
- *  \details 
  */
 Point2d EpipolarRect::RectToEpi(const Point2d &rect) const {
   const Point2d r{ mCosRot * rect.x + mSinRot * rect.y,

@@ -88,7 +88,7 @@ void RationalModelMarshaller::Serialize(const std::string &modelFile,
  *  \return the pointer to the rational model object
  *  \throw if the file cannot be opened for reading
  */
-std::unique_ptr<ISensorModel>
+std::unique_ptr<RationalModel>
 RationalModelMarshaller::Deserialize(const std::string &modelFile) {
   const auto coefFormat = GetCoefFormat(modelFile);
 
@@ -150,7 +150,7 @@ void RationalModelMarshaller::SerializeRpc(std::ostream& outStream,
  *
  *  \param [in] inStream input stream
  */
-std::unique_ptr<ISensorModel>
+std::unique_ptr<RationalModel>
 RationalModelMarshaller::DeserializeRpb(std::istream& inStream) {
   double errBias{};
   double errRand{};
@@ -236,7 +236,7 @@ RationalModelMarshaller::DeserializeRpb(std::istream& inStream) {
  *
  *  \param [in] inStream input stream
  */
-std::unique_ptr<ISensorModel>
+std::unique_ptr<RationalModel>
 RationalModelMarshaller::DeserializeRpc(std::istream& inStream) {
   std::array<double, rnf::NumFact> normalFators{};
   std::array<double, RationalModel::NumCoef> lineNumCoef{};

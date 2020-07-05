@@ -53,7 +53,7 @@ void GenerateRationalEpipolar(const EpipolarOptions& epiOpt) {
   auto [leftNumCols, leftNumRows] = leftReader.GetSize();
   
   rmMarshaller.SetImageSize(leftNumCols, leftNumRows);
-  std::shared_ptr<ISensorModel> leftModel = 
+  std::shared_ptr<RationalModel> leftModel = 
     rmMarshaller.Deserialize(epiOpt.leftMdlFile);
   assert(SensorType::eRATIONAL == leftModel->GetModelType());
 
@@ -61,13 +61,13 @@ void GenerateRationalEpipolar(const EpipolarOptions& epiOpt) {
   auto [rightNumCols, rightNumRows] = rightReader.GetSize();
 
   rmMarshaller.SetImageSize(rightNumCols, rightNumRows);
-  std::shared_ptr<ISensorModel> rightModel = 
+  std::shared_ptr<RationalModel> rightModel =
     rmMarshaller.Deserialize(epiOpt.rightMdlFile);
   assert(SensorType::eRATIONAL == rightModel->GetModelType());
 
   EpipolarModelFactory epiModelFac(FacEpiOpt::eFULL);
   auto [leftEpiModel, rightEpiModel] = 
-    epiModelFac.CreateEpipolarModel(leftModel, rightModel, epiOpt.sample);
+    epiModelFac.CreateRationalEpiModel(leftModel, rightModel, epiOpt.sample);
   assert(IEpipolarModel::ePLANERECT == leftEpiModel->GetEpipolarAlgorithm());
 
   auto format = leftReader.GetFileFormat();

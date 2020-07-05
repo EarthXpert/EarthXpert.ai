@@ -272,7 +272,7 @@ private:
   friend class RationalStereoModel;
 
   static constexpr int kMaxIterS2G = 10; // max. number of iterations allowed for SensorToGround
-  static constexpr double kTolPartialS2G = 0.05; // tolerance
+  static constexpr double kRatio = 1.0e-4; // ratio of tolerance proportional to image range
   static constexpr double kTol_d = 0.1; // tolerance proportional to ground range
 
   // rational polynomial coefficients
@@ -399,8 +399,8 @@ private:
                             double &v) const;
   
   // cached calculation for better performance
-  double mTol_c{ 1.0e-6 }; // tolerance proportional to image range
-  double mTol_r{ 1.0e-6 };
+  double mTol_c{ 1.0e-7 }; // tolerance proportional to image range
+  double mTol_r{ 1.0e-7 };
     
   std::array<double, NumInvScl> mInvScale{1.0}; // reciprocal of scale factors
   std::unique_ptr<InterpCubeD>

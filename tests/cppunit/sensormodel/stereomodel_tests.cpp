@@ -6,6 +6,7 @@
 #include "testconfig.h"
 
 #include "core/utils/unitutils.h"
+#include "marshaller/rationalmodelmarshaller.h"
 #include "sensormodel/rationalmodel.h"
 #include "sensormodel/rationalstereomodel.h"
 #include "sensormodel/stereomodel.h"
@@ -118,6 +119,13 @@ TEST(stereomodel, ImageToGround_Cube) {
   //const auto leftModelB = CreateRationalModelBLeft();
   //const auto rightModelB = CreateRationalModelBRight();
   //TestImageToGround_Cube(leftModelB.get(), rightModelB.get());
+
+  std::string leftMdlFileC = TestConfig::DataPath("Imagery/Satellite/zy302a_006911_258169_20170827/zy302a_fwd_006911_258169_20170827181359_01_sec_0001_1709018015_rpc.txt");
+  std::string rightMdlFileC = TestConfig::DataPath("Imagery/Satellite/zy302a_006911_258169_20170827/zy302a_bwd_006911_258169_20170827181359_01_sec_0001_1709011888_rpc.txt");
+  RationalModelMarshaller rmMarshaller;
+  auto leftModelC = rmMarshaller.Deserialize(leftMdlFileC);
+  auto rightModelC = rmMarshaller.Deserialize(rightMdlFileC);
+  TestImageToGround_Cube(leftModelC.get(), rightModelC.get());
 }
 
 void TestImageToGround_Cube(const RationalModel* leftModel, const RationalModel* rightModel) {

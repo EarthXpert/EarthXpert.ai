@@ -7,7 +7,7 @@ add_cppunit_test(rationalmodel_tests
   core sensormodel 
   ${GDAL_LIBRARY})
 add_cppunit_test(stereomodel_tests 
-  core sensormodel 
+  core marshaller sensormodel 
   ${GDAL_LIBRARY} ${OpenCV_LIBS})
 if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
   get_filename_component(BOOST_BIN_DIR "${Boost_DIR}/../.." ABSOLUTE)

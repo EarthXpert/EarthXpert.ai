@@ -12,7 +12,6 @@
 #include <optional>
 
 namespace earthxpert {
-
 /**
  *  The class EpipolarModel defines a sensor-independent algorithm
  *  for generating epipolar images from image products with sensor models.
@@ -86,7 +85,7 @@ public:
 
 private:
   static constexpr int kMaxIters{ 5 };
-  static constexpr double kHgtTol{ 0.0001 }; // Height tolerance [0.1mm]?
+  static constexpr double kHgtTol{ 1.0e-4 }; // Height tolerance [0.1mm]?
   static constexpr int kGridStride{ 256 };
 
   std::unique_ptr<EpipolarRect> mEpiRect;     // epipolar rectification

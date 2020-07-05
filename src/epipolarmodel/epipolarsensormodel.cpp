@@ -50,7 +50,7 @@ size_t EpipolarSensorModel::EpiToRaw(const std::vector<Point2d>& epi, std::vecto
   assert(size == raw.size());
   size_t ret{};
 
-  //#pragma omp parallel for reduction(+ : ret)
+#pragma omp parallel for reduction(+ : ret)
   for (long i = 0; i < size; ++i) {
     if (EpiToRaw(epi[i], raw[i])) {
       ++ret;
@@ -90,7 +90,7 @@ size_t EpipolarSensorModel::RawToEpi(const std::vector<Point2d>& raw, std::vecto
   assert(size == epi.size());
   size_t ret{};
 
-  //#pragma omp parallel for reduction(+ : ret)
+#pragma omp parallel for reduction(+ : ret)
   for (long i = 0; i < size; ++i) {
     if (RawToEpi(raw[i], epi[i])) {
       ++ret;

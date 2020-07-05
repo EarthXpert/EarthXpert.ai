@@ -15,19 +15,20 @@
 
 using namespace earthxpert;
 
-static constexpr double kTol = 1.0e-8; // [1mm]
-static constexpr double kTolH = 3.0e-3; // [3mm]
+static constexpr double kTol = 1.0e-8; // [mm]
+static constexpr double kTolH = 1.0e-3; // [mm]
 static constexpr int kNum = 5;
 static constexpr double kFactor = 0.75;
 
 static void CreateRationalEpipolarModel(const std::string& leftMdlFile,
   const std::string& rightMdlFile, EpiModelPair& epiModels);
 static void TestImageToGround_Cube(const IEpipolarModel* leftEpiModel, 
-  const IEpipolarModel* rightEpiModel);
+  const IEpipolarModel* rightEpiModel, const double tol = kTol, 
+  const double tolH = kTolH);
 
 TEST(epipolarmodelfactory, 052522862010_01_P001_PAN) {
-  std::string leftMdlFile = "D:/home/workspace/TestData/Imagery/Satellite/052522862010_01_P001_PAN/09JAN15034657-P2AS-052522862010_01_P001.RPB";
-  std::string rightMdlFile = "D:/home/workspace/TestData/Imagery/Satellite/052522862010_01_P001_PAN/09JAN15034801-P2AS-052522862010_01_P001.RPB";
+  std::string leftMdlFile = TestConfig::DataPath("Imagery/Satellite/052522862010_01_P001_PAN/09JAN15034657-P2AS-052522862010_01_P001.RPB");
+  std::string rightMdlFile = TestConfig::DataPath("Imagery/Satellite/052522862010_01_P001_PAN/09JAN15034801-P2AS-052522862010_01_P001.RPB");
   
   EpiModelPair epiModels;
   CreateRationalEpipolarModel(leftMdlFile, rightMdlFile, epiModels);
@@ -53,8 +54,8 @@ TEST(epipolarmodelfactory, 052522862010_01_P001_PAN) {
 }
 
 TEST(epipolarmodelfactory, po_162796_pan) {
-  std::string leftMdlFile = "D:/home/workspace/TestData/Imagery/Satellite/po_162796_pan/po_162796_pan_0000000_rpc.txt";
-  std::string rightMdlFile = "D:/home/workspace/TestData/Imagery/Satellite/po_162796_pan/po_162796_pan_0010000_rpc.txt";
+  std::string leftMdlFile = TestConfig::DataPath("Imagery/Satellite/po_162796_pan/po_162796_pan_0000000_rpc.txt");
+  std::string rightMdlFile = TestConfig::DataPath("Imagery/Satellite/po_162796_pan/po_162796_pan_0010000_rpc.txt");
 
   EpiModelPair epiModels;
   CreateRationalEpipolarModel(leftMdlFile, rightMdlFile, epiModels);
@@ -76,19 +77,44 @@ TEST(epipolarmodelfactory, po_162796_pan) {
   ASSERT_EQ(12122, rRawNumCols);
   ASSERT_EQ(13148, rRawNumRows);
 
-  TestImageToGround_Cube(epiModels.first.get(), epiModels.second.get());
+  TestImageToGround_Cube(epiModels.first.get(), epiModels.second.get(), kTol, 3.0e-3);
+}
+
+TEST(epipolarmodelfactory, zy302a_006911_258169_20170827) {
+  std::string leftMdlFile = TestConfig::DataPath("Imagery/Satellite/zy302a_006911_258169_20170827/zy302a_fwd_006911_258169_20170827181359_01_sec_0001_1709018015_rpc.txt");
+  std::string rightMdlFile = TestConfig::DataPath("Imagery/Satellite/zy302a_006911_258169_20170827/zy302a_bwd_006911_258169_20170827181359_01_sec_0001_1709011888_rpc.txt");
+
+  EpiModelPair epiModels;
+  CreateRationalEpipolarModel(leftMdlFile, rightMdlFile, epiModels);
+
+  auto leftEpiModel{ epiModels.first.get() };
+  auto rightEpiModel{ epiModels.second.get() };
+
+  auto [lEpiNumCols, lEpiNumRows] = leftEpiModel->GetImageSize();
+  ASSERT_EQ(20715, lEpiNumCols);
+  ASSERT_EQ(22898, lEpiNumRows);
+  auto [lRawNumCols, lRawNumRows] = leftEpiModel->GetRawImageSize();
+  ASSERT_EQ(24512, lRawNumCols);
+  ASSERT_EQ(19996, lRawNumRows);
+
+  auto [rEpiNumCols, rEpiNumRows] = rightEpiModel->GetImageSize();
+  ASSERT_EQ(20715, rEpiNumCols);
+  ASSERT_EQ(22898, rEpiNumRows);
+  auto [rRawNumCols, rRawNumRows] = rightEpiModel->GetRawImageSize();
+  ASSERT_EQ(24512, rRawNumCols);
+  ASSERT_EQ(19996, rRawNumRows);
+
+  TestImageToGround_Cube(epiModels.first.get(), epiModels.second.get(), 3.0e-8, 2.0e-2);
 }
 
 void CreateRationalEpipolarModel(const std::string& leftMdlFile,
   const std::string& rightMdlFile, EpiModelPair& epiModels) {
   RationalModelMarshaller rmMarshaller;
-  std::shared_ptr<ISensorModel> leftModel = rmMarshaller.Deserialize(leftMdlFile);
-  ASSERT_TRUE(SensorType::eRATIONAL == leftModel->GetModelType());
-  std::shared_ptr<ISensorModel> rightModel = rmMarshaller.Deserialize(rightMdlFile);
-  ASSERT_TRUE(SensorType::eRATIONAL == rightModel->GetModelType());
+  std::shared_ptr<RationalModel> leftModel = rmMarshaller.Deserialize(leftMdlFile);
+  std::shared_ptr<RationalModel> rightModel = rmMarshaller.Deserialize(rightMdlFile);
 
   EpipolarModelFactory epiModelFac(FacEpiOpt::eFULL);
-  auto [leftEpiModel, rightEpiModel] = epiModelFac.CreateEpipolarModel(leftModel, rightModel);
+  auto [leftEpiModel, rightEpiModel] = epiModelFac.CreateRationalEpiModel(leftModel, rightModel);
   ASSERT_TRUE(IEpipolarModel::ePLANERECT == leftEpiModel->GetEpipolarAlgorithm());
   ASSERT_TRUE(IEpipolarModel::ePLANERECT == rightEpiModel->GetEpipolarAlgorithm());
 
@@ -112,7 +138,7 @@ void CreateRationalEpipolarModel(const std::string& leftMdlFile,
 }
 
 void TestImageToGround_Cube(const IEpipolarModel* leftEpiModel,
-  const IEpipolarModel* rightEpiModel) {
+  const IEpipolarModel* rightEpiModel, const double tol, const double tolH) {
   auto leftRM = dynamic_cast<const RationalModel*>(leftEpiModel->GetSensorModel());
   auto rightRM = dynamic_cast<const RationalModel*>(rightEpiModel->GetSensorModel());
 
@@ -156,6 +182,9 @@ void TestImageToGround_Cube(const IEpipolarModel* leftEpiModel,
   auto [leftEpiNumCols, leftEpiNumRows] = leftEpiModel->GetImageSize();
   auto [rightEpiNumCols, rightEpiNumRows] = rightEpiModel->GetImageSize();
 
+  auto [leftRawNumCols, leftRawNumRows] = leftEpiModel->GetRawImageSize();
+  auto [rightRawNumCols, rightRawNumRows] = rightEpiModel->GetRawImageSize();
+
   int n{};  // # of test points
   int nN{}; // # of NR.
 
@@ -168,11 +197,17 @@ void TestImageToGround_Cube(const IEpipolarModel* leftEpiModel,
         Point3d ground{ lon, lat, hgt };
 
         Point2d imageL;
+        leftRM->GroundToImage(ground, imageL);
+        if (0 > imageL.x || imageL.x > leftRawNumCols || 0 > imageL.y || imageL.y > leftRawNumRows)
+          continue;
         leftModel->GroundToImage(ground, imageL);
         if (0 > imageL.x || imageL.x > leftEpiNumCols || 0 > imageL.y || imageL.y > leftEpiNumRows)
           continue;
 
         Point2d imageR;
+        rightRM->GroundToImage(ground, imageR);
+        if (0 > imageR.x || imageR.x > rightRawNumCols || 0 > imageR.y || imageR.y > rightRawNumRows)
+          continue;
         rightModel->GroundToImage(ground, imageR);
         if (0 > imageR.x || imageR.x > rightEpiNumCols || 0 > imageR.y || imageR.y > rightEpiNumRows)
           continue;
@@ -202,7 +237,7 @@ void TestImageToGround_Cube(const IEpipolarModel* leftEpiModel,
   ASSERT_LT(0, n) << "Number of test points: " << n;
   ASSERT_EQ(nN, n) << "Number of NR points: " << nN;
 
-  ASSERT_LE(maxDiffLonN, kTol) << "Max. longitude difference > 1 mm: " << maxDiffLonN;
-  ASSERT_LE(maxDiffLatN, kTol) << "Max.  latitude difference > 1 mm: " << maxDiffLatN;
-  ASSERT_LE(maxDiffHgtN, kTolH) << "Max.    height difference > 1 mm: " << maxDiffHgtN;
+  ASSERT_LE(maxDiffLonN, tol) << "Max. longitude difference > 1 mm: " << maxDiffLonN;
+  ASSERT_LE(maxDiffLatN, tol) << "Max.  latitude difference > 1 mm: " << maxDiffLatN;
+  ASSERT_LE(maxDiffHgtN, tolH) << "Max.    height difference > 1 mm: " << maxDiffHgtN;
 }

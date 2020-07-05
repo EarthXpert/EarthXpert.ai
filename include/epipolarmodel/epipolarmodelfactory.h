@@ -7,7 +7,7 @@
 #include "epipolarmodel/epipolarrect.h"
 #include "epipolarmodel/iepipolarmodel.h"
 #include "3rdparty/boost/exboost.h"
-#include "sensormodel/isensormodel.h"
+#include "sensormodel/rationalmodel.h"
 
 #include <array>
 #include <utility>
@@ -19,6 +19,8 @@ using EpiModelPair = std::pair<std::unique_ptr<IEpipolarModel>, std::unique_ptr<
 /**
  *  The class EpipolarModelFactory defines the behaviours for creating
  *  epipolar models from image products with sensor models.
+ *
+ *  \remark This implementation requires that the stereo images are of the same sensro type.
  */
 class EXEPIPOLARMODEL_EXPORTS EpipolarModelFactory {
 public:
@@ -40,16 +42,18 @@ public:
   /**
    *  \brief create epipolar models from a pair of stereo images.
    */
-  EpiModelPair CreateEpipolarModel(std::shared_ptr<ISensorModel> leftModel,
-    std::shared_ptr<ISensorModel> rightModel, int sample=1, double height=0);
+  EpiModelPair CreateFrameEpiModel(std::shared_ptr<ISensorModel> leftModel,
+      std::shared_ptr<ISensorModel> rightModel, int sample, double height);
+  EpiModelPair CreateRationalEpiModel(std::shared_ptr<RationalModel> leftModel,
+      std::shared_ptr<RationalModel> rightModel, int sample=1);
 
   /**
    *  \brief create epipolar models from a pair of stereo images.
    */
-  EpiModelPair CreateEpipolarModel(
-    const std::array<std::shared_ptr<ISensorModel>, 2> sensorModels,
-    int sample, double height = 0) {
-    return CreateEpipolarModel(sensorModels[0], sensorModels[1], sample, height);
+  EpiModelPair CreateRationalEpiModel(
+    const std::array<std::shared_ptr<RationalModel>, 2> sensorModels,
+    int sample=1) {
+    return CreateRationalEpiModel(sensorModels[0], sensorModels[1], sample);
   }
 
   /**
@@ -67,11 +71,6 @@ private:
 
   EpipolarOption mEpiOpt{ EpiOpt::eFULL };
 
-  EpiModelPair CreateFrameEpiModel(std::shared_ptr<ISensorModel> leftModel,
-      std::shared_ptr<ISensorModel> rightModel, int sample, double height);
-  EpiModelPair CreateRationalEpiModel(std::shared_ptr<ISensorModel> leftModel,
-      std::shared_ptr<ISensorModel> rightModel, int sample=1);
-
   double EpipolarModelFactory::CalcEpiRotation(const ISensorModel* leftModel,
     const ISensorModel* rightModel, const EarthEllipsoid* ee, double height, 
     const Polygon2d& leftFp, const Polygon2d& rightFp) const;
@@ -79,7 +78,6 @@ private:
     double scale, double cosRot, double sinRot) const;
 
   // cached
-  SensorType mSensorType{ SensorType::eUNDEFINED };
 };
 
 using FacEpiOpt = EpipolarModelFactory::EpiOpt;

@@ -50,7 +50,7 @@ public:
    *  \param [in] modelFile the name of the input file
    *  \return the pointer to the rational model object
    */
-  std::unique_ptr<ISensorModel> Deserialize(const std::string& modelFile);
+  std::unique_ptr<RationalModel> Deserialize(const std::string& modelFile);
 
   // GDAL helper
   /**
@@ -83,14 +83,14 @@ private:
    *
    *  \param [in] inStream input stream
    */
-  std::unique_ptr<ISensorModel> DeserializeRpb(std::istream& inStream);
+  std::unique_ptr<RationalModel> DeserializeRpb(std::istream& inStream);
 
   /**
    *  \brief Deserialize _rpc.txt file
    *
    *  \param [in] inStream input stream
    */
-  std::unique_ptr<ISensorModel> DeserializeRpc(std::istream& inStream);
+  std::unique_ptr<RationalModel> DeserializeRpc(std::istream& inStream);
 
   void InsertCoefs(std::ostream& outStream,
     const std::array<double, RationalModel::NumCoef>& coefs);
