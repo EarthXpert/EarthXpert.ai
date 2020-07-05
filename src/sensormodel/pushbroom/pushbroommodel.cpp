@@ -5,10 +5,12 @@
 #include "sensormodel/pushbroommodel.h"
 #include "3rdparty/gdal/exgdal.h"
 
+using earthxpert::AircraftPolicy;
+using earthxpert::SpacecraftPolicy;
 using earthxpert::ISensorModel;
 using earthxpert::Point2d;
 using earthxpert::Point3d;
-using earthxpert::PushBroomModel;
+using earthxpert::PushbroomModel;
 using earthxpert::SatelliteDP;
 using earthxpert::ScannerEP;
 using earthxpert::ScannerEPCorr;
@@ -24,7 +26,7 @@ using earthxpert::SpatialReferenceSystem;
  * orientation \param [in] scannerEP extrinsic parameters defining scanner
  * exterior orientation \param [in] groundSRS ground coordinate reference system
  */
-PushBroomModel::PushBroomModel(
+template <typename CraftPolicy> PushbroomModel<CraftPolicy>::PushbroomModel(
     std::shared_ptr<ScannerImageModel> imgModel,
     std::unique_ptr<ScannerIP> &&scannerIP,
     std::shared_ptr<ScannerEP> scannerEP,
@@ -39,30 +41,36 @@ PushBroomModel::PushBroomModel(
  * exterior orientation \param [in] satelliteDP distortion parameters defining
  * external effects \param [in] groundSRS ground coordinate reference system
  */
-PushBroomModel::PushBroomModel(
+template <typename CraftPolicy> PushbroomModel<CraftPolicy>::PushbroomModel(
     std::shared_ptr<ScannerImageModel> imgModel,
     std::unique_ptr<ScannerIP> &&scannerIP,
     std::shared_ptr<ScannerEP> scannerEP,
     std::shared_ptr<SatelliteDP> satelliteDP,
     std::shared_ptr<SpatialReferenceSystem> groundSRS) {}
 
-PushBroomModel::PushBroomModel(const PushBroomModel &rhs) {}
+template <typename CraftPolicy> 
+PushbroomModel<CraftPolicy>::PushbroomModel(const PushbroomModel<CraftPolicy>&rhs) {}
 
-PushBroomModel::PushBroomModel(PushBroomModel &&rhs) noexcept {}
+template <typename CraftPolicy> 
+PushbroomModel<CraftPolicy>::PushbroomModel(PushbroomModel &&rhs) noexcept {}
 
-PushBroomModel &PushBroomModel::operator=(const PushBroomModel &rhs) {
+template <typename CraftPolicy> PushbroomModel<CraftPolicy>& 
+PushbroomModel<CraftPolicy>::operator=(const PushbroomModel<CraftPolicy>&rhs) {
   return *this;
 }
 
-PushBroomModel &PushBroomModel::operator=(PushBroomModel &&rhs) noexcept {
+template <typename CraftPolicy> PushbroomModel<CraftPolicy>& 
+PushbroomModel<CraftPolicy>::operator=(PushbroomModel<CraftPolicy>&&rhs) noexcept {
   return *this;
 }
 
-bool PushBroomModel::operator==(const PushBroomModel &rhs) const {
+template <typename CraftPolicy> 
+bool PushbroomModel<CraftPolicy>::operator==(const PushbroomModel<CraftPolicy>&rhs) const {
   return true;
 }
 
-bool PushBroomModel::operator!=(const PushBroomModel &rhs) const {
+template <typename CraftPolicy> 
+bool PushbroomModel<CraftPolicy>::operator!=(const PushbroomModel<CraftPolicy>&rhs) const {
   return !(operator==(rhs));
 }
 
@@ -79,7 +87,8 @@ bool PushBroomModel::operator!=(const PushBroomModel &rhs) const {
  *
  *  \details More details
  */
-bool PushBroomModel::ImageToGround(const Point2d &image,
+template <typename CraftPolicy>
+bool PushbroomModel<CraftPolicy>::ImageToGround(const Point2d &image,
                                    Point3d &ground) const {
   return true;
 }
@@ -94,7 +103,8 @@ bool PushBroomModel::ImageToGround(const Point2d &image,
  *
  *  \details More details
  */
-size_t PushBroomModel::ImageToGround(const Point2d &image,
+template <typename CraftPolicy>
+size_t PushbroomModel<CraftPolicy>::ImageToGround(const Point2d &image,
                                      std::vector<Point3d> &ground) const {
   return 0;
 }
@@ -111,7 +121,8 @@ size_t PushBroomModel::ImageToGround(const Point2d &image,
  *
  *  \details More details
  */
-bool PushBroomModel::GroundToImage(const Point3d &ground,
+template <typename CraftPolicy>
+bool PushbroomModel<CraftPolicy>::GroundToImage(const Point3d &ground,
                                    Point2d &image) const {
   return true;
 }
@@ -121,15 +132,20 @@ bool PushBroomModel::GroundToImage(const Point3d &ground,
  *
  *  \param [in] scannerEPCorr ephemeris & attitude corrections
  */
-void PushBroomModel::SetCorrection(
+template <typename CraftPolicy>
+void PushbroomModel<CraftPolicy>::SetCorrection(
     std::shared_ptr<ScannerEPCorr> scannerEPCorr) {}
 
-bool PushBroomModel::EqualTo(const ISensorModel &rhs) const {
+template <typename CraftPolicy>
+bool PushbroomModel<CraftPolicy>::EqualTo(const ISensorModel &rhs) const {
   if (ISensorModel::ModelType::ePUSHBROOM != rhs.GetModelType())
     return false;
 
-  auto pbModel = dynamic_cast<const PushBroomModel *>(&rhs);
+  auto pbModel = dynamic_cast<const PushbroomModel *>(&rhs);
   assert(pbModel);
 
   return operator==(*pbModel);
 }
+
+template class earthxpert::PushbroomModel<AircraftPolicy>;
+template class earthxpert::PushbroomModel<SpacecraftPolicy>;
