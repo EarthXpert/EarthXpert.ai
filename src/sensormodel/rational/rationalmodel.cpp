@@ -192,7 +192,8 @@ void RationalModel::CheckModel() const {
   if (nfc[eSHEIGHT] < 1.0)
     throw std::invalid_argument("Height scale is too small.");
 
-  // numerical reliability
+  // numerical reliability, not singular, contineous
+  // non-zero denominator
 
 }
 

@@ -86,17 +86,17 @@ void TestRaw2Epi_Epi2Raw_Grid(const IEpipolarModel* epiModel, const double tol) 
   double diffCol{}, diffRow{};
   double maxDiffCol{ -1.0 }, maxDiffRow{ -1.0 };
 
-  Point2d epi, raw2;
+  Point2d epi, rawN;
   for (int col = 0; col < rawNumCols; col+=kGridStride)
     for (int row = 0; row < rawNumRows; row+=kGridStride) {
       Point2d raw(col, row);
       epiModel->RawToEpi(raw, epi);
-      epiModel->EpiToRaw(epi, raw2);
+      epiModel->EpiToRaw(epi, rawN);
 
-      diffCol = fabs(raw2.x - raw.x);
+      diffCol = fabs(rawN.x - raw.x);
       if (maxDiffCol < diffCol)
         maxDiffCol = diffCol;
-      diffRow = fabs(raw2.y - raw.y);
+      diffRow = fabs(rawN.y - raw.y);
       if (maxDiffRow < diffRow)
         maxDiffRow = diffRow;
     }

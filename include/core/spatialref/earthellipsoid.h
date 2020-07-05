@@ -86,7 +86,7 @@ public:
   inline Point3d GetLsrOrigin() const { return mLsrOrigin; }
 
 private:
-  static constexpr double kTolH{1.0e-5}; // Height tolerance
+  static constexpr double kTolH{1.0e-5}; // Height tolerance [10um]
 
   double mA{kWGS84_A};          // Semi-major axis length [m]
   double mEccSq{kWGS84_ECCSQ};  // first Eccentricity squared
