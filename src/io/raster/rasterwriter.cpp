@@ -21,7 +21,7 @@ using namespace earthxpert;
 RasterWriter::RasterWriter(const std::string& imageFile, const std::vector<int>& bands) {
   mDataset = static_cast<GDALDataset*>(GDALOpen(imageFile.c_str(), GA_Update));
   if (!mDataset) {
-    throw IOError(_("GDAL failed to open image file for write acess."));
+    throw IOError(_("GDAL failed to open image file for write access."));
   }
 
   Initialize(mDataset, bands);
@@ -75,6 +75,7 @@ void RasterWriter::SetNodataValues(const double nodataValue) {
 
 void RasterWriter::SetNodataValues(const std::vector<double>& nodataValues) {
   assert(mWriteNumBands == nodataValues.size());
+  std::unique_lock<std::shared_mutex> lock(mMutex);
   auto& ndValues = mReader->GetNodataValues();
   ndValues = nodataValues;
 
@@ -102,12 +103,12 @@ void RasterWriter::SetCoordinateSystem(const SpatialReferenceSystem* srs) {
  *  \param [in] geocoding geocoding information
  */
 void RasterWriter::SetGeocoding(const Geocoding* geocoding) {
+  if (!geocoding) return;
   std::unique_lock<std::shared_mutex> lock(mMutex);
-  if (geocoding) {
-    double geoTransform[6] = { geocoding->mOriginX, geocoding->mPixelSizeX, 0,
-                               geocoding->mOriginY, 0, geocoding->mPixelSizeY };
-    mDataset->SetGeoTransform(geoTransform);
-  }
+
+  double geoTransform[6] = { geocoding->mOriginX, geocoding->mPixelSizeX, 0,
+                             geocoding->mOriginY, 0, geocoding->mPixelSizeY };
+  mDataset->SetGeoTransform(geoTransform);
 }
 
 /**
@@ -150,7 +151,7 @@ void RasterWriter::WriteRaster(const CvRaster* raster) {
       const auto err = band->RasterIO(GF_Write, writeColOff, writeRowOff + r,
         writeNumCols, 1, writeRow, writeNumCols, 1, mGdalDT, 0, 0, nullptr);
       if (CE_None != err) {
-        throw IOError(_("Failaure when reading by RasterIO"));
+        throw IOError(_("Failure when reading by RasterIO"));
       }
 
       writeRow += rowNumBytes;
@@ -182,7 +183,7 @@ void RasterWriter::WriteRaster(const CvRaster* raster) {
         writeNumCols, 1, gdalBuffer.get(), writeNumCols, 1, mGdalDT,
         mWriteNumBands, mBands.data(), 0, 0, 0, nullptr);
       if (CE_None != err) {
-        throw IOError(_("Failaure when writing by RasterIO"));
+        throw IOError(_("Failure when writing by RasterIO"));
       }
 
       writeRow += rowNumBytes;
@@ -218,7 +219,7 @@ void RasterWriter::WriteRaster(const GdalRaster* raster) {
       const auto err = band->RasterIO(GF_Write, writeColOff, writeRowOff + r,
         writeNumCols, 1, writeRow, writeNumCols, 1, mGdalDT, 0, 0, nullptr);
       if (CE_None != err) {
-        throw IOError(_("Failaure when reading by RasterIO"));
+        throw IOError(_("Failure when reading by RasterIO"));
       }
 
       writeRow += rowNumBytes;
@@ -265,7 +266,7 @@ RasterWriter::ObtainWriteWindow(const IRaster* raster) const {
   const auto [numCols, numRows] = raster->GetSize();
   if (0 > colOffset || mFileNumCols < colOffset+numCols ||
       0 > rowOffset || mFileNumRows < rowOffset+numRows) {
-    throw std::out_of_range(_("raster object context is outside of image file"));
+    throw std::out_of_range(_("ObtainWriteWindow: raster object context is outside of image file"));
   }
 
   const int64 writePixelOff = raster->GetImagePixelOffset();
