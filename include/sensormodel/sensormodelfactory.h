@@ -5,13 +5,12 @@
 #pragma once
 
 #include "sensormodel/framemodel.h"
+#include "sensormodel/framemodel.h"
+#include "sensormodel/rationalmodel.h"
 
 #include <memory>
 
 namespace earthxpert {
-class ISensorModel;
-class RationalModel;
-
 /**
  *  The class SensorModelFactory defines the behaviours for creating
  *  sensor model from image products.
@@ -26,16 +25,16 @@ public:
   /**
    *  \brief
    */
-  static std::unique_ptr<FilmFrameModel> CreateFilmFrameModel();
-
-  /**
-   *  \brief
-   */
   static std::unique_ptr<DigitalFrameModel> CreateDigitalFrameModel();
 
   /**
    *  \brief
    */
-  static std::unique_ptr<RationalModel> CreateRationalModel();
+  static std::unique_ptr<FilmFrameModel> CreateFilmFrameModel();
+
+  /**
+   *  \brief create rational model from another sensor model
+   */
+  static std::unique_ptr<RationalModel> CreateRationalModel(const ISensorModel* sensorModel);
 };
 } // namespace earthxpert

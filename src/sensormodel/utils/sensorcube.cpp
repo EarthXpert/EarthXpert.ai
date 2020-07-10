@@ -8,9 +8,10 @@
 using namespace earthxpert;
 
 SensorCube::SensorCube(const std::array<double, NumFact>& normalFators,
-  const int numHoriz, const int numVert, const int numLayers)
+  const int numHoriz, const int numVert, 
+  const int numLayers, const LayerType layerType)
   : mNormalFators(normalFators), mNumHoriz(numHoriz), 
-  mNumVert(numVert), mNumLayers(numLayers) {
+  mNumVert(numVert), mNumLayers(numLayers), mLayerType(layerType) {
   Initialize();
 }
 

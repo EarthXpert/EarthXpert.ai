@@ -29,7 +29,7 @@ public:
   };
 
   SensorCube(const std::array<double, NumFact>& normalFators,
-    int numHoriz, int numVert, int numLayers);
+    int numHoriz, int numVert, int numLayers, LayerType layerType);
   ~SensorCube() = default;
 
   void SetNormalFators(const std::array<double, NumFact>& normalFators) {
@@ -37,10 +37,12 @@ public:
     Initialize();
   }
 
-  void SetLayout(const int numHoriz, const int numVert, const int numLayers) {
+  void SetLayout(const int numHoriz, const int numVert, 
+    const int numLayers, const LayerType layerType) {
     mNumHoriz = numHoriz;
     mNumVert = numVert;
     mNumLayers = numLayers;
+    mLayerType = layerType;
     Initialize();
   }
 
@@ -54,7 +56,10 @@ private:
   int mNumHoriz{};
   int mNumVert{};
   int mNumLayers{};
+  LayerType mLayerType{ eMODEL };
 
   void Initialize();
 };
+
+using CubeType = SensorCube::LayerType;
 }
