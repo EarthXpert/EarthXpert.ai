@@ -15,10 +15,20 @@ using ct = thirdparty::CeresTraits;
 using st = SolverTraits;
 
 namespace math {
-// residual base for intersection
+/**
+ *  \brief residual base for intersection
+ *
+ *  \tparam GeomTy Type of geometry: point, circle, etc.
+ */
 template <typename GeomTy> struct IntersectResidual : IResidual {
+  IntersectResidual() {}
   IntersectResidual(const GeomTy* segms, const int numSegms) : segs(segms), numSegs(numSegms) {}
   virtual ~IntersectResidual() = default;
+
+  void SetArgs(const GeomTy* segms, const int numSegms) {
+    segs = segms;
+    numSegs = numSegms;
+  }
 
 protected:
   const GeomTy* segs;  // pointer to an array of geometries
@@ -44,6 +54,7 @@ class  AnalyticLineIntersectCostFunc final : ceres::DynamicCostFunction {
 template <typename PointTy> struct AutoLineIntersectResidual final : IntersectResidual<PointTy> {
   enum { eDiffAlg = ct::kAutoDiff };
 
+  AutoLineIntersectResidual() {}
   /**
    *  \param [in] segs the packed observation data, containing (numSegs * 2) points.
    *  \param [in] numSegs number of observations
@@ -51,6 +62,10 @@ template <typename PointTy> struct AutoLineIntersectResidual final : IntersectRe
   AutoLineIntersectResidual(const PointTy* segms, const int numSegms) 
     : IntersectResidual<PointTy>(segms, numSegms) {}
   ~AutoLineIntersectResidual() = default;
+
+  void SetArgs(const PointTy* segms, const int numSegms) {
+    IntersectResidual::SetArgs(segms, numSegms);
+  }
 
   /**
    *  \brief Size-fixed functor
@@ -189,6 +204,7 @@ private:
 template <typename PointTy> struct NumericLineIntersectResidual final : IntersectResidual<PointTy> {
   enum { eDiffAlg = ct::kNumericDiff };
 
+  NumericLineIntersectResidual() {}
   /**
    *  \param [in] segs the packed observation data, containing (numSegs * 2) points.
    *  \param [in] numSegs number of observations
@@ -196,6 +212,10 @@ template <typename PointTy> struct NumericLineIntersectResidual final : Intersec
   NumericLineIntersectResidual(const PointTy* segms, const int numSegms) 
     : IntersectResidual<PointTy>(segms, numSegms) {}
   ~NumericLineIntersectResidual() = default;
+
+  void SetArgs(const PointTy* segms, const int numSegms) {
+    IntersectResidual::SetArgs(segms, numSegms);
+  }
 
   /**
    *  \brief Size-fixed functor
@@ -379,7 +399,7 @@ template <typename SphereType> struct NumericSphereIntersectResidual final : Int
 template <typename GeomTy,
   template <typename GTy = GeomTy> class ResidualPolicy, class LossPolicy = void>
 bool IntersectGeometries(const GeomTy* geoms, const int numGeoms, std::vector<double>& pb,
-    const Solver::Options& options, Solver::Summary& summary, LossPolicy* lossFunc = nullptr) {
+  const Solver::Options& options, Solver::Summary& summary, LossPolicy* lossFunc = nullptr) {
   using CostFunctor = ResidualPolicy<GeomTy>;
   static_assert(std::is_base_of_v<IResidual, CostFunctor>, "IResidual");
   static_assert(std::is_base_of_v<LossFunction, LossPolicy> || std::is_void_v<LossPolicy>, "LossFunction");
@@ -419,7 +439,7 @@ bool IntersectGeometries(const GeomTy* geoms, const int numGeoms, std::vector<do
       new CostFunctor(geoms, numGeoms));  // DO_NOT_TAKE_OWNERSHIP, 3, ndopt
   }
 
-  problem.AddResidualBlock(costFunc, lossF, pb.data()); 
+  problem.AddResidualBlock(costFunc, lossF, pb.data());
   ceres::Solve(options, &problem, &summary);
 
   return summary.IsSolutionUsable();
