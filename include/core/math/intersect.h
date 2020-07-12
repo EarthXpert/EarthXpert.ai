@@ -51,7 +51,8 @@ class  AnalyticLineIntersectCostFunc final : ceres::DynamicCostFunction {
  *  \param PointTy type of point: Point3f, Point3d, Vector3d, etc
  */
  // 3d line equation: p(x, y, z) = p0(x0, y0, z0) + t * v(a, b, c), where v = p1 - p0
-template <typename PointTy> struct AutoLineIntersectResidual final : IntersectResidual<PointTy> {
+template <typename PointTy> 
+struct AutoLineIntersectResidual final : IntersectResidual<PointTy> {
   enum { eDiffAlg = ct::kAutoDiff };
 
   AutoLineIntersectResidual() {}
@@ -73,7 +74,8 @@ template <typename PointTy> struct AutoLineIntersectResidual final : IntersectRe
    *  \param [in] pb the parameter block determined by the algorithms.
    *  \param [out] residual discrepency determined by the algorithms.
    */
-  template <typename Ty = double> bool operator()(const Ty* const pb, Ty* residual) const {
+  template <typename Ty = double> 
+  bool operator()(const Ty* const pb, Ty* residual) const {
     static_assert(sizeof(Ty) >= sizeof(PointTy::value_type), "Parameter precision must be not lowert than observation's");
 
     if (2 == numSegs) {
@@ -88,7 +90,8 @@ template <typename PointTy> struct AutoLineIntersectResidual final : IntersectRe
   }
 
   // Dynamic functor
-  template <typename Ty = double> bool operator()(Ty const* const* pb, Ty* residual) const {
+  template <typename Ty = double> 
+  bool operator()(Ty const* const* pb, Ty* residual) const {
     if (2 == numSegs) {
       return TwoLines(pb, residual);
     }
@@ -201,7 +204,8 @@ private:
  *  \param PointTy type of point: Point3f, Point3d, Vector3d, etc
  */
  // 3d line equation: p(x, y, z) = p0(x0, y0, z0) + t * v(a, b, c), where v = p1 - p0
-template <typename PointTy> struct NumericLineIntersectResidual final : IntersectResidual<PointTy> {
+template <typename PointTy> 
+struct NumericLineIntersectResidual final : IntersectResidual<PointTy> {
   enum { eDiffAlg = ct::kNumericDiff };
 
   NumericLineIntersectResidual() {}
@@ -359,7 +363,8 @@ class  AnalyticSphereIntersectCostFunc final: ceres::DynamicCostFunction {
  *  \param SphereType type of sphere: Circle3f, Circle3d, etc
  */
  // 3d sphere equation: r = distance(p(x, y, z), p0(x0, y0, z0))
-template <typename SphereType> struct AutoSphereIntersectResidual final : IntersectResidual<SphereType> {
+template <typename SphereType> 
+struct AutoSphereIntersectResidual final : IntersectResidual<SphereType> {
   AutoSphereIntersectResidual(const SphereType* sphs, const int numSphs) : IntersectResidual<SphereType>(sphs, numSphs) {}
   ~AutoSphereIntersectResidual() = default;
 };
@@ -370,7 +375,8 @@ template <typename SphereType> struct AutoSphereIntersectResidual final : Inters
  *  \param SphereType type of sphere: Circle3f, Circle3d, etc
  */
  // 3d sphere equation: r = distance(p(x, y, z), p0(x0, y0, z0))
-template <typename SphereType> struct NumericSphereIntersectResidual final : IntersectResidual<SphereType> {
+template <typename SphereType> 
+struct NumericSphereIntersectResidual final : IntersectResidual<SphereType> {
   NumericSphereIntersectResidual(const SphereType* sphs, const int numSphs) : IntersectResidual<SphereType>(sphs, numSphs) {}
   ~NumericSphereIntersectResidual() = default;
 };
@@ -398,8 +404,9 @@ template <typename SphereType> struct NumericSphereIntersectResidual final : Int
  */
 template <typename GeomTy,
   template <typename GTy = GeomTy> class ResidualPolicy, class LossPolicy = void>
-bool IntersectGeometries(const GeomTy* geoms, const int numGeoms, std::vector<double>& pb,
-  const Solver::Options& options, Solver::Summary& summary, LossPolicy* lossFunc = nullptr) {
+bool IntersectGeometries(const GeomTy* geoms, const int numGeoms, 
+  std::vector<double>& pb, const Solver::Options& options, 
+  Solver::Summary& summary, LossPolicy* lossFunc = nullptr) {
   using CostFunctor = ResidualPolicy<GeomTy>;
   static_assert(std::is_base_of_v<IResidual, CostFunctor>, "IResidual");
   static_assert(std::is_base_of_v<LossFunction, LossPolicy> || std::is_void_v<LossPolicy>, "LossFunction");
@@ -495,7 +502,8 @@ public:
    *  \param [in] numSegs number of line segments given by segs, must be 2
    *  \return Return true if successful, false if parallel.
    */
-  inline bool IntersectEigen(const Point3d* segs, Point3d& p, const int = 2) const override {
+  inline bool IntersectEigen(const Point3d* segs, Point3d& p, 
+    const int = 2) const override {
     return IntersectEigen(segs, segs + 2, p);
   }
 
@@ -544,7 +552,8 @@ public:
    *  \param [in] numSegs number of line segments given by segs, must be 3
    *  \return Return true if successful, false if parallel.
    */
-  inline bool IntersectEigen(const Point3d * segs, Point3d & p, const int = 3) const override {
+  inline bool IntersectEigen(const Point3d * segs, Point3d& p, 
+    const int = 3) const override {
     return IntersectEigen(segs, segs + 2, segs + 4, p);
   }
 
@@ -593,7 +602,8 @@ public:
    *  \param [in] numSegs number of line segments given by segs, must be 2+
    *  \return Return true if successful, false if parallel.
    */
-  bool IntersectEigen(const Point3d* segs, Point3d& p, const int numSegs) const override;
+  bool IntersectEigen(const Point3d* segs, Point3d& p, 
+    const int numSegs) const override;
 };
 
 // helper free functions
@@ -613,7 +623,8 @@ inline EXCORE_EXPORTS bool IntersectTwoLines(const Point3d* segs,
  *
  *  \return Return true if successful, false if parallel.
  */
-inline EXCORE_EXPORTS bool IntersectTwoLines(const Point3d* s1, const Point3d* s2, Point3d& p) {
+inline EXCORE_EXPORTS bool IntersectTwoLines(const Point3d* s1, 
+  const Point3d* s2, Point3d& p) {
   XTwoLines xl;
   return xl.IntersectEigen(s1, s2, p);
 }
@@ -623,8 +634,8 @@ inline EXCORE_EXPORTS bool IntersectTwoLines(const Point3d* s1, const Point3d* s
  *
  *  \return Return true if successful, false if parallel.
  */
-inline EXCORE_EXPORTS bool IntersectThreeLines(const Point3d* s1, const Point3d* s2,
-  const Point3d* s3, Point3d& p) {
+inline EXCORE_EXPORTS bool IntersectThreeLines(const Point3d* s1, 
+  const Point3d* s2, const Point3d* s3, Point3d& p) {
   XThreeLines xl;
   return xl.IntersectEigen(s1, s2, s3, p);
 }

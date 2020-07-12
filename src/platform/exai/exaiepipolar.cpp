@@ -37,7 +37,6 @@ int ExaiEpipolar::Execute() {
   }
 
   EpipolarOptions epiOptions;
-
   epiOptions.sensorName = vm["sensorname"].as<std::string>();
   const auto st = SensorNameToType(epiOptions.sensorName);
   if (SensorType::eRATIONAL != st && SensorType::eFRAME != st) {
@@ -46,7 +45,6 @@ int ExaiEpipolar::Execute() {
 
   epiOptions.leftImgFile = vm["leftimg"].as<std::string>();
   epiOptions.rightImgFile = vm["rightimg"].as<std::string>();
-
   epiOptions.bands = vm["bands"].as<std::vector<int>>();
   epiOptions.sample = vm["sample"].as<int>();
   epiOptions.outPath = vm["outdir"].as<std::string>();

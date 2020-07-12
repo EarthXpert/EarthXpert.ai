@@ -163,8 +163,6 @@ void StereoModel::SetForwardAlgorithm(const ForwardAlgo fwdAlgo) {
  *  \param [in] rightImages a list of corresponding 2d position (x,
  * y) in right sensor raster coordinate system 
  *  \param [in/out] grounds a list of 3d ground positions (X, Y, Z) in ground coordinate system
- *
- *  \details
  */
 size_t StereoModel::ImageToGround(const std::vector<Point2d> &leftImages,
   const std::vector<Point2d> &rightImages, std::vector<Point3d> &grounds) const {
@@ -192,8 +190,6 @@ size_t StereoModel::ImageToGround(const std::vector<Point2d> &leftImages,
  * imagery raster coordinate systems, interleaved by sensor models. 
  *  \param [in/out] grounds List of 3d ground positions (X, Y, Z) in ground coordinate
  * system
- *
- *  \details
  */
 size_t StereoModel::ImageToGround(const std::vector<Point2d> &images, 
   std::vector<Point3d> &grounds) const {
@@ -227,8 +223,6 @@ size_t StereoModel::ImageToGround(const std::vector<Point2d> &images,
  *  \param [in] ground 3d position (X, Y, Z) in ground coordinate system
  *  \param [out] image 2d position (x, y) in imagery raster coordinate system 
  *  \return Returns true if operation succeeds
- *
- *  \details
  */
 bool StereoModel::GroundToImage(const Point3d &ground, 
   std::vector<Point2d> &image) const {
@@ -251,8 +245,6 @@ bool StereoModel::GroundToImage(const Point3d &ground,
  *  \param [in] grounds List of 3d ground positions (X, Y, Z)
  *  \param [in/out] images List of 2d positions (x, y) on image,
  * interleaved by sensor models
- *
- *  \details
  */
 size_t StereoModel::GroundToImage(const std::vector<Point3d> &grounds, 
   std::vector<Point2d> &images) const {

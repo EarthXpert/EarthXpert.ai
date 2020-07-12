@@ -63,19 +63,19 @@ public:
   const auto& GetSensorModels() const noexcept { return mModels; }
 
   /**
+   *  clang-format off
    *  Image-to-ground backward projection (fixed).
    *
    *  \brief Given a pair of sensor models and associated 2d positions
    *  in image coordinate system, do forward intersection of pair-rays, and
    *  output the ground position with respect to the ground coordinate system.
    *
-   *  \param [in] leftImage 2d position (x, y) in left image raster coordinate
-   * system
+   *  \param [in] leftImage 2d position (x, y) in left image raster coordinate system
    *  \param [in] rightImage the corresponding 2d position (x, y) in right image
-   * raster coordinate system
-   *  \param [in/out] ground 3d ground position (X, Y, Z) in ground coordinate
-   * system 
+   *              raster coordinate system
+   *  \param [in/out] ground 3d ground position (X, Y, Z) in ground coordinate system 
    *  \return Returns true if the operation succeeds
+   *  clang-format on
    */
   virtual bool ImageToGround(const Point2d &leftImage,
     const Point2d &rightImage, Point3d &ground) const override {
@@ -183,8 +183,8 @@ public:
    *
    *  \param [in] sensorModels an array of sensor models.
    *  \param [in] images the corresponding 2d positions (x, y) in
-   * imagery raster coordinate systems, interleaved by sensor models. \param
-   * [in/out] ground 3d ground position (X, Y, Z) in ground coordinate system
+   * imagery raster coordinate systems, interleaved by sensor models. 
+   *  \param [in/out] ground 3d ground position (X, Y, Z) in ground coordinate system
    *  \return Returns true if the operation succeeds
    */
   virtual bool ImageToGround(const std::vector<const ISensorModel*>& sensorModels,
@@ -228,8 +228,8 @@ public:
    *
    *  \param [in] sensorModels an array of sensor models.
    *  \param [in] ground 3d position (X, Y, Z) in ground coordinate system
-   *  \param [out] images 2d position (x, y) in imagery raster
-   * coordinate system \return Returns true if operation succeeds
+   *  \param [out] images 2d position (x, y) in imagery raster coordinate system 
+   *  \return Returns true if operation succeeds
    */
   virtual bool GroundToImage(const std::vector<const ISensorModel*>& sensorModels,
     const Point3d& ground, std::vector<Point2d>& images) const {
