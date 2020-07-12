@@ -14,6 +14,7 @@ message(STATUS "SLTBENCH_LIBS: ${SLTBENCH_LIBS}")
 add_definitions(-DEX3RDPARTY_API)
 earthxpert_add_library(ex3rdparty "api"
   SRCS "boost/exboost.cpp"
+       "ceres/bal_problem.cpp"
        "ceres/exceres.cpp"
        "cgal/excgal.cpp"
        "eigen/exeigen.cpp"
