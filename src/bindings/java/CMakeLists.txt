@@ -6,7 +6,7 @@ function(earthxpert_add_java_library name libs_dir)
 
 endfunction()
 
-earthxpert_add_java_library(exjava "bindings"
+earthxpert_add_java_library(exjava "bindings/java"
   SRCS "exjava.cpp"
   ITEMS ex3rdparty core dataio epipolar epipolarmodel marshaller sensormodel
         Boost::python37 ${GDAL_LIBRARY} ${GETTEXT_LIBRARY})

@@ -1,7 +1,7 @@
 project(tests_performance)
 
 function(add_performance_test name)
-  earthxpert_add_test(${name} "tests_performance" ${ARGN})
+  earthxpert_add_test(${name} "tests/performance" ${ARGN})
 endfunction()
 
 add_definitions(-D_USE_MATH_DEFINES)

@@ -4,7 +4,7 @@
  */
 #pragma once
 
-#include "epipolarmodel/igroundpolicy.h"
+#include "core/spatialref/igroundpolicy.h"
 #include "core/exceptions/exexcept.h"
 #include "core/spatialref/earthellipsoid.h"
 #include "core/utils/unitutils.h"
@@ -20,8 +20,8 @@ constexpr int kAU_RADIAN = 2;
 
 // linear unit
 constexpr int kLU_FEET = 0;
-constexpr int kLU_METER = 2;
-constexpr int kLU_USFEET = 3;
+constexpr int kLU_METER = 1;
+constexpr int kLU_USFEET = 2;
 
 /**
  *  The class GeographicGround offers the ground transformation
@@ -31,7 +31,7 @@ constexpr int kLU_USFEET = 3;
  *  \tparam linearUnit linear unit of vertical coordinate in ground: feet, meter, us_survey_feet
  */
 template <int angleUnit = kAU_RADIAN, int linearUnit = kLU_METER>
-class EXEPIPOLARMODEL_EXPORTS GeographicGround final : public IGroundPolicy {
+class EXCORE_EXPORTS GeographicGround final : public IGroundPolicy {
 public:
   static constexpr SrsType kGroundType = eGEO;
 
@@ -71,13 +71,13 @@ public:
   }
 
   /**
-   *  \brief Given a 3d position in rectification LSR coordinate system,
+   *  \brief Given a 3d position in Cartesian LSR coordinate system,
    *  output the 3d position in model geographic coordinate system.
    *
    *  \param [in] rect 3d position in LSR coordinate system
    *  \return Return 3d position in geographic coordinate system [unit: AngleUnit]
    */
-  Point3d RectToGround(const Point3d &rect) const  override {
+  Point3d CartesianToGround(const Point3d &rect) const  override {
     if constexpr (kAU_DEGREE == angleUnit) {
       return Rad2Deg(mEarthEllip->LSRToLPH(rect));
     }
@@ -91,12 +91,12 @@ public:
 
   /**
    *  \brief Given a 3d position in model geographic coordinate system,
-   *  output the 3d position in rectification LSR coordinate system.
+   *  output the 3d position in Cartesian LSR coordinate system.
    *
    *  \param [in] ground 3d position in geographic coordinate system [unit: AngleUnit]
    *  \return Return 3d position in LSR coordinate system
    */
-  Point3d GroundToRect(const Point3d &ground) const override {
+  Point3d GroundToCartesian(const Point3d &ground) const override {
     if constexpr (kAU_DEGREE == angleUnit) {
       return mEarthEllip->LPHToLSR(Deg2Rad(ground));
     }
@@ -129,12 +129,12 @@ using GeographicGroundRad = GeographicGround<kAU_RADIAN>;
 
 /**
  *  The class LocalGround offers the ground transformation
- *  between the model LSR and the rectification LSR coordinates.
+ *  between the model LSR and the Cartesian LSR coordinates.
  *
  *  \tparam linearUnit linear unit of vertical coordinate in ground: feet, meter, us_survey_feet
  */
 template <int linearUnit = kLU_METER>
-class EXEPIPOLARMODEL_EXPORTS LocalGround final : public IGroundPolicy{
+class EXCORE_EXPORTS LocalGround final : public IGroundPolicy{
 public:
   static constexpr SrsType kGroundType = eLOCAL;
 
@@ -158,22 +158,22 @@ public:
   bool operator!=(const LocalGround& rhs) const;
 
   /**
-   *  \brief Given a 3d position in rectification LSR coordinate system,
+   *  \brief Given a 3d position in Cartesian LSR coordinate system,
    *  output the 3d position in model LSR coordinate system.
    *
-   *  \param [in] rect 3d position in rectification LSR coordinate system
+   *  \param [in] rect 3d position in Cartesian LSR coordinate system
    *  \return Return 3d position in model LSR coordinate system
    */
-  Point3d RectToGround(const Point3d& rect) const  override;
+  Point3d CartesianToGround(const Point3d& rect) const override;
 
   /**
    *  \brief Given a 3d position in model LSR coordinate system,
-   *  output the 3d position in rectification LSR coordinate system.
+   *  output the 3d position in Cartesian LSR coordinate system.
    *
    *  \param [in] ground 3d position in model LSR coordinate system
-   *  \return Return 3d position in rectification LSR coordinate system
+   *  \return Return 3d position in Cartesian LSR coordinate system
    */
-  Point3d GroundToRect(const Point3d& ground) const override;
+  Point3d GroundToCartesian(const Point3d& ground) const override;
 
   /**
    * \return Return type of ground policy
@@ -195,12 +195,12 @@ using LocalGroundUf = LocalGround<kLU_USFEET>;
 
 /**
  *  The class MapGround offers the ground transformation
- *  between the model map and the rectification map coordinates.
+ *  between the model map and the Cartesian map coordinates.
  *
  *  \tparam linearUnit linear unit of vertical coordinate in ground: feet, meter, us_survey_feet
  */
 template <int linearUnit = kLU_METER>
-class EXEPIPOLARMODEL_EXPORTS MapGround final : public IGroundPolicy {
+class EXCORE_EXPORTS MapGround final : public IGroundPolicy {
 public:
   static constexpr SrsType kGroundType = eMAP;
 
@@ -224,22 +224,22 @@ public:
   bool operator!=(const MapGround& rhs) const;
 
   /**
-   *  \brief Given a 3d position in rectification map coordinate system,
+   *  \brief Given a 3d position in Cartesian map coordinate system,
    *  output the 3d position in model map coordinate system.
    *
-   *  \param [in] rect 3d position in rectification map coordinate system
+   *  \param [in] rect 3d position in Cartesian map coordinate system
    *  \return Return 3d position in model map coordinate system
    */
-  Point3d RectToGround(const Point3d& rect) const  override;
+  Point3d CartesianToGround(const Point3d& rect) const override;
 
   /**
    *  \brief Given a 3d position in model map coordinate system,
-   *  output the 3d position in rectification map coordinate system.
+   *  output the 3d position in Cartesian map coordinate system.
    *
    *  \param [in] ground 3d position in model map coordinate system
-   *  \return Return 3d position in rectification map coordinate system
+   *  \return Return 3d position in Cartesian map coordinate system
    */
-  Point3d GroundToRect(const Point3d& ground) const override;
+  Point3d GroundToCartesian(const Point3d& ground) const override;
 
   /**
    * \return Return type of ground policy

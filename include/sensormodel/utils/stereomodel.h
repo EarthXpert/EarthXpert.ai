@@ -9,7 +9,7 @@
 #include "core/exceptions/exexcept.h"
 #include "core/math/iintersect.h"
 #include "core/spatialref/earthellipsoid.h"
-#include "core/spatialref/spatialdef.h"
+#include "core/spatialref/groundpolicy.h"
 
 #include <cassert>
 
@@ -23,9 +23,13 @@ class ISensorModel;
  *  rays from a block of sensor geometry models are used to implement
  *    forward intersection and backward projection in the network.
  *
- *  \todo revist the design for variable number of rays, specifily, 
+ *  \tparam GroundPolicy defines the behaviour of and relationshp between
+ *  the model coordinate system and the rectification coordinate system
+ *
+ *  \todo revist the design for variable number of rays, specifily,
  *  changing freaquently for matched key points: anohter class VariableStereoModel? 
  */
+//template <class GroundPolicy>
 class EXSENSORMODEL_EXPORTS StereoModel : public IStereoModel {
 public:
   /**

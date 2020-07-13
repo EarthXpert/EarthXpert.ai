@@ -59,7 +59,7 @@ EpipolarModel<GroundPolicy>::EpipolarModel(std::shared_ptr<ISensorModel> sensorM
 template <class GroundPolicy>
 bool EpipolarModel<GroundPolicy>::EpiToRaw(const Point2d &epi, Point2d &raw) const {
   const Point2d rect = mEpiRect->EpiToRect(epi);
-  const Point3d ground = mGroundPolicy->RectToGround(Point3d(rect.x, rect.y, mHeight));
+  const Point3d ground = mGroundPolicy->CartesianToGround(Point3d(rect.x, rect.y, mHeight));
   return mSensorModel->GroundToImage(ground, raw);
 }
 
@@ -105,7 +105,7 @@ EpipolarModel<GroundPolicy>::RawToRect(const Point2d &raw, Point2d &rect) const 
     if (!mSensorModel->ImageToGround(raw, ground))
       return std::nullopt;
     
-    rect3 = mGroundPolicy->GroundToRect(ground);
+    rect3 = mGroundPolicy->GroundToCartesian(ground);
     const double dz = mHeight - rect3.z;
     ground.z += dz;
 

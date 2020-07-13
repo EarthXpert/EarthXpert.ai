@@ -6,8 +6,8 @@
 
 #include "epipolarmodel/epipolarsensormodel.h"
 #include "core/math/interpgrid.h"
+#include "core/spatialref/groundpolicy.h"
 #include "epipolarmodel/epipolarrect.h"
-#include "epipolarmodel/groundpolicy.h"
 
 #include <optional>
 

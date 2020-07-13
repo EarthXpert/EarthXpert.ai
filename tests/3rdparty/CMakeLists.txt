@@ -1,7 +1,7 @@
 project(tests_3rdparty)
 
 function(add_3rdparty_test name)
-  earthxpert_add_test(${name} "tests_3rdparty" ${ARGN})
+  earthxpert_add_test(${name} "tests/3rdparty" ${ARGN})
 endfunction()
 
 add_subdirectory(boost)
