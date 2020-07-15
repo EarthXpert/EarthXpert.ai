@@ -86,6 +86,11 @@ public:
   void BuildPyramids() override;
 
   /**
+   *  \return Returns the RasterReader object.
+   */
+  RasterReader* GetReader() { return mReader.get(); }
+
+  /**
    *  \return Returns metadata tags
    */
   std::unique_ptr<RasterMetadata> GetMetadata() const override {

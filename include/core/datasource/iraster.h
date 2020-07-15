@@ -18,7 +18,7 @@ namespace earthxpert {
  */
 class EXCORE_EXPORTS IRaster {
 public:
-  virtual ~IRaster() {}
+  virtual ~IRaster() = default;
 
   /**
    *  The RasterType defines the raster data structure

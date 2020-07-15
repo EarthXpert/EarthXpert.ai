@@ -15,7 +15,7 @@
 #include <map>
 
 namespace earthxpert {
-// field group
+// field group and traits
 struct FieldGroup : std::bitset<8> {
   // position
   static constexpr size_t kPOSXYZ = 0;    // kPDF0 ~ kPDF10
@@ -197,13 +197,13 @@ struct GPSTime {
 };
 
 /**
- *  The structure WxPoint stores 3D coordinates, classification, and
+ *  The structure ExPoint stores 3D coordinates, classification, and
  *  optional relevant fields of laser point record.
  *
  *  \tparam Fields the pack of fields group.
  */
 template <typename... Fields>
-struct WxPoint : Fields... {
+struct ExPoint : Fields... {
   static constexpr int kNumFields = sizeof...(Fields);
 
   static_assert(0 < kNumFields, "Empty fields");
@@ -213,27 +213,27 @@ struct WxPoint : Fields... {
 
 // XYZ
 template <typename CoordTy>
-using Point = WxPoint<XYZ<CoordTy>>;
+using Point = ExPoint<XYZ<CoordTy>>;
 
 // XYZ, classification
 template <typename CoordTy>
-using CPoint = WxPoint<XYZ<CoordTy>, Classification>;
+using CPoint = ExPoint<XYZ<CoordTy>, Classification>;
 
 // XYZ, intensity, classification
 template <typename CoordTy>
-using CIPoint = WxPoint<XYZ<CoordTy>, Intensity, Classification>;
+using CIPoint = ExPoint<XYZ<CoordTy>, Intensity, Classification>;
 
 // XYZ, RGB, classification
 template <typename CoordTy, typename ColorTy>
-using CRGBPoint = WxPoint<XYZ<CoordTy>, RGB<ColorTy>, Classification>;
+using CRGBPoint = ExPoint<XYZ<CoordTy>, RGB<ColorTy>, Classification>;
 
 // XYZ, RGBN, classification
 template <typename CoordTy, typename ColorTy>
-using CRGBNPoint = WxPoint<XYZ<CoordTy>, RGBN<ColorTy>, Classification>;
+using CRGBNPoint = ExPoint<XYZ<CoordTy>, RGBN<ColorTy>, Classification>;
 
 // time, XYZ
 template <typename CoordTy>
-using PointT = WxPoint<GPSTime, XYZ<CoordTy>>;
+using PointT = ExPoint<GPSTime, XYZ<CoordTy>>;
 
 // typical usages
 using XYZF = XYZ<float>;

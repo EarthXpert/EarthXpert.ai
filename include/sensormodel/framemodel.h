@@ -28,6 +28,8 @@ public:
   using PolicyType = ImageModelPolicy;
 
   /**
+   *  Constructor.
+   *
    *  \brief Construct a geometry model considering corrections from
    *  various effects, such as atmospheric refraction, earth curvature, etc.
    *
@@ -41,8 +43,6 @@ public:
              std::shared_ptr<FrameCP> frameCP);
 
   /**
-   *  Constructor.
-   *
    *  \brief Construct a simple pin-hole geometry model.
    *
    *  \param [in] imageModel transformation between focal plane and imagery

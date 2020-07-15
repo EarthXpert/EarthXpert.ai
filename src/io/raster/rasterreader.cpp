@@ -95,7 +95,16 @@ int64 RasterReader::GetRasterBufferNumBytes(const int numCols,
   const int numRows) const noexcept {
   const auto bufNumCols = numCols + mMarginCols * 2;
   const auto bufNumRows = numRows + mMarginRows * 2;
-  return (int64(CV_ELEM_SIZE(mCvDT)) * int64(bufNumCols) * int64(bufNumRows));
+  return GetRasterBufferNumBytes(int64(bufNumCols) * int64(bufNumRows));
+}
+
+/**
+ *  \param [in] numPix number of pixels
+ *
+ *  \return Return number of bytes to accomadate the image data of raster object.
+ */
+int64 RasterReader::GetRasterBufferNumBytes(const int64 numPix) const noexcept {
+  return (int64(CV_ELEM_SIZE(mCvDT)) * numPix);
 }
 
 /**

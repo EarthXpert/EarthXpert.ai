@@ -33,11 +33,17 @@ struct EXCORE_EXPORTS RasterWindow {
     numRows += marginRows * 2;
   }
 
+  bool IsValid() const noexcept {
+    return (0 < numCols && 0 < numRows);
+  }
+
+  int64 GetNumPixels() const noexcept { return int64(numCols) * int64(numRows); }
+
   /**
    *  \param [in] rhs Object to test
    *  \return Return true if containing the other object improperly, false otherwise.
    */
-  bool ImproperContain(const RasterWindow& rhs) const {
+  bool ImproperContain(const RasterWindow& rhs) const noexcept {
     if (colOffset > rhs.colOffset) return false;
     if (rowOffset > rhs.rowOffset) return false;
     if (colOffset + numCols < rhs.colOffset + rhs.numCols) return false;

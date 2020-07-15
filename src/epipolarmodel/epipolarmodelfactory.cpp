@@ -3,7 +3,9 @@
  * -----------------------------------------------------------------------------
  */
 #include "epipolarmodel/epipolarmodelfactory.h"
+#include "3rdparty/gettext/exgettext.h"
 #include "core/utils/typehelper.h"
+#include "core/exceptions/exexcept.h"
 #include "epipolarmodel/epipolarmodel.h"
 #include "sensormodel/framemodel.h"
 #include "sensormodel/rationalmodel.h"
@@ -13,7 +15,6 @@
 #include <cassert>
 #include <cmath>
 #include <deque>
-#include <exception>
 
 using namespace earthxpert;
 
@@ -36,7 +37,7 @@ EpiModelPair EpipolarModelFactory::CreateFrameEpiModel(
   std::shared_ptr<ISensorModel> rightModel,
   const int sample, const double height) {
   if (leftModel->GetModelType() != rightModel->GetModelType())
-    throw std::exception("The stereo pair should be of the same sensor type.");
+    throw std::exception(_("The stereo pair should be of the same sensor type."));
   return { nullptr,nullptr };
 }
 
@@ -51,7 +52,7 @@ EpiModelPair EpipolarModelFactory::CreateRationalEpiModel(
   std::shared_ptr<RationalModel> leftModel,
   std::shared_ptr<RationalModel> rightModel, const int sample) {
   if (leftModel->GetModelType() != rightModel->GetModelType())
-    throw std::exception("The stereo pair should be of the same sensor type.");
+    throw std::exception(_("The stereo pair should be of the same sensor type."));
   auto lnfc = leftModel->GetNormalFators();
   auto rnfc = rightModel->GetNormalFators();
 
@@ -83,6 +84,9 @@ EpiModelPair EpipolarModelFactory::CreateRationalEpiModel(
 
   const double offsetY{ std::min(leftEpiMin.y, rightEpiMin.y) };
   const int numRows{ int(std::max(leftEpiMax.y, rightEpiMax.y) - offsetY + 0.5) };
+  if (1 >= numRows) {
+    throw EpipolarError(_("CreateRationalEpiModel: not valid"));
+  }
 
   double leftOffsetX{};
   int leftNumCols{};
@@ -106,6 +110,10 @@ EpiModelPair EpipolarModelFactory::CreateRationalEpiModel(
     break;
   default:
     assert(false && "undefined epipolar option");
+  }
+
+  if (1 >= leftNumCols || 1 >= rightNumCols) {
+    throw EpipolarError(_("CreateRationalEpiModel: not valid"));
   }
 
   auto geoGround = std::make_shared<GeographicGroundDeg>(std::move(earthEllip));

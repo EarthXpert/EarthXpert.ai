@@ -47,6 +47,7 @@ int ExaiEpipolar::Execute() {
   epiOptions.rightImgFile = vm["rightimg"].as<std::string>();
   epiOptions.bands = vm["bands"].as<std::vector<int>>();
   epiOptions.sample = vm["sample"].as<int>();
+  epiOptions.grey = vm["grey"].as<bool>();
   epiOptions.outPath = vm["outdir"].as<std::string>();
   epiOptions.resample = vm["resample"].as<std::string>();
   epiOptions.memSize = size_t(vm["memsize"].as<int>()) * 1000;  // [unit: bytes]
@@ -80,6 +81,7 @@ void ExaiEpipolar::AddRationalOptions(bpo::options_description & optDesc) {
     ("rightmdl,n", bpo::value<std::string>(), "right model file")
     ("bands,b", bpo::value<std::vector<int>>()->multitoken(), "list of bands")
     ("sample,s", bpo::value<int>()->default_value(1), "downsample factor")
+    ("grey,g", bpo::value<bool>()->default_value(true), "convert to grey image")
     ("outdir,o", bpo::value<std::string>()->required(), "output directory")
     ("resample,r", bpo::value<std::string>()->default_value("cubic"), "resample algorithm: bilinear|cubic|gausian")
     ("memsize,e", bpo::value<int>()->default_value(4000), "memory size in MB")

@@ -5,7 +5,7 @@
 #pragma once
 
 #include "core/datasource/iraster.h"
-//#include "core/datasource/rasterwindow.h"
+#include "core/utils/rasterwindow.h"
 
 #include "gdal_priv.h"
 
@@ -210,6 +210,7 @@ public:
   int64 GetBandNumBytes() const noexcept { return mBandNumBytes; }
 
 private:
+  //RasterWindow mRasWin;
   int mNumCols{};               // number of image columns
   int mNumRows{};               // number of image rows
   GDALDataType mDataType{ GDT_Unknown };     // data type of each band
@@ -224,6 +225,7 @@ private:
   // cached temporaries for performance
   int mBpb{};             // bytes occupied by one band
   int mBpp{};             // bytes occupied by one pixel
+  //RasterWindow mBufWin;
   int mBufColOff{};       // col offset of buffer
   int mBufRowOff{};       // row offset of buffer
   int mBufNumCols{};      // buffer cols including image cols, both left and right margins

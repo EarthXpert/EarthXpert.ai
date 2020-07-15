@@ -17,6 +17,8 @@ public:
   ExaiCmd();
   virtual ~ExaiCmd() = default;
 
+  virtual int Execute() = 0;
+
 protected:
 };
 }

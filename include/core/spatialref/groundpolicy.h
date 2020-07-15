@@ -13,16 +13,6 @@
 #include <utility>
 
 namespace earthxpert {
-// angle unit
-constexpr int kAU_DEGREE = 0;
-constexpr int kAU_GON = 1;
-constexpr int kAU_RADIAN = 2;
-
-// linear unit
-constexpr int kLU_FEET = 0;
-constexpr int kLU_METER = 1;
-constexpr int kLU_USFEET = 2;
-
 /**
  *  The class GeographicGround offers the ground transformation
  *  between the geographic and LSR coordinates.
@@ -59,13 +49,11 @@ public:
     }
     return *this;
   }
-
   GeographicGround &operator=(GeographicGround &&rhs) noexcept = default;
 
   bool operator==(const GeographicGround &rhs) const {
     return *mEarthEllip.get() == *(rhs.mEarthEllip.get());
   }
-
   bool operator!=(const GeographicGround &rhs) const {
     return !(operator==(rhs));
   }
@@ -78,15 +66,8 @@ public:
    *  \return Return 3d position in geographic coordinate system [unit: AngleUnit]
    */
   Point3d CartesianToGround(const Point3d &rect) const  override {
-    if constexpr (kAU_DEGREE == angleUnit) {
-      return Rad2Deg(mEarthEllip->LSRToLPH(rect));
-    }
-    else if constexpr (kAU_GON == angleUnit) {
-      return Rad2Gon(mEarthEllip->LSRToLPH(rect));
-    }
-    else {
-      return mEarthEllip->LSRToLPH(rect);
-    }
+    Point3d lsr = LinearUnit<linearUnit>::ToMeter(rect);
+    return AngleUnit<angleUnit>::FromRadian(mEarthEllip->LSRToLPH(lsr));
   }
 
   /**
@@ -97,15 +78,8 @@ public:
    *  \return Return 3d position in LSR coordinate system
    */
   Point3d GroundToCartesian(const Point3d &ground) const override {
-    if constexpr (kAU_DEGREE == angleUnit) {
-      return mEarthEllip->LPHToLSR(Deg2Rad(ground));
-    }
-    else if constexpr (kAU_GON == angleUnit) {
-      return mEarthEllip->LPHToLSR(Gon2Rad(ground));
-    }
-    else {
-      return mEarthEllip->LPHToLSR(ground);
-    }
+    Point3d lph = AngleUnit<angleUnit>::ToRadian(ground);
+    return LinearUnit<linearUnit>::FromMeter(mEarthEllip->LPHToLSR(lph));
   }
 
   /**
@@ -141,7 +115,7 @@ public:
   /**
    *  \brief Constructor.
    *
-   *  \param [in]
+   *  \param [in] origin 
    */
   LocalGround(const Point3d& origin);
 
@@ -150,11 +124,9 @@ public:
   ~LocalGround() = default;
 
   LocalGround& operator=(const LocalGround& rhs);
-
   LocalGround& operator=(LocalGround&& rhs) noexcept;
 
   bool operator==(const LocalGround& rhs) const;
-
   bool operator!=(const LocalGround& rhs) const;
 
   /**
@@ -183,6 +155,7 @@ public:
   }
 
 private:
+  // 3D similarity transformation
   Point3d mOrigin{ 0.0, 0.0, 0.0 }; // origin XYZ
 
   void CopyFrom(const LocalGround& rhs);
@@ -207,7 +180,7 @@ public:
   /**
    *  \brief Constructor.
    *
-   *  \param [in]
+   *  \param [in] origin 
    */
   MapGround(const Point3d& origin);
 
@@ -216,11 +189,9 @@ public:
   ~MapGround() = default;
 
   MapGround& operator=(const MapGround& rhs);
-
   MapGround& operator=(MapGround&& rhs) noexcept;
 
   bool operator==(const MapGround& rhs) const;
-
   bool operator!=(const MapGround& rhs) const;
 
   /**
@@ -249,6 +220,7 @@ public:
   }
 
 private:
+  // 2D similarity transformation
   Point3d mOrigin{ 0.0, 0.0, 0.0 }; // origin XYZ
 
   void CopyFrom(const MapGround& rhs);

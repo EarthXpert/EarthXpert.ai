@@ -73,6 +73,9 @@ void GenerateRationalEpipolar(const EpipolarOptions& epiOpt) {
   auto format = leftReader.GetFileFormat();
   auto gdalDT = leftReader.GetDataType();
   auto numBands = leftReader.GetNumBands();
+  if (epiOpt.grey && 3 == numBands) {
+    numBands = 1;
+  }
 
   auto rasResample = std::make_unique<RasterResample>(epiOpt.resample);
   EpipolarGenerator epiGen(rasResample.get(), epiOpt.memSize);

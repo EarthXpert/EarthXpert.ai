@@ -24,7 +24,7 @@ class ISensorModel;
  *    forward intersection and backward projection in the network.
  *
  *  \tparam GroundPolicy defines the behaviour of and relationshp between
- *  the model coordinate system and the rectification coordinate system
+ *  the model coordinate system and the Cartesian coordinate system
  *
  *  \todo revist the design for variable number of rays, specifily,
  *  changing freaquently for matched key points: anohter class VariableStereoModel? 

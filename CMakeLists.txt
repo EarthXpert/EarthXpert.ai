@@ -339,3 +339,5 @@ endif()
 option(EARTHXPERT_INSTALL_PACKAGES_3RDPARTY "install 3rdparty packages" OFF)
 if(EARTHXPERT_INSTALL_PACKAGES_3RDPARTY)
 endif()
+
+include(CPack)

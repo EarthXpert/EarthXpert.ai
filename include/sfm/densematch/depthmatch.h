@@ -6,8 +6,11 @@
 
 #include "sfm/densematch/densematch.h"
 #include "sfm/densematch/depthmatchtypes.h"
-#include "sfm/densematch/icostfunc.h"
-#include "sfm/densematch/ineighborhood.h"
+#include "sfm/densematch/censuscostfunc.h"
+#include "sfm/densematch/micostfunc.h"
+#include "sfm/densematch/rankcostfunc.h"
+#include "sfm/densematch/circleneighbor.h"
+#include "sfm/densematch/rectneighbor.h"
 
 #include <algorithm>
 #include <cassert>

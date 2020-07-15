@@ -125,6 +125,8 @@ public:
    */
   int64 GetRasterBufferNumBytes(int numCols, int numRows) const noexcept;
 
+  int64 GetRasterBufferNumBytes(int64 numPix) const noexcept;
+
   /**
    *  \brief Reads the entire image.
    *

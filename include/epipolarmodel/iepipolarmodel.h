@@ -4,8 +4,8 @@
  */
 #pragma once
 
-#include "3rdparty/opencv/exopencv.h"
 #include "epipolarmodel/exepipolarmodel.h"
+#include "3rdparty/opencv/exopencv.h"
 
 #include <vector>
 

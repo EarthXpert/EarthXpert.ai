@@ -24,6 +24,7 @@ struct EpipolarOptions {
 
   std::vector<int> bands;
   int sample{ 1 };
+  bool grey{ true };
   std::string outPath;
   std::string resample;
   size_t memSize;  // [unit: bytes]

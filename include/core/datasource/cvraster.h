@@ -5,6 +5,7 @@
 #pragma once
 
 #include "core/datasource/iraster.h"
+#include "core/utils/rasterwindow.h"
 #include "opencv2/core.hpp"
 
 namespace earthxpert {
@@ -18,8 +19,10 @@ public:
   CvRaster(int numCols, int numRows, int dataType,
     int colOffset = 0, int rowOffset = 0, int marginCols = 0, int marginRows = 0, 
     MarginKind marginKind = MarginKind::eCONSTANT);
+  CvRaster(int numCols, int numRows, int dataType, int colOffset, int rowOffset, 
+    int marginCols, int marginRows, MarginKind marginKind, uchar* buffer);
   CvRaster(int numCols, int numRows, int dataType,
-    int colOffset, int rowOffset, int marginCols, int marginRows, MarginKind marginKind, uchar* buffer);
+    int colOffset, int rowOffset, uchar* buffer);
   CvRaster(int numCols, int numRows, int dataType, uchar* buffer);
   CvRaster(const CvRaster& rhs) = default;
   CvRaster(CvRaster&& rhs) noexcept = default;  // TODO
@@ -175,6 +178,7 @@ public:
   int64 GetRowNumBytes() const noexcept { return mRowNumBytes; }
 
 private:
+  //RasterWindow mRasWin;
   int mNumCols{};               // number of image columns
   int mNumRows{};               // number of image rows
   int mDataType{ CV_8UC1 };     // data type of each band
@@ -189,6 +193,7 @@ private:
   // cached temporaries for performance
   int mBpb{};             // bytes occupied by one band
   int mBpp{};             // bytes occupied by one pixel
+  //RasterWindow mBufWin;
   int mBufColOff{};       // col offset of buffer
   int mBufRowOff{};       // row offset of buffer
   int mBufNumCols{};      // buffer cols including image cols, both left and right margins

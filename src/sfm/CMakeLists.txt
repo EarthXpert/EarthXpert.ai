@@ -5,6 +5,8 @@ earthxpert_add_library(sfm "api"
   SRCS "densematch/circleneighbor.cpp"
        "densematch/densematch.cpp"
        "densematch/densematchfactory.cpp"
+       "densematch/depthmatch.cpp"
+       "densematch/disparitymatch.cpp"
        "densematch/rectneighbor.cpp"
        "sparsematch/sparsematch.cpp"
   ITEMS ex3rdparty core dataio epipolarmodel sensormodel

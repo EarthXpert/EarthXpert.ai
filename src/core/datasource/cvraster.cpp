@@ -60,6 +60,23 @@ CvRaster::CvRaster(const int numCols, const int numRows,
  *  \param [in] numRows image height
  *  \param [in] numBands number of bands/channels
  *  \param [in] dataType data type of elements in a band
+ *  \param [in] colOffset col offset of first pixel
+ *  \param [in] rowOffset row offset of first pixel
+ *  \param [in] buffer pointer to pre-allocted buffer
+ */
+CvRaster::CvRaster(const int numCols, const int numRows,
+  const int dataType, const int colOffset, const int rowOffset, uchar* buffer)
+  : CvRaster(numCols, numRows, dataType, colOffset, rowOffset, 0, 0, MarginKind::eCONSTANT, buffer) {
+}
+
+/**
+ *  \brief Construct raster object by passing an existing memory buffer.
+ * The caller is resposible for the management of the passed buffer.
+ *
+ *  \param [in] numCols image width [unit: pixels]
+ *  \param [in] numRows image height
+ *  \param [in] numBands number of bands/channels
+ *  \param [in] dataType data type of elements in a band
  *  \param [in] buffer pointer to pre-allocted buffer
  */
 CvRaster::CvRaster(const int numCols, const int numRows, 
