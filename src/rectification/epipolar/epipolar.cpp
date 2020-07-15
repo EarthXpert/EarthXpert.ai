@@ -73,19 +73,18 @@ void GenerateRationalEpipolar(const EpipolarOptions& epiOpt) {
   auto format = leftReader.GetFileFormat();
   auto gdalDT = leftReader.GetDataType();
   auto numBands = leftReader.GetNumBands();
-  if (epiOpt.grey && 3 == numBands) {
-    numBands = 1;
-  }
 
-  auto rasResample = std::make_unique<RasterResample>(epiOpt.resample);
+  const int epiNumBands = (epiOpt.grey && 3 == numBands) ? 1 : numBands;
+
+  auto rasResample = std::make_unique<RasterResampleCV>(epiOpt.resample);
   EpipolarGenerator epiGen(rasResample.get(), epiOpt.memSize);
 
   // generate left epipolar image
   detail::GenerateEpipolar(epiOpt.leftImgFile, &epiGen, &leftReader,
-    leftEpiModel.get(), epiOpt.outPath, format, gdalDT, numBands);
+    leftEpiModel.get(), epiOpt.outPath, format, gdalDT, epiNumBands);
 
   // generate right epipolar image
   detail::GenerateEpipolar(epiOpt.rightImgFile, &epiGen, &rightReader,
-    rightEpiModel.get(), epiOpt.outPath, format, gdalDT, numBands);
+    rightEpiModel.get(), epiOpt.outPath, format, gdalDT, epiNumBands);
 }
 }

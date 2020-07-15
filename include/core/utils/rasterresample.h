@@ -5,13 +5,18 @@
 #pragma once
 
 #include "core/utils/irasterresample.h"
+
+#include <stdexcept>
 #include <string>
 
 namespace earthxpert {
 /**
  *  The class RasterResample implements behavior given a resampling kernel
  *  using OpenCV remap as backend.
+ *
+ *  \tparam algoBackend Specify the backend implementation
  */
+template <int algoBackend = IRasterResample::eAB_CV>
 class EXCORE_EXPORTS RasterResample final : public IRasterResample {
 public:
   RasterResample(const std::string& algo);
@@ -24,12 +29,32 @@ public:
 
   int GetWinDim() const noexcept override;
 
-  void Resample(CvRaster& srcRaster, CvRaster& tgtRaster, CvRaster& posRaster) const override;
-  void Resample(cv::Mat& srcRaster, cv::Mat& tgtRaster, cv::Mat& posRaster) const override;
+  void Resample(CvRaster& srcRaster, CvRaster& tgtRaster, CvRaster& posRaster) const override {
+    if constexpr (eAB_CV == algoBackend) {
+      ResampleCV(srcRaster, tgtRaster, posRaster);
+    }
+    else {
+      throw std::invalid_argument("RasterResample: backend algorithm not supported");
+    }
+  }
+
+  void Resample(cv::Mat& srcMat, cv::Mat& tgtMat, cv::Mat& posMat) const override {
+    if constexpr (eAB_CV == algoBackend) {
+      ResampleCV(srcMat, tgtMat, posMat);
+    }
+    else {
+      throw std::invalid_argument("RasterResample: backend algorithm not supported");
+    }
+  }
 
 private:
   cv::InterpolationFlags mInterpAlgo{ cv::INTER_CUBIC }; // interpolation algorithm
   cv::BorderTypes mBorderType{ cv::BORDER_CONSTANT };
   cv::Scalar mBorderValue{ cv::Scalar::all(0) };
+
+  void ResampleCV(CvRaster& srcRaster, CvRaster& tgtRaster, CvRaster& posRaster) const;
+  void ResampleCV(cv::Mat& srcMat, cv::Mat& tgtMat, cv::Mat& posMat) const;
 };
+
+using RasterResampleCV = RasterResample<IRasterResample::eAB_CV>;
 }

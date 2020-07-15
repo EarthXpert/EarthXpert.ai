@@ -83,7 +83,7 @@ private:
   int mImgNumRows{};
   int mImgCvDT{};
 
-  IEpipolarModel* mEpiModel{};
+  const IEpipolarModel* mEpiModel{};
   RasterWriter* mEpiWriter{};
   int mEpiNumCols{};
   int mEpiNumRows{};

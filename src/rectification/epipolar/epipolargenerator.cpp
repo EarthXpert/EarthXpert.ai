@@ -30,7 +30,7 @@ EpipolarGenerator::EpipolarGenerator(const IRasterResample* rasResample,
  *  \return Returns true if operation succeeds
  */
 bool EpipolarGenerator::Process(IRasterReader *const img,
-  IEpipolarModel const *const epiModel, IRasterWriter *const epi) {
+  IEpipolarModel const* epiModel, IRasterWriter *const epi) {
   try {
     SetImageParams(img);
     SetEpipolarParams(epiModel, epi);
@@ -52,7 +52,7 @@ void EpipolarGenerator::SetImageParams(IRasterReader* const img) {
 }
 
 void EpipolarGenerator::SetEpipolarParams(
-  IEpipolarModel const* const epiModel, IRasterWriter* const epi) {
+  IEpipolarModel const* epiModel, IRasterWriter* const epi) {
   assert(epiModel);
   mEpiModel = epiModel;
 
@@ -79,12 +79,12 @@ void EpipolarGenerator::LayoutTiles() {
     epiCorners[2] = Point2d(colOffset + numCols, rowOffset);
     epiCorners[3] = Point2d(colOffset + numCols, rowOffset + numRows / 2);
     epiCorners[4] = Point2d(colOffset + numCols, rowOffset + numRows);
-    epiCorners[5] = Point2d(colOffset + numCols / 2, rowOffset + numRows;
+    epiCorners[5] = Point2d(colOffset + numCols / 2, rowOffset + numRows);
     epiCorners[6] = Point2d(colOffset, rowOffset + numRows);
     epiCorners[7] = Point2d(colOffset, rowOffset + numRows / 2);
 
-    double minImgX{ mImgNumCols };
-    double minImgY{ mImgNumRows };
+    double minImgX = mImgNumCols;
+    double minImgY = mImgNumRows;
     double maxImgX{};
     double maxImgY{};
 
@@ -130,10 +130,13 @@ void EpipolarGenerator::LayoutTiles() {
   AllocateBuffers();
 }
 
-int64 EpipolarGenerator::GetTilesLimit(
-  const std::vector<RasterWindow>& tiles, const RasterReader* reader) const {
+int64 EpipolarGenerator::GetTilesLimit(const std::vector<RasterWindow>& tiles,
+  const RasterReader* reader) const {
   int maxTileNumPix{ -1 };
-  for (auto tile : tiles) {
+
+  for (auto& tile : tiles) {
+    if (!tile.IsValid()) continue;
+
     const auto tileNumPix = tile.GetNumPixels();
     if (maxTileNumPix < tileNumPix)
       maxTileNumPix = tileNumPix;
@@ -179,39 +182,30 @@ void EpipolarGenerator::ProcessTiles() {
 }
 
 void EpipolarGenerator::ReadTile(const int tileId) {
+  const auto [colOffset, rowOffset, numCols, numRows] = mImgTiles[tileId];
+  if (0 == numCols || 0 == numRows) return;
 
-  RasterWindow imgRw;
-  if (!GetImageRasterWindow(epiRw, epiModel, pos, imgFileCols, imgFileRows, imgRw))
-  {
-    //this epi window has no overlap with the original image
-//      epi->WriteRaster(&epiRaster);
-    continue;
-  }
-
-  const auto imgbufNumBytes = imgReader->GetRasterBufferNumBytes(imgRw.numCols, imgRw.numRows);
-  std::unique_ptr<uchar[]> imgBuffer{ new uchar[imgbufNumBytes] };
-  CvRaster imgRaster(imgRw.numCols, imgRw.numRows, cvDT, imgRw.colOffset, imgRw.rowOffset,
-    marginCols, marginRows, marginKind, imgBuffer.get());
-  imgReader->ReadRaster(&imgRaster);
-
-  cv::Mat map;
-  map.create(epiRw.numRows, epiRw.numCols, CV_32FC2);
-  GetEpiPixelMap(epiModel, pos, epiRw, imgRw, imgFileCols, imgFileRows, map);
-
-  epi->WriteRaster(&epiRaster);
+  CvRaster imgRaster(numCols, numRows, mImgCvDT, colOffset, rowOffset, mImgBuffer.get());
+  mImgReader->ReadRaster(&imgRaster);
 }
 
 void EpipolarGenerator::ProcessTile(const int tileId) {
-  CvRaster imgRaster;
-  CvRaster epiRaster;
-  CvRaster posRaster;
+  const auto [imgColOffset, imgRowOffset, imgNumCols, imgNumRows] = mImgTiles[tileId];
+  if (0 == imgNumCols || 0 == imgNumRows) return;
+  cv::Mat imgMat(imgNumCols, imgNumRows, mImgCvDT, mImgBuffer.get());
 
-  mRasResample->Resample(imgRaster, epiRaster, posRaster);
+  const auto [colOffset, rowOffset, numCols, numRows] = mEpiTiles[tileId];
+  cv::Mat epiMat(numCols, numRows, mEpiCvDT, mEpiBuffer.get());
+
+  cv::Mat posMat(numCols, numRows, 0, mPosBuffer.get());
+  //map.create(epiRw.numRows, epiRw.numCols, CV_32FC2);
+  //GetEpiPixelMap(epiModel, pos, epiRw, imgRw, imgFileCols, imgFileRows, map);
+
+  mRasResample->Resample(imgMat, epiMat, posMat);
 }
 
 void EpipolarGenerator::WriteTile(const int tileId) {
   const auto [colOffset, rowOffset, numCols, numRows] = mEpiTiles[tileId];
-
   CvRaster epiRaster(numCols, numRows, mEpiCvDT, colOffset, rowOffset, mEpiBuffer.get());
   mEpiWriter->WriteRaster(&epiRaster);
 }

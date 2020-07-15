@@ -7,7 +7,6 @@
 
 #include "opencv2/imgproc.hpp"
 #include <algorithm>
-#include <stdexcept>
 #include <type_traits>
 
 using namespace earthxpert;
@@ -24,13 +23,13 @@ static const std::map<cv::InterpolationFlags, int> sInterpWinMap = {
   {cv::INTER_NEAREST, 1}, {cv::INTER_LINEAR, 2}, 
   {cv::INTER_CUBIC, 4}, {cv::INTER_LANCZOS4, 8} };
 
-
 /**
  *  constructor
  *
  *  \brief construct a resampler for the given interpolation algorithm.
  */
-RasterResample::RasterResample(const std::string& algo) {
+template <int algoBackend>
+RasterResample<algoBackend>::RasterResample(const std::string& algo) {
   auto it = sInterpAlgoMap.find(algo);
   if (it == sInterpAlgoMap.end()) {
     throw std::invalid_argument(_("RasterResample: algo"));
@@ -41,7 +40,8 @@ RasterResample::RasterResample(const std::string& algo) {
 /**
  *  \return Returns dimension of resampling window
  */
-int RasterResample::GetWinDim() const {
+template <int algoBackend>
+int RasterResample<algoBackend>::GetWinDim() const noexcept {
   return sInterpWinMap.at(mInterpAlgo);
 }
 
@@ -51,7 +51,8 @@ int RasterResample::GetWinDim() const {
  *
  *  \param [in] posRaster Resampling positions of target raster in source raster.
  */
-void RasterResample::Resample(CvRaster& srcRaster,
+template <int algoBackend>
+void RasterResample<algoBackend>::ResampleCV(CvRaster& srcRaster,
   CvRaster& tgtRaster, CvRaster& posRaster) const {
   assert(tgtRaster.GetSize() == posRaster.GetSize());
   assert(tgtRaster.GetMarginSize() == posRaster.GetMarginSize());
@@ -60,11 +61,12 @@ void RasterResample::Resample(CvRaster& srcRaster,
 }
 
 /**
- *  \param [in] posRaster Resampling positions of target raster in source raster.
+ *  \param [in] posMat Resampling positions of target raster in source raster.
  */
-void RasterResample::Resample(cv::Mat& srcRaster,
-  cv::Mat& tgtRaster, cv::Mat& posRaster) const {
-  assert(tgtRaster.size() == posRaster.size());
-  cv::remap(srcRaster, tgtRaster, posRaster, cv::Mat(),
-    mInterpAlgo, mBorderType, mBorderValue);
+template <int algoBackend>
+void RasterResample<algoBackend>::ResampleCV(cv::Mat& srcMat, cv::Mat& tgtMat, cv::Mat& posMat) const {
+  assert(tgtMat.size() == posMat.size());
+  cv::remap(srcMat, tgtMat, posMat, cv::Mat(), mInterpAlgo, mBorderType, mBorderValue);
 }
+
+template class earthxpert::RasterResample<IRasterResample::eAB_CV>;

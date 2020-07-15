@@ -5,6 +5,7 @@
 #pragma once
 
 #include "core/excore.h"
+#include <stdint.h>
 
 namespace earthxpert {
 /**
@@ -33,11 +34,9 @@ struct EXCORE_EXPORTS RasterWindow {
     numRows += marginRows * 2;
   }
 
-  bool IsValid() const noexcept {
-    return (0 < numCols && 0 < numRows);
-  }
+  bool IsValid() const noexcept { return (0 < numCols && 0 < numRows); }
 
-  int64 GetNumPixels() const noexcept { return int64(numCols) * int64(numRows); }
+  int64_t GetNumPixels() const noexcept { return int64_t(numCols) * int64_t(numRows); }
 
   /**
    *  \param [in] rhs Object to test

@@ -16,11 +16,16 @@ namespace earthxpert {
  */
 class EXCORE_EXPORTS IRasterResample {
 public:
+  enum AlgoBackend {
+    eAB_CV,   // call cv::remap
+    eAB_EXAI
+  };
+
   virtual ~IRasterResample() = default;
 
   virtual int GetWinDim() const noexcept = 0;
 
   virtual void Resample(CvRaster& srcRaster, CvRaster& tgtRaster, CvRaster& posRaster) const = 0;
-  virtual void Resample(cv::Mat& srcRaster, cv::Mat& tgtRaster, cv::Mat& posRaster) const = 0;
+  virtual void Resample(cv::Mat& srcMat, cv::Mat& tgtMat, cv::Mat& posMat) const = 0;
 };
 }

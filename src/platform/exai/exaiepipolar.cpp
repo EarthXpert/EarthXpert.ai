@@ -81,7 +81,7 @@ void ExaiEpipolar::AddRationalOptions(bpo::options_description & optDesc) {
     ("rightmdl,n", bpo::value<std::string>(), "right model file")
     ("bands,b", bpo::value<std::vector<int>>()->multitoken(), "list of bands")
     ("sample,s", bpo::value<int>()->default_value(1), "downsample factor")
-    ("grey,g", bpo::value<bool>()->default_value(true), "convert to grey image")
+    ("grey,g", bpo::value<bool>()->default_value(false), "convert to grey image")
     ("outdir,o", bpo::value<std::string>()->required(), "output directory")
     ("resample,r", bpo::value<std::string>()->default_value("cubic"), "resample algorithm: bilinear|cubic|gausian")
     ("memsize,e", bpo::value<int>()->default_value(4000), "memory size in MB")
