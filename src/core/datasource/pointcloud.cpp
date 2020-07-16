@@ -231,7 +231,7 @@ SpatialTileD Pointcloud::ObtainBoundingBox2D() const noexcept {
     float maxY = -std::numeric_limits<float>::max();
 
 #pragma omp for
-    for (int64 i = 0; i < mPointCount; ++i) {
+    for (int64_t i = 0; i < mPointCount; ++i) {
       if (minX > mXYZ[i].x) minX = mXYZ[i].x;
       if (maxX < mXYZ[i].x) maxX = mXYZ[i].x;
       if (minY > mXYZ[i].y) minY = mXYZ[i].y;

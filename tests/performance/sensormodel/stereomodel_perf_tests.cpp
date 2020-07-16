@@ -166,7 +166,7 @@ void I2G_Cube(const StereoModel& sm, const std::vector<Point3d>& cube) {
 // OMP
 void I2G_CubeOMP(const StereoModel& sm, const std::vector<Point3d>& cube) {
   auto& models = sm.GetSensorModels();
-  const int64 numPts = cube.size();
+  const int64_t numPts = cube.size();
 
 #pragma omp parallel 
   {
@@ -175,7 +175,7 @@ void I2G_CubeOMP(const StereoModel& sm, const std::vector<Point3d>& cube) {
   Point3d grd;
 
 #pragma omp for
-  for (int64 i = 0; i < numPts; ++i) {
+  for (int64_t i = 0; i < numPts; ++i) {
     models[0]->GroundToImage(cube[i], imageL);
     models[1]->GroundToImage(cube[i], imageR);
 

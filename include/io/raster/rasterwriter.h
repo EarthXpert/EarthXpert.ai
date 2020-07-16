@@ -109,6 +109,11 @@ public:
   GDALDataType GetDataType() const noexcept { return mGdalDT; }
 
   /**
+   *  \return Returns OpenCV data type.
+   */
+  int GetCvDataType() const noexcept { return mReader->GetCvDataType(); }
+
+  /**
    *  \return Return the number of channels contained in the image file
    */
   int GetNumBands() const noexcept override { return mReader->GetNumBands(); }
@@ -214,7 +219,7 @@ private:
   GDALDataset* mDataset{ nullptr };  // non-owning pointer to GDALDataset object
   int mFileNumCols{};   // width of image file [unit: pixel]
   int mFileNumRows{};   // height of image file
-  std::vector<int> mBands;    // list of bands to wrtie into
+  std::vector<int> mBands;    // list of bands to write into
   GDALDataType mGdalDT{GDT_Byte};     // GDAL data type of image file
   int mWriteNumBands{};   // number of bands to write
 

@@ -160,12 +160,12 @@ std::unique_ptr<CvRaster> ConvertRaster(const GdalRaster* gdalRaster) {
     colOffset, rowOffset, marginCols, marginRows, marginKind);
   auto cvBuffer = cvRaster->GetBuffer();
 
-  const int64 numPixels = int64(bufNumCols) * int64(bufNumRows);
+  const int64_t numPixels = int64_t(bufNumCols) * int64_t(bufNumRows);
 
   // convert RGB of GDAL into BGR of CVMAT
   auto pixel{ cvBuffer };
   auto bandPage{gdalBuffer + bufNumBytes - bandNumBytes };
-  for (int64 p = 0; p < numPixels; ++p) {
+  for (int64_t p = 0; p < numPixels; ++p) {
     auto band{ bandPage };
     for (int b = numBands - 1; b >= 0; --b) {
       memcpy(pixel, band, bpb);

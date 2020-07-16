@@ -49,24 +49,24 @@ int RasterResample<algoBackend>::GetWinDim() const noexcept {
  *  \brief Call cv::remap() to wrap the source raster into the target raster
  *  using the specified 2D position transformation raster:
  *
- *  \param [in] posRaster Resampling positions of target raster in source raster.
+ *  \param [in] tfmRaster Resampling transformation of target raster in source raster.
  */
 template <int algoBackend>
 void RasterResample<algoBackend>::ResampleCV(CvRaster& srcRaster,
-  CvRaster& tgtRaster, CvRaster& posRaster) const {
-  assert(tgtRaster.GetSize() == posRaster.GetSize());
-  assert(tgtRaster.GetMarginSize() == posRaster.GetMarginSize());
-  cv::remap(srcRaster.GetCvMat(), tgtRaster.GetCvMat(), posRaster.GetCvMat(), 
+  CvRaster& tgtRaster, CvRaster& tfmRaster) const {
+  assert(tgtRaster.GetSize() == tfmRaster.GetSize());
+  assert(tgtRaster.GetMarginSize() == tfmRaster.GetMarginSize());
+  cv::remap(srcRaster.GetCvMat(), tgtRaster.GetCvMat(), tfmRaster.GetCvMat(), 
     cv::Mat(), mInterpAlgo, mBorderType, mBorderValue);
 }
 
 /**
- *  \param [in] posMat Resampling positions of target raster in source raster.
+ *  \param [in] tfmMat Resampling transformation of target raster in source raster.
  */
 template <int algoBackend>
-void RasterResample<algoBackend>::ResampleCV(cv::Mat& srcMat, cv::Mat& tgtMat, cv::Mat& posMat) const {
-  assert(tgtMat.size() == posMat.size());
-  cv::remap(srcMat, tgtMat, posMat, cv::Mat(), mInterpAlgo, mBorderType, mBorderValue);
+void RasterResample<algoBackend>::ResampleCV(cv::Mat& srcMat, cv::Mat& tgtMat, cv::Mat& tfmMat) const {
+  assert(tgtMat.size() == tfmMat.size());
+  cv::remap(srcMat, tgtMat, tfmMat, cv::Mat(), mInterpAlgo, mBorderType, mBorderValue);
 }
 
 template class earthxpert::RasterResample<IRasterResample::eAB_CV>;

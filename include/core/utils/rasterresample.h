@@ -29,18 +29,18 @@ public:
 
   int GetWinDim() const noexcept override;
 
-  void Resample(CvRaster& srcRaster, CvRaster& tgtRaster, CvRaster& posRaster) const override {
+  void Resample(CvRaster& srcRaster, CvRaster& tgtRaster, CvRaster& tfmRaster) const override {
     if constexpr (eAB_CV == algoBackend) {
-      ResampleCV(srcRaster, tgtRaster, posRaster);
+      ResampleCV(srcRaster, tgtRaster, tfmRaster);
     }
     else {
       throw std::invalid_argument("RasterResample: backend algorithm not supported");
     }
   }
 
-  void Resample(cv::Mat& srcMat, cv::Mat& tgtMat, cv::Mat& posMat) const override {
+  void Resample(cv::Mat& srcMat, cv::Mat& tgtMat, cv::Mat& tfmMat) const override {
     if constexpr (eAB_CV == algoBackend) {
-      ResampleCV(srcMat, tgtMat, posMat);
+      ResampleCV(srcMat, tgtMat, tfmMat);
     }
     else {
       throw std::invalid_argument("RasterResample: backend algorithm not supported");
@@ -52,8 +52,8 @@ private:
   cv::BorderTypes mBorderType{ cv::BORDER_CONSTANT };
   cv::Scalar mBorderValue{ cv::Scalar::all(0) };
 
-  void ResampleCV(CvRaster& srcRaster, CvRaster& tgtRaster, CvRaster& posRaster) const;
-  void ResampleCV(cv::Mat& srcMat, cv::Mat& tgtMat, cv::Mat& posMat) const;
+  void ResampleCV(CvRaster& srcRaster, CvRaster& tgtRaster, CvRaster& tfmRaster) const;
+  void ResampleCV(cv::Mat& srcMat, cv::Mat& tgtMat, cv::Mat& tfmMat) const;
 };
 
 using RasterResampleCV = RasterResample<IRasterResample::eAB_CV>;

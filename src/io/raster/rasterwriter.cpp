@@ -136,11 +136,11 @@ void RasterWriter::WriteRaster(IRaster* const raster) {
  */
 void RasterWriter::WriteRaster(const CvRaster* raster) {
   std::unique_lock<std::shared_mutex> lock(mMutex);
-  const int64 rowNumBytes = raster->GetRowNumBytes();
+  const int64_t rowNumBytes = raster->GetRowNumBytes();
   const auto [writeWin, writePixelOff] = ObtainWriteWindow(raster);
   const auto [writeColOff, writeRowOff, writeNumCols, writeNumRows] = writeWin;
-  const int64 bpp = raster->GetBytesPerPixel();
-  const int64 writeBytesOff = bpp * writePixelOff;
+  const int64_t bpp = raster->GetBytesPerPixel();
+  const int64_t writeBytesOff = bpp * writePixelOff;
   auto writeBuffer = raster->GetBuffer() + writeBytesOff;
 
   if (1 == raster->GetNumBands()) {
@@ -158,9 +158,9 @@ void RasterWriter::WriteRaster(const CvRaster* raster) {
     }
   }
   else {
-    const int64 bpb = raster->GetBytesPerBand();
-    const int64 bandRowNumBytes = bpb * writeNumCols;
-    const int64 pixelRowNumBytes = bpp * writeNumCols;
+    const int64_t bpb = raster->GetBytesPerBand();
+    const int64_t bandRowNumBytes = bpb * writeNumCols;
+    const int64_t pixelRowNumBytes = bpp * writeNumCols;
     std::unique_ptr<uchar[]> gdalBuffer(new uchar[pixelRowNumBytes]);
 
     auto writeRow{ writeBuffer };
@@ -203,11 +203,11 @@ void RasterWriter::WriteRaster(const GdalRaster* raster) {
     throw std::invalid_argument(_("The data type of raster object is not compatible with image file"));
   }
 
-  const int64 rowNumBytes = raster->GetRowNumBytes();
-  const int64 bandNumBytes = raster->GetBandNumBytes();
+  const int64_t rowNumBytes = raster->GetRowNumBytes();
+  const int64_t bandNumBytes = raster->GetBandNumBytes();
   const auto [writeWin, writePixelOff] = ObtainWriteWindow(raster);
   const auto [writeColOff, writeRowOff, writeNumCols, writeNumRows] = writeWin;
-  const int64 writeBytesOff = raster->GetBytesPerBand() * writePixelOff;
+  const int64_t writeBytesOff = raster->GetBytesPerBand() * writePixelOff;
 
   auto writeBuffer = raster->GetBuffer() + writeBytesOff;
 
@@ -255,7 +255,7 @@ void RasterWriter::ObtainDatasetInfo() {
  *  \param [in] raster the raster object.
  *  \return Returns the write window offset, size, and the pixel offset.
  */
-std::tuple<RasterWindow, int64>
+std::tuple<RasterWindow, int64_t>
 RasterWriter::ObtainWriteWindow(const IRaster* raster) const {
   const int numBands = raster->GetNumBands();
   if (numBands != mWriteNumBands) {
@@ -269,6 +269,6 @@ RasterWriter::ObtainWriteWindow(const IRaster* raster) const {
     throw std::out_of_range(_("ObtainWriteWindow: raster object context is outside of image file"));
   }
 
-  const int64 writePixelOff = raster->GetImagePixelOffset();
+  const int64_t writePixelOff = raster->GetImagePixelOffset();
   return { {colOffset, rowOffset, numCols, numRows}, writePixelOff };
 }

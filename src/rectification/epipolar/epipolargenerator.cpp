@@ -17,6 +17,8 @@ using namespace earthxpert;
 
 /**
  *  \brief
+ * 
+ *  \param memSize [in] memory available [unit: bytes]
  */
 EpipolarGenerator::EpipolarGenerator(const IRasterResample* rasResample, 
   const size_t memSize, const unsigned short stride)
@@ -29,11 +31,11 @@ EpipolarGenerator::EpipolarGenerator(const IRasterResample* rasResample,
  *
  *  \return Returns true if operation succeeds
  */
-bool EpipolarGenerator::Process(IRasterReader *const img,
-  IEpipolarModel const* epiModel, IRasterWriter *const epi) {
+bool EpipolarGenerator::Process(IRasterReader *const img, 
+  IRasterWriter *const epi, IEpipolarModel const* epiModel) {
   try {
     SetImageParams(img);
-    SetEpipolarParams(epiModel, epi);
+    SetEpipolarParams(epi, epiModel);
 
     LayoutTiles();
     ProcessTiles();
@@ -49,29 +51,53 @@ void EpipolarGenerator::SetImageParams(IRasterReader* const img) {
   assert(img);
   mImgReader = dynamic_cast<RasterReader* const>(img);
   std::tie(mImgNumCols, mImgNumRows) = mImgReader->GetSize();
+  mImgCvDT = mImgReader->GetCvDataType();
+  mImgBpp = CV_ELEM_SIZE(mImgCvDT);
 }
 
 void EpipolarGenerator::SetEpipolarParams(
-  IEpipolarModel const* epiModel, IRasterWriter* const epi) {
-  assert(epiModel);
-  mEpiModel = epiModel;
-
+  IRasterWriter* const epi, IEpipolarModel const* epiModel) {
   assert(epi);
   mEpiWriter = dynamic_cast<RasterWriter* const>(epi);
   std::tie(mEpiNumCols, mEpiNumRows) = mEpiWriter->GetSize();
+  mEpiCvDT = mEpiWriter->GetCvDataType();
+  mEpiBpp = CV_ELEM_SIZE(mEpiCvDT);
+
+  assert(epiModel);
+  mEpiModel = epiModel;
+
+  auto [numCols, numRows] = mEpiModel->GetImageSize();
+  const Point2d ec{ numCols * 0.5, numRows * 0.5 };
+
+  Point2d ic, ic2;
+  mEpiModel->EpiToRaw(ec, ic);
+  mEpiModel->EpiToRaw(ec + Point2d(1.0, 1.0), ic2);
+
+  const double sample = cv::norm(ic2 - ic) * M_SQRT1_2;
+  mSample = std::max<int>(1, std::lround(sample));
 }
 
 void EpipolarGenerator::LayoutTiles() {
   static constexpr int kNP = 8;
-  RasterLayout rasLayout(mEpiNumCols, mEpiNumRows, kTileDim*10, kTileDim*10);
+
+  // estimate tile size
+  const double bpp = 1.0 +  mTfmBpp + mEpiBpp + mImgBpp * mSample * mSample;
+  int tileDim = int(sqrt(mMemSize / bpp));
+  tileDim = std::max(1, (tileDim / kTileDim)) * kTileDim;
+  
+  const int tileNumCols = (tileDim < mEpiNumCols) ? tileDim : mEpiNumCols;
+  const int tileNumRows = (tileDim < mEpiNumRows) ? tileDim : mEpiNumRows;
+  RasterLayout rasLayout(mEpiNumCols, mEpiNumRows, tileNumCols, tileNumRows);
+  
   mEpiTiles = rasLayout.GetRasterWindows();
   mNumTiles = int(mEpiTiles.size());
 
-  std::array<Point2d, kNP> epiCorners;
-  std::array<Point2d, kNP> imgCorners;
-
+  // calculate image bound for epipolar tiles
   int numImgTiles{};
   mImgTiles.clear();
+
+  std::array<Point2d, kNP> epiCorners;
+  std::array<Point2d, kNP> imgCorners;
 
   for (const auto [colOffset, rowOffset, numCols, numRows] : mEpiTiles) {
     epiCorners[0] = Point2d(colOffset, rowOffset);
@@ -130,8 +156,10 @@ void EpipolarGenerator::LayoutTiles() {
   AllocateBuffers();
 }
 
-int64 EpipolarGenerator::GetTilesLimit(const std::vector<RasterWindow>& tiles,
-  const RasterReader* reader) const {
+/**
+ *  \return Returns the max number of pixels to hold any tile
+ */
+int64_t EpipolarGenerator::GetTilesLimit(const std::vector<RasterWindow>& tiles) const {
   int maxTileNumPix{ -1 };
 
   for (auto& tile : tiles) {
@@ -142,38 +170,67 @@ int64 EpipolarGenerator::GetTilesLimit(const std::vector<RasterWindow>& tiles,
       maxTileNumPix = tileNumPix;
   }
 
-  return reader->GetRasterBufferNumBytes(maxTileNumPix);
+  return maxTileNumPix;
 }
 
+/**
+ *  \brief allocate memory buffers
+ */
 void EpipolarGenerator::AllocateBuffers() {
-  const auto imgBufNumBytes = GetTilesLimit(mImgTiles, mImgReader);
+  const auto imgBufNumPix = GetTilesLimit(mImgTiles);
+  const int64_t imgBufNumBytes = mImgBpp * imgBufNumPix;
   if (mImgBufNumBytes < imgBufNumBytes) {
     mImgBuffer.reset();
     mImgBufNumBytes = imgBufNumBytes;
     mImgBuffer.reset(new uchar[mImgBufNumBytes]);
   }
 
-  const auto epiBufNumBytes = GetTilesLimit(mEpiTiles, mEpiWriter->GetReader());
+  const auto epiBufNumPix = GetTilesLimit(mEpiTiles);
+  const int64_t epiBufNumBytes = mEpiBpp * epiBufNumPix;
   if (mEpiBufNumBytes < epiBufNumBytes) {
     mEpiBuffer.reset();
+    mTfmBuffer.reset();
+    mMaskBuffer.reset();
     mEpiBufNumBytes = epiBufNumBytes;
+
     mEpiBuffer.reset(new uchar[mEpiBufNumBytes]);
+    mTfmBuffer.reset(new uchar[mTfmBpp * epiBufNumPix]);
+    mTfmBuffer.reset(new uchar[epiBufNumPix]);
   }
 }
 
-void EpipolarGenerator::ResetBuffers() {
-  memset(mImgBuffer.get(), 0, mImgBufNumBytes);
-  memset(mEpiBuffer.get(), 0, mEpiBufNumBytes);
+void EpipolarGenerator::ResetBuffers(const int tileId) {
+  const auto& epiTile = mEpiTiles[tileId];
+  const int64_t epiNumPix = epiTile.GetNumPixels();
+  memset(mEpiBuffer.get(), 0, mEpiBpp * epiNumPix);
+
+  const auto& imgTile = mImgTiles[tileId];
+  if (imgTile.IsValid()) {
+    memset(mImgBuffer.get(), 0, mImgBpp * imgTile.GetNumPixels());
+    memset(mMaskBuffer.get(), 0, epiNumPix);
+    cv::Mat tfmMat(epiTile.numCols, epiTile.numRows, mTfmCvDT, mTfmBuffer.get());
+
+#pragma omp parallel for
+    for (int64_t k = 0; k < epiNumPix; ++k) {
+      const int col = k % epiTile.numCols;
+      const int row = k / epiTile.numCols;
+      auto& tfm = tfmMat.at<cv::Vec2f>(row, col);
+      tfm[0] = -1;
+      tfm[1] = -1;
+    }
+  }
 }
 
 void EpipolarGenerator::FreeBuffers() {
   mImgBuffer.reset();
   mEpiBuffer.reset();
+  mTfmBuffer.reset();
+  mMaskBuffer.reset();
 }
 
 void EpipolarGenerator::ProcessTiles() {
   for (int t = 0; t < mNumTiles; ++t) {
-    ResetBuffers();
+    ResetBuffers(t);
 
     ReadTile(t);
     ProcessTile(t);
@@ -197,15 +254,141 @@ void EpipolarGenerator::ProcessTile(const int tileId) {
   const auto [colOffset, rowOffset, numCols, numRows] = mEpiTiles[tileId];
   cv::Mat epiMat(numCols, numRows, mEpiCvDT, mEpiBuffer.get());
 
-  cv::Mat posMat(numCols, numRows, 0, mPosBuffer.get());
-  //map.create(epiRw.numRows, epiRw.numCols, CV_32FC2);
-  //GetEpiPixelMap(epiModel, pos, epiRw, imgRw, imgFileCols, imgFileRows, map);
+  cv::Mat tfmMat(numCols, numRows, mTfmCvDT, mTfmBuffer.get());
+  GeoTransformEpiToImg(tileId, tfmMat);
 
-  mRasResample->Resample(imgMat, epiMat, posMat);
+  mRasResample->Resample(imgMat, epiMat, tfmMat);
 }
 
 void EpipolarGenerator::WriteTile(const int tileId) {
   const auto [colOffset, rowOffset, numCols, numRows] = mEpiTiles[tileId];
   CvRaster epiRaster(numCols, numRows, mEpiCvDT, colOffset, rowOffset, mEpiBuffer.get());
   mEpiWriter->WriteRaster(&epiRaster);
+}
+
+void EpipolarGenerator::GeoTransformEpiToImg(int tileId, cv::Mat& tfmMat) {
+  const auto [imgColOffset, imgRowOffset, imgNumCols, imgNumRows] = mImgTiles[tileId];
+  const auto [colOffset, rowOffset, numCols, numRows] = mEpiTiles[tileId];
+
+  // grid col/row positions for rigorous geometry
+  std::vector<int> gridCols;
+  std::vector<int> gridRows;
+
+  for (int i = 0; i < numCols - 1; i += mStride) {
+    gridCols.push_back(i);
+  }
+  gridCols.push_back(numCols - 1);
+
+  for (int i = 0; i < numRows - 1; i += mStride) {
+    gridRows.push_back(i);
+  }
+  gridRows.push_back(numRows - 1);
+
+  const int numGridCols = int(gridCols.size());
+  const int numGridRows = int(gridRows.size());
+  assert(2 <= numGridCols);
+  assert(2 <= numGridRows);
+
+  const int64_t numGridPix = numGridCols * numGridRows;
+
+  // Do geometry at grid points
+#pragma omp parallel for
+  for (int64_t g = 0; g < numGridPix; ++g)
+  {
+    const int gridCol = int(g % numGridCols);
+    const int gridRow = int(g / numGridCols);
+
+    const int tileCol = gridCols[gridCol];
+    const int tileRow = gridRows[gridRow];
+
+    Point2d epi(0.5 + colOffset + tileCol, 0.5 + rowOffset + tileRow), img;
+    const auto ret = mEpiModel->EpiToRaw(epi, img);
+
+    if (ret) {
+      const float tfmCol = float(img.x - 0.5 - imgColOffset);
+      const float tfmRow = float(img.y - 0.5 - imgRowOffset);
+
+      if (0 <= tfmCol && tfmCol < imgNumCols - 1 && 
+          0 <= tfmRow && tfmRow < imgNumRows - 1) {
+        auto& tfm = tfmMat.at<cv::Vec2f>(tileRow, tileCol);
+        tfm[0] = tfmCol;
+        tfm[1] = tfmRow;
+
+        const int64_t k = int64_t(numCols) * int64_t(tileRow) + int64_t(tileCol);
+        mMaskBuffer[k] = 1;
+      }
+    }
+  }
+
+  if (1 == mSample) return;
+  
+  // Densify non-grid positions
+  const int64_t numPix = numCols * numRows;
+
+#pragma omp parallel for
+  for (int64_t k = 0; k < numPix; ++k)
+  {
+    if (1 == mMaskBuffer[k]) continue;
+    const int tileCol = int(k % numCols);
+    const int tileRow = int(k / numCols);
+
+    const bool isGridCol = (0 == tileCol % mSample || tileCol == numCols - 1);
+    const bool isGridRow = (0 == tileRow % mSample || tileRow == numRows - 1);
+    if (isGridCol && isGridRow) continue; // failed grid point
+
+    const int gridCol = std::min(tileCol / mSample, numGridCols - 2);
+    const int gridRow = std::min(tileRow / mSample, numGridRows - 2);
+
+    const int tileColL = gridCols[gridCol];
+    const int tileColR = gridCols[gridCol + 1];
+    const int tileRowU = gridRows[gridRow];
+    const int tileRowL = gridRows[gridRow + 1];
+
+    const int64 i1 = tileRowU * numCols + tileColL;
+    const int64 i2 = tileRowU * numCols + tileColR;
+    const int64 i3 = tileRowL * numCols + tileColL;
+    const int64 i4 = tileRowL * numCols + tileColR;
+
+    if (0 == mMaskBuffer[i1] && 0 == mMaskBuffer[i2] &&
+        0 == mMaskBuffer[i3] && 0 == mMaskBuffer[i4]) {
+      continue;
+    }
+
+    double dfColL0, dfRowL0;
+
+    if (1 == pabyL1MaskBuf[nIdx1] && 1 == pabyL1MaskBuf[nIdx2] &&
+      1 == pabyL1MaskBuf[nIdx3] && 1 == pabyL1MaskBuf[nIdx4])
+    {
+      // Bilinear interpolation if all four grid points are valid
+      const double xf = double(nBlockCol - nBlockColL) / double(nBlockColR - nBlockColL);
+      const double yf = double(nBlockRow - nBlockRowU) / double(nBlockRowL - nBlockRowU);
+
+      dfColL0 = (1.0 - yf) * ((1.0 - xf) * vfColPos[nIdx1] +
+        xf * vfColPos[nIdx2]) +
+        yf * ((1.0 - xf) * vfColPos[nIdx3] +
+          xf * vfColPos[nIdx4]);
+      dfRowL0 = (1.0 - yf) * ((1.0 - xf) * vfRowPos[nIdx1] +
+        xf * vfRowPos[nIdx2]) +
+        yf * ((1.0 - xf) * vfRowPos[nIdx3] +
+          xf * vfRowPos[nIdx4]);
+
+      vfColPos[k] = float(dfColL0);
+      vfRowPos[k] = float(dfRowL0);
+      pabyL1MaskBuf[k] = 1;
+    }
+    else
+    {
+      // Do actual geometry if any grid point is invalid
+      const int nColL1 = nColL1Start + nBlockCol;
+      const int nRowL1 = nBlockRow;
+
+      int nStatus = TransformL1ToL0(poModel, nColL1, nRowL1, dfColL0, dfRowL0);
+      if (0 == nStatus)
+      {
+        vfColPos[k] = float(dfColL0 - 0.5);
+        vfRowPos[k] = float(dfRowL0 - 0.5);
+        pabyL1MaskBuf[k] = 1;
+      }
+    }
+  }
 }

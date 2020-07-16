@@ -63,6 +63,11 @@ public:
   GDALDataType GetDataType() const noexcept { return mGdalDT; }
 
   /**
+   *  \return Returns OpenCV data type.
+   */
+  int GetCvDataType() const noexcept { return mCvDT; }
+
+  /**
    *  \return Return the 1-based band indices to read from
    */
   auto GetReadBands() const noexcept { return mBands; }

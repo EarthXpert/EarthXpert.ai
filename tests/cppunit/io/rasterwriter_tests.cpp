@@ -175,7 +175,7 @@ TEST(rasterwriter, CvRasterOMP) {
     std::unique_ptr<uchar[]> buffer{ new uchar[bufNumBytes] };
 
 #pragma omp for
-  for (int64 i = 0; i < rasterWins.size(); ++i) {  // auto& rw : rasterWins
+  for (int64_t i = 0; i < rasterWins.size(); ++i) {  // auto& rw : rasterWins
     auto& rw = rasterWins[i];
     CvRaster raster(rw.numCols, rw.numRows, cvDT, rw.colOffset, rw.rowOffset,
       marginCols, marginRows, MarginKind::eCONSTANT, buffer.get());
@@ -291,7 +291,7 @@ TEST(rasterwriter, GdalRasterOMP) {
     std::unique_ptr<uchar[]> buffer{ new uchar[bufNumBytes] };
 
 #pragma omp for 
-    for (int64 i = 0; i < rasterWins.size(); ++i) {  // auto& rw : rasterWins
+    for (int64_t i = 0; i < rasterWins.size(); ++i) {  // auto& rw : rasterWins
       auto& rw = rasterWins[i];
       GdalRaster raster(rw.numCols, rw.numRows, gdalDT, numBands, rw.colOffset, rw.rowOffset,
         marginCols, marginRows, MarginKind::eCONSTANT, buffer.get());

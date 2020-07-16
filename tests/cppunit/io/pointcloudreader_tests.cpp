@@ -219,7 +219,7 @@ TEST(pointcloudreader, ReadPointcloudOMP_LAS_XYZ_CHUNKS) {
     Pointcloud pc(chunkNumPts, { fgt::kBITXYZ });
 
     #pragma omp for
-      for (int64 i = 0; i < filePointCount - chunkNumPts; i += chunkNumPts) {
+      for (int64_t i = 0; i < filePointCount - chunkNumPts; i += chunkNumPts) {
         reader.ReadPointcloud(i, &pc);
         //ASSERT_EQ(pc.GetPointCount(), chunkNumPts) << "#points of last chunk";  // fatal error C1001: Internal compiler error
       }
@@ -261,7 +261,7 @@ TEST(pointcloudreader, ReadPointcloud_LAS_XYZC_TILES) {
   ASSERT_EQ(4, tiles.size()) << "number of tiles";
 
   int j{};
-  for (int64 i = 0; i < tiles.size(); ++i) {
+  for (int64_t i = 0; i < tiles.size(); ++i) {
     auto& tile = tiles[i];
     auto pc = reader.ReadPointcloud(tile);
 
@@ -306,7 +306,7 @@ TEST(pointcloudreader, ReadPointcloudOMP_LAS_XYZ_TILES) {
 
   int j{};
 #pragma omp parallel for reduction(+ : j)   // \todo fatal error C1001: Internal compiler error
-  for (int64 i = 0; i < tiles.size(); ++i) {
+  for (int64_t i = 0; i < tiles.size(); ++i) {
     auto& tile = tiles[i];
     auto pc = reader.ReadPointcloud(tile);
 

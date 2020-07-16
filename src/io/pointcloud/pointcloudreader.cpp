@@ -150,8 +150,8 @@ PointcloudReader::ReadPointcloud(const SpatialTileD& tile) {
   // 1st pass: obtain number of points
   mReader->seek(0);
 
-  std::optional<int64> firstPoint;   // index of first inclusion point
-  int64 lastPoint{};                 // index of last inclusion point
+  std::optional<int64_t> firstPoint;   // index of first inclusion point
+  int64_t lastPoint{};                 // index of last inclusion point
   size_t numPoints{};   // actual #points
   while (TRUE == mReader->read_point()) {
     if (!firstPoint) {

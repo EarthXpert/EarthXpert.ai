@@ -116,7 +116,7 @@ void CvRaster::ObtainMatInfo() {
   mBufRowOff = mRowOffset - mMarginRows;
   mBufNumCols = mNumCols + mMarginCols * 2;
   mBufNumRows = mNumRows + mMarginRows * 2;
-  mImgPixelOff = int64(mBufNumCols) * int64(mMarginRows) + int64(mMarginCols);
-  mRowNumBytes = int64(mBpp) * int64(mBufNumCols);
-  mBufNumBytes = mRowNumBytes * int64(mBufNumRows);
+  mImgPixelOff = int64_t(mBufNumCols) * int64_t(mMarginRows) + int64_t(mMarginCols);
+  mRowNumBytes = int64_t(mBpp) * int64_t(mBufNumCols);
+  mBufNumBytes = mRowNumBytes * int64_t(mBufNumRows);
 }

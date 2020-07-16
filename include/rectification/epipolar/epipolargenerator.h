@@ -9,6 +9,7 @@
 #include "core/utils/rasterwindow.h"
 
 #include <memory>
+#include <cstdint>
 #include <vector>
 
 namespace earthxpert {
@@ -41,7 +42,7 @@ public:
    *
    *  \return Returns true if operation succeeds
    */
-  bool Process(IRasterReader* img, IEpipolarModel const* epiModel, IRasterWriter* epi);
+  bool Process(IRasterReader* img, IRasterWriter* epi, IEpipolarModel const* epiModel);
 
 private:
   static constexpr int kTileDim = 256;
@@ -51,21 +52,23 @@ private:
   unsigned short mStride{1}; // stride for rigorous epipolar geometry
 
   void SetImageParams(IRasterReader* const img);
-  void SetEpipolarParams(IEpipolarModel const* epiModel, IRasterWriter* const epi);
+  void SetEpipolarParams(IRasterWriter* const epi, IEpipolarModel const* epiModel);
 
   std::vector<RasterWindow> mImgTiles;
   std::vector<RasterWindow> mEpiTiles;
   void LayoutTiles();  // layout helper
-  int64 GetTilesLimit(const std::vector<RasterWindow>& tiles,
-    const RasterReader* reader) const;
+  int64_t GetTilesLimit(const std::vector<RasterWindow>& tiles) const;
 
-  int64 mImgBufNumBytes{};
-  std::unique_ptr<uchar[]> mImgBuffer;
-  int64 mEpiBufNumBytes{};
-  std::unique_ptr<uchar[]> mEpiBuffer;
-  std::unique_ptr<uchar[]> mPosBuffer;
+  int64_t mImgBufNumBytes{};
+  std::unique_ptr<uchar[]> mImgBuffer;    // raw image tile
+  
+  int64_t mEpiBufNumBytes{};
+  std::unique_ptr<uchar[]> mEpiBuffer;    // epipolar tile
+  std::unique_ptr<uchar[]> mTfmBuffer;    // transfomration map
+  std::unique_ptr<uchar[]> mMaskBuffer;   // epipolar mask
+
   void AllocateBuffers();
-  void ResetBuffers();
+  void ResetBuffers(int tileId);
   void FreeBuffers();
 
   void ProcessTiles();
@@ -73,6 +76,8 @@ private:
   void ReadTile(int tileId);
   void ProcessTile(int tileId);
   void WriteTile(int tileId);
+
+  void GeoTransformEpiToImg(int tileId, cv::Mat& tfmMat);
 
   // cached information
   int mMarginDim{};
@@ -82,11 +87,17 @@ private:
   int mImgNumCols{};
   int mImgNumRows{};
   int mImgCvDT{};
+  int mImgBpp{};  // bytes per pixel
 
-  const IEpipolarModel* mEpiModel{};
   RasterWriter* mEpiWriter{};
   int mEpiNumCols{};
   int mEpiNumRows{};
   int mEpiCvDT{};
+  int mEpiBpp{};
+
+  const IEpipolarModel* mEpiModel{};
+  int mSample{ 1 };
+  int mTfmCvDT{ CV_32FC2 };
+  int mTfmBpp{ CV_ELEM_SIZE(CV_32FC2) };
 };
 } // namespace earthxpert
