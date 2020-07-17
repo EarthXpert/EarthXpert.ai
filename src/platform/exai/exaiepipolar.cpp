@@ -39,28 +39,29 @@ int ExaiEpipolar::Execute() {
     return 0;
   }
 
-  EpipolarOptions epiOptions;
-  epiOptions.sensorName = vm["sensorname"].as<std::string>();
-  const auto st = SensorNameToType(epiOptions.sensorName);
+  EpipolarOptions epiOpt;
+  epiOpt.sensorName = vm["sensorname"].as<std::string>();
+  const auto st = SensorNameToType(epiOpt.sensorName);
   if (SensorType::eRATIONAL != st && SensorType::eFRAME != st) {
-    throw std::invalid_argument("Epipolar not implemented fro sensor: " + epiOptions.sensorName);
+    throw std::invalid_argument("Epipolar not implemented fro sensor: " + epiOpt.sensorName);
   }
 
-  epiOptions.leftImgFile = vm["leftimg"].as<std::string>();
-  epiOptions.rightImgFile = vm["rightimg"].as<std::string>();
-  epiOptions.bands = vm["bands"].as<std::vector<int>>();
-  epiOptions.sample = vm["sample"].as<int>();
-  epiOptions.grey = vm["grey"].as<bool>();
-  epiOptions.outPath = vm["outdir"].as<std::string>();
-  epiOptions.resample = vm["resample"].as<std::string>();
-  epiOptions.memSize = size_t(vm["memsize"].as<int>()) * 1000;  // [unit: bytes]
+  epiOpt.leftImgFile = vm["leftimg"].as<std::string>();
+  epiOpt.rightImgFile = vm["rightimg"].as<std::string>();
+  epiOpt.bands = vm["bands"].as<std::vector<int>>();
+  epiOpt.sample = vm["sample"].as<int>();
+  epiOpt.grey = vm["grey"].as<bool>();
+  epiOpt.outPath = vm["outdir"].as<std::string>();
+  epiOpt.resample = vm["resample"].as<std::string>();
+  epiOpt.memSize = size_t(vm["memsize"].as<int>()) * 1024;  // [unit: bytes]
 
   switch (st) {
   case SensorType::eRATIONAL: {
-    epiOptions.leftMdlFile = vm["leftmdl"].as<std::string>();
-    epiOptions.rightMdlFile = vm["rightmdl"].as<std::string>();
+    epiOpt.leftMdlFile = vm["leftmdl"].as<std::string>();
+    epiOpt.rightMdlFile = vm["rightmdl"].as<std::string>();
 
-    GenerateRationalEpipolar(epiOptions);
+    std::cout << ToString(&epiOpt);
+    GenerateRationalEpipolar(epiOpt);
     break;
   }
 

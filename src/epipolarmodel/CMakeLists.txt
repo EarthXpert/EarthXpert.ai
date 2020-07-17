@@ -7,6 +7,7 @@ earthxpert_add_library(epipolarmodel "api"
        "epipolarrect.cpp"
        "epipolarsensormodel.cpp"
        "frameepipolarmodel.cpp"
+       "utils.cpp"
   ITEMS ex3rdparty core sensormodel 
         ${GDAL_LIBRARY} ${GETTEXT_LIBRARY} ${OpenCV_LIBS})
 

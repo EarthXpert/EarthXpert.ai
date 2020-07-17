@@ -11,6 +11,7 @@
 
 namespace earthxpert {
 class EarthEllipsoid;
+class RationalModel;
 
 ISensorModel::ModelType EXSENSORMODEL_EXPORTS SensorNameToType(const std::string& name);
 std::string EXSENSORMODEL_EXPORTS SensorTypeToName(ISensorModel::ModelType type);
@@ -27,4 +28,6 @@ Polygon2d EXSENSORMODEL_EXPORTS CalcFootprint(const ISensorModel* sensorModel,
   const EarthEllipsoid* ee, double height);
 Polygon2d EXSENSORMODEL_EXPORTS 
 CalcFootprint(const ISensorModel* sensorModel, double height);
+
+std::string EXSENSORMODEL_EXPORTS ToString(const RationalModel* ratModel);
 }

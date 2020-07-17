@@ -185,4 +185,9 @@ Polygon2d CalcFootprint(const ISensorModel* sensorModel, const double height) {
   bg::assign_points(fp, fpCorners);
   return fp;
 }
+
+std::string ToString(const RationalModel* ratModel) {
+  std::string str;
+  return str;
+}
 }

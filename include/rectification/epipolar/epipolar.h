@@ -24,11 +24,13 @@ struct EpipolarOptions {
 
   std::vector<int> bands;
   int sample{ 1 };
-  bool grey{ true };
+  bool grey{ false };
   std::string outPath;
   std::string resample;
   size_t memSize;  // [unit: bytes]
 };
+
+std::string EXEPIPOLAR_EXPORTS ToString(const EpipolarOptions* epiOpt);
 
 void EXEPIPOLAR_EXPORTS GenerateFrameEpipolar();
 

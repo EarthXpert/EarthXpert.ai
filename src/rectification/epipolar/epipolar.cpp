@@ -12,6 +12,10 @@
 #include "marshaller/rationalmodelmarshaller.h"
 #include "rectification/epipolar/epipolargenerator.h"
 
+#include "boost/format.hpp"
+#include <iostream>
+#include <sstream>
+
 using namespace earthxpert;
 using namespace earthxpert::utils;
 
@@ -28,6 +32,7 @@ void GenerateEpipolar(const std::string& imgFile, EpipolarGenerator* epiGen,
   if (fs::exists(epiFile)) {
     fs::remove(epiFile);
   }
+  std::cout << "epiFile: " << epiFile << std::endl;
 
   auto [epiNumCols, epiNumRows] = epiModel->GetImageSize();
   RasterWriter epiWriter(epiFile.string(), format,
@@ -35,6 +40,20 @@ void GenerateEpipolar(const std::string& imgFile, EpipolarGenerator* epiGen,
 
   epiGen->Process(reader, &epiWriter, epiModel);
 }
+}
+
+std::string ToString(const EpipolarOptions* epiOpt) {
+  std::stringstream ss;
+  ss << boost::format("** EpipolarOptions **\n"
+    "sensorName: %1%\leftImgFile: %2%\nleftMdlFile: %3%\n"
+    "rightImgFile: %4%\nrightMdlFile: %5%\nbands: %6%\nsample: %7%\n"
+    "grey: %8%\noutPath: %9%\nresample: %10%\nmemSize: %11%\n") \
+    % epiOpt->sensorName % epiOpt->leftImgFile % epiOpt->leftMdlFile % \
+    epiOpt->rightImgFile % epiOpt->rightMdlFile % epiOpt->bands.size() %\
+    epiOpt->sample % epiOpt->grey % epiOpt->outPath % epiOpt->resample % epiOpt->memSize;
+
+  std::string str{ ss.str() };
+  return str;
 }
 
 /**

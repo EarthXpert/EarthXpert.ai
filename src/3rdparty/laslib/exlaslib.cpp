@@ -87,11 +87,9 @@ std::unique_ptr<LASsummary> ObtainLasSummary(const std::string& lasFile) {
   }
 
   auto summary = std::make_unique<LASsummary>();
-
   while (reader->read_point()) {
     summary->add(&reader->point);
   }
-
   return summary;
 }
 }
