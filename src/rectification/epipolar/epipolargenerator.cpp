@@ -92,8 +92,21 @@ void EpipolarGenerator::LayoutTiles() {
   int tileDim = int(sqrt(mMemSize / bpp));
   tileDim = std::max(1, (tileDim / kTileDim)) * kTileDim;
   
-  const int tileNumCols = (tileDim < mEpiNumCols) ? tileDim : mEpiNumCols;
-  const int tileNumRows = (tileDim < mEpiNumRows) ? tileDim : mEpiNumRows;
+  int tileNumCols = (tileDim < mEpiNumCols) ? tileDim : mEpiNumCols;
+  int tileNumRows = (tileDim < mEpiNumRows) ? tileDim : mEpiNumRows;
+
+  //  \param [in] num total number of pixels
+  //  \param [in] tileNum number of tile pixels
+  auto balNumTiles = [](const int num, const int tileNum) {
+    const int numTiles = (num - 1) / tileNum + 1;
+    return (tileNum * numTiles - num) / (kTileDim * numTiles);
+  };
+    
+  const int balNumCols = balNumTiles(mEpiNumCols, tileNumCols) * kTileDim;
+  const int balNumRows = balNumTiles(mEpiNumRows, tileNumRows) * kTileDim;
+
+  tileNumCols -= balNumCols;
+  tileNumRows -= balNumRows;
   RasterLayout rasLayout(mEpiNumCols, mEpiNumRows, tileNumCols, tileNumRows);
   
   mEpiTiles = rasLayout.GetRasterWindows();
@@ -220,17 +233,17 @@ void EpipolarGenerator::ResetBuffers(const int tileId) {
     memset(mMaskBuffer.get(), 0, epiNumPix);
     cv::Mat tfmMat(epiTile.numCols, epiTile.numRows, mTfmCvDT, mTfmBuffer.get());
 
-    tfmMat.forEach<cv::Vec2f>([](cv::Vec2f& tfm, const int*) { 
-      tfm[0] = -1; tfm[1] = -1; });
+    //tfmMat.forEach<cv::Vec2f>([](cv::Vec2f& tfm, const int*) { 
+    //  tfm[0] = -1; tfm[1] = -1; });
     
 //#pragma omp parallel for
-//    for (int64_t k = 0; k < epiNumPix; ++k) {
-//      const int col = k % epiTile.numCols;
-//      const int row = k / epiTile.numCols;
-//      auto& tfm = tfmMat.at<cv::Vec2f>(row, col);
-//      tfm[0] = -1;
-//      tfm[1] = -1;
-//    }
+    for (int64_t k = 0; k < epiNumPix; ++k) {
+      const int col = k % epiTile.numCols;
+      const int row = k / epiTile.numCols;
+      auto& tfm = tfmMat.at<cv::Vec2f>(row, col);
+      tfm[0] = -1;
+      tfm[1] = -1;
+    }
   }
 }
 
@@ -323,7 +336,7 @@ void EpipolarGenerator::EpiToImg(const int tileId, cv::Mat& tfmMat) {
   const int64_t numGridPix = numGridCols * numGridRows;
 
   // Do geometry at grid points
-#pragma omp parallel for
+//#pragma omp parallel for
   for (int64_t g = 0; g < numGridPix; ++g) {
     const int gridCol = int(g % numGridCols);
     const int gridRow = int(g / numGridCols);
@@ -338,9 +351,8 @@ void EpipolarGenerator::EpiToImg(const int tileId, cv::Mat& tfmMat) {
   // Densify non-grid positions
   const int64_t numPix = numCols * numRows;
 
-#pragma omp parallel for
-  for (int64_t k = 0; k < numPix; ++k)
-  {
+//#pragma omp parallel for
+  for (int64_t k = 0; k < numPix; ++k) {
     if (1 == mMaskBuffer[k]) continue;
     const int tileCol = int(k % numCols);
     const int tileRow = int(k / numCols);
