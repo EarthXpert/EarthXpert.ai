@@ -44,6 +44,9 @@ using namespace earthxpert;
 GdalInfo::GdalInfo() {
 }
 
+/**
+ *  \brief
+ */
 int GdalInfo::Execute() {
   EarlySetConfigOptions(mArgc, mArgv);
 

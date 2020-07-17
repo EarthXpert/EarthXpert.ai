@@ -33,7 +33,7 @@ void GenerateEpipolar(const std::string& imgFile, EpipolarGenerator* epiGen,
   RasterWriter epiWriter(epiFile.string(), format,
     epiNumCols, epiNumRows, gdalDT, numBands);
 
-  epiGen->Process(reader, epiModel, &epiWriter);
+  epiGen->Process(reader, &epiWriter, epiModel);
 }
 }
 

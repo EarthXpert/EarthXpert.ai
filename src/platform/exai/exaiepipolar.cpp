@@ -16,6 +16,9 @@ using namespace earthxpert;
 ExaiEpipolar::ExaiEpipolar() {
 }
 
+/**
+ *  \brief 
+ */
 int ExaiEpipolar::Execute() {
   bpo::options_description optDesc{ "Options" };
   AddRationalOptions(optDesc);
@@ -71,6 +74,9 @@ int ExaiEpipolar::Execute() {
 void ExaiEpipolar::AddFrameOptions(bpo::options_description& optDesc) {
 }
 
+/**
+ *  \brief
+ */
 void ExaiEpipolar::AddRationalOptions(bpo::options_description & optDesc) {
     optDesc.add_options()
     ("sensorname,t", bpo::value<std::string>()->required(), "sensor name: frame|rational")

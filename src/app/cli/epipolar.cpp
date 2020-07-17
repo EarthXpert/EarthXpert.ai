@@ -19,17 +19,18 @@ namespace bpo = boost::program_options;
  *  2D images that lead to constraints between the image pixels.
  *
  *  usage:  epipolar.exe [options]
- *      --sensorname  <frame|rational>
- *      --prjdir      [path_of_project_directory_or_file]
- *      --leftimg     <path_of_left_image_file>    // "images/img01.tif"
- *      --leftmdl     <path_of_left_model_file>    // "images/img01_rpc.tif"
- *      --rightimg    <path_of_right_image_file>  // "images/img02.tif"
- *      --rightmdl    <path_of_right_model_file>  // "images/img02_rpc.tif"
- *      --bands       [list_of_band_ids]             // "1,2,3"
- *      --sample      [downsample_factor]           // 2
+ *      --sensorname  <frame|rational>              // "rational"
+ *      --prjdir      [path_of_project_dir_or_file]
+ *      --leftimg     <path_of_left_image_file>     // "images/img01.tif"
+ *      --leftmdl     <path_of_left_model_file>     // "images/img01_rpc.tif"
+ *      --rightimg    <path_of_right_image_file>    // "images/img02.tif"
+ *      --rightmdl    <path_of_right_model_file>    // "images/img02_rpc.tif"
+ *      --bands       [list_of_band_ids]            // "1,2,3"
+ *      --sample      [downsample_factor]           // 1
+ *      --grey        [convert_color]               // false
  *      --outdir      [path_of_output_directory]    // "d:/out/"
- *      --resample    [bilinear|cubic|gaussian|sinc]
- *      --memsize     [memory_size_in_MB]          // 4000
+ *      --resample    [linear|cubic|gaussian|sinc]  // "cubic"
+ *      --memsize     [memory_size_in_MB]           // 4000
  *
  *  examples:
  *

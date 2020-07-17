@@ -65,6 +65,9 @@ PdalJob::PdalJob(std::ostream& out) : mOut(out) {
   mLogger.reset( new pdal::Log("PDAL", "stderr") );
 }
 
+/**
+ *  \brief
+ */
 int PdalJob::SetCmdArgs(int argc, char** argv) {
   mCmdArgs.clear();
   for (int i = 1; i < argc; ++i)
@@ -102,6 +105,9 @@ int PdalJob::SetCmdArgs(int argc, char** argv) {
   return 0;
 }
 
+/**
+ *  \brief
+ */
 int PdalJob::Run() {
   mCommand = Utils::tolower(mCommand);
   if (!mCommand.empty()) {

@@ -47,6 +47,9 @@ bool EpipolarGenerator::Process(IRasterReader *const img,
   return true;
 }
 
+/**
+ *  \brief
+ */
 void EpipolarGenerator::SetImageParams(IRasterReader* const img) {
   assert(img);
   mImgReader = dynamic_cast<RasterReader* const>(img);
@@ -55,6 +58,9 @@ void EpipolarGenerator::SetImageParams(IRasterReader* const img) {
   mImgBpp = CV_ELEM_SIZE(mImgCvDT);
 }
 
+/**
+ *  \brief
+ */
 void EpipolarGenerator::SetEpipolarParams(
   IRasterWriter* const epi, IEpipolarModel const* epiModel) {
   assert(epi);
@@ -77,6 +83,9 @@ void EpipolarGenerator::SetEpipolarParams(
   mSample = std::max<int>(1, std::lround(sample));
 }
 
+/**
+ *  \brief
+ */
 void EpipolarGenerator::LayoutTiles() {
   static constexpr int kNP = 8;
 
@@ -199,6 +208,9 @@ void EpipolarGenerator::AllocateBuffers() {
   }
 }
 
+/**
+ *  \brief
+ */
 void EpipolarGenerator::ResetBuffers(const int tileId) {
   const auto& epiTile = mEpiTiles[tileId];
   const int64_t epiNumPix = epiTile.GetNumPixels();
@@ -210,17 +222,23 @@ void EpipolarGenerator::ResetBuffers(const int tileId) {
     memset(mMaskBuffer.get(), 0, epiNumPix);
     cv::Mat tfmMat(epiTile.numCols, epiTile.numRows, mTfmCvDT, mTfmBuffer.get());
 
-#pragma omp parallel for
-    for (int64_t k = 0; k < epiNumPix; ++k) {
-      const int col = k % epiTile.numCols;
-      const int row = k / epiTile.numCols;
-      auto& tfm = tfmMat.at<cv::Vec2f>(row, col);
-      tfm[0] = -1;
-      tfm[1] = -1;
-    }
+    tfmMat.forEach<cv::Vec2f>([](cv::Vec2f& tfm, const int*) { 
+      tfm[0] = -1; tfm[1] = -1; });
+    
+//#pragma omp parallel for
+//    for (int64_t k = 0; k < epiNumPix; ++k) {
+//      const int col = k % epiTile.numCols;
+//      const int row = k / epiTile.numCols;
+//      auto& tfm = tfmMat.at<cv::Vec2f>(row, col);
+//      tfm[0] = -1;
+//      tfm[1] = -1;
+//    }
   }
 }
 
+/**
+ *  \brief
+ */
 void EpipolarGenerator::FreeBuffers() {
   mImgBuffer.reset();
   mEpiBuffer.reset();
@@ -228,6 +246,9 @@ void EpipolarGenerator::FreeBuffers() {
   mMaskBuffer.reset();
 }
 
+/**
+ *  \brief 
+ */
 void EpipolarGenerator::ProcessTiles() {
   for (int t = 0; t < mNumTiles; ++t) {
     ResetBuffers(t);
@@ -238,6 +259,9 @@ void EpipolarGenerator::ProcessTiles() {
   }
 }
 
+/**
+ *  \brief
+ */
 void EpipolarGenerator::ReadTile(const int tileId) {
   const auto [colOffset, rowOffset, numCols, numRows] = mImgTiles[tileId];
   if (0 == numCols || 0 == numRows) return;
@@ -246,6 +270,9 @@ void EpipolarGenerator::ReadTile(const int tileId) {
   mImgReader->ReadRaster(&imgRaster);
 }
 
+/**
+ *  \brief
+ */
 void EpipolarGenerator::ProcessTile(const int tileId) {
   const auto [imgColOffset, imgRowOffset, imgNumCols, imgNumRows] = mImgTiles[tileId];
   if (0 == imgNumCols || 0 == imgNumRows) return;
@@ -255,18 +282,24 @@ void EpipolarGenerator::ProcessTile(const int tileId) {
   cv::Mat epiMat(numCols, numRows, mEpiCvDT, mEpiBuffer.get());
 
   cv::Mat tfmMat(numCols, numRows, mTfmCvDT, mTfmBuffer.get());
-  GeoTransformEpiToImg(tileId, tfmMat);
+  EpiToImg(tileId, tfmMat);
 
   mRasResample->Resample(imgMat, epiMat, tfmMat);
 }
 
+/**
+ *  \brief
+ */
 void EpipolarGenerator::WriteTile(const int tileId) {
   const auto [colOffset, rowOffset, numCols, numRows] = mEpiTiles[tileId];
   CvRaster epiRaster(numCols, numRows, mEpiCvDT, colOffset, rowOffset, mEpiBuffer.get());
   mEpiWriter->WriteRaster(&epiRaster);
 }
 
-void EpipolarGenerator::GeoTransformEpiToImg(int tileId, cv::Mat& tfmMat) {
+/**
+ *  \brief Do geometric transformation to populate the map
+ */
+void EpipolarGenerator::EpiToImg(const int tileId, cv::Mat& tfmMat) {
   const auto [imgColOffset, imgRowOffset, imgNumCols, imgNumRows] = mImgTiles[tileId];
   const auto [colOffset, rowOffset, numCols, numRows] = mEpiTiles[tileId];
 
@@ -293,31 +326,13 @@ void EpipolarGenerator::GeoTransformEpiToImg(int tileId, cv::Mat& tfmMat) {
 
   // Do geometry at grid points
 #pragma omp parallel for
-  for (int64_t g = 0; g < numGridPix; ++g)
-  {
+  for (int64_t g = 0; g < numGridPix; ++g) {
     const int gridCol = int(g % numGridCols);
     const int gridRow = int(g / numGridCols);
 
     const int tileCol = gridCols[gridCol];
     const int tileRow = gridRows[gridRow];
-
-    Point2d epi(0.5 + colOffset + tileCol, 0.5 + rowOffset + tileRow), img;
-    const auto ret = mEpiModel->EpiToRaw(epi, img);
-
-    if (ret) {
-      const float tfmCol = float(img.x - 0.5 - imgColOffset);
-      const float tfmRow = float(img.y - 0.5 - imgRowOffset);
-
-      if (0 <= tfmCol && tfmCol < imgNumCols - 1 && 
-          0 <= tfmRow && tfmRow < imgNumRows - 1) {
-        auto& tfm = tfmMat.at<cv::Vec2f>(tileRow, tileCol);
-        tfm[0] = tfmCol;
-        tfm[1] = tfmRow;
-
-        const int64_t k = int64_t(numCols) * int64_t(tileRow) + int64_t(tileCol);
-        mMaskBuffer[k] = 1;
-      }
-    }
+    EpiToImg(tileId, tfmMat, tileCol, tileRow);
   }
 
   if (1 == mSample) return;
@@ -354,41 +369,49 @@ void EpipolarGenerator::GeoTransformEpiToImg(int tileId, cv::Mat& tfmMat) {
       continue;
     }
 
-    double dfColL0, dfRowL0;
+    auto& tfm = tfmMat.at<cv::Vec2f>(tileRow, tileCol);
 
-    if (1 == pabyL1MaskBuf[nIdx1] && 1 == pabyL1MaskBuf[nIdx2] &&
-      1 == pabyL1MaskBuf[nIdx3] && 1 == pabyL1MaskBuf[nIdx4])
-    {
+    if (1 == mMaskBuffer[i1] && 1 == mMaskBuffer[i2] &&
+        1 == mMaskBuffer[i3] && 1 == mMaskBuffer[i4]) {
       // Bilinear interpolation if all four grid points are valid
-      const double xf = double(nBlockCol - nBlockColL) / double(nBlockColR - nBlockColL);
-      const double yf = double(nBlockRow - nBlockRowU) / double(nBlockRowL - nBlockRowU);
+      const double xf = double(tileCol - tileColL) / double(tileColR - tileColL);
+      const double yf = double(tileRow - tileRowU) / double(tileRowL - tileRowU);
 
-      dfColL0 = (1.0 - yf) * ((1.0 - xf) * vfColPos[nIdx1] +
-        xf * vfColPos[nIdx2]) +
-        yf * ((1.0 - xf) * vfColPos[nIdx3] +
-          xf * vfColPos[nIdx4]);
-      dfRowL0 = (1.0 - yf) * ((1.0 - xf) * vfRowPos[nIdx1] +
-        xf * vfRowPos[nIdx2]) +
-        yf * ((1.0 - xf) * vfRowPos[nIdx3] +
-          xf * vfRowPos[nIdx4]);
-
-      vfColPos[k] = float(dfColL0);
-      vfRowPos[k] = float(dfRowL0);
-      pabyL1MaskBuf[k] = 1;
+      tfm[0] = float((1.0 - yf) * ((1.0 - xf) * gridCols[i1] + xf * gridCols[i2]) +
+        yf * ((1.0 - xf) * gridCols[i3] + xf * gridCols[i4]));
+      tfm[1] = float((1.0 - yf) * ((1.0 - xf) * gridRows[i1] + xf * gridRows[i2]) +
+        yf * ((1.0 - xf) * gridRows[i3] + xf * gridRows[i4]));
+      mMaskBuffer[k] = 1;
     }
-    else
-    {
+    else {
       // Do actual geometry if any grid point is invalid
-      const int nColL1 = nColL1Start + nBlockCol;
-      const int nRowL1 = nBlockRow;
-
-      int nStatus = TransformL1ToL0(poModel, nColL1, nRowL1, dfColL0, dfRowL0);
-      if (0 == nStatus)
-      {
-        vfColPos[k] = float(dfColL0 - 0.5);
-        vfRowPos[k] = float(dfRowL0 - 0.5);
-        pabyL1MaskBuf[k] = 1;
-      }
+      EpiToImg(tileId, tfmMat, tileCol, tileRow);
     }
+  }
+}
+
+/**
+ *  \brief Do rigorous transformation at given epipolar pixel
+ */
+void EpipolarGenerator::EpiToImg(const int tileId, cv::Mat& tfmMat,
+  const int tileCol, const int tileRow) {
+  const auto [imgColOffset, imgRowOffset, imgNumCols, imgNumRows] = mImgTiles[tileId];
+  const auto [colOffset, rowOffset, numCols, numRows] = mEpiTiles[tileId];
+
+  Point2d epi(0.5 + colOffset + tileCol, 0.5 + rowOffset + tileRow), img;
+  const auto ret = mEpiModel->EpiToRaw(epi, img);
+  if (!ret) return;
+  
+  const float tfmCol = float(img.x - 0.5 - imgColOffset);
+  const float tfmRow = float(img.y - 0.5 - imgRowOffset);
+
+  if (0 <= tfmCol && tfmCol < imgNumCols - 1 &&
+    0 <= tfmRow && tfmRow < imgNumRows - 1) {
+    auto& tfm = tfmMat.at<cv::Vec2f>(tileRow, tileCol);
+    tfm[0] = tfmCol;
+    tfm[1] = tfmRow;
+
+    const int64_t k = int64_t(numCols) * int64_t(tileRow) + int64_t(tileCol);
+    mMaskBuffer[k] = 1;
   }
 }

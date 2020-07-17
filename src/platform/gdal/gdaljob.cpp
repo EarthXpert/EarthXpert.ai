@@ -12,6 +12,9 @@ GdalJob::GdalJob(std::ostream& out) : mOut(out) {
   GDALInitialize();
 }
 
+/**
+ *  \brief
+ */
 int GdalJob::Run() {
   return 0;
 }

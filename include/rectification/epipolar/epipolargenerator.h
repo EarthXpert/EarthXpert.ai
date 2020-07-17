@@ -77,7 +77,8 @@ private:
   void ProcessTile(int tileId);
   void WriteTile(int tileId);
 
-  void GeoTransformEpiToImg(int tileId, cv::Mat& tfmMat);
+  void EpiToImg(int tileId, cv::Mat& tfmMat);
+  void EpiToImg(int tileId, cv::Mat& tfmMat, int tileCol, int tileRow);
 
   // cached information
   int mMarginDim{};
