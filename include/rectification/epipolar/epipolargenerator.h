@@ -64,8 +64,8 @@ private:
   
   int64_t mEpiBufNumBytes{};
   std::unique_ptr<uchar[]> mEpiBuffer;    // epipolar tile
-  std::unique_ptr<uchar[]> mTfmBuffer;    // transfomration map
   std::unique_ptr<uchar[]> mMaskBuffer;   // epipolar mask
+  std::unique_ptr<uchar[]> mTfmBuffer;    // transfomration map
 
   void AllocateBuffers();
   void ResetBuffers(int tileId);

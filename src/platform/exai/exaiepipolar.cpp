@@ -53,7 +53,7 @@ int ExaiEpipolar::Execute() {
   epiOpt.grey = vm["grey"].as<bool>();
   epiOpt.outPath = vm["outdir"].as<std::string>();
   epiOpt.resample = vm["resample"].as<std::string>();
-  epiOpt.memSize = size_t(vm["memsize"].as<int>()) * 1024;  // [unit: bytes]
+  epiOpt.memSize = size_t(vm["memsize"].as<int>()) * 1024 * 1024;  // [unit: bytes]
 
   switch (st) {
   case SensorType::eRATIONAL: {

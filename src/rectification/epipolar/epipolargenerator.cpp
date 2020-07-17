@@ -72,11 +72,9 @@ void EpipolarGenerator::SetEpipolarParams(
   assert(epiModel);
   mEpiModel = epiModel;
 
-  auto [numCols, numRows] = mEpiModel->GetImageSize();
-  const Point2d ec{ numCols * 0.5, numRows * 0.5 };
-
-  Point2d ic, ic2;
-  mEpiModel->EpiToRaw(ec, ic);
+  const Point2d ic{ mImgNumCols * 0.5, mImgNumRows * 0.5 };
+  Point2d ec, ic2;
+  mEpiModel->RawToEpi(ic, ec);
   mEpiModel->EpiToRaw(ec + Point2d(1.0, 1.0), ic2);
 
   const double sample = cv::norm(ic2 - ic) * M_SQRT1_2;
@@ -198,13 +196,13 @@ void EpipolarGenerator::AllocateBuffers() {
   const int64_t epiBufNumBytes = mEpiBpp * epiBufNumPix;
   if (mEpiBufNumBytes < epiBufNumBytes) {
     mEpiBuffer.reset();
-    mTfmBuffer.reset();
     mMaskBuffer.reset();
+    mTfmBuffer.reset();
+    
     mEpiBufNumBytes = epiBufNumBytes;
-
     mEpiBuffer.reset(new uchar[mEpiBufNumBytes]);
+    mMaskBuffer.reset(new uchar[epiBufNumPix]);
     mTfmBuffer.reset(new uchar[mTfmBpp * epiBufNumPix]);
-    mTfmBuffer.reset(new uchar[epiBufNumPix]);
   }
 }
 
