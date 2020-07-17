@@ -231,7 +231,7 @@ void EpipolarGenerator::ResetBuffers(const int tileId) {
   if (imgTile.IsValid()) {
     memset(mImgBuffer.get(), 0, mImgBpp * imgTile.GetNumPixels());
     memset(mMaskBuffer.get(), 0, epiNumPix);
-    cv::Mat tfmMat(epiTile.numCols, epiTile.numRows, mTfmCvDT, mTfmBuffer.get());
+    cv::Mat tfmMat(epiTile.numRows, epiTile.numCols, mTfmCvDT, mTfmBuffer.get());
 
     //tfmMat.forEach<cv::Vec2f>([](cv::Vec2f& tfm, const int*) { 
     //  tfm[0] = -1; tfm[1] = -1; });
@@ -287,12 +287,12 @@ void EpipolarGenerator::ReadTile(const int tileId) {
 void EpipolarGenerator::ProcessTile(const int tileId) {
   const auto [imgColOffset, imgRowOffset, imgNumCols, imgNumRows] = mImgTiles[tileId];
   if (0 == imgNumCols || 0 == imgNumRows) return;
-  cv::Mat imgMat(imgNumCols, imgNumRows, mImgCvDT, mImgBuffer.get());
+  cv::Mat imgMat(imgNumRows, imgNumCols, mImgCvDT, mImgBuffer.get());
 
   const auto [colOffset, rowOffset, numCols, numRows] = mEpiTiles[tileId];
-  cv::Mat epiMat(numCols, numRows, mEpiCvDT, mEpiBuffer.get());
+  cv::Mat epiMat(numRows, numCols, mEpiCvDT, mEpiBuffer.get());
 
-  cv::Mat tfmMat(numCols, numRows, mTfmCvDT, mTfmBuffer.get());
+  cv::Mat tfmMat(numRows, numCols, mTfmCvDT, mTfmBuffer.get());
   EpiToImg(tileId, tfmMat);
 
   mRasResample->Resample(imgMat, epiMat, tfmMat);
