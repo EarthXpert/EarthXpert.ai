@@ -10,8 +10,9 @@ namespace earthxpert {
 std::string ToString(const EpiGenPerf* perf) {
   std::stringstream ss;
   ss << boost::format("** EpipolarGenerator Performance **\n"
-    "Total: %1%\nRead %2%\nProcess: %3%\nWrite: %4%\n") \
-    % perf->tmTotal % perf->tmRead % perf->tmProcess % perf->tmWrite;
+    "Total: %1%\nLayout: %2%\nReset: %3%\nRead %4%\nProcess: %5%\nWrite: %6%\n") % \
+    perf->tmTotal % perf->tmLayout % perf->tmReset % \
+    perf->tmRead % perf->tmProcess % perf->tmWrite;
 
   return ss.str();
 }
