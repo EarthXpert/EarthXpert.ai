@@ -8,6 +8,7 @@
 
 #include <cmath>
 #include <map>
+#include <sstream>
 
 namespace earthxpert {
 namespace detail {
@@ -187,7 +188,7 @@ Polygon2d CalcFootprint(const ISensorModel* sensorModel, const double height) {
 }
 
 std::string ToString(const RationalModel* ratModel) {
-  std::string str;
-  return str;
+  std::stringstream ss;
+  return ss.str();
 }
 }

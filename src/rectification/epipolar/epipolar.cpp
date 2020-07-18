@@ -45,15 +45,15 @@ void GenerateEpipolar(const std::string& imgFile, EpipolarGenerator* epiGen,
 std::string ToString(const EpipolarOptions* epiOpt) {
   std::stringstream ss;
   ss << boost::format("** EpipolarOptions **\n"
-    "sensorName: %1%\leftImgFile: %2%\nleftMdlFile: %3%\n"
+    "sensorName: %1%\nleftImgFile: %2%\nleftMdlFile: %3%\n"
     "rightImgFile: %4%\nrightMdlFile: %5%\nbands: %6%\nsample: %7%\n"
-    "grey: %8%\noutPath: %9%\nresample: %10%\nmemSize: %11%\n") \
-    % epiOpt->sensorName % epiOpt->leftImgFile % epiOpt->leftMdlFile % \
+    "grey: %8%\noutPath: %9%\nresample: %10%\nmemSize: %11%\n") % \
+    epiOpt->sensorName % epiOpt->leftImgFile % epiOpt->leftMdlFile % \
     epiOpt->rightImgFile % epiOpt->rightMdlFile % epiOpt->bands.size() %\
-    epiOpt->sample % epiOpt->grey % epiOpt->outPath % epiOpt->resample % epiOpt->memSize;
+    epiOpt->sample % epiOpt->grey % epiOpt->outPath % \
+    epiOpt->resample % epiOpt->memSize;
 
-  std::string str{ ss.str() };
-  return str;
+  return ss.str();
 }
 
 /**
@@ -101,9 +101,11 @@ void GenerateRationalEpipolar(const EpipolarOptions& epiOpt) {
   // generate left epipolar image
   detail::GenerateEpipolar(epiOpt.leftImgFile, &epiGen, &leftReader,
     leftEpiModel.get(), epiOpt.outPath, format, gdalDT, epiNumBands);
+  std::cout << ToString(epiGen.GetPerfMettrics());
 
   // generate right epipolar image
   detail::GenerateEpipolar(epiOpt.rightImgFile, &epiGen, &rightReader,
     rightEpiModel.get(), epiOpt.outPath, format, gdalDT, epiNumBands);
+  std::cout << ToString(epiGen.GetPerfMettrics());
 }
 }

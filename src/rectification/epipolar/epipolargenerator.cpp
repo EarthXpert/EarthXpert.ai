@@ -10,10 +10,12 @@
 #include "io/raster/irasterreader.h"
 #include "io/raster/rasterwriter.h"
 
+#include <chrono>
 #include <omp.h>
 #include <tuple>
 
 using namespace earthxpert;
+namespace chrono = std::chrono;
 
 /**
  *  \brief
@@ -33,6 +35,9 @@ EpipolarGenerator::EpipolarGenerator(const IRasterResample* rasResample,
  */
 bool EpipolarGenerator::Process(IRasterReader *const img, 
   IRasterWriter *const epi, IEpipolarModel const* epiModel) {
+  mPerf.Clear();
+  auto start = chrono::steady_clock::now();
+
   try {
     SetImageParams(img);
     SetEpipolarParams(epi, epiModel);
@@ -44,6 +49,8 @@ bool EpipolarGenerator::Process(IRasterReader *const img,
     throw;
   }
 
+  chrono::duration<double> diff = chrono::steady_clock::now() - start;
+  mPerf.tmTotal = diff.count();
   return true;
 }
 
@@ -86,6 +93,7 @@ void EpipolarGenerator::SetEpipolarParams(
  */
 void EpipolarGenerator::LayoutTiles() {
   static constexpr int kNP = 8;
+  auto start = chrono::steady_clock::now();
 
   // estimate tile size
   const double bpp = 1.0 +  mTfmBpp + mEpiBpp + mImgBpp * mSample * mSample;
@@ -174,6 +182,9 @@ void EpipolarGenerator::LayoutTiles() {
   }
 
   AllocateBuffers();
+
+  chrono::duration<double> diff = chrono::steady_clock::now() - start;
+  mPerf.tmLayout += diff.count();
 }
 
 /**
@@ -223,6 +234,8 @@ void EpipolarGenerator::AllocateBuffers() {
  *  \brief
  */
 void EpipolarGenerator::ResetBuffers(const int tileId) {
+  auto start = chrono::steady_clock::now();
+
   const auto& epiTile = mEpiTiles[tileId];
   const int64_t epiNumPix = epiTile.GetNumPixels();
   memset(mEpiBuffer.get(), 0, mEpiBpp * epiNumPix);
@@ -233,18 +246,21 @@ void EpipolarGenerator::ResetBuffers(const int tileId) {
     memset(mMaskBuffer.get(), 0, epiNumPix);
     cv::Mat tfmMat(epiTile.numRows, epiTile.numCols, mTfmCvDT, mTfmBuffer.get());
 
-    //tfmMat.forEach<cv::Vec2f>([](cv::Vec2f& tfm, const int*) { 
-    //  tfm[0] = -1; tfm[1] = -1; });
+    tfmMat.forEach<cv::Vec2f>([](cv::Vec2f& tfm, const int*) { 
+      tfm[0] = -1; tfm[1] = -1; });
     
 //#pragma omp parallel for
-    for (int64_t k = 0; k < epiNumPix; ++k) {
-      const int col = k % epiTile.numCols;
-      const int row = k / epiTile.numCols;
-      auto& tfm = tfmMat.at<cv::Vec2f>(row, col);
-      tfm[0] = -1;
-      tfm[1] = -1;
-    }
+    //for (int64_t k = 0; k < epiNumPix; ++k) {
+    //  const int col = k % epiTile.numCols;
+    //  const int row = k / epiTile.numCols;
+    //  auto& tfm = tfmMat.at<cv::Vec2f>(row, col);
+    //  tfm[0] = -1;
+    //  tfm[1] = -1;
+    //}
   }
+
+  chrono::duration<double> diff = chrono::steady_clock::now() - start;
+  mPerf.tmReset += diff.count();
 }
 
 /**
@@ -276,9 +292,13 @@ void EpipolarGenerator::ProcessTiles() {
 void EpipolarGenerator::ReadTile(const int tileId) {
   const auto [colOffset, rowOffset, numCols, numRows] = mImgTiles[tileId];
   if (0 == numCols || 0 == numRows) return;
+  auto start = chrono::steady_clock::now();
 
   CvRaster imgRaster(numCols, numRows, mImgCvDT, colOffset, rowOffset, mImgBuffer.get());
   mImgReader->ReadRaster(&imgRaster);
+
+  chrono::duration<double> diff = chrono::steady_clock::now() - start;
+  mPerf.tmRead += diff.count();
 }
 
 /**
@@ -287,6 +307,8 @@ void EpipolarGenerator::ReadTile(const int tileId) {
 void EpipolarGenerator::ProcessTile(const int tileId) {
   const auto [imgColOffset, imgRowOffset, imgNumCols, imgNumRows] = mImgTiles[tileId];
   if (0 == imgNumCols || 0 == imgNumRows) return;
+  auto start = chrono::steady_clock::now();
+
   cv::Mat imgMat(imgNumRows, imgNumCols, mImgCvDT, mImgBuffer.get());
 
   const auto [colOffset, rowOffset, numCols, numRows] = mEpiTiles[tileId];
@@ -296,15 +318,23 @@ void EpipolarGenerator::ProcessTile(const int tileId) {
   EpiToImg(tileId, tfmMat);
 
   mRasResample->Resample(imgMat, epiMat, tfmMat);
+
+  chrono::duration<double> diff = chrono::steady_clock::now() - start;
+  mPerf.tmProcess = diff.count();
 }
 
 /**
  *  \brief
  */
 void EpipolarGenerator::WriteTile(const int tileId) {
+  auto start = chrono::steady_clock::now();
+
   const auto [colOffset, rowOffset, numCols, numRows] = mEpiTiles[tileId];
   CvRaster epiRaster(numCols, numRows, mEpiCvDT, colOffset, rowOffset, mEpiBuffer.get());
   mEpiWriter->WriteRaster(&epiRaster);
+
+  chrono::duration<double> diff = chrono::steady_clock::now() - start;
+  mPerf.tmWrite += diff.count();
 }
 
 /**
@@ -336,7 +366,7 @@ void EpipolarGenerator::EpiToImg(const int tileId, cv::Mat& tfmMat) {
   const int64_t numGridPix = numGridCols * numGridRows;
 
   // Do geometry at grid points
-//#pragma omp parallel for
+#pragma omp parallel for
   for (int64_t g = 0; g < numGridPix; ++g) {
     const int gridCol = int(g % numGridCols);
     const int gridRow = int(g / numGridCols);
@@ -351,7 +381,7 @@ void EpipolarGenerator::EpiToImg(const int tileId, cv::Mat& tfmMat) {
   // Densify non-grid positions
   const int64_t numPix = numCols * numRows;
 
-//#pragma omp parallel for
+#pragma omp parallel for
   for (int64_t k = 0; k < numPix; ++k) {
     if (1 == mMaskBuffer[k]) continue;
     const int tileCol = int(k % numCols);

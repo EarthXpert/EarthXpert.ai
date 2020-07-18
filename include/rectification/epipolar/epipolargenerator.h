@@ -5,6 +5,7 @@
 #pragma once
 
 #include "rectification/epipolar/exepipolar.h"
+#include "rectification/epipolar/utils.h"
 #include "epipolarmodel/iepipolarmodel.h"
 #include "core/utils/rasterwindow.h"
 
@@ -44,6 +45,11 @@ public:
    */
   bool Process(IRasterReader* img, IRasterWriter* epi, IEpipolarModel const* epiModel);
 
+  /**
+   *  \return Returns performance info
+   */
+  const EpiGenPerf* GetPerfMettrics() const noexcept { return &mPerf; }
+
 private:
   static constexpr int kTileDim = 256;
 
@@ -79,6 +85,9 @@ private:
 
   void EpiToImg(int tileId, cv::Mat& tfmMat);
   void EpiToImg(int tileId, cv::Mat& tfmMat, int tileCol, int tileRow);
+
+  // performance
+  EpiGenPerf mPerf;
 
   // cached information
   int mMarginDim{};
