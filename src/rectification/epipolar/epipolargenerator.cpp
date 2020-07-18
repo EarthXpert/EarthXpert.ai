@@ -93,7 +93,7 @@ void EpipolarGenerator::SetEpipolarParams(
  */
 void EpipolarGenerator::LayoutTiles() {
   static constexpr int kNP = 8;
-  auto start = chrono::steady_clock::now();
+  const auto start = chrono::steady_clock::now();
 
   // estimate tile size
   const double bpp = 1.0 +  mTfmBpp + mEpiBpp + mImgBpp * mSample * mSample;
@@ -183,7 +183,7 @@ void EpipolarGenerator::LayoutTiles() {
 
   AllocateBuffers();
 
-  chrono::duration<double> diff = chrono::steady_clock::now() - start;
+  const chrono::duration<double> diff = chrono::steady_clock::now() - start;
   mPerf.tmLayout += diff.count();
 }
 
@@ -234,7 +234,7 @@ void EpipolarGenerator::AllocateBuffers() {
  *  \brief
  */
 void EpipolarGenerator::ResetBuffers(const int tileId) {
-  auto start = chrono::steady_clock::now();
+  const auto start = chrono::steady_clock::now();
 
   const auto& epiTile = mEpiTiles[tileId];
   const int64_t epiNumPix = epiTile.GetNumPixels();
@@ -259,7 +259,7 @@ void EpipolarGenerator::ResetBuffers(const int tileId) {
     //}
   }
 
-  chrono::duration<double> diff = chrono::steady_clock::now() - start;
+  const chrono::duration<double> diff = chrono::steady_clock::now() - start;
   mPerf.tmReset += diff.count();
 }
 
@@ -292,12 +292,12 @@ void EpipolarGenerator::ProcessTiles() {
 void EpipolarGenerator::ReadTile(const int tileId) {
   const auto [colOffset, rowOffset, numCols, numRows] = mImgTiles[tileId];
   if (0 == numCols || 0 == numRows) return;
-  auto start = chrono::steady_clock::now();
+  const auto start = chrono::steady_clock::now();
 
   CvRaster imgRaster(numCols, numRows, mImgCvDT, colOffset, rowOffset, mImgBuffer.get());
   mImgReader->ReadRaster(&imgRaster);
 
-  chrono::duration<double> diff = chrono::steady_clock::now() - start;
+  const chrono::duration<double> diff = chrono::steady_clock::now() - start;
   mPerf.tmRead += diff.count();
 }
 
@@ -307,7 +307,7 @@ void EpipolarGenerator::ReadTile(const int tileId) {
 void EpipolarGenerator::ProcessTile(const int tileId) {
   const auto [imgColOffset, imgRowOffset, imgNumCols, imgNumRows] = mImgTiles[tileId];
   if (0 == imgNumCols || 0 == imgNumRows) return;
-  auto start = chrono::steady_clock::now();
+  const auto start = chrono::steady_clock::now();
 
   cv::Mat imgMat(imgNumRows, imgNumCols, mImgCvDT, mImgBuffer.get());
 
@@ -319,7 +319,7 @@ void EpipolarGenerator::ProcessTile(const int tileId) {
 
   mRasResample->Resample(imgMat, epiMat, tfmMat);
 
-  chrono::duration<double> diff = chrono::steady_clock::now() - start;
+  const chrono::duration<double> diff = chrono::steady_clock::now() - start;
   mPerf.tmProcess += diff.count();
 }
 
@@ -327,13 +327,13 @@ void EpipolarGenerator::ProcessTile(const int tileId) {
  *  \brief
  */
 void EpipolarGenerator::WriteTile(const int tileId) {
-  auto start = chrono::steady_clock::now();
+  const auto start = chrono::steady_clock::now();
 
   const auto [colOffset, rowOffset, numCols, numRows] = mEpiTiles[tileId];
   CvRaster epiRaster(numCols, numRows, mEpiCvDT, colOffset, rowOffset, mEpiBuffer.get());
   mEpiWriter->WriteRaster(&epiRaster);
 
-  chrono::duration<double> diff = chrono::steady_clock::now() - start;
+  const chrono::duration<double> diff = chrono::steady_clock::now() - start;
   mPerf.tmWrite += diff.count();
 }
 
@@ -399,10 +399,10 @@ void EpipolarGenerator::EpiToImg(const int tileId, cv::Mat& tfmMat) {
     const int tileRowU = gridRows[gridRow];
     const int tileRowL = gridRows[gridRow + 1];
 
-    const int64 i1 = tileRowU * numCols + tileColL;
-    const int64 i2 = tileRowU * numCols + tileColR;
-    const int64 i3 = tileRowL * numCols + tileColL;
-    const int64 i4 = tileRowL * numCols + tileColR;
+    const int64 i1 = numCols * tileRowU + tileColL;
+    const int64 i2 = numCols * tileRowU + tileColR;
+    const int64 i3 = numCols * tileRowL + tileColL;
+    const int64 i4 = numCols * tileRowL + tileColR;
 
     if (0 == mMaskBuffer[i1] && 0 == mMaskBuffer[i2] &&
         0 == mMaskBuffer[i3] && 0 == mMaskBuffer[i4]) {
@@ -417,10 +417,15 @@ void EpipolarGenerator::EpiToImg(const int tileId, cv::Mat& tfmMat) {
       const double xf = double(tileCol - tileColL) / double(tileColR - tileColL);
       const double yf = double(tileRow - tileRowU) / double(tileRowL - tileRowU);
 
-      tfm[0] = float((1.0 - yf) * ((1.0 - xf) * gridCols[i1] + xf * gridCols[i2]) +
-        yf * ((1.0 - xf) * gridCols[i3] + xf * gridCols[i4]));
-      tfm[1] = float((1.0 - yf) * ((1.0 - xf) * gridRows[i1] + xf * gridRows[i2]) +
-        yf * ((1.0 - xf) * gridRows[i3] + xf * gridRows[i4]));
+      const auto& tfm1 = tfmMat.at<cv::Vec2f>(tileRowU, tileColL);
+      const auto& tfm2 = tfmMat.at<cv::Vec2f>(tileRowU, tileColR);
+      const auto& tfm3 = tfmMat.at<cv::Vec2f>(tileRowL, tileColL);
+      const auto& tfm4 = tfmMat.at<cv::Vec2f>(tileRowL, tileColR);
+
+      tfm[0] = float((1.0 - yf) * ((1.0 - xf) * tfm1[0] + xf * tfm2[0]) +
+        yf * ((1.0 - xf) * tfm3[0] + xf * tfm4[0]));
+      tfm[1] = float((1.0 - yf) * ((1.0 - xf) * tfm1[1] + xf * tfm2[1]) +
+        yf * ((1.0 - xf) * tfm3[1] + xf * tfm4[1]));
       mMaskBuffer[k] = 1;
     }
     else {
