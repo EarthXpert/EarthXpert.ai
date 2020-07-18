@@ -47,10 +47,10 @@ std::string ToString(const EpipolarOptions* epiOpt) {
   ss << boost::format("** EpipolarOptions **\n"
     "sensorName: %1%\nleftImgFile: %2%\nleftMdlFile: %3%\n"
     "rightImgFile: %4%\nrightMdlFile: %5%\nbands: %6%\nsample: %7%\n"
-    "grey: %8%\noutPath: %9%\nresample: %10%\nmemSize: %11%\n") % \
+    "stride: %8%\ngrey: %9%\noutPath: %10%\nresample: %11%\nmemSize: %12%\n") % \
     epiOpt->sensorName % epiOpt->leftImgFile % epiOpt->leftMdlFile % \
     epiOpt->rightImgFile % epiOpt->rightMdlFile % epiOpt->bands.size() %\
-    epiOpt->sample % epiOpt->grey % epiOpt->outPath % \
+    epiOpt->sample % epiOpt->stride % epiOpt->grey % epiOpt->outPath % \
     epiOpt->resample % epiOpt->memSize;
 
   return ss.str();
@@ -96,7 +96,7 @@ void GenerateRationalEpipolar(const EpipolarOptions& epiOpt) {
   const int epiNumBands = (epiOpt.grey && 3 == numBands) ? 1 : numBands;
 
   auto rasResample = std::make_unique<RasterResampleCV>(epiOpt.resample);
-  EpipolarGenerator epiGen(rasResample.get(), epiOpt.memSize);
+  EpipolarGenerator epiGen(rasResample.get(), epiOpt.memSize, epiOpt.stride);
 
   // generate left epipolar image
   detail::GenerateEpipolar(epiOpt.leftImgFile, &epiGen, &leftReader,

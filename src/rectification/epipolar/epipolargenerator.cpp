@@ -376,7 +376,7 @@ void EpipolarGenerator::EpiToImg(const int tileId, cv::Mat& tfmMat) {
     EpiToImg(tileId, tfmMat, tileCol, tileRow);
   }
 
-  if (1 == mSample) return;
+  if (1 == mStride) return;
   
   // Densify non-grid positions
   const int64_t numPix = numCols * numRows;
@@ -387,12 +387,12 @@ void EpipolarGenerator::EpiToImg(const int tileId, cv::Mat& tfmMat) {
     const int tileCol = int(k % numCols);
     const int tileRow = int(k / numCols);
 
-    const bool isGridCol = (0 == tileCol % mSample || tileCol == numCols - 1);
-    const bool isGridRow = (0 == tileRow % mSample || tileRow == numRows - 1);
+    const bool isGridCol = (0 == tileCol % mStride || tileCol == numCols - 1);
+    const bool isGridRow = (0 == tileRow % mStride || tileRow == numRows - 1);
     if (isGridCol && isGridRow) continue; // failed grid point
 
-    const int gridCol = std::min(tileCol / mSample, numGridCols - 2);
-    const int gridRow = std::min(tileRow / mSample, numGridRows - 2);
+    const int gridCol = std::min(tileCol / mStride, numGridCols - 2);
+    const int gridRow = std::min(tileRow / mStride, numGridRows - 2);
 
     const int tileColL = gridCols[gridCol];
     const int tileColR = gridCols[gridCol + 1];

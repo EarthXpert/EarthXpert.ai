@@ -50,6 +50,7 @@ int ExaiEpipolar::Execute() {
   epiOpt.rightImgFile = vm["rightimg"].as<std::string>();
   epiOpt.bands = vm["bands"].as<std::vector<int>>();
   epiOpt.sample = vm["sample"].as<int>();
+  epiOpt.stride = vm["stride"].as<int>();
   epiOpt.grey = vm["grey"].as<bool>();
   epiOpt.oneFile = vm["onefile"].as<bool>();
   epiOpt.outPath = vm["outdir"].as<std::string>();
@@ -89,6 +90,7 @@ void ExaiEpipolar::AddRationalOptions(bpo::options_description & optDesc) {
     ("rightmdl,n", bpo::value<std::string>(), "right model file")
     ("bands,b", bpo::value<std::vector<int>>()->multitoken(), "list of bands")
     ("sample,s", bpo::value<int>()->default_value(1), "downsample factor")
+    ("stride,d", bpo::value<int>()->default_value(8), "stride interval")
     ("grey,g", bpo::value<bool>()->default_value(false), "convert to grey image")
     ("onefile,f", bpo::value<bool>()->default_value(false), "save two epipolar images in a single file")
     ("outdir,o", bpo::value<std::string>()->required(), "output directory")

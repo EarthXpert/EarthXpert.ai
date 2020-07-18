@@ -24,6 +24,7 @@ struct EpipolarOptions {
 
   std::vector<int> bands;
   int sample{ 1 };
+  int stride{ 8 };
   bool grey{ false };
   bool oneFile{ false };
   std::string outPath;
