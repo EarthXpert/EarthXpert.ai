@@ -320,7 +320,7 @@ void EpipolarGenerator::ProcessTile(const int tileId) {
   mRasResample->Resample(imgMat, epiMat, tfmMat);
 
   chrono::duration<double> diff = chrono::steady_clock::now() - start;
-  mPerf.tmProcess = diff.count();
+  mPerf.tmProcess += diff.count();
 }
 
 /**
