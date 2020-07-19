@@ -4,7 +4,9 @@
  */
 #include "rectification/epipolar/epipolargenerator.h"
 #include "core/exceptions/exexcept.h"
+#include "core/math/math.h"
 #include "core/utils/irasterresample.h"
+#include "core/utils/layoututils.h"
 #include "core/utils/rasterlayout.h"
 #include "epipolarmodel/iepipolarmodel.h"
 #include "io/raster/irasterreader.h"
@@ -97,25 +99,9 @@ void EpipolarGenerator::LayoutTiles() {
   const auto start = chrono::steady_clock::now();
 
   // estimate tile size
-  const double bpp = 1.0 +  mTfmBpp + mEpiBpp * 2 + mImgBpp * mSample * mSample * 2;
-  int tileDim = int(sqrt(mMemSize / bpp));
-  tileDim = std::max(1, (tileDim / kTileDim)) * kTileDim;
-  
-  int tileNumCols = (tileDim < mEpiNumCols) ? tileDim : mEpiNumCols;
-  int tileNumRows = (tileDim < mEpiNumRows) ? tileDim : mEpiNumRows;
-
-  //  \param [in] num total number of pixels
-  //  \param [in] tileNum number of tile pixels
-  auto balNumTiles = [](const int num, const int tileNum) {
-    const int numTiles = (num - 1) / tileNum + 1;
-    return (tileNum * numTiles - num) / (kTileDim * numTiles);
-  };
-    
-  const int balNumCols = balNumTiles(mEpiNumCols, tileNumCols) * kTileDim;
-  const int balNumRows = balNumTiles(mEpiNumRows, tileNumRows) * kTileDim;
-
-  tileNumCols -= balNumCols;
-  tileNumRows -= balNumRows;
+  const int bpp = 1 +  mTfmBpp + mEpiBpp * 2 + mImgBpp * mSample * mSample * 2;
+  const auto [tileNumCols, tileNumRows] = EstimateTileSize(mMemSize,
+    bpp, mEpiNumCols, mEpiNumRows, kTileDim);
   RasterLayout rasLayout(mEpiNumCols, mEpiNumRows, tileNumCols, tileNumRows);
   
   mEpiTiles = rasLayout.GetRasterWindows();
@@ -415,11 +401,11 @@ void EpipolarGenerator::EpiToImg(const int tileId, cv::Mat& tfmMat) {
   assert(2 <= numGridCols);
   assert(2 <= numGridRows);
 
-  const int64_t numGridPix = numGridCols * numGridRows;
+  const int64_t numGridNodes = numGridCols * numGridRows;
 
-  // Do geometry at grid points
+  // Do geometry at grid nodes
 #pragma omp parallel for
-  for (int64_t g = 0; g < numGridPix; ++g) {
+  for (int64_t g = 0; g < numGridNodes; ++g) {
     const int gridCol = int(g % numGridCols);
     const int gridRow = int(g / numGridCols);
 
@@ -429,15 +415,14 @@ void EpipolarGenerator::EpiToImg(const int tileId, cv::Mat& tfmMat) {
   }
 
   if (1 == mStride) return;
-  auto Bilinear = [](const double v1, const double v2, const double v3, 
-    const double v4, const double xf, const double yf) {
-      return (1.0 - yf) * ((1.0 - xf) * v1 + xf * v2) +
-        yf * ((1.0 - xf) * v3 + xf * v4);
-  };
   
   // Densify non-grid positions
   const int64_t numPix = numCols * numRows;
 
+  // todo method 0: loop over grid cells
+  const int64_t numGridCells = (numGridCols - 1) * (numGridRows);
+
+  // method 1: loop over pixels
 #pragma omp parallel for
   for (int64_t k = 0; k < numPix; ++k) {
     if (1 == mMaskBuf[k]) continue;
@@ -471,7 +456,7 @@ void EpipolarGenerator::EpiToImg(const int tileId, cv::Mat& tfmMat) {
     if (1 == mMaskBuf[i1] && 1 == mMaskBuf[i2] &&
         1 == mMaskBuf[i3] && 1 == mMaskBuf[i4]) {
       // Bilinear interpolation if all four grid points are valid
-      // \todo re-calculate fraction lookup table at locations 0 ~ mStride -1
+      // \todo pre-calculate fraction lookup table at locations 0 ~ mStride -1
       const double xf = double(tileCol - tileColL) / double(tileColR - tileColL);
       const double yf = double(tileRow - tileRowU) / double(tileRowL - tileRowU);
 
@@ -480,14 +465,12 @@ void EpipolarGenerator::EpiToImg(const int tileId, cv::Mat& tfmMat) {
       const auto& tfm3 = tfmMat.at<cv::Vec2f>(tileRowL, tileColL);
       const auto& tfm4 = tfmMat.at<cv::Vec2f>(tileRowL, tileColR);
 
-      tfm[0] = float((1.0 - yf) * ((1.0 - xf) * tfm1[0] + xf * tfm2[0]) +
-        yf * ((1.0 - xf) * tfm3[0] + xf * tfm4[0]));
-      tfm[1] = float((1.0 - yf) * ((1.0 - xf) * tfm1[1] + xf * tfm2[1]) +
-        yf * ((1.0 - xf) * tfm3[1] + xf * tfm4[1]));
-      mMaskBuf[k] = 1;
+      tfm[0] = float(LinearInterp(tfm1[0], tfm2[0], tfm3[0], tfm4[0], xf, yf));
+      tfm[1] = float(LinearInterp(tfm1[1], tfm2[1], tfm3[1], tfm4[1], xf, yf));
+      //mMaskBuf[k] = 1;     // uncomment if needing mask
     }
     else {
-      // Do actual geometry if any grid point is invalid
+      // Do actual geometry if any grid node is invalid
       EpiToImg(tileId, tfmMat, tileCol, tileRow);
     }
   }

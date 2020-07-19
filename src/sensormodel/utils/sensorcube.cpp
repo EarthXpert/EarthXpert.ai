@@ -23,3 +23,13 @@ int SensorCube::CreateCube(const ISensorModel* sensorModel,
   std::vector<Point2f>& images, std::vector<Point3d>& grounds) const {
   return 0;
 }
+
+int SensorCube::CreateCubeFlat(const ISensorModel* sensorModel,
+  std::vector<Point2f>& images, std::vector<Point3d>& grounds) const {
+  return 0;
+}
+
+int SensorCube::CreateCubeModel(const ISensorModel* sensorModel,
+  std::vector<Point2f>& images, std::vector<Point3d>& grounds) const {
+  return 0;
+}
