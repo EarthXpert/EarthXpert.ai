@@ -2,8 +2,8 @@
  *  Copyright (c) 2018.  All rights reserved.
  * -----------------------------------------------------------------------------
  */
-#include "sensormodel/stereomodel.h"
-#include "sensormodel/intersecti2g.h"
+#include "sensormodel/utils/stereomodel.h"
+#include "sensormodel/utils/intersecti2g.h"
 #include "3rdparty/gettext/exgettext.h"
 #include "core/exceptions/exexcept.h"
 #include "core/math/intersect.h"
@@ -28,7 +28,8 @@ using namespace ceres;
  *  \param [in] leftModel left sensor model composing the stereo model
  *  \param [in] rightModel right sensor model composing the stereo model
  */
-StereoModel::StereoModel(ISensorModel const* const leftModel, ISensorModel const* const rightModel) {
+StereoModel::StereoModel(ISensorModel const* const leftModel, 
+  ISensorModel const* const rightModel) {
   mModels.resize(2);
   mModels[0] = leftModel;
   mModels[1] = rightModel;
@@ -67,11 +68,13 @@ void StereoModel::Initialize() {
     throw std::exception(_("StereoModel: requires 2 or more models"));
 
   // default forward intersection algorithm
-  const auto modelType = mModels[0]->GetModelType();
-  switch (modelType) {
-  case ISensorModel::eFRAME:
+  mSensorType = mModels[0]->GetModelType();
+  mSrsType = mModels[0]->GetSrsType();
+
+  switch (mSensorType) {
+  case SensorType::eFRAME:
     break;
-  case ISensorModel::eRATIONAL:
+  case SensorType::eRATIONAL:
     mFwdAlgo = eSM_NR;
     break;
   default:
@@ -127,9 +130,26 @@ void StereoModel::SetEarthEllipsoid(std::shared_ptr<EarthEllipsoid> earthEllip) 
 }
 
 void StereoModel::SetForwardAlgorithm(const ForwardAlgo fwdAlgo) {
-  mFwdAlgo = fwdAlgo; 
-
   // verify consistency
+  switch (fwdAlgo) {
+  case eSM_CERES: {
+    break;
+  }
+  case eCA_INTERSECT: {
+    if (eGEO == mSrsType && !(mEarthEllip && mIntersect)) {
+      throw std::exception("StereoModel: SetForwardAlgorithm");
+    }
+    break;
+  }
+  case eSM_NR: {
+    break;
+  }
+  default: {
+    break;
+  }
+  }
+
+  mFwdAlgo = fwdAlgo; 
 }
 
 /**
@@ -143,8 +163,6 @@ void StereoModel::SetForwardAlgorithm(const ForwardAlgo fwdAlgo) {
  *  \param [in] rightImages a list of corresponding 2d position (x,
  * y) in right sensor raster coordinate system 
  *  \param [in/out] grounds a list of 3d ground positions (X, Y, Z) in ground coordinate system
- *
- *  \details
  */
 size_t StereoModel::ImageToGround(const std::vector<Point2d> &leftImages,
   const std::vector<Point2d> &rightImages, std::vector<Point3d> &grounds) const {
@@ -172,10 +190,9 @@ size_t StereoModel::ImageToGround(const std::vector<Point2d> &leftImages,
  * imagery raster coordinate systems, interleaved by sensor models. 
  *  \param [in/out] grounds List of 3d ground positions (X, Y, Z) in ground coordinate
  * system
- *
- *  \details
  */
-size_t StereoModel::ImageToGround(const std::vector<Point2d> &images, std::vector<Point3d> &grounds) const {
+size_t StereoModel::ImageToGround(const std::vector<Point2d> &images, 
+  std::vector<Point3d> &grounds) const {
   const size_t numModels = mModels.size();
   const long size = images.size() / numModels;
 
@@ -206,10 +223,9 @@ size_t StereoModel::ImageToGround(const std::vector<Point2d> &images, std::vecto
  *  \param [in] ground 3d position (X, Y, Z) in ground coordinate system
  *  \param [out] image 2d position (x, y) in imagery raster coordinate system 
  *  \return Returns true if operation succeeds
- *
- *  \details
  */
-bool StereoModel::GroundToImage(const Point3d &ground, std::vector<Point2d> &image) const {
+bool StereoModel::GroundToImage(const Point3d &ground, 
+  std::vector<Point2d> &image) const {
   const long size = mModels.size();
   image.resize(size);
 
@@ -229,10 +245,9 @@ bool StereoModel::GroundToImage(const Point3d &ground, std::vector<Point2d> &ima
  *  \param [in] grounds List of 3d ground positions (X, Y, Z)
  *  \param [in/out] images List of 2d positions (x, y) on image,
  * interleaved by sensor models
- *
- *  \details
  */
-size_t StereoModel::GroundToImage(const std::vector<Point3d> &grounds, std::vector<Point2d> &images) const {
+size_t StereoModel::GroundToImage(const std::vector<Point3d> &grounds, 
+  std::vector<Point2d> &images) const {
   const long size = grounds.size();
   const auto numModels{mModels.size()};
   images.resize(size * numModels);
@@ -315,7 +330,8 @@ bool StereoModel::ImageToGroundNR(const Point2d& leftImage,
 
 // Ceres
 // \todo intial position
-bool StereoModel::ImageToGroundCeres(const std::array<Point2d, 3>& images, Point3d& ground) const {
+bool StereoModel::ImageToGroundCeres(
+  const std::array<Point2d, 3>& images, Point3d& ground) const {
   assert(3 == mModels.size());
   ground.z = (mModels[0]->GetMeanHeight() + mModels[1]->GetMeanHeight() +
     mModels[2]->GetMeanHeight()) / 3.0;
@@ -328,7 +344,8 @@ bool StereoModel::ImageToGroundCeres(const std::array<Point2d, 3>& images, Point
   return ret;
 }
 
-bool StereoModel::ImageToGroundNR(const std::array<Point2d, 3>& images, Point3d& ground) const {
+bool StereoModel::ImageToGroundNR(
+  const std::array<Point2d, 3>& images, Point3d& ground) const {
   assert(3 == mModels.size());
   ground.z = (mModels[0]->GetMeanHeight() + mModels[1]->GetMeanHeight() + 
     mModels[2]->GetMeanHeight()) / 3.0;
@@ -373,7 +390,8 @@ bool StereoModel::ImageToGroundNR(const std::array<Point2d, 3>& images, Point3d&
 
 // Ceres
 // \todo intial position
-bool StereoModel::ImageToGroundCeres(const Point2d* images, int numRays, Point3d& ground) const {
+bool StereoModel::ImageToGroundCeres(const Point2d* images, 
+  const int numRays, Point3d& ground) const {
   assert(2 <= mModels.size());
   ground.z = 0.0;
   for (int k = 0; k < numRays; ++k) {
@@ -400,7 +418,8 @@ bool StereoModel::ImageToGroundCeres(const Point2d* images, int numRays, Point3d
  *  \param [in/out] grounds List of 3d ground positions (X, Y, Z) in ground coordinate
  * system
  */
-bool StereoModel::ImageToGroundX(const Point2d* images, const int numRays, Point3d& ground) const {
+bool StereoModel::ImageToGroundX(const Point2d* images, 
+  const int numRays, Point3d& ground) const {
   assert(numRays == mModels.size());
   ground.z = 0.0;
   for (int k = 0; k < numRays; ++k) {
@@ -415,22 +434,27 @@ bool StereoModel::ImageToGroundX(const Point2d* images, const int numRays, Point
     const double hgtRange[2] = { ground.z + kH, ground.z - kH };
 
     for (int j = 0; j < 2; ++j) {
-      Point3d grd{ 0.0, 0.0, hgtRange[j] };
-
       for (int k = 0; k < numRays; ++k) {
-        mModels[k]->ImageToGround(images[k], grd);
-        segs[j + k * 2] = mEarthEllip->LPHToLSR(Deg2Rad(grd));
+        const int pi = j + k * 2;   // point index
+        segs[pi].z = hgtRange[j];
+
+        mModels[k]->ImageToGround(images[k], segs[pi]);
+        if (eGEO == mSrsType)
+          segs[pi] = mEarthEllip->LPHToLSR(Deg2Rad(segs[pi]));
       }
     }
 
     // 3d intersection X
-    Solver::Summary summary;
-    const bool ret = mIntersect->IntersectCeres(segs.data(), lsr, summary);
+    //Solver::Summary summary;
+    //const bool ret = mIntersect->IntersectCeres(segs.data(), lsr, summary);
     //std::cout << summary.BriefReport() << std::endl;
-    //const bool ret = mIntersect->IntersectEigen(segs.data(), lsr, numRays);   // IntersectTwoLines(segs.data(), lsr, numRays)
+    const bool ret = mIntersect->IntersectEigen(segs.data(), lsr, numRays);   // IntersectTwoLines(segs.data(), lsr, numRays)
     
     if (!ret) return false;
-    ground = Rad2Deg(mEarthEllip->LSRToLPH(lsr));
+    if (eGEO == mSrsType)
+      ground = Rad2Deg(mEarthEllip->LSRToLPH(lsr));
+    else
+      ground = lsr;
   }
 
   return true;

@@ -12,6 +12,8 @@
 #include <boost/geometry/geometries/geometries.hpp>
 #include <boost/geometry/geometries/multi_point.hpp>
 
+#include <boost/pool/object_pool.hpp>
+
 #include <iostream>
 #include <vector>
 

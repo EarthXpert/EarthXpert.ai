@@ -19,6 +19,10 @@ public:
   Geocoding(double originX, double originY, double pixelSizeX, double pixelSizeY);
   ~Geocoding() = default;
 
+  std::unique_ptr<Geocoding> Clone() const {
+    return std::make_unique<Geocoding>(*this);
+  }
+
   /**
    *  \brief Performs transformation from image coordinates to map coordinates
    *

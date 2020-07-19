@@ -63,6 +63,11 @@ public:
   GDALDataType GetDataType() const noexcept { return mGdalDT; }
 
   /**
+   *  \return Returns OpenCV data type.
+   */
+  int GetCvDataType() const noexcept { return mCvDT; }
+
+  /**
    *  \return Return the 1-based band indices to read from
    */
   auto GetReadBands() const noexcept { return mBands; }
@@ -71,6 +76,11 @@ public:
    *  \return Return the number of channels contained in the image file
    */
   int GetNumBands() const noexcept override { return mFileNumBands; }
+
+  /**
+   *  \return Returns metadata NODATA_VALUES.
+   */
+  std::vector<double>& GetNodataValues() noexcept override { return mNodataValues; }
 
   /**
    *  \brief Set the margin size and kind.
@@ -119,6 +129,8 @@ public:
    *  \return Returns number of bytes to accomadate the image data of raster object
    */
   int64 GetRasterBufferNumBytes(int numCols, int numRows) const noexcept;
+
+  int64 GetRasterBufferNumBytes(int64 numPix) const noexcept;
 
   /**
    *  \brief Reads the entire image.
@@ -179,6 +191,7 @@ private:
   int mReadNumBands{};  // number of bands to read from
   int mFileNumCols{};   // width of image file [unit: pixel]
   int mFileNumRows{};   // height of image file
+  std::vector<double> mNodataValues;
   GDALDataType mGdalDT{};
   int mCvDT{};
 

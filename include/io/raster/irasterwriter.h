@@ -28,6 +28,12 @@ public:
   virtual void SetMetadata(const RasterMetadata* metaData) = 0;
 
   /**
+   *  \brief Set metadata NODATA_VALUES.
+   */
+  virtual void SetNodataValues(double nodataValue) = 0;
+  virtual void SetNodataValues(const std::vector<double>& nodataValues) = 0;
+
+  /**
    *  \brief Inject the ground coordinate system where the image file operates
    *
    *  \param [in] spatialref the coordinate system
@@ -53,4 +59,7 @@ public:
    */
   virtual void BuildPyramids() = 0;
 };
+
+using UPIRasterWriter = std::unique_ptr<IRasterWriter>;
+using SPIRasterWriter = std::shared_ptr<IRasterWriter>;
 } // namespace earthxpert

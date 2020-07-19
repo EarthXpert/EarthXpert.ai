@@ -6,8 +6,8 @@
 #include "testconfig.h"
 
 #include "sensormodel/frameep.h"
-#include "sensormodel/frameip.h"
 #include "sensormodel/framemodel.h"
+#include "sensormodel/utils/frameip.h"
 
 #include <cmath>
 #include <iostream>

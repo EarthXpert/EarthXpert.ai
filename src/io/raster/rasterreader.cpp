@@ -91,11 +91,20 @@ std::unique_ptr<Geocoding> RasterReader::GetGeocoding() const {
  *  \param [in] numRows vertical height
  *  \return Returns number of bytes to accomadate the image data of raster object
  */
-int64 RasterReader::GetRasterBufferNumBytes(const int numCols,
+int64_t RasterReader::GetRasterBufferNumBytes(const int numCols,
   const int numRows) const noexcept {
   const auto bufNumCols = numCols + mMarginCols * 2;
   const auto bufNumRows = numRows + mMarginRows * 2;
-  return (int64(CV_ELEM_SIZE(mCvDT)) * int64(bufNumCols) * int64(bufNumRows));
+  return GetRasterBufferNumBytes(int64_t(bufNumCols) * int64_t(bufNumRows));
+}
+
+/**
+ *  \param [in] numPix number of pixels
+ *
+ *  \return Return number of bytes to accomadate the image data of raster object.
+ */
+int64_t RasterReader::GetRasterBufferNumBytes(const int64_t numPix) const noexcept {
+  return (int64_t(CV_ELEM_SIZE(mCvDT)) * numPix);
 }
 
 /**
@@ -172,11 +181,11 @@ void RasterReader::ReadRaster(IRaster* const raster) {
 void RasterReader::ReadRaster(CvRaster* const raster) {
   assert(mDataset);
   std::lock_guard<std::mutex> lock(mMutex);
-  const int64 rowNumBytes = raster->GetRowNumBytes();
+  const int64_t rowNumBytes = raster->GetRowNumBytes();
   const auto [readWin, readPixelOff] = ObtainReadWindow(raster);
   const auto [readColOff, readRowOff, readNumCols, readNumRows] = readWin;
-  const int64 bpp = raster->GetBytesPerPixel();
-  const int64 readBytesOff = bpp * readPixelOff;
+  const int64_t bpp = raster->GetBytesPerPixel();
+  const int64_t readBytesOff = bpp * readPixelOff;
   auto readBuffer = raster->GetBuffer() + readBytesOff;
 
   if (1 == raster->GetNumBands()) {
@@ -194,9 +203,9 @@ void RasterReader::ReadRaster(CvRaster* const raster) {
     }
   }
   else {
-    const int64 bpb = raster->GetBytesPerBand();
-    const int64 bandRowNumBytes = bpb * readNumCols;
-    const int64 pixelRowNumBytes = bpp * readNumCols;
+    const int64_t bpb = raster->GetBytesPerBand();
+    const int64_t bandRowNumBytes = bpb * readNumCols;
+    const int64_t pixelRowNumBytes = bpp * readNumCols;
     std::unique_ptr<uchar[]> gdalBuffer(new uchar[pixelRowNumBytes]);
 
     auto readRow{ readBuffer };
@@ -239,11 +248,11 @@ void RasterReader::ReadRaster(CvRaster* const raster) {
 void RasterReader::ReadRaster(GdalRaster* const raster) {
   assert(mDataset);
   std::lock_guard<std::mutex> lock(mMutex);
-  const int64 rowNumBytes = raster->GetRowNumBytes();
-  const int64 bandNumBytes = raster->GetBandNumBytes();
+  const int64_t rowNumBytes = raster->GetRowNumBytes();
+  const int64_t bandNumBytes = raster->GetBandNumBytes();
   const auto [readWin, readPixelOff] = ObtainReadWindow(raster);
   const auto [readColOff, readRowOff, readNumCols, readNumRows] = readWin;
-  const int64 readBytesOff = raster->GetBytesPerBand() * readPixelOff;
+  const int64_t readBytesOff = raster->GetBytesPerBand() * readPixelOff;
 
   auto readBuffer = raster->GetBuffer() + readBytesOff;
 
@@ -315,14 +324,19 @@ void RasterReader::ObtainDatasetInfo() {
   mReadNumBands = static_cast<int>(mBands.size());
   mFileNumCols = mDataset->GetRasterXSize();
   mFileNumRows = mDataset->GetRasterYSize();
+  mNodataValues.resize(mReadNumBands);
 
-  mGdalDT = mDataset->GetRasterBand(mBands[0])->GetRasterDataType();
+  auto band = mDataset->GetRasterBand(mBands[0]);
+  mGdalDT = band->GetRasterDataType();
+  mNodataValues[0] = band->GetNoDataValue();
 
   // check if the data type is same for all read bands
   for (int b = 1; b < mReadNumBands; ++b) {
-    if (mGdalDT != mDataset->GetRasterBand(mBands[b])->GetRasterDataType()) {
+    band = mDataset->GetRasterBand(mBands[b]);
+    if (mGdalDT != band->GetRasterDataType()) {
       throw std::logic_error(_("Image bands should be of same data type"));
     }
+    mNodataValues[b] = band->GetNoDataValue();
   }
 
   mCvDT = ConvertPixelType(mGdalDT, mReadNumBands);
@@ -334,7 +348,7 @@ void RasterReader::ObtainDatasetInfo() {
  *  \param [in] raster the raster object.
  *  \return Returns the read window offset, size, and the pixel offset.
  */
-std::tuple<RasterWindow, int64>
+std::tuple<RasterWindow, int64_t>
 RasterReader::ObtainReadWindow(IRaster* const raster) const {
   const auto [bufColOff, bufRowOff] = raster->GetBufferOffsets();
   const auto [bufNumCols, bufNumRows] = raster->GetBufferSize();
@@ -348,8 +362,8 @@ RasterReader::ObtainReadWindow(IRaster* const raster) const {
   const auto readNumCols = readColMax - readColOff;
   const auto readNumRows = readRowMax - readRowOff;
 
-  const int64 readPixelOff = int64(bufNumCols) * (int64(readRowOff) - int64(bufRowOff)) +
-    int64(readColOff) - int64(bufColOff);
+  const int64_t readPixelOff = int64_t(bufNumCols) * (int64_t(readRowOff) - int64_t(bufRowOff)) +
+    int64_t(readColOff) - int64_t(bufColOff);
   return { {readColOff, readRowOff, readNumCols, readNumRows}, readPixelOff };
 }
 

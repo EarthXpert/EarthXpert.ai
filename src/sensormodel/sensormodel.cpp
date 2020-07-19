@@ -24,8 +24,6 @@ using earthxpert::SensorModel;
  *  \param [in] image 2d position (x, y) in imagery raster coordinate system
  *  \param [in/out] ground 3d ground position (X, Y, Z) in ground coordinate
  * system \return Returns true if the operation succeeds
- *
- *  \details
  */
 bool SensorModel::ImageToGround(const Point2d &image, Point3d &ground) const {
   return false;
@@ -59,14 +57,11 @@ size_t SensorModel::ImageToGround(const Point2d &image,
  *
  *  \param [in] image List of 2d positions (x, y) on image
  *  \param [in/out] ground List of 3d ground positions (X, Y, Z)
- *
- *  \details More details
  */
 size_t SensorModel::ImageToGround(const std::vector<Point2d> &image,
                                   std::vector<Point3d> &ground) const {
   const long size = static_cast<long>(image.size());
   assert(size == ground.size());
-
   size_t ret{};
 
   #pragma omp parallel for reduction(+ : ret)
@@ -87,8 +82,6 @@ size_t SensorModel::ImageToGround(const std::vector<Point2d> &image,
  *  \param [in] ground 3d position (X, Y, Z) in ground coordinate system
  *  \param [out] image 2d position (x, y) in imagery raster coordinate system
  *  \return Returns true if operation succeeds
- *
- *  \details
  */
 bool SensorModel::GroundToImage(const Point3d &ground, Point2d &image) const {
   return false;
@@ -105,7 +98,6 @@ size_t SensorModel::GroundToImage(const std::vector<Point3d> &ground,
                                   std::vector<Point2d> &image) const {
   const long size = static_cast<long>(ground.size());
   assert(size == image.size());
-
   size_t ret{};
 
   #pragma omp parallel for reduction(+ : ret)

@@ -8,6 +8,7 @@
 #include "core/datasource/rastertypes.h"
 
 #include "opencv2/core/hal/interface.h"
+#include <cstdint>
 #include <memory>
 #include <utility>
 
@@ -18,7 +19,7 @@ namespace earthxpert {
  */
 class EXCORE_EXPORTS IRaster {
 public:
-  virtual ~IRaster() {}
+  virtual ~IRaster() = default;
 
   /**
    *  The RasterType defines the raster data structure
@@ -91,7 +92,7 @@ public:
   /**
    *  \return Returns number of bytes occupide by the entire raster buffer
    */
-  virtual int64 GetBufferNumBytes() const noexcept = 0;
+  virtual int64_t GetBufferNumBytes() const noexcept = 0;
 
   /**
    *  \return Returns bytes per band
@@ -116,6 +117,9 @@ public:
   /**
    *  \return Returns offset of the first pixel belonging to the image in the buffer.
    */
-  virtual int64 GetImagePixelOffset() const noexcept = 0;
+  virtual int64_t GetImagePixelOffset() const noexcept = 0;
 };
+
+using UPIRaster = std::unique_ptr<IRaster>;
+using SPIRaster = std::shared_ptr<IRaster>;
 } // namespace earthxpert

@@ -18,7 +18,7 @@ class ISensorModel;
  */
 class EXMARSHALLER_EXPORTS ISensorModelMarshaller {
 public:
-  virtual ~ISensorModelMarshaller() {}
+  virtual ~ISensorModelMarshaller() = default;
 
   /**
    *  \brief

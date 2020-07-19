@@ -6,31 +6,35 @@
 
 #include "rectification/epipolar/exepipolar.h"
 
-#include <memory>
 #include <string>
 #include <vector>
 
 namespace earthxpert {
 class IEpipolarModel;
 class IRasterResample;
-class ISensorModel;
 class RasterReader;
 class RasterWriter;
 
-namespace epipolar {
-void EXEPIPOLAR_EXPORTS GenerateEpipolar(
-  RasterReader* leftReader, const ISensorModel* leftModel,
-  RasterReader* rightReader, const ISensorModel* rightModel,
-  const IEpipolarModel* epipolarModel,
-  RasterWriter* leftEpiWriter, RasterWriter* rightEpiWriter,
-  const IRasterResample* rasResample, size_t memSize);
+struct EpipolarOptions {
+  std::string sensorName;
+  std::string leftImgFile;
+  std::string leftMdlFile;
+  std::string rightImgFile;
+  std::string rightMdlFile;
+
+  std::vector<int> bands;
+  int sample{ 1 };
+  int stride{ 8 };
+  bool grey{ false };
+  bool oneFile{ false };
+  std::string outPath;
+  std::string resample;
+  size_t memSize;  // [unit: bytes]
+};
+
+std::string EXEPIPOLAR_EXPORTS ToString(const EpipolarOptions* epiOpt);
 
 void EXEPIPOLAR_EXPORTS GenerateFrameEpipolar();
 
-void EXEPIPOLAR_EXPORTS GenerateRationalEpipolar(
-  const std::string& leftImgFile, const std::string& leftMdlFile,
-  const std::string& rightImgFile, const std::string& rightMdlFile,
-  const std::vector<int>& bands, int sample, const std::string& outPath,
-  const std::string& resample, size_t memSize);
-}
+void EXEPIPOLAR_EXPORTS GenerateRationalEpipolar(const EpipolarOptions& epiOpt);
 } // namespace earthxpert::epipolar

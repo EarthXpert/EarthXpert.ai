@@ -14,7 +14,7 @@ namespace earthxpert {
  */
 class EXSENSORMODEL_EXPORTS SensorModel : public ISensorModel {
 public:
-  virtual ~SensorModel() {}
+  virtual ~SensorModel() = default;
 
   /**
    *  \brief compare the equality of two models.
@@ -44,10 +44,8 @@ public:
    *  \param [in] image 2d position (x, y) in imagery raster coordinate system
    *  \param [in/out] ground 3d ground position (X, Y, Z) in ground coordinate
    * system \return Returns true if the operation succeeds
-   *
-   *  \details
    */
-  virtual bool ImageToGround(const Point2d &image, Point3d &ground) const;
+  virtual bool ImageToGround(const Point2d &image, Point3d &ground) const override;
 
   bool operator()(const Point2d& image, Point3d& ground) const override {
     return ImageToGround(image, ground);
@@ -60,8 +58,6 @@ public:
    *  \param [in] image 2d position (x, y) in imagery raster coordinate system
    *  \param [in/out] ground 3d ground positions (X, Y, Z) in ground coordinate
    * system
-   *
-   *  \details More details
    */
   virtual size_t ImageToGround(const Point2d &image,
                                std::vector<Point3d> &ground) const override;
@@ -73,8 +69,6 @@ public:
    *
    *  \param [in] image List of 2d positions (x, y) on image
    *  \param [in/out] ground List of 3d ground positions (X, Y, Z)
-   *
-   *  \details More details
    */
   virtual size_t ImageToGround(const std::vector<Point2d> &image,
                                std::vector<Point3d> &ground) const override;
@@ -88,10 +82,8 @@ public:
    *  \param [in] ground 3d position (X, Y, Z) in ground coordinate system
    *  \param [out] image 2d position (x, y) in imagery raster coordinate system
    *  \return Returns true if operation succeeds
-   *
-   *  \details
    */
-  virtual bool GroundToImage(const Point3d &ground, Point2d &image) const;
+  virtual bool GroundToImage(const Point3d &ground, Point2d &image) const override;
 
   bool operator()(const Point3d& ground, Point2d& image) const override {
     return GroundToImage(ground, image);
@@ -103,21 +95,9 @@ public:
    *
    *  \param [in] ground List of 3d ground positions (X, Y, Z)
    *  \param [in/out] image List of 2d positions (x, y) on image
-   *
-   *  \details More details
    */
   virtual size_t GroundToImage(const std::vector<Point3d> &ground,
                                std::vector<Point2d> &image) const override;
-
-  /**
-   *  \return Returns type of SRS
-   */
-  virtual SrsType GetSrsType() const noexcept { return eUNKNOWN; }
-
-  /**
-   *  \return Returns the middle height
-   */
-  virtual double GetMeanHeight() const noexcept { return 0.0; }
 
 protected:
   virtual bool EqualTo(const ISensorModel &rhs) const = 0;

@@ -13,6 +13,12 @@ namespace earthxpert {
  */
 class EXPROJECT_EXPORTS RationalProject final : public Project {
 public:
+  enum {
+    ProjectType = ePT_RATIONAL
+  };
+
   ~RationalProject() = default;
+
+  PrjType GetProjectType() const noexcept override { return ePT_RATIONAL; }
 };
 }

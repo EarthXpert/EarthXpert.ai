@@ -150,12 +150,14 @@ PointcloudReader::ReadPointcloud(const SpatialTileD& tile) {
   // 1st pass: obtain number of points
   mReader->seek(0);
 
-  std::optional<size_t> firstPoint;   // index of first inclusion point
+  std::optional<int64_t> firstPoint;   // index of first inclusion point
+  int64_t lastPoint{};                 // index of last inclusion point
   size_t numPoints{};   // actual #points
   while (TRUE == mReader->read_point()) {
     if (!firstPoint) {
-      firstPoint = numPoints;
+      firstPoint = mReader->p_count;
     }
+    lastPoint = mReader->p_count;
     ++numPoints;
   }
   if (0 == numPoints) return {};
@@ -168,7 +170,7 @@ PointcloudReader::ReadPointcloud(const SpatialTileD& tile) {
     mHeader->y_offset, mHeader->z_offset));
 
   size_t i{};
-  while (TRUE == mReader->read_point()) {
+  while (TRUE == mReader->read_point() && mReader->p_count <= lastPoint) {
     pointCloud->SetPoint_Unchecked(i, mReader->point, false);
     ++i;
   }

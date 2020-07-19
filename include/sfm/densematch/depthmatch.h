@@ -6,8 +6,11 @@
 
 #include "sfm/densematch/densematch.h"
 #include "sfm/densematch/depthmatchtypes.h"
-#include "sfm/densematch/icostfunc.h"
-#include "sfm/densematch/ineighborhood.h"
+#include "sfm/densematch/censuscostfunc.h"
+#include "sfm/densematch/micostfunc.h"
+#include "sfm/densematch/rankcostfunc.h"
+#include "sfm/densematch/circleneighbor.h"
+#include "sfm/densematch/rectneighbor.h"
 
 #include <algorithm>
 #include <cassert>
@@ -24,8 +27,8 @@ namespace earthxpert {
  *  represented by sensor models. A depth is considered valid iff the object point
  *  occured on N-view (N >= 2) and is validated.
  *
- *  \param CostFunc defines the behaviour of calculating cost
- *  \param Neighborhood defines the behaviour of neighborhood selection
+ *  \tparam CostFunc defines the behaviour of calculating cost
+ *  \tparam Neighborhood defines the behaviour of neighborhood selection
  *
  *  \remark the terms depth and elevation are used interchangably here.
  */

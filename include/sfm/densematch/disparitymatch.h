@@ -8,8 +8,11 @@
 #include "epipolarmodel/iepipolarmodel.h"
 #include "sensormodel/isensormodel.h"
 #include "sfm/densematch/disparitymatchtypes.h"
-#include "sfm/densematch/icostfunc.h"
-#include "sfm/densematch/ineighborhood.h"
+#include "sfm/densematch/censuscostfunc.h"
+#include "sfm/densematch/micostfunc.h"
+#include "sfm/densematch/rankcostfunc.h"
+#include "sfm/densematch/circleneighbor.h"
+#include "sfm/densematch/rectneighbor.h"
 
 #include <algorithm>
 #include <cassert>
@@ -23,12 +26,14 @@ namespace earthxpert {
  *  The class DisparityMatch implements a binocunar view semi-global matching algorithm.
  *  The algorithm computes the disparity map in image space. The input images determined
  *  the GeometryModel policy, respectively, for epipolar images with epipolar model, or
- *  for raw images with sensor models. The latter also includes satellite OrthoReady images
- *  that are resampled epipolar images but with an RPC model.
+ *  for raw images with sensor models, or for ortho images with geocoding models.
+ *  The latter also includes satellite OrthoReady images that are
+ *  resampled epipolar images but with an RPC model.
  *
- *  \param GeometryModel defines the behaviour of geometry model of the imagery: epipolar model, sensor model
- *  \param CostFunction defines the behaviour of calculating cost
- *  \param Neighborhood defines the behaviour of neighborhood selection
+ *  \tparam GeometryModel defines the behaviour of geometry model of the imagery:
+ *  epipolar model, sensor model, affine model
+ *  \tparam CostFunction defines the behaviour of calculating cost
+ *  \tparam Neighborhood defines the behaviour of neighborhood selection
  */
 template <class GeometryModel, class CostFunc, class Neighborhood>
 class EXSFM_EXPORTS DisparityMatch final : public DenseMatch {

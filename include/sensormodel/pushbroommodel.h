@@ -5,21 +5,25 @@
 #pragma once
 
 #include "sensormodel/sensormodel.h"
-#include "sensormodel/satellitedp.h"
+#include "sensormodel/craftpolicy.h"
 #include "sensormodel/scannerep.h"
 #include "sensormodel/scannerepcorr.h"
 #include "sensormodel/scannerimagemodel.h"
 #include "sensormodel/scannerip.h"
+#include "sensormodel/utils/satellitedp.h"
 
 #include <array>
 #include <chrono>
 
 namespace earthxpert {
 /**
- *  The class PushBroomModel implements the physical geometry model
+ *  The class PushbroomModel implements the physical geometry model
  *  for optical line-scanning/framelet sensors.
+ *
+ *  \tparam CraftPolicy defnies behaviours specific to airborne or spacecraft.
  */
-class EXSENSORMODEL_EXPORTS PushBroomModel final : public SensorModel {
+template <typename CraftPolicy>
+class EXSENSORMODEL_EXPORTS PushbroomModel final : public SensorModel {
 public:
   /**
    *  \brief Construct an aerial pushbroom geometry model.
@@ -29,7 +33,7 @@ public:
    * interior orientation \param [in] scannerEP extrinsic parameters defining
    * scanner exterior orientation \param [in] groundSRS ground coordinate system
    */
-  PushBroomModel(std::shared_ptr<ScannerImageModel> imgModel,
+  PushbroomModel(std::shared_ptr<ScannerImageModel> imgModel,
                  std::unique_ptr<ScannerIP> &&scannerIP,
                  std::shared_ptr<ScannerEP> scannerEP,
                  std::shared_ptr<SpatialReferenceSystem> groundSRS);
@@ -43,22 +47,22 @@ public:
    * scanner exterior orientation \param [in] satelliteDP distortion parameters
    * defining external effects \param [in] groundSRS ground coordinate system
    */
-  PushBroomModel(std::shared_ptr<ScannerImageModel> imgModel,
+  PushbroomModel(std::shared_ptr<ScannerImageModel> imgModel,
                  std::unique_ptr<ScannerIP> &&scannerIP,
                  std::shared_ptr<ScannerEP> scannerEP,
                  std::shared_ptr<SatelliteDP> satelliteDP,
                  std::shared_ptr<SpatialReferenceSystem> groundSRS);
 
-  PushBroomModel(const PushBroomModel &rhs);
-  PushBroomModel(PushBroomModel &&rhs) noexcept;
+  PushbroomModel(const PushbroomModel &rhs);
+  PushbroomModel(PushbroomModel &&rhs) noexcept;
 
-  ~PushBroomModel() {}
+  ~PushbroomModel() {}
 
-  PushBroomModel &operator=(const PushBroomModel &rhs);
-  PushBroomModel &operator=(PushBroomModel &&rhs) noexcept;
+  PushbroomModel &operator=(const PushbroomModel &rhs);
+  PushbroomModel &operator=(PushbroomModel &&rhs) noexcept;
 
-  bool operator==(const PushBroomModel &rhs) const;
-  bool operator!=(const PushBroomModel &rhs) const;
+  bool operator==(const PushbroomModel &rhs) const;
+  bool operator!=(const PushbroomModel &rhs) const;
 
   /**
    *  Image-to-ground forward projection.
@@ -146,4 +150,7 @@ private:
       mFusedScannerEP; // extrinsic parameters combining original extrinsic
                        // parameters and their corrections
 };
+
+using AirPushbroomModel = PushbroomModel<AircraftPolicy>;
+using SpacePushbroomModel = PushbroomModel<SpacecraftPolicy>;
 } // namespace earthxpert

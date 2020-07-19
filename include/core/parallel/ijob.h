@@ -5,6 +5,7 @@
 #pragma once
 
 #include "core/excore.h"
+#include <memory>
 
 namespace earthxpert {
 /**
@@ -19,4 +20,7 @@ public:
    */
   virtual int Run() = 0;
 };
+
+using UPIJob = std::unique_ptr<IJob>;
+using SPIJob = std::shared_ptr<IJob>;
 }

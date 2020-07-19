@@ -27,7 +27,7 @@ public:
 
   enum PathType {
     ePT8,     // 8 pathes
-    ePY16     // 16 pathes
+    ePT16     // 16 pathes
   };
 
   virtual ~IDenseMatch() = default;
@@ -42,4 +42,7 @@ public:
 
   virtual MatchType GetMatchType() const noexcept = 0;
 };
+
+using UPIDenseMatch = std::unique_ptr<IDenseMatch>;
+using SPIDenseMatch = std::shared_ptr<IDenseMatch>;
 }

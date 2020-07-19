@@ -3,4 +3,4 @@
  * -----------------------------------------------------------------------------
  */
 #include "platform/gdal/gdalmanager.h"
-#include "platform/utils/commandinfo.h"
+#include "platform/gdal/gdalcmds.h"

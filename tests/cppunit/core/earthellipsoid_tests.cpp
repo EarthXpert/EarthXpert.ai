@@ -10,6 +10,9 @@
 
 using namespace earthxpert;
 
+static constexpr double kTolD = 1.0e-10; // [10um]
+static constexpr double kTol = 1.0e-5; // [10um]
+
 TEST(earthellipsoid, ECEF_LPH) {
   EarthEllipsoid ee;
 
@@ -18,16 +21,63 @@ TEST(earthellipsoid, ECEF_LPH) {
   const Point3d lphN = ee.XYZToLPH(xyz);
   const Point3d xyzN = ee.LPHToXYZ(lphN);
 
-  EqualD EqA(1.0e-8);  // [mm]
-  EqualD EqM(1.0e-3);  // [mm]
+  EqualD EqA(kTolD);
+  EqualD EqM(kTol);  
 
-  ASSERT_TRUE(EqA(lph.x, lphN.x)) << "Longitude difference > 1 mm";
-  ASSERT_TRUE(EqA(lph.y, lphN.y)) << "Latitude difference > 1 mm";
-  ASSERT_TRUE(EqM(lph.z, lphN.z)) << "Height difference > 1 mm";
+  ASSERT_TRUE(EqA(lph.x, lphN.x)) << "Longitude difference > 10 um";
+  ASSERT_TRUE(EqA(lph.y, lphN.y)) << "Latitude difference > 10 um";
+  ASSERT_TRUE(EqM(lph.z, lphN.z)) << "Height difference > 10 um";
 
-  ASSERT_TRUE(EqM(xyz.x, xyzN.x)) << "X difference > 1 mm";
-  ASSERT_TRUE(EqM(xyz.y, xyzN.y)) << "Y difference > 1 mm";
-  ASSERT_TRUE(EqM(xyz.z, xyzN.z)) << "Z difference > 1 mm";
+  ASSERT_TRUE(EqM(xyz.x, xyzN.x)) << "X difference > 10 um";
+  ASSERT_TRUE(EqM(xyz.y, xyzN.y)) << "Y difference > 10 um";
+  ASSERT_TRUE(EqM(xyz.z, xyzN.z)) << "Z difference > 10 um";
+}
+
+TEST(earthellipsoid, ECEF_LPH_Cube) {
+  EarthEllipsoid ee;
+
+  double diffLon{}, diffLat{}, diffHgt{};
+  double diffX{}, diffY{}, diffZ{};
+
+  double maxDiffLon{ -1.0 }, maxDiffLat{ -1.0 }, maxDiffHgt{ -1.0 };
+  double maxDiffX{ -1.0 }, maxDiffY{ -1.0 }, maxDiffZ{ -1.0 };
+
+  for (double lon = -180.0; lon < 180.0; lon += 6.0)
+    for (double lat = -90.0; lat < 90.0; lat += 3.0)
+      for (double hgt = -2000.0; hgt < 10000.0; hgt += 100.0) {
+        const Point3d lph(Deg2Rad(lon), Deg2Rad(lat), hgt);
+        const Point3d xyz = ee.LPHToXYZ(lph);
+        const Point3d lphN = ee.XYZToLPH(xyz);
+        const Point3d xyzN = ee.LPHToXYZ(lphN);
+
+        diffLon = fabs(lph.x - lphN.x);
+        if (maxDiffLon < diffLon)
+          maxDiffLon = diffLon;
+        diffLat = fabs(lph.y - lphN.y);
+        if (maxDiffLat < diffLat)
+          maxDiffLat = diffLat;
+        diffHgt = fabs(lph.z - lphN.z);
+        if (maxDiffHgt < diffHgt)
+          maxDiffHgt = diffHgt;
+
+        diffX = fabs(xyz.x - xyzN.x);
+        if (maxDiffX < diffX)
+          maxDiffX = diffX;
+        diffY = fabs(xyz.y - xyzN.y);
+        if (maxDiffY < diffY)
+          maxDiffY = diffY;
+        diffZ = fabs(xyz.z - xyzN.z);
+        if (maxDiffZ < diffZ)
+          maxDiffZ = diffZ;
+      }
+
+  ASSERT_LT(maxDiffLon, kTolD) << "Longitude difference > 10 um";
+  ASSERT_LT(maxDiffLat, kTolD) << "Latitude difference > 10 um";
+  ASSERT_LT(maxDiffHgt, kTol) << "Height difference > 10 um";
+
+  ASSERT_LT(maxDiffX, kTol) << "X difference > 10 um";
+  ASSERT_LT(maxDiffY, kTol) << "Y difference > 10 um";
+  ASSERT_LT(maxDiffZ, kTol) << "Z difference > 10 um";
 }
 
 TEST(earthellipsoid, LSR) {
@@ -41,24 +91,24 @@ TEST(earthellipsoid, LSR) {
   const Point3d lsrN = ee.XYZToLSR(xyz);
   const Point3d xyzN = ee.LSRToXYZ(lsrN);
 
-  EqualD EqM(1.0e-3);  // [mm]
-  ASSERT_TRUE(EqM(lsr.x, lsrN.x)) << "X difference > 1 mm";
-  ASSERT_TRUE(EqM(lsr.y, lsrN.y)) << "Y difference > 1 mm";
-  ASSERT_TRUE(EqM(lsr.z, lsrN.z)) << "Z difference > 1 mm";
-  ASSERT_TRUE(EqM(xyz.x, xyzN.x)) << "X difference > 1 mm";
-  ASSERT_TRUE(EqM(xyz.y, xyzN.y)) << "Y difference > 1 mm";
-  ASSERT_TRUE(EqM(xyz.z, xyzN.z)) << "Z difference > 1 mm";
+  EqualD EqM(kTol); 
+  ASSERT_TRUE(EqM(lsr.x, lsrN.x)) << "X difference > 10 um";
+  ASSERT_TRUE(EqM(lsr.y, lsrN.y)) << "Y difference > 10 um";
+  ASSERT_TRUE(EqM(lsr.z, lsrN.z)) << "Z difference > 10 um";
+  ASSERT_TRUE(EqM(xyz.x, xyzN.x)) << "X difference > 10 um";
+  ASSERT_TRUE(EqM(xyz.y, xyzN.y)) << "Y difference > 10 um";
+  ASSERT_TRUE(EqM(xyz.z, xyzN.z)) << "Z difference > 10 um";
 
   const Point3d lph = ee.LSRToLPH(lsr);
   const Point3d lsrN2 = ee.LPHToLSR(lph);
   const Point3d lphN = ee.LSRToLPH(lsrN2);
 
-  ASSERT_TRUE(EqM(lsr.x, lsrN2.x)) << "X difference > 1 mm";
-  ASSERT_TRUE(EqM(lsr.y, lsrN2.y)) << "Y difference > 1 mm";
-  ASSERT_TRUE(EqM(lsr.z, lsrN2.z)) << "Z difference > 1 mm";
+  ASSERT_TRUE(EqM(lsr.x, lsrN2.x)) << "X difference > 10 um";
+  ASSERT_TRUE(EqM(lsr.y, lsrN2.y)) << "Y difference > 10 um";
+  ASSERT_TRUE(EqM(lsr.z, lsrN2.z)) << "Z difference > 10 um";
 
-  EqualD EqA(1.0e-8);  // [mm]
-  ASSERT_TRUE(EqA(lph.x, lphN.x)) << "Longitude difference > 1 mm";
-  ASSERT_TRUE(EqA(lph.y, lphN.y)) << "Latitude difference > 1 mm";
-  ASSERT_TRUE(EqM(lph.z, lphN.z)) << "Height difference > 1 mm";
+  EqualD EqA(kTolD);  
+  ASSERT_TRUE(EqA(lph.x, lphN.x)) << "Longitude difference > 10 um";
+  ASSERT_TRUE(EqA(lph.y, lphN.y)) << "Latitude difference > 10 um";
+  ASSERT_TRUE(EqM(lph.z, lphN.z)) << "Height difference > 10 um";
 }

@@ -57,4 +57,7 @@ public:
   virtual size_t WritePointcloud(Pointcloud const* const pointCloud,
     size_t start, size_t numPoints) = 0;
 };
+
+using UPIPointcloudWriter = std::unique_ptr<IPointcloudWriter>;
+using SPIPointcloudWriter = std::shared_ptr<IPointcloudWriter>;
 } // namespace earthxpert

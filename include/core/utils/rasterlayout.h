@@ -19,10 +19,10 @@ enum class LayoutKind;
  */
 class EXCORE_EXPORTS RasterLayout {
 public:
-  RasterLayout(int numCols, int numRows,
-    int winNumCols, int winNumRows, LayoutKind kind = LayoutKind::eHORIZONTAL);
-  RasterLayout(int colOffset, int rowOffset, int numCols, int numRows,
-    int winNumCols, int winNumRows, LayoutKind kind = LayoutKind::eHORIZONTAL);
+  RasterLayout(int numCols, int numRows, int winNumCols, int winNumRows, 
+    LayoutKind kind = LayoutKind::eHORIZONTAL);
+  RasterLayout(const RasterWindow& range, int winNumCols, int winNumRows, 
+    LayoutKind kind = LayoutKind::eHORIZONTAL);
   RasterLayout(const RasterLayout& rhs) = default;
   RasterLayout(RasterLayout&& rhs) noexcept = default;
   ~RasterLayout() = default;
@@ -33,9 +33,7 @@ public:
   int SetWindowSize(int winNumCols, int winNumRows);
   int SetNumWindows(int numWins);
 
-  int GetNumWindows() const {
-    return static_cast<int>(mWins.size());
-  }
+  int GetNumWindows() const { return static_cast<int>(mWins.size()); }
 
   /**
    *  \param [in] index 0-based position
@@ -49,15 +47,10 @@ public:
   /**
    *  \return Returns const reference to the array of RasterWindow objects.
    */
-  const auto& GetRasterWindows() const {
-    return mWins;
-  }
+  const auto& GetRasterWindows() const { return mWins; }
 
 private:
-  int mColOffset{};   // column at top-left corner of image
-  int mRowOffset{};   // row at top-left corner of image
-  int mNumCols{};     // width of image [unit: pixels]
-  int mNumRows{};     // height of image
+  RasterWindow mRange;    // raster range to divide into smaller windows
   int mWinNumCols{};  // width of window
   int mWinNumRows{};  // height of window
   LayoutKind mLayoutkind{LayoutKind::eHORIZONTAL};  // major direction

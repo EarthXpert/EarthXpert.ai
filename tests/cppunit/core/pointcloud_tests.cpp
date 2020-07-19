@@ -11,18 +11,18 @@
 
 using namespace earthxpert;
 
-static constexpr float tol{ 0.000001f };
-static constexpr auto rngMax = static_cast<double>(std::mt19937::max());
-static constexpr auto rngMid = rngMax / 2;
-static constexpr auto scaleX = 1000. / (rngMax + 2.0);
-static constexpr auto scaleY = 1000. / (rngMax + 2.0);
-static constexpr auto scaleZ = 100. / (rngMax + 2.0);
+static constexpr float kTol{ 0.000001f };
+static constexpr auto kRngMax = static_cast<double>(std::mt19937::max());
+static constexpr auto kRngMid = kRngMax / 2;
+static constexpr auto kScaleX = 1000. / (kRngMax + 2.0);
+static constexpr auto kScaleY = 1000. / (kRngMax + 2.0);
+static constexpr auto kScaleZ = 100. / (kRngMax + 2.0);
 
 static void FillXYZ(std::vector<XYZF>& xyz, std::mt19937& rng) {
   std::generate_n(std::begin(xyz), xyz.size(), [&rng]() {
-    return XYZF{ float((double(rng()) - rngMid) * scaleX),
-                 float((double(rng()) - rngMid) * scaleY),
-                 float((double(rng()) - rngMid) * scaleZ) };
+    return XYZF{ float((double(rng()) - kRngMid) * kScaleX),
+                 float((double(rng()) - kRngMid) * kScaleY),
+                 float((double(rng()) - kRngMid) * kScaleZ) };
     });
 }
 
@@ -43,9 +43,9 @@ static void CheckPointcloud_PointF(const Pointcloud& pc) {
     ASSERT_LE(point.z, 50.0f);
 
     auto& xyz = pc.GetField<XYZF>(i);
-    ASSERT_NEAR(point.x, xyz.x, tol);
-    ASSERT_NEAR(point.y, xyz.y, tol);
-    ASSERT_NEAR(point.z, xyz.z, tol);
+    ASSERT_NEAR(point.x, xyz.x, kTol);
+    ASSERT_NEAR(point.y, xyz.y, kTol);
+    ASSERT_NEAR(point.z, xyz.z, kTol);
   }
 }
 
@@ -60,14 +60,14 @@ static void CheckPointcloud_PointF_Subscript(const Pointcloud& pc) {
     ASSERT_LE(point.z, 50.0f);
 
     auto cvpoint = static_cast<Point3f>(point);
-    ASSERT_NEAR(point.x, cvpoint.x, tol);
-    ASSERT_NEAR(point.y, cvpoint.y, tol);
-    ASSERT_NEAR(point.z, cvpoint.z, tol);
+    ASSERT_NEAR(point.x, cvpoint.x, kTol);
+    ASSERT_NEAR(point.y, cvpoint.y, kTol);
+    ASSERT_NEAR(point.z, cvpoint.z, kTol);
 
     auto& xyz = pc.GetField<XYZF>(i);
-    ASSERT_NEAR(point.x, xyz.x, tol);
-    ASSERT_NEAR(point.y, xyz.y, tol);
-    ASSERT_NEAR(point.z, xyz.z, tol);
+    ASSERT_NEAR(point.x, xyz.x, kTol);
+    ASSERT_NEAR(point.y, xyz.y, kTol);
+    ASSERT_NEAR(point.z, xyz.z, kTol);
   }
 }
 
@@ -83,9 +83,9 @@ static void CheckPointcloud_CPointF(const Pointcloud& pc) {
     ASSERT_LT(point.c, 128);
 
     auto& xyz = pc.GetField<XYZF>(i);
-    ASSERT_NEAR(point.x, xyz.x, tol);
-    ASSERT_NEAR(point.y, xyz.y, tol);
-    ASSERT_NEAR(point.z, xyz.z, tol);
+    ASSERT_NEAR(point.x, xyz.x, kTol);
+    ASSERT_NEAR(point.y, xyz.y, kTol);
+    ASSERT_NEAR(point.z, xyz.z, kTol);
 
     auto& c = pc.GetField<Classification>(i);
     ASSERT_EQ(point.c, c.c);
@@ -104,9 +104,9 @@ static void CheckPointcloud_CPointF_Subscript(const Pointcloud& pc) {
     ASSERT_LT(point.c, 128);
 
     auto& xyz = pc.GetField<XYZF>(i);
-    ASSERT_NEAR(point.x, xyz.x, tol);
-    ASSERT_NEAR(point.y, xyz.y, tol);
-    ASSERT_NEAR(point.z, xyz.z, tol);
+    ASSERT_NEAR(point.x, xyz.x, kTol);
+    ASSERT_NEAR(point.y, xyz.y, kTol);
+    ASSERT_NEAR(point.z, xyz.z, kTol);
 
     auto& c = pc.GetField<Classification>(i);
     ASSERT_EQ(point.c, c.c);
@@ -190,9 +190,9 @@ TEST(pointcloud, SetPoint) {
 
   std::mt19937 rng;
   for (size_t i = 0; i < 100; ++i) {
-    CPointF point{ { float((double(rng()) - rngMid) * scaleX),
-                   float((double(rng()) - rngMid) * scaleY),
-                   float((double(rng()) - rngMid) * scaleZ) },
+    CPointF point{ { float((double(rng()) - kRngMid) * kScaleX),
+                   float((double(rng()) - kRngMid) * kScaleY),
+                   float((double(rng()) - kRngMid) * kScaleZ) },
                   rng() % 128 };
     pc.SetPoint<CPointF>(i, point);
   }
@@ -216,9 +216,9 @@ TEST(pointcloud, Subscript) {
 
   std::mt19937 rng;
   for (size_t i = 0; i < 100; ++i) {
-    pc[i] = CPointF{ { float((double(rng()) - rngMid) * scaleX),
-                       float((double(rng()) - rngMid) * scaleY),
-                       float((double(rng()) - rngMid) * scaleZ) },
+    pc[i] = CPointF{ { float((double(rng()) - kRngMid) * kScaleX),
+                       float((double(rng()) - kRngMid) * kScaleY),
+                       float((double(rng()) - kRngMid) * kScaleZ) },
                        rng() % 128 };
   }
 

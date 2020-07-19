@@ -5,7 +5,7 @@
 #pragma once
 
 #include "marshaller/exmarshaller.h"
-#include "sensormodel/distortiongrid.h"
+#include "sensormodel/utils/distortiongrid.h"
 
 #include <istream>
 #include <ostream>

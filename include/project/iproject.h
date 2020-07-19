@@ -13,6 +13,14 @@ namespace earthxpert {
  */
 class EXPROJECT_EXPORTS IProject {
 public:
+  enum PrjType {
+    ePT_ADS,
+    ePT_FRAME,
+    ePT_RATIONAL
+  };
+
   virtual ~IProject() = default;
+
+  virtual PrjType GetProjectType() const noexcept = 0;
 };
 }

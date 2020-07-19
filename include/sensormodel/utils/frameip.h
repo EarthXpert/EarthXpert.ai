@@ -4,7 +4,7 @@
  */
 #pragma once
 
-#include "sensormodel/distortiongrid.h"
+#include "sensormodel/utils/distortiongrid.h"
 #include "3rdparty/opencv/exopencv.h"
 
 #include <array>
@@ -126,6 +126,15 @@ private:
   std::array<double, NumDecCoef> mDecentDist{};  // decentering distortion [P1 P2 P3 P4]
   std::array<double, NumLinCoef> mLinearDist{};  // linear distortion for non-square, non-orthogonality [B1 B2]
   std::unique_ptr<DistortionGridF> mGridDist;   // grid distortion
+
+  // uncertainties
+  double mStdFL{};
+  std::array<double, 2> mStdPPA{};
+  std::array<double, 3> mStdPC{};
+  std::array<double, 3> mStdIMU{};
+  std::array<double, NumRadCoef> mStdRadialDist{};
+  std::array<double, NumDecCoef> mStdDecentDist{};
+  std::array<double, NumLinCoef> mStdLinearDist{};
 
   // self-calibration model with added parameters
 

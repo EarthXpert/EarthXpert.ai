@@ -4,13 +4,13 @@
  */
 #pragma once
 
+#include "sensormodel/sensormodel.h"
 #include "sensormodel/framecp.h"
 #include "sensormodel/frameep.h"
 #include "sensormodel/frameepcorr.h"
-#include "sensormodel/frameip.h"
-#include "sensormodel/frameipcorr.h"
 #include "sensormodel/imagemodelpolicy.h"
-#include "sensormodel/sensormodel.h"
+#include "sensormodel/utils/frameip.h"
+#include "sensormodel/utils/frameipcorr.h"
 
 #include "opencv2/core/mat.hpp"
 
@@ -19,7 +19,7 @@ namespace earthxpert {
  *  The class FrameModel implements the projective geometry of
  *  the pin-hole model for the global-shutter frame camera.
  *
- *  \param ImageModelPolicy defines the relationship between
+ *  \tparam ImageModelPolicy defines the relationship between
  * the image raster coordinate system and the focal plane coordinate system
  */
 template <class ImageModelPolicy>
@@ -28,6 +28,8 @@ public:
   using PolicyType = ImageModelPolicy;
 
   /**
+   *  Constructor.
+   *
    *  \brief Construct a geometry model considering corrections from
    *  various effects, such as atmospheric refraction, earth curvature, etc.
    *
@@ -41,8 +43,6 @@ public:
              std::shared_ptr<FrameCP> frameCP);
 
   /**
-   *  Constructor.
-   *
    *  \brief Construct a simple pin-hole geometry model.
    *
    *  \param [in] imageModel transformation between focal plane and imagery
@@ -54,7 +54,7 @@ public:
 
   FrameModel(const FrameModel &model);
   FrameModel(FrameModel &&model) noexcept;
-  ~FrameModel() {}
+  ~FrameModel() = default;
 
   FrameModel &operator=(const FrameModel &model);
   FrameModel &operator=(FrameModel &&model) noexcept;
@@ -112,11 +112,28 @@ public:
   std::shared_ptr<SpatialReferenceSystem> GetCoordinateSystem() const
       noexcept override;
 
+  /**
+   *  \return Returns type of SRS
+   */
+  SrsType GetSrsType() const noexcept override {
+    return eMAP;
+  }
+
   std::pair<int, int> GetImageSize() const noexcept override;
+
+  /**
+   *  \return Returns the middle height
+   */
+  double GetMeanHeight() const noexcept override {
+    return 0.0;
+  }
 
   // block adjustment helpers
 
 private:
+  template<typename> friend class FrameEpipolarModel;
+  friend class FrameStereoModel;
+
   static constexpr int kMaxIterG2I{ 10 };
   static constexpr double kConvergeTolMM{ 0.0001 }; // [mm]
 
@@ -230,4 +247,8 @@ private:
  */
 using DigitalFrameModel = FrameModel<DigitalImageModel>;
 using FilmFrameModel = FrameModel<FilmImageModel>;
+using UPDigitalFrameModel = std::unique_ptr<DigitalFrameModel>;
+using SPDigitalFrameModel = std::shared_ptr<DigitalFrameModel>;
+using UPFilmFrameModel = std::unique_ptr<FilmFrameModel>;
+using SPFilmFrameModel = std::shared_ptr<FilmFrameModel>;
 } // namespace earthxpert

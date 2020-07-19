@@ -5,10 +5,13 @@
 #pragma once
 
 #include "sensormodel/exsensormodel.h"
-#include "sensormodel/isensormodel.h"
-#include <string>
 
 namespace earthxpert {
-ISensorModel::ModelType EXSENSORMODEL_EXPORTS SensorNameToType(const std::string& name);
-std::string EXSENSORMODEL_EXPORTS SensorTypeToName(ISensorModel::ModelType type);
-}
+/**
+ *  The interface ICraftPolicy defines behaviours of crafts for line-scanning sensors.
+ */
+class EXSENSORMODEL_EXPORTS ICraftPolicy {
+public:
+  ~ICraftPolicy() = default;
+};
+} // namespace earthxpert

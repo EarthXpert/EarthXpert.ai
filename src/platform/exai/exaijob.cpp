@@ -7,13 +7,16 @@
 
 using earthxpert::ExaiJob;
 
-ExaiJob::ExaiJob() {
+ExaiJob::ExaiJob(std::ostream& out) : mOut(out) {
 }
 
-int ExaiJob::SetArgs() {
-  return 0;
-}
-
+/**
+ *  \brief
+ */
 int ExaiJob::Run() {
   return 0;
+}
+
+void ExaiJob::Help() {
+  mOut << "Usage: exai <command> <command options>" << std::endl;
 }

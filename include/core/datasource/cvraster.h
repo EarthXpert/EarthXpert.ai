@@ -5,6 +5,7 @@
 #pragma once
 
 #include "core/datasource/iraster.h"
+#include "core/utils/rasterwindow.h"
 #include "opencv2/core.hpp"
 
 namespace earthxpert {
@@ -18,8 +19,10 @@ public:
   CvRaster(int numCols, int numRows, int dataType,
     int colOffset = 0, int rowOffset = 0, int marginCols = 0, int marginRows = 0, 
     MarginKind marginKind = MarginKind::eCONSTANT);
+  CvRaster(int numCols, int numRows, int dataType, int colOffset, int rowOffset, 
+    int marginCols, int marginRows, MarginKind marginKind, uchar* buffer);
   CvRaster(int numCols, int numRows, int dataType,
-    int colOffset, int rowOffset, int marginCols, int marginRows, MarginKind marginKind, uchar* buffer);
+    int colOffset, int rowOffset, uchar* buffer);
   CvRaster(int numCols, int numRows, int dataType, uchar* buffer);
   CvRaster(const CvRaster& rhs) = default;
   CvRaster(CvRaster&& rhs) noexcept = default;  // TODO
@@ -131,7 +134,7 @@ public:
   /**
    *  \return Returns number of bytes occupide by the entire raster buffer
    */
-  int64 GetBufferNumBytes() const noexcept override { return mBufNumBytes; }
+  int64_t GetBufferNumBytes() const noexcept override { return mBufNumBytes; }
 
   /**
    *  \return Returns a reference to the internal cv::Mat member
@@ -165,16 +168,17 @@ public:
   /**
    *  \return Returns offset of the first pixel belonging to the image in the buffer.
    */
-  int64 GetImagePixelOffset() const noexcept override {
+  int64_t GetImagePixelOffset() const noexcept override {
     return mImgPixelOff;
   }
 
   /**
    *  \return Returns number of bytes occupide by a row of pixels
    */
-  int64 GetRowNumBytes() const noexcept { return mRowNumBytes; }
+  int64_t GetRowNumBytes() const noexcept { return mRowNumBytes; }
 
 private:
+  //RasterWindow mRasWin;
   int mNumCols{};               // number of image columns
   int mNumRows{};               // number of image rows
   int mDataType{ CV_8UC1 };     // data type of each band
@@ -189,13 +193,14 @@ private:
   // cached temporaries for performance
   int mBpb{};             // bytes occupied by one band
   int mBpp{};             // bytes occupied by one pixel
+  //RasterWindow mBufWin;
   int mBufColOff{};       // col offset of buffer
   int mBufRowOff{};       // row offset of buffer
   int mBufNumCols{};      // buffer cols including image cols, both left and right margins
   int mBufNumRows{};      // buffer rows including image rows, both top and bottom margins
-  int64 mImgPixelOff{};   // offset of the first pixel belonging to the image in the buffer
-  int64 mRowNumBytes{};   // number of bytes occupide by a row of pixels
-  int64 mBufNumBytes{};   // number of bytes of mBuffer
+  int64_t mImgPixelOff{};   // offset of the first pixel belonging to the image in the buffer
+  int64_t mRowNumBytes{};   // number of bytes occupide by a row of pixels
+  int64_t mBufNumBytes{};   // number of bytes of mBuffer
 
   void ObtainMatInfo();
 };

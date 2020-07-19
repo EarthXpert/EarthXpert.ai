@@ -8,6 +8,8 @@
 #include "3rdparty/gdal/exgdal.h"
 #include "core/parallel/ijob.h"
 
+#include <iostream>
+
 namespace earthxpert {
 /**
  *  \brief the GDAL utils and their C API offer a rich set of raster and vector CLIs, 
@@ -15,7 +17,7 @@ namespace earthxpert {
  */
 class EXGDAL_EXPORTS GdalJob final : public IJob {
 public:
-  GdalJob();
+  GdalJob(std::ostream& out = std::cout);
   GdalJob(const GdalJob&) = delete;
   GdalJob(GdalJob&&) = delete;
   ~GdalJob() = default;
@@ -23,16 +25,26 @@ public:
   GdalJob& operator=(const GdalJob&) = delete;
   GdalJob& operator=(GdalJob&&) = delete;
 
-  int SetArgs();
+  int SetCmdArgs(int argc, char** argv) {
+    mArgc = argc;
+    mArgv = argv;
+    return 0;
+  }
 
   int Run() override;
 
-  int operator()() {
-    SetArgs();
+  int operator()(int argc, char** argv) {
+    SetCmdArgs(argc, argv);
     return Run();
   }
 
 private:
+  std::ostream& mOut;
+  int mArgc;
+  char** mArgv;
+
   std::string mCommand;
+
+  void Help();
 };
 } // namespace earthxpert::thirdparty

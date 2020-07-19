@@ -32,8 +32,8 @@ public:
   };
 
   void SetImageSize(const int numCols, const int numRows) {
-    imgNumCols = numCols;
-    imgNumRows = numRows;
+    mNumCols = numCols;
+    mNumRows = numRows;
   }
 
   /**
@@ -42,8 +42,7 @@ public:
    *  \param[in] modelFile the file to insert model coefficients
    *  \param[in] rationalModel the rational model to be seralized
    */
-  void Serialize(const std::string& modelFile,
-    const RationalModel* const rationalModel);
+  void Serialize(const std::string& modelFile, const RationalModel* rationalModel);
 
   /**
    *  \brief deserialize rational model from a .RPB or rpc.txt file
@@ -51,15 +50,15 @@ public:
    *  \param [in] modelFile the name of the input file
    *  \return the pointer to the rational model object
    */
-  std::unique_ptr<ISensorModel> Deserialize(const std::string& modelFile);
+  std::unique_ptr<RationalModel> Deserialize(const std::string& modelFile);
 
   // GDAL helper
   /**
    *  \brief GeoTIFF/NITF tags
    */
 private:
-  int imgNumCols{};
-  int imgNumRows{};
+  int mNumCols{};
+  int mNumRows{};
 
   CoefFormat GetCoefFormat(const std::string& modelFile) const;
 
@@ -69,8 +68,7 @@ private:
    *  \param[in] outStream output stream
    *  \param[in] rationalModel the rational model to be seralized
    */
-  void SerializeRpb(std::ostream& outStream,
-    const RationalModel* const rationalModel);
+  void SerializeRpb(std::ostream& outStream, const RationalModel* rationalModel);
 
   /**
    *  \brief seralize a rational model into a rpc.txt file
@@ -78,22 +76,21 @@ private:
    *  \param[in] outStream output stream
    *  \param[in] rationalModel the rational model to be seralized
    */
-  void SerializeRpc(std::ostream& outStream,
-    const RationalModel* const rationalModel);
+  void SerializeRpc(std::ostream& outStream, const RationalModel* rationalModel);
 
   /**
    *  \brief Deserialize .RPB file
    *
    *  \param [in] inStream input stream
    */
-  std::unique_ptr<ISensorModel> DeserializeRpb(std::istream& inStream);
+  std::unique_ptr<RationalModel> DeserializeRpb(std::istream& inStream);
 
   /**
    *  \brief Deserialize _rpc.txt file
    *
    *  \param [in] inStream input stream
    */
-  std::unique_ptr<ISensorModel> DeserializeRpc(std::istream& inStream);
+  std::unique_ptr<RationalModel> DeserializeRpc(std::istream& inStream);
 
   void InsertCoefs(std::ostream& outStream,
     const std::array<double, RationalModel::NumCoef>& coefs);

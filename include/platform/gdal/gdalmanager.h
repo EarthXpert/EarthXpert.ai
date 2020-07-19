@@ -3,3 +3,8 @@
  * -----------------------------------------------------------------------------
  */
 #pragma once 
+
+#include "platform/gdal/gdaljob.h"
+
+namespace earthxpert {
+}

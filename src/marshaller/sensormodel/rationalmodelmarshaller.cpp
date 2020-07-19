@@ -88,7 +88,7 @@ void RationalModelMarshaller::Serialize(const std::string &modelFile,
  *  \return the pointer to the rational model object
  *  \throw if the file cannot be opened for reading
  */
-std::unique_ptr<ISensorModel>
+std::unique_ptr<RationalModel>
 RationalModelMarshaller::Deserialize(const std::string &modelFile) {
   const auto coefFormat = GetCoefFormat(modelFile);
 
@@ -150,11 +150,11 @@ void RationalModelMarshaller::SerializeRpc(std::ostream& outStream,
  *
  *  \param [in] inStream input stream
  */
-std::unique_ptr<ISensorModel>
+std::unique_ptr<RationalModel>
 RationalModelMarshaller::DeserializeRpb(std::istream& inStream) {
   double errBias{};
   double errRand{};
-  std::array<double, RationalModel::NumFact> normalFators{};
+  std::array<double, rnf::NumFact> normalFators{};
   std::array<double, RationalModel::NumCoef> lineNumCoef{};
   std::array<double, RationalModel::NumCoef> lineDenCoef{};
   std::array<double, RationalModel::NumCoef> sampNumCoef{};
@@ -216,9 +216,15 @@ RationalModelMarshaller::DeserializeRpb(std::istream& inStream) {
     }
   }
 
-  auto groundSRS = std::make_shared<SpatialReferenceSystem>("WGS84");
+  if (0 == mNumCols) {
+    mNumCols = normalFators[eSSAMP] * 2;
+  }
+  if (0 == mNumRows) {
+    mNumRows = normalFators[eSLINE] * 2;
+  }
 
-  auto rationalModel = std::make_unique<RationalModel>(imgNumCols, imgNumRows, 
+  auto groundSRS = std::make_shared<SpatialReferenceSystem>("WGS84");
+  auto rationalModel = std::make_unique<RationalModel>(mNumCols, mNumRows,
     normalFators, lineNumCoef, lineDenCoef, sampNumCoef, sampDenCoef, groundSRS);
   rationalModel->SetErrors(errBias, errRand);
 
@@ -230,9 +236,9 @@ RationalModelMarshaller::DeserializeRpb(std::istream& inStream) {
  *
  *  \param [in] inStream input stream
  */
-std::unique_ptr<ISensorModel>
+std::unique_ptr<RationalModel>
 RationalModelMarshaller::DeserializeRpc(std::istream& inStream) {
-  std::array<double, RationalModel::NumFact> normalFators{};
+  std::array<double, rnf::NumFact> normalFators{};
   std::array<double, RationalModel::NumCoef> lineNumCoef{};
   std::array<double, RationalModel::NumCoef> lineDenCoef{};
   std::array<double, RationalModel::NumCoef> sampNumCoef{};
@@ -288,9 +294,15 @@ RationalModelMarshaller::DeserializeRpc(std::istream& inStream) {
     }
   }
 
-  auto groundSRS = std::make_shared<SpatialReferenceSystem>("WGS84");
+  if (0 == mNumCols) {
+    mNumCols = normalFators[eSSAMP] * 2;
+  }
+  if (0 == mNumRows) {
+    mNumRows = normalFators[eSLINE] * 2;
+  }
 
-  return std::make_unique<RationalModel>(imgNumCols, imgNumRows, normalFators,
+  auto groundSRS = std::make_shared<SpatialReferenceSystem>("WGS84");
+  return std::make_unique<RationalModel>(mNumCols, mNumRows, normalFators,
       lineNumCoef, lineDenCoef, sampNumCoef, sampDenCoef, groundSRS);
 }
 

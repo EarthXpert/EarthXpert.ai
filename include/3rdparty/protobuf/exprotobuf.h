@@ -2,7 +2,10 @@
  *  Copyright (c) 2018.  All rights reserved.
  * -----------------------------------------------------------------------------
  */
-#include "epipolarmodel/iepipolarmodel.h"
-#include "rectification/epipolar/epipolargenerator.h"
+#pragma once
 
-using earthxpert::EpipolarGenerator;
+#include "3rdparty/ex3rdparty.h"
+#include "protobuf/message.h"
+
+namespace earthxpert::thirdparty {
+} // namespace earthxpert::thirdparty

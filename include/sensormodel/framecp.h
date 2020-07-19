@@ -6,6 +6,8 @@
 
 #include "sensormodel/exsensormodel.h"
 
+#include <utility>
+
 namespace earthxpert {
 /**
  *  The class defines correction parameters for external effects.
@@ -30,11 +32,21 @@ public:
   bool ApplyCurvature() const { return (0.0 < mEarthRadius); }
 
   double GetEarthRadius() const { return mEarthRadius; }
-
   double GetRefractionK(double H, double h) const;
+
+  void SetHeightOffScale(const double offset, const double scale) {
+    mOHeight = offset;
+    mSHeight = scale;
+  }
+  std::pair<double, double> GetHeightOffScale() const noexcept {
+    return { mOHeight, mSHeight };
+  }
 
 private:
   bool mAtRefract{false};    // atmospheric refration
   double mEarthRadius{6378}; // earth radius [km]
+
+  double mOHeight{};  // offset of ground surface
+  double mSHeight{};  // scale of ground surface
 };
 } // namespace earthxpert

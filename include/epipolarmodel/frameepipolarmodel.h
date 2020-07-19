@@ -4,82 +4,50 @@
  */
 #pragma once
 
-#include "epipolarmodel/iepipolarmodel.h"
-
-#include <memory>
-#include <utility>
-
-#define matrixSize 9
+#include "epipolarmodel/epipolarsensormodel.h"
+#include "sensormodel/framemodel.h"
 
 namespace earthxpert {
-class ISensorModel;
-
 /**
- *  The class FrameEpipolarModel defines the xxx algorithm
+ *  The class FrameEpipolarModel defines the rigorous algorithm
  *  for generating epipolar images from image products with frame models.
+ *
+ *  \param ImageModelPolicy defines the relationship between
+ * the image raster coordinate system and the focal plane coordinate system
  */
-class EXEPIPOLARMODEL_EXPORTS FrameEpipolarModel final : public IEpipolarModel {
+template <class ImageModelPolicy>
+class EXEPIPOLARMODEL_EXPORTS FrameEpipolarModel final : public EpipolarSensorModel {
 public:
   /**
-   *  Constructor.
+   *  \param [in] sensorModel sensor model associated with the image
+   *  \param [in] pos Component position of stereo model
    */
-  FrameEpipolarModel(std::shared_ptr<ISensorModel> leftModel,
-                     std::shared_ptr<ISensorModel> rightModel);
-  ~FrameEpipolarModel() {}
+  FrameEpipolarModel(std::shared_ptr<FrameModel<ImageModelPolicy>> sensorModel, StereoPos pos);
+  ~FrameEpipolarModel() = default;
 
   /**
-   *  Epipolar-to-image transform.
+   *  Epipolar-to-raw transform.
    *
    *  \brief Given a 2d poistion on epipolar, output the corresponding position
    * on original image.
    *
    *  \param [in] epi 2d position (x, y) in epipolar raster coordinate system
-   *  \param [in/out] img 2d position (x, y) in image raster coordinate system
-   *  \param [in] pos Component position of stereo model
+   *  \param [in/out] raw 2d position (x, y) in image raster coordinate system
    *  \return Returns true if operation succeeds
    */
-  bool EpipolarToImage(const Point2d &epi, Point2d &img,
-                       StereoPos pos) const override;
+  bool EpiToRaw(const Point2d &epi, Point2d &raw) const override;
 
   /**
-   *  \brief Given a list of 2d poistions on epipolar, output the corresponding
-   * positions on original image.
-   *
-   *  \param [in] epi List of 2d positions (x, y) in epipolar raster coordinate
-   * system \param [in] img List of 2d positions (x, y) in image raster
-   * coordinate system \param [in] pos Component position of stereo model
-   *  \return Returns true if operation succeeds
-   */
-  size_t EpipolarToImage(const std::vector<Point2d> &epi,
-                         std::vector<Point2d> &img,
-                         StereoPos pos) const override;
-
-  /**
-   *  Image-to-epipolar transform.
+   *  Raw-to-epipolar transform.
    *
    *  \brief Given a 2d poistion on image, output the corresponding position on
    * epipolar.
    *
-   *  \param [in] img 2d position (x, y) in image raster coordinate system
+   *  \param [in] raw 2d position (x, y) in image raster coordinate system
    *  \param [in] epi 2d position (x, y) in epipolar raster coordinate system
-   *  \param [in] pos Component position of stereo model
    *  \return Returns true if operation succeeds
    */
-  bool ImageToEpipolar(const Point2d &img, Point2d &epi,
-                       StereoPos pos) const override;
-
-  /**
-   *  \brief Given a list of 2d poistions on image, output the corresponding
-   * positions on epipolar.
-   *
-   *  \param [in] img List of 2d positions (x, y) in image raster coordinate
-   * system \param [in] epi List of 2d positions (x, y) in epipolar raster
-   * coordinate system \param [in] pos Component position of stereo model
-   *  \return Returns true if operation succeeds
-   */
-  size_t ImageToEpipolar(const std::vector<Point2d> &img,
-                         std::vector<Point2d> &epi,
-                         StereoPos pos) const override;
+  bool RawToEpi(const Point2d &raw, Point2d &epi) const override;
 
   /**
    *  \return Returns algorithm of epipolar model
@@ -88,11 +56,30 @@ public:
     return eCOPLANAR;
   }
 
+  /**
+   *  \return Returns the internal sensor model
+   */
+  const FrameModel<ImageModelPolicy>* GetSensorModel() const noexcept override {
+    return mFrameModel;
+  }
+
+  /**
+   *  \return Returns raster columns & rows of epipolar image [unit: pixel]
+   */
+  std::pair<int, int> GetImageSize() const noexcept override {
+    return { mNumCols, mNumRows };
+  }
+
 private:
-  std::shared_ptr<ISensorModel>
-      mLeftModel; // left image composing of the stereo model
-  std::shared_ptr<ISensorModel> mRightModel; // right image
+  int mNumCols{ 0 };       // Number of cols of epipolar image
+  int mNumRows{ 0 };       // Number of rows of epipolar image
+
+  void Initialize();
 
   // cached data for convenience
+  const FrameModel<ImageModelPolicy>* mFrameModel{};
 };
+
+using DigitalFrameEpipolarModel = FrameEpipolarModel<DigitalImageModel>;
+using FilmFrameEpipolarModel = FrameEpipolarModel<FilmImageModel>;
 } // namespace earthxpert

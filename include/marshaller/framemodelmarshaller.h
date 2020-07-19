@@ -24,7 +24,7 @@ struct EpData {
  */
 class EXMARSHALLER_EXPORTS FrameModelMarshaller {
 public:
-  ~FrameModelMarshaller() {}
+  ~FrameModelMarshaller() = default;
 
   /**
    *  \brief read from a bingo directory into a framemodel

@@ -5,18 +5,20 @@
 #include "3rdparty/gtest/gtest_main.h"
 #include "testconfig.h"
 
+#include "marshaller/rationalmodelmarshaller.h"
 #include "sensormodel/rationalmodel.h"
 #include <cmath>
 
 using namespace earthxpert;
 using rfm = earthxpert::RationalModel;
 
-static constexpr int num{ 10 };
-static constexpr double tol = 1.0e-8; // [mm]
+static constexpr int kNum{ 10 };
+static constexpr double kTol = 1.0e-8; // [mm]
 
 static std::unique_ptr<RationalModel> CreateRationalModelA();
 static std::unique_ptr<RationalModel> CreateRationalModelB();
 static std::unique_ptr<RationalModel> CreateRationalModelC();
+static std::unique_ptr<RationalModel> CreateRationalModelD();
 static void TestCubeI2G(const RationalModel* rationalModel);
 static void TestCubeI2G_Functor(const RationalModel* rationalModel);
 
@@ -57,8 +59,8 @@ TEST(rationalmodel, CornerI2G) {
     Point3d grdI2G{ 0, 0, ground.z };
     rationalModel->ImageToGround(image, grdI2G);
 
-    ASSERT_NEAR(ground.x, grdI2G.x, tol) << "Longitude difference > 1 mm";
-    ASSERT_NEAR(ground.y, grdI2G.y, tol) << "Latitude difference > 1 mm";
+    ASSERT_NEAR(ground.x, grdI2G.x, kTol) << "Longitude difference > 1 mm";
+    ASSERT_NEAR(ground.y, grdI2G.y, kTol) << "Latitude difference > 1 mm";
   }
 }
 
@@ -82,8 +84,8 @@ TEST(rationalmodel, CornerI2G_Functor) {
     Point3d grdI2G{ 0, 0, ground.z };
     (*rationalModel)(image, grdI2G);
 
-    ASSERT_NEAR(ground.x, grdI2G.x, tol) << "Longitude difference > 1 mm";
-    ASSERT_NEAR(ground.y, grdI2G.y, tol) << "Latitude difference > 1 mm";
+    ASSERT_NEAR(ground.x, grdI2G.x, kTol) << "Longitude difference > 1 mm";
+    ASSERT_NEAR(ground.y, grdI2G.y, kTol) << "Latitude difference > 1 mm";
   }
 }
 
@@ -99,6 +101,9 @@ TEST(rationalmodel, CubeI2G) {
 
   const auto rationalModelC = CreateRationalModelC();
   TestCubeI2G(rationalModelC.get());
+
+  const auto rationalModelD = CreateRationalModelD();
+  TestCubeI2G(rationalModelD.get());
 }
 
 TEST(rationalmodel, CubeI2G_Functor) {
@@ -110,13 +115,16 @@ TEST(rationalmodel, CubeI2G_Functor) {
 
   const auto rationalModelC = CreateRationalModelC();
   TestCubeI2G_Functor(rationalModelC.get());
+
+  const auto rationalModelD = CreateRationalModelD();
+  TestCubeI2G_Functor(rationalModelD.get());
 }
 
 /**
  * Create an instance of rational model
  */
 std::unique_ptr<RationalModel> CreateRationalModelA() {
-  std::array<double, rfm::NumFact> normalFators{
+  std::array<double, rnf::NumFact> normalFators{
       14521, 18751, 45.0429, 82.3670, 686, 14522, 18752, 0.0727, 0.1175, 501};
   std::array<double, rfm::NumCoef> lineNumCoef{
       +2.048296E-02, -1.444756E-01, -1.166505E+00, +2.179594E-02,
@@ -153,7 +161,7 @@ std::unique_ptr<RationalModel> CreateRationalModelA() {
  * Create an instance of rational model of left image
  */
 std::unique_ptr<RationalModel> CreateRationalModelB() {
-  std::array<double, rfm::NumFact> normalFators{
+  std::array<double, rnf::NumFact> normalFators{
     15069, 13790, 43.8664, -79.5300, 196, 15210, 13930, 0.0900, 0.1109, 500 };
   std::array<double, rfm::NumCoef> lineNumCoef{
     -2.283325E-03, -3.637293E-02, -1.028037E+00, +8.541168E-03,
@@ -192,7 +200,7 @@ std::unique_ptr<RationalModel> CreateRationalModelB() {
  * Create an instance of rational model of right image
  */
 std::unique_ptr<RationalModel> CreateRationalModelC() {
-  std::array<double, rfm::NumFact> normalFators{
+  std::array<double, rnf::NumFact> normalFators{
       15073, 13790, 43.7319, -79.5313, 110, 15198, 13940, 0.0893, 0.1106, 500 };
   std::array<double, rfm::NumCoef> lineNumCoef{
     -1.736510E-03, -3.255581E-02, -1.024674E+00, +7.518102E-03,
@@ -227,18 +235,25 @@ std::unique_ptr<RationalModel> CreateRationalModelC() {
   return rm;
 }
 
+std::unique_ptr<RationalModel> CreateRationalModelD() {
+  //std::string mdlFile = TestConfig::DataPath("Imagery/Satellite/zy302a_006911_258169_20170827/zy302a_fwd_006911_258169_20170827181359_01_sec_0001_1709018015_rpc.txt");
+  std::string mdlFile = TestConfig::DataPath("Imagery/Satellite/zy302a_006911_258169_20170827/zy302a_bwd_006911_258169_20170827181359_01_sec_0001_1709011888_rpc.txt");
+  RationalModelMarshaller rmMarshaller;
+  return rmMarshaller.Deserialize(mdlFile);
+}
+
 void TestCubeI2G(const RationalModel* rationalModel) {
   auto nfc = rationalModel->GetNormalFators();
-  const auto minLon = nfc[rfm::eOLONG] - nfc[rfm::eSLONG];
-  const auto maxLon = nfc[rfm::eOLONG] + nfc[rfm::eSLONG];
-  const auto minLat = nfc[rfm::eOLAT] - nfc[rfm::eSLAT];
-  const auto maxLat = nfc[rfm::eOLAT] + nfc[rfm::eSLAT];
-  const auto minHgt = nfc[rfm::eOHEIGHT] - nfc[rfm::eSHEIGHT];
-  const auto maxHgt = nfc[rfm::eOHEIGHT] + nfc[rfm::eSHEIGHT];
+  const auto minLon = nfc[rnf::eOLONG] - nfc[rnf::eSLONG];
+  const auto maxLon = nfc[rnf::eOLONG] + nfc[rnf::eSLONG];
+  const auto minLat = nfc[rnf::eOLAT] - nfc[rnf::eSLAT];
+  const auto maxLat = nfc[rnf::eOLAT] + nfc[rnf::eSLAT];
+  const auto minHgt = nfc[rnf::eOHEIGHT] - nfc[rnf::eSHEIGHT];
+  const auto maxHgt = nfc[rnf::eOHEIGHT] + nfc[rnf::eSHEIGHT];
 
-  const auto stepLon = (maxLon - minLon) / num;
-  const auto stepLat = (maxLat - minLat) / num;
-  const auto stepHgt = (maxHgt - minHgt) / num;
+  const auto stepLon = (maxLon - minLon) / kNum;
+  const auto stepLat = (maxLat - minLat) / kNum;
+  const auto stepHgt = (maxHgt - minHgt) / kNum;
 
   double maxDiffLon{-1.0};
   double maxDiffLat{-1.0};
@@ -269,22 +284,22 @@ void TestCubeI2G(const RationalModel* rationalModel) {
   }
 
   ASSERT_LT(0, n) << "Number of test points";
-  ASSERT_LE(maxDiffLon, tol) << "Max. longitude difference > 1 mm";
-  ASSERT_LE(maxDiffLat, tol) << "Max. latitude difference > 1 mm";
+  ASSERT_LE(maxDiffLon, kTol) << "Max. longitude difference > 1 mm";
+  ASSERT_LE(maxDiffLat, kTol) << "Max. latitude difference > 1 mm";
 }
 
 void TestCubeI2G_Functor(const RationalModel* rationalModel) {
   auto nfc = rationalModel->GetNormalFators();
-  const auto minLon = nfc[rfm::eOLONG] - nfc[rfm::eSLONG];
-  const auto maxLon = nfc[rfm::eOLONG] + nfc[rfm::eSLONG];
-  const auto minLat = nfc[rfm::eOLAT] - nfc[rfm::eSLAT];
-  const auto maxLat = nfc[rfm::eOLAT] + nfc[rfm::eSLAT];
-  const auto minHgt = nfc[rfm::eOHEIGHT] - nfc[rfm::eSHEIGHT];
-  const auto maxHgt = nfc[rfm::eOHEIGHT] + nfc[rfm::eSHEIGHT];
+  const auto minLon = nfc[rnf::eOLONG] - nfc[rnf::eSLONG];
+  const auto maxLon = nfc[rnf::eOLONG] + nfc[rnf::eSLONG];
+  const auto minLat = nfc[rnf::eOLAT] - nfc[rnf::eSLAT];
+  const auto maxLat = nfc[rnf::eOLAT] + nfc[rnf::eSLAT];
+  const auto minHgt = nfc[rnf::eOHEIGHT] - nfc[rnf::eSHEIGHT];
+  const auto maxHgt = nfc[rnf::eOHEIGHT] + nfc[rnf::eSHEIGHT];
 
-  const auto stepLon = (maxLon - minLon) / num;
-  const auto stepLat = (maxLat - minLat) / num;
-  const auto stepHgt = (maxHgt - minHgt) / num;
+  const auto stepLon = (maxLon - minLon) / kNum;
+  const auto stepLat = (maxLat - minLat) / kNum;
+  const auto stepHgt = (maxHgt - minHgt) / kNum;
 
   double maxDiffLon{-1.0};
   double maxDiffLat{-1.0};
@@ -315,6 +330,6 @@ void TestCubeI2G_Functor(const RationalModel* rationalModel) {
   }
 
   ASSERT_LT(0, n) << "Number of test points";
-  ASSERT_LE(maxDiffLon, tol) << "Max. longitude difference > 1 mm";
-  ASSERT_LE(maxDiffLat, tol) << "Max. latitude difference > 1 mm";
+  ASSERT_LE(maxDiffLon, kTol) << "Max. longitude difference > 1 mm";
+  ASSERT_LE(maxDiffLat, kTol) << "Max. latitude difference > 1 mm";
 }

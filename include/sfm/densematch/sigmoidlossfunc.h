@@ -17,7 +17,7 @@ constexpr int kST_LOGISTIC = 1;
  *  The class SigmoidLossFunc defines the math methods used to convert/activate
  *  cost/difference value to loss value.
  *
- *  \param sigmoidType type of the S-shape
+ *  \tparam sigmoidType type of the S-shape
  */
 template <int sigmoidType = kST_LOGISTIC>
 class EXSFM_EXPORTS SigmoidLossFunc final : public ILossFunc {

@@ -66,12 +66,12 @@ public:
   PdalJob& operator=(const PdalJob&) = delete;
   PdalJob& operator=(PdalJob&&) = delete;
 
-  int SetArgs(const StringList& cmdArgs);
+  int SetCmdArgs(int argc, char** argv);
 
   int Run() override;
 
-  int operator()(const StringList& cmdArgs) {
-    SetArgs(cmdArgs);
+  int operator()(int argc, char** argv) {
+    SetCmdArgs(argc, argv);
     return Run();
   }
 
@@ -97,12 +97,12 @@ private:
   std::string mLog;
   std::string mHeadline;
 
-  void AddArgs();
-  void OutputVersion();
-  void OutputHelp();
-  void OutputCommands(const std::string& leader);
-  void OutputDrivers();
-  void OutputOptions();
-  void OutputOptions(const std::string& stageName, std::ostream& strm);
+  void AddCmdArgs();
+  void Help();
+  void HelpVersion();
+  void HelpCommands(const std::string& leader);
+  void HelpDrivers();
+  void HelpOptions();
+  void HelpOptions(const std::string& stageName, std::ostream& strm);
 };
 } // namespace earthxpert::thirdparty

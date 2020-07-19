@@ -7,6 +7,7 @@
 #include "platform/exai/exexai.h"
 #include "core/parallel/ijob.h"
 
+#include <iostream>
 #include <string>
 
 namespace earthxpert {
@@ -16,7 +17,7 @@ namespace earthxpert {
  */
 class EXEXAI_EXPORTS ExaiJob final : public IJob {
 public:
-  ExaiJob();
+  ExaiJob(std::ostream& out = std::cout);
   ExaiJob(const ExaiJob&) = delete;
   ExaiJob(ExaiJob&&) = delete;
   ~ExaiJob() = default;
@@ -24,16 +25,26 @@ public:
   ExaiJob& operator=(const ExaiJob&) = delete;
   ExaiJob& operator=(ExaiJob&&) = delete;
 
-  int SetArgs();
+  int SetCmdArgs(int argc, char** argv) {
+    mArgc = argc;
+    mArgv = argv;
+    return 0;
+  }
 
   int Run() override;
 
-  int operator()() {
-    SetArgs();
+  int operator()(int argc, char** argv) {
+    SetCmdArgs(argc, argv);
     return Run();
   }
 
 private:
+  std::ostream& mOut;
+  int mArgc;
+  char** mArgv;
+
   std::string mCommand;
+
+  void Help();
 };
 } // namespace earthxpert::thirdparty

@@ -16,7 +16,7 @@ using namespace earthxpert;
 using earthxpert::RegionLayoutD;
 using fgt = FieldGroup;
 
-static constexpr double tol = 1.0e-6; // [um]
+static constexpr double kTol = 1.0e-6; // [um]
 
 /**
  *  \brief PointcloudReader test cases, zero offsets in .las
@@ -39,15 +39,15 @@ TEST(pointcloudreader, ReadPointcloud_LAS_XYZ) {
   ASSERT_FALSE(fg.test(fgt::kPOSCLA));
 
   const auto origin = pc->GetOrigin();
-  ASSERT_NEAR(0, origin.x, tol) << "difference > 1 um";
-  ASSERT_NEAR(0, origin.y, tol) << "difference > 1 um";
-  ASSERT_NEAR(0, origin.z, tol) << "difference > 1 um";
+  ASSERT_NEAR(0, origin.x, kTol) << "difference > 1 um";
+  ASSERT_NEAR(0, origin.y, kTol) << "difference > 1 um";
+  ASSERT_NEAR(0, origin.z, kTol) << "difference > 1 um";
 
   const auto bbox = pc->ObtainBoundingBox2D();
-  ASSERT_NEAR(539836, bbox.minX, tol) << "difference > 1 um";
-  ASSERT_NEAR(1384288.75, bbox.minY, tol) << "difference > 1 um";
-  ASSERT_NEAR(1205, bbox.width, tol) << "difference > 1 um";
-  ASSERT_NEAR(873, bbox.height, tol) << "difference > 1 um";
+  ASSERT_NEAR(539836, bbox.minX, kTol) << "difference > 1 um";
+  ASSERT_NEAR(1384288.75, bbox.minY, kTol) << "difference > 1 um";
+  ASSERT_NEAR(1205, bbox.width, kTol) << "difference > 1 um";
+  ASSERT_NEAR(873, bbox.height, kTol) << "difference > 1 um";
 }
 
 /**
@@ -71,15 +71,15 @@ TEST(pointcloudreader, ReadPointcloud_LAS_XYZC) {
   ASSERT_TRUE(fg.test(fgt::kPOSCLA));
 
   const auto origin = pc->GetOrigin();
-  ASSERT_NEAR(424996.503, origin.x, tol) << "difference > 1 um";
-  ASSERT_NEAR(5132320.247, origin.y, tol) << "difference > 1 um";
-  ASSERT_NEAR(0, origin.z, tol) << "difference > 1 um";
+  ASSERT_NEAR(424996.503, origin.x, kTol) << "difference > 1 um";
+  ASSERT_NEAR(5132320.247, origin.y, kTol) << "difference > 1 um";
+  ASSERT_NEAR(0, origin.z, kTol) << "difference > 1 um";
 
   const auto bbox = pc->ObtainBoundingBox2D();
-  ASSERT_NEAR(424854.93700573733, bbox.minX, tol) << "difference > 1 um";
-  ASSERT_NEAR(5132303.1900007939, bbox.minY, tol) << "difference > 1 um";
-  ASSERT_NEAR(292.94400024414062, bbox.width, tol) << "difference > 1 um";
-  ASSERT_NEAR(17.056999206542969, bbox.height, tol) << "difference > 1 um";
+  ASSERT_NEAR(424854.93700573733, bbox.minX, kTol) << "difference > 1 um";
+  ASSERT_NEAR(5132303.1900007939, bbox.minY, kTol) << "difference > 1 um";
+  ASSERT_NEAR(292.94400024414062, bbox.width, kTol) << "difference > 1 um";
+  ASSERT_NEAR(17.056999206542969, bbox.height, kTol) << "difference > 1 um";
 }
 
 /**
@@ -104,22 +104,22 @@ TEST(pointcloudreader, ReadPointcloud_LAZ_XYZ) {
   ASSERT_FALSE(fg.test(fgt::kPOSRGB));
 
   const auto origin = pc->GetOrigin();
-  ASSERT_NEAR(0, origin.x, tol) << "difference > 1 um";
-  ASSERT_NEAR(0, origin.y, tol) << "difference > 1 um";
-  ASSERT_NEAR(0, origin.z, tol) << "difference > 1 um";
+  ASSERT_NEAR(0, origin.x, kTol) << "difference > 1 um";
+  ASSERT_NEAR(0, origin.y, kTol) << "difference > 1 um";
+  ASSERT_NEAR(0, origin.z, kTol) << "difference > 1 um";
 
   const size_t i = filePointCount / 2;
 
   const auto xyz = pc->GetField<XYZF>(i);
-  ASSERT_NEAR(-11.8599997, xyz.x, tol) << "difference > 1 um";
-  ASSERT_NEAR( 99.4300003, xyz.y, tol) << "difference > 1 um";
-  ASSERT_NEAR( 11.9899998, xyz.z, tol) << "difference > 1 um";
+  ASSERT_NEAR(-11.8599997, xyz.x, kTol) << "difference > 1 um";
+  ASSERT_NEAR( 99.4300003, xyz.y, kTol) << "difference > 1 um";
+  ASSERT_NEAR( 11.9899998, xyz.z, kTol) << "difference > 1 um";
 
   const auto bbox = pc->ObtainBoundingBox2D();
-  ASSERT_NEAR(-244.16000366210938, bbox.minX, tol) << "difference > 1 um";
-  ASSERT_NEAR(-320.20001220703125, bbox.minY, tol) << "difference > 1 um";
-  ASSERT_NEAR(512, bbox.width, tol) << "difference > 1 um";
-  ASSERT_NEAR(0.850006103515625, bbox.height, tol) << "difference > 1 um";
+  ASSERT_NEAR(-244.16000366210938, bbox.minX, kTol) << "difference > 1 um";
+  ASSERT_NEAR(-320.20001220703125, bbox.minY, kTol) << "difference > 1 um";
+  ASSERT_NEAR(512, bbox.width, kTol) << "difference > 1 um";
+  ASSERT_NEAR(0.850006103515625, bbox.height, kTol) << "difference > 1 um";
 }
 
 /**
@@ -144,16 +144,16 @@ TEST(pointcloudreader, ReadPointcloud_LAZ_XYZCRGB) {
   ASSERT_TRUE(fg.test(fgt::kPOSRGB));
 
   const auto origin = pc->GetOrigin();
-  ASSERT_NEAR(0, origin.x, tol) << "difference > 1 um";
-  ASSERT_NEAR(0, origin.y, tol) << "difference > 1 um";
-  ASSERT_NEAR(0, origin.z, tol) << "difference > 1 um";
+  ASSERT_NEAR(0, origin.x, kTol) << "difference > 1 um";
+  ASSERT_NEAR(0, origin.y, kTol) << "difference > 1 um";
+  ASSERT_NEAR(0, origin.z, kTol) << "difference > 1 um";
 
   const size_t i = 823560 / 2;
 
   const auto xyz = pc->GetField<XYZF>(i);
-  ASSERT_NEAR(-11.8599997, xyz.x, tol) << "difference > 1 um";
-  ASSERT_NEAR( 99.4300003, xyz.y, tol) << "difference > 1 um";
-  ASSERT_NEAR( 11.9899998, xyz.z, tol) << "difference > 1 um";
+  ASSERT_NEAR(-11.8599997, xyz.x, kTol) << "difference > 1 um";
+  ASSERT_NEAR( 99.4300003, xyz.y, kTol) << "difference > 1 um";
+  ASSERT_NEAR( 11.9899998, xyz.z, kTol) << "difference > 1 um";
 
   const auto c = pc->GetField<Classification>(i);
   ASSERT_EQ(0, c.c);
@@ -193,9 +193,9 @@ TEST(pointcloudreader, ReadPointcloud_LAS_XYZC_CHUNKS) {
     ASSERT_EQ(chunkNumPts4[j], readNumPts);
 
     const auto xyz = pc.GetField<XYZF>(0);
-    ASSERT_NEAR(xyz4[j].x, xyz.x, tol) << "difference > 1 um";
-    ASSERT_NEAR(xyz4[j].y, xyz.y, tol) << "difference > 1 um";
-    ASSERT_NEAR(xyz4[j].z, xyz.z, tol) << "difference > 1 um";
+    ASSERT_NEAR(xyz4[j].x, xyz.x, kTol) << "difference > 1 um";
+    ASSERT_NEAR(xyz4[j].y, xyz.y, kTol) << "difference > 1 um";
+    ASSERT_NEAR(xyz4[j].z, xyz.z, kTol) << "difference > 1 um";
   }
 }
 
@@ -219,7 +219,7 @@ TEST(pointcloudreader, ReadPointcloudOMP_LAS_XYZ_CHUNKS) {
     Pointcloud pc(chunkNumPts, { fgt::kBITXYZ });
 
     #pragma omp for
-      for (int64 i = 0; i < filePointCount - chunkNumPts; i += chunkNumPts) {
+      for (int64_t i = 0; i < filePointCount - chunkNumPts; i += chunkNumPts) {
         reader.ReadPointcloud(i, &pc);
         //ASSERT_EQ(pc.GetPointCount(), chunkNumPts) << "#points of last chunk";  // fatal error C1001: Internal compiler error
       }
@@ -233,15 +233,16 @@ TEST(pointcloudreader, ReadPointcloudOMP_LAS_XYZ_CHUNKS) {
  *  \brief PointcloudReader test cases
  *
  *  TestCase 7: read tiles of points in .las
+ *  \todo examine extent of reader
  */
 TEST(pointcloudreader, ReadPointcloud_LAS_XYZC_TILES) {
   constexpr size_t filePointCount{ 20680 };
   const std::array<size_t, 4> tileNumPts4{
     6680, 4257, 6390, 3249 };
-  const std::array<XYZF, 4> xyz4{ XYZF{539841.125f, 1384727.0f, 42.07f},
-                                  XYZF{540472.625f, 1384715.5f, 46.25f},
-                                  XYZF{539859.5625f, 1385157.5f, 38.87f},
-                                  XYZF{540459.75f, 1384731.125f, 45.82f} };
+  const std::array<XYZF, 4> xyz4{ XYZF{539852.6875f, 1384727.875f, 41.35f},
+                                  XYZF{540465.5f, 1384716.5f, 45.89f},
+                                  XYZF{539838.8125f, 1385144.0f, 38.21f},
+                                  XYZF{540464.625f, 1384732.75f, 45.82f} };
 
   const std::string lasFile(TestConfig::DataPath("PointClouds/points_small.las"));
   PointcloudReader reader(lasFile, { fgt::kBITXC });
@@ -260,23 +261,23 @@ TEST(pointcloudreader, ReadPointcloud_LAS_XYZC_TILES) {
   ASSERT_EQ(4, tiles.size()) << "number of tiles";
 
   int j{};
-  for (int64 i = 0; i < tiles.size(); ++i) {
+  for (int64_t i = 0; i < tiles.size(); ++i) {
     auto& tile = tiles[i];
     auto pc = reader.ReadPointcloud(tile);
 
     ASSERT_EQ(tileNumPts4[i], pc->GetPointCount()) << "#points";
 
     const auto xyz = pc->GetField<XYZF>(0);
-    ASSERT_NEAR(xyz4[i].x, xyz.x, tol) << "difference > 1 um";
-    ASSERT_NEAR(xyz4[i].y, xyz.y, tol) << "difference > 1 um";
-    ASSERT_NEAR(xyz4[i].z, xyz.z, tol) << "difference > 1 um";
+    ASSERT_NEAR(xyz4[i].x, xyz.x, kTol) << "difference > 1 um";
+    ASSERT_NEAR(xyz4[i].y, xyz.y, kTol) << "difference > 1 um";
+    ASSERT_NEAR(xyz4[i].z, xyz.z, kTol) << "difference > 1 um";
 
     const auto tile2 = pc->ObtainBoundingBox2D();
     if (!(tile >= tile2)) {
       ++j;
     }
   }
-  ASSERT_EQ(2, j) << "#tiles";
+  ASSERT_EQ(4, j) << "#tiles";
 }
 
 /**
@@ -305,7 +306,7 @@ TEST(pointcloudreader, ReadPointcloudOMP_LAS_XYZ_TILES) {
 
   int j{};
 #pragma omp parallel for reduction(+ : j)   // \todo fatal error C1001: Internal compiler error
-  for (int64 i = 0; i < tiles.size(); ++i) {
+  for (int64_t i = 0; i < tiles.size(); ++i) {
     auto& tile = tiles[i];
     auto pc = reader.ReadPointcloud(tile);
 

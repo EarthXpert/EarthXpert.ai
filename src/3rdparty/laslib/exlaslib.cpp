@@ -83,15 +83,13 @@ std::unique_ptr<LASsummary> ObtainLasSummary(const std::string& lasFile) {
   LASreadOpener readOpener;
   std::unique_ptr<LASreader> reader(readOpener.open(lasFile.c_str()));
   if (!reader) {
-    throw std::exception("CreateLAX: failed to open las file");
+    throw std::exception("ObtainLasSummary: failed to open las file");
   }
 
   auto summary = std::make_unique<LASsummary>();
-
   while (reader->read_point()) {
     summary->add(&reader->point);
   }
-
   return summary;
 }
 }

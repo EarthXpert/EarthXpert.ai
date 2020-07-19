@@ -5,7 +5,7 @@
 #pragma once
 
 #include "sensormodel/sensormodel.h"
-#include "sensormodel/imagemodel.h"
+#include "sensormodel/utils/imagemodel.h"
 
 #include <array>
 #include <chrono>

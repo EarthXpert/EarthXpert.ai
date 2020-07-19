@@ -20,7 +20,7 @@ using RasterType = IRaster::RasterType;
  */
 class EXIO_EXPORTS IRasterReader {
 public:
-  virtual ~IRasterReader() {}
+  virtual ~IRasterReader() = default;
 
   /**
    *  \return Returns metadata tags
@@ -36,6 +36,11 @@ public:
    *  \return Return the number of channels contained in the image file
    */
   virtual int GetNumBands() const noexcept = 0;
+
+  /**
+   *  \return Returns metadata NODATA_VALUES.
+   */
+  virtual std::vector<double>& GetNodataValues() noexcept = 0;
 
   /**
    *  \brief Set the margin size and kind.
@@ -103,4 +108,7 @@ public:
    */
   //virtual std::unique_ptr<IPyramidReader> GetPyramidReader() = 0;
 };
+
+using UPIRasterReader = std::unique_ptr<IRasterReader>;
+using SPIRasterReader = std::shared_ptr<IRasterReader>;
 } // namespace earthxpert

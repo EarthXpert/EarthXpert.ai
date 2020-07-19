@@ -2,7 +2,7 @@
  *  Copyright (c) 2018.  All rights reserved.
  * -----------------------------------------------------------------------------
  */
-#include "sensormodel/distortiongrid.h"
+#include "sensormodel/utils/distortiongrid.h"
 
 #include <algorithm>
 #include <cassert>

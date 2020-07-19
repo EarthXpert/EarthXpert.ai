@@ -51,6 +51,12 @@ public:
   void SetMetadata(const RasterMetadata* metaData) override;
 
   /**
+   *  \brief Set metadata NODATA_VALUES.
+   */
+  void SetNodataValues(double nodataValue) override;
+  void SetNodataValues(const std::vector<double>& nodataValues) override;
+
+  /**
    *  \brief Inject the ground coordinate system where the image file operates
    *
    *  \param [in] spatialref the coordinate system
@@ -80,6 +86,11 @@ public:
   void BuildPyramids() override;
 
   /**
+   *  \return Returns the RasterReader object.
+   */
+  RasterReader* GetReader() { return mReader.get(); }
+
+  /**
    *  \return Returns metadata tags
    */
   std::unique_ptr<RasterMetadata> GetMetadata() const override {
@@ -98,9 +109,19 @@ public:
   GDALDataType GetDataType() const noexcept { return mGdalDT; }
 
   /**
+   *  \return Returns OpenCV data type.
+   */
+  int GetCvDataType() const noexcept { return mReader->GetCvDataType(); }
+
+  /**
    *  \return Return the number of channels contained in the image file
    */
   int GetNumBands() const noexcept override { return mReader->GetNumBands(); }
+
+  /**
+   *  \return Returns metadata NODATA_VALUES.
+   */
+  std::vector<double>& GetNodataValues() noexcept override { return mReader->GetNodataValues(); }
 
   /**
    *  \brief Set the margin size and kind.
@@ -198,7 +219,7 @@ private:
   GDALDataset* mDataset{ nullptr };  // non-owning pointer to GDALDataset object
   int mFileNumCols{};   // width of image file [unit: pixel]
   int mFileNumRows{};   // height of image file
-  std::vector<int> mBands;    // list of bands to wrtie into
+  std::vector<int> mBands;    // list of bands to write into
   GDALDataType mGdalDT{GDT_Byte};     // GDAL data type of image file
   int mWriteNumBands{};   // number of bands to write
 

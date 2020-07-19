@@ -171,4 +171,8 @@ public:
   virtual size_t
   GroundToImage(const std::vector<Point3d> &grounds, std::vector<Point2d> &images) const = 0;
 };
+
+using StereoFwdAlgo = IStereoModel::ForwardAlgo;
+using UPIStereoModel = std::unique_ptr<IStereoModel>;
+using SPIStereoModel = std::shared_ptr<IStereoModel>;
 } // namespace earthxpert

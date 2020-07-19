@@ -4,8 +4,8 @@
  */
 #pragma once
 
-#include "core/math/interpcube.h"
 #include "sensormodel/pushbroommodel.h"
+#include "core/math/interpcube.h"
 
 #include <array>
 #include <chrono>
@@ -106,7 +106,7 @@ public:
   // block adjustment support
 
 private:
-  std::unique_ptr<PushBroomModel>
+  std::unique_ptr<AirPushbroomModel>
       mPbModel; // pushbroom model define in LSR cartetian coordinate system
   Point2d
       mLsrOrigin; // longitude & latitude coordinates defining the origin of LSR

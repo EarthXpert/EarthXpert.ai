@@ -4,12 +4,12 @@
  */
 #pragma once
 
-#include "sensormodel/istereomodel.h"
+#include "sensormodel/utils/istereomodel.h"
 #include "sensormodel/isensormodel.h"
+#include "core/exceptions/exexcept.h"
 #include "core/math/iintersect.h"
 #include "core/spatialref/earthellipsoid.h"
-#include "core/spatialref/spatialdef.h"
-#include "core/exceptions/exexcept.h"
+#include "core/spatialref/groundpolicy.h"
 
 #include <cassert>
 
@@ -23,20 +23,22 @@ class ISensorModel;
  *  rays from a block of sensor geometry models are used to implement
  *    forward intersection and backward projection in the network.
  *
- *  \todo revist the design for variable number of rays, specifily, 
+ *  \tparam GroundPolicy defines the behaviour of and relationshp between
+ *  the model coordinate system and the Cartesian coordinate system
+ *
+ *  \todo revist the design for variable number of rays, specifily,
  *  changing freaquently for matched key points: anohter class VariableStereoModel? 
  */
+//template <class GroundPolicy>
 class EXSENSORMODEL_EXPORTS StereoModel : public IStereoModel {
 public:
   /**
-   *  Constructor.
-   *
    *  \brief Form a stereo model by a pair of sensor models.
    *
    *  \param [in] leftModel left sensor model composing the stereo model
    *  \param [in] rightModel right sensor model composing the stereo model
    */
-  StereoModel(ISensorModel const* const leftModel, ISensorModel const* const rightModel);
+  StereoModel(ISensorModel const* leftModel, ISensorModel const* rightModel);
 
   /**
    *  \brief Form a triplet stereo model by three sensor models.
@@ -65,32 +67,30 @@ public:
   const auto& GetSensorModels() const noexcept { return mModels; }
 
   /**
+   *  clang-format off
    *  Image-to-ground backward projection (fixed).
    *
    *  \brief Given a pair of sensor models and associated 2d positions
    *  in image coordinate system, do forward intersection of pair-rays, and
    *  output the ground position with respect to the ground coordinate system.
    *
-   *  \param [in] leftImage 2d position (x, y) in left image raster coordinate
-   * system
+   *  \param [in] leftImage 2d position (x, y) in left image raster coordinate system
    *  \param [in] rightImage the corresponding 2d position (x, y) in right image
-   * raster coordinate system
-   *  \param [in/out] ground 3d ground position (X, Y, Z) in ground coordinate
-   * system 
+   *              raster coordinate system
+   *  \param [in/out] ground 3d ground position (X, Y, Z) in ground coordinate system 
    *  \return Returns true if the operation succeeds
+   *  clang-format on
    */
   virtual bool ImageToGround(const Point2d &leftImage,
     const Point2d &rightImage, Point3d &ground) const override {
     assert(2 == mModels.size());
     switch (mFwdAlgo) {
-    case eCA_INTERSECT: {
-      assert(eGEO == mModels[0]->GetSrsType());
-      assert(mEarthEllip && mIntersect);
-      Point2d images[2] = { leftImage, rightImage };
-      return ImageToGroundX(images, 2, ground);
-    }
     case eSM_CERES: {
       return ImageToGroundCeres(leftImage, rightImage, ground);
+    }
+    case eCA_INTERSECT: {
+      Point2d images[2] = { leftImage, rightImage };
+      return ImageToGroundX(images, 2, ground);
     }
     case eSM_NR: {
       return ImageToGroundNR(leftImage, rightImage, ground);
@@ -132,13 +132,11 @@ public:
   ImageToGround(const std::array<Point2d, 3> &images, Point3d &ground) const override {
     assert(3 == mModels.size());
     switch (mFwdAlgo) {
-    case eCA_INTERSECT: {
-      assert(eGEO == mModels[0]->GetSrsType());
-      assert(mEarthEllip && mIntersect);
-      return ImageToGroundX(images.data(), 3, ground);
-    }
     case eSM_CERES: {
       return ImageToGroundCeres(images, ground);
+    }
+    case eCA_INTERSECT: {
+      return ImageToGroundX(images.data(), 3, ground);
     }
     case eSM_NR: {
       return ImageToGroundNR(images, ground);
@@ -164,13 +162,11 @@ public:
     const int numRays = int(mModels.size());
     assert(numRays == images.size());
     switch (mFwdAlgo) {
-    case eCA_INTERSECT: {
-      assert(eGEO == mModels[0]->GetSrsType());
-      assert(mEarthEllip && mIntersect);
-      return ImageToGroundX(images.data(), numRays, ground);
-    }
     case eSM_CERES: {
       return ImageToGroundCeres(images.data(), numRays, ground);
+    }
+    case eCA_INTERSECT: {
+      return ImageToGroundX(images.data(), numRays, ground);
     }
     case eSM_NR: {
       //return ImageToGroundNR(images, numRays, ground);
@@ -191,8 +187,8 @@ public:
    *
    *  \param [in] sensorModels an array of sensor models.
    *  \param [in] images the corresponding 2d positions (x, y) in
-   * imagery raster coordinate systems, interleaved by sensor models. \param
-   * [in/out] ground 3d ground position (X, Y, Z) in ground coordinate system
+   * imagery raster coordinate systems, interleaved by sensor models. 
+   *  \param [in/out] ground 3d ground position (X, Y, Z) in ground coordinate system
    *  \return Returns true if the operation succeeds
    */
   virtual bool ImageToGround(const std::vector<const ISensorModel*>& sensorModels,
@@ -236,8 +232,8 @@ public:
    *
    *  \param [in] sensorModels an array of sensor models.
    *  \param [in] ground 3d position (X, Y, Z) in ground coordinate system
-   *  \param [out] images 2d position (x, y) in imagery raster
-   * coordinate system \return Returns true if operation succeeds
+   *  \param [out] images 2d position (x, y) in imagery raster coordinate system 
+   *  \return Returns true if operation succeeds
    */
   virtual bool GroundToImage(const std::vector<const ISensorModel*>& sensorModels,
     const Point3d& ground, std::vector<Point2d>& images) const {
@@ -289,5 +285,7 @@ private:
   bool ImageToGroundX(const Point2d* images, int numRays, Point3d& ground) const;
 
   // cache
+  SensorType mSensorType{ SensorType::eUNDEFINED };
+  SrsType mSrsType{ eUNKNOWN };
 };
 } // namespace earthxpert

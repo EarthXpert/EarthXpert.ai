@@ -31,6 +31,9 @@ public:
 
   void SetMetadata(const RasterMetadata*) override {}
 
+  void SetNodataValues(double) {}
+  void SetNodataValues(const std::vector<double>&) {}
+
   void SetCoordinateSystem(const SpatialReferenceSystem*) override {}
 
   void SetGeocoding(const Geocoding*) override {}
@@ -49,6 +52,11 @@ public:
   GDALDataType GetDataType() const noexcept { return GDT_Unknown; }
 
   int GetNumBands() const noexcept override { return 0; }
+
+  std::vector<double>& GetNodataValues() noexcept {
+    static std::vector<double> nodataValues;
+    return nodataValues;
+  }
 
   void SetMargins(int, int, MarginKind) override {}
 
