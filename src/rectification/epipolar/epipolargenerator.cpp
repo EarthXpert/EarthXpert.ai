@@ -429,6 +429,11 @@ void EpipolarGenerator::EpiToImg(const int tileId, cv::Mat& tfmMat) {
   }
 
   if (1 == mStride) return;
+  auto Bilinear = [](const double v1, const double v2, const double v3, 
+    const double v4, const double xf, const double yf) {
+      return (1.0 - yf) * ((1.0 - xf) * v1 + xf * v2) +
+        yf * ((1.0 - xf) * v3 + xf * v4);
+  };
   
   // Densify non-grid positions
   const int64_t numPix = numCols * numRows;
