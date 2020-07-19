@@ -62,7 +62,7 @@ int ExaiEpipolar::Execute() {
     epiOpt.leftMdlFile = vm["leftmdl"].as<std::string>();
     epiOpt.rightMdlFile = vm["rightmdl"].as<std::string>();
 
-    std::cout << ToString(&epiOpt);
+    //std::cout << ToString(&epiOpt);
     GenerateRationalEpipolar(epiOpt);
     break;
   }

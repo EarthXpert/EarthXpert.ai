@@ -23,7 +23,7 @@ namespace chrono = std::chrono;
  *  \param memSize [in] memory available [unit: bytes]
  */
 EpipolarGenerator::EpipolarGenerator(const IRasterResample* rasResample, 
-  const size_t memSize, const unsigned short stride)
+  const size_t memSize, const int stride)
   : mRasResample(rasResample), mMemSize(memSize), mStride(stride) {
   mMarginDim = mRasResample->GetWinDim() / 2;
 }
@@ -37,6 +37,7 @@ bool EpipolarGenerator::Process(IRasterReader *const img,
   IRasterWriter *const epi, IEpipolarModel const* epiModel) {
   mPerf.Clear();
   auto start = chrono::steady_clock::now();
+  omp_set_nested(2);
 
   try {
     SetImageParams(img);
@@ -96,7 +97,7 @@ void EpipolarGenerator::LayoutTiles() {
   const auto start = chrono::steady_clock::now();
 
   // estimate tile size
-  const double bpp = 1.0 +  mTfmBpp + mEpiBpp + mImgBpp * mSample * mSample;
+  const double bpp = 1.0 +  mTfmBpp + mEpiBpp * 2 + mImgBpp * mSample * mSample * 2;
   int tileDim = int(sqrt(mMemSize / bpp));
   tileDim = std::max(1, (tileDim / kTileDim)) * kTileDim;
   
@@ -206,27 +207,32 @@ int64_t EpipolarGenerator::GetTilesLimit(const std::vector<RasterWindow>& tiles)
 
 /**
  *  \brief allocate memory buffers
+ *  \todo reduce mMaskBuf to label grid nodes
  */
 void EpipolarGenerator::AllocateBuffers() {
   const auto imgBufNumPix = GetTilesLimit(mImgTiles);
   const int64_t imgBufNumBytes = mImgBpp * imgBufNumPix;
   if (mImgBufNumBytes < imgBufNumBytes) {
-    mImgBuffer.reset();
+    mImgBufRead.reset();
+    mImgBufWork.reset();
     mImgBufNumBytes = imgBufNumBytes;
-    mImgBuffer.reset(new uchar[mImgBufNumBytes]);
+    mImgBufRead.reset(new uchar[mImgBufNumBytes]);
+    mImgBufWork.reset(new uchar[mImgBufNumBytes]);
   }
 
   const auto epiBufNumPix = GetTilesLimit(mEpiTiles);
   const int64_t epiBufNumBytes = mEpiBpp * epiBufNumPix;
   if (mEpiBufNumBytes < epiBufNumBytes) {
-    mEpiBuffer.reset();
-    mMaskBuffer.reset();
-    mTfmBuffer.reset();
+    mEpiBufWork.reset();
+    mEpiBufWrit.reset();
+    mMaskBuf.reset();
+    mTfmBuf.reset();
     
     mEpiBufNumBytes = epiBufNumBytes;
-    mEpiBuffer.reset(new uchar[mEpiBufNumBytes]);
-    mMaskBuffer.reset(new uchar[epiBufNumPix]);
-    mTfmBuffer.reset(new uchar[mTfmBpp * epiBufNumPix]);
+    mEpiBufWork.reset(new uchar[mEpiBufNumBytes]);
+    mEpiBufWrit.reset(new uchar[mEpiBufNumBytes]);
+    mMaskBuf.reset(new uchar[epiBufNumPix]);
+    mTfmBuf.reset(new uchar[mTfmBpp * epiBufNumPix]);
   }
 }
 
@@ -234,30 +240,10 @@ void EpipolarGenerator::AllocateBuffers() {
  *  \brief
  */
 void EpipolarGenerator::ResetBuffers(const int tileId) {
+  if (!TileId(tileId)) return;
   const auto start = chrono::steady_clock::now();
 
-  const auto& epiTile = mEpiTiles[tileId];
-  const int64_t epiNumPix = epiTile.GetNumPixels();
-  memset(mEpiBuffer.get(), 0, mEpiBpp * epiNumPix);
-
-  const auto& imgTile = mImgTiles[tileId];
-  if (imgTile.IsValid()) {
-    memset(mImgBuffer.get(), 0, mImgBpp * imgTile.GetNumPixels());
-    memset(mMaskBuffer.get(), 0, epiNumPix);
-    cv::Mat tfmMat(epiTile.numRows, epiTile.numCols, mTfmCvDT, mTfmBuffer.get());
-
-    tfmMat.forEach<cv::Vec2f>([](cv::Vec2f& tfm, const int*) { 
-      tfm[0] = -1; tfm[1] = -1; });
-    
-//#pragma omp parallel for
-    //for (int64_t k = 0; k < epiNumPix; ++k) {
-    //  const int col = k % epiTile.numCols;
-    //  const int row = k / epiTile.numCols;
-    //  auto& tfm = tfmMat.at<cv::Vec2f>(row, col);
-    //  tfm[0] = -1;
-    //  tfm[1] = -1;
-    //}
-  }
+  memset(mEpiBufWork.get(), 0, mEpiBpp * mEpiTiles[tileId].GetNumPixels());
 
   const chrono::duration<double> diff = chrono::steady_clock::now() - start;
   mPerf.tmReset += diff.count();
@@ -266,23 +252,83 @@ void EpipolarGenerator::ResetBuffers(const int tileId) {
 /**
  *  \brief
  */
-void EpipolarGenerator::FreeBuffers() {
-  mImgBuffer.reset();
-  mEpiBuffer.reset();
-  mTfmBuffer.reset();
-  mMaskBuffer.reset();
+void EpipolarGenerator::SwapBuffers() {
+  std::swap(mImgBufRead, mImgBufWork);
+  std::swap(mEpiBufWork, mEpiBufWrit);
 }
 
 /**
- *  \brief 
+ *  \brief
+ */
+void EpipolarGenerator::FreeBuffers() {
+  mImgBufRead.reset();
+  mImgBufWork.reset();
+  mEpiBufWork.reset();
+  mEpiBufWrit.reset();
+  mTfmBuf.reset();
+  mMaskBuf.reset();
+}
+
+/**
+ *  \brief pipelined overlapping of read/write and computation tasks
+ *  \todo investigate GDAL thread model: does it allow simuteneous read/write of different datasets? 
  */
 void EpipolarGenerator::ProcessTiles() {
-  for (int t = 0; t < mNumTiles; ++t) {
+  for (int t = -1; t <= mNumTiles; ++t) {
     ResetBuffers(t);
 
-    ReadTile(t);
+#pragma omp parallel sections num_threads(2)
+    {
+#pragma omp section
+      {
+        ReadTile(t + 1);
+        WriteTile(t - 1);
+      }
+
+#pragma omp section
+      ProcessTile(t);
+    }
+
+    SwapBuffers();
+  }
+}
+
+/**
+ *  \brief pipelined overlapping of read, computation, write tasks
+ *  \todo 4x slower than SQ!
+ */
+void EpipolarGenerator::ProcessTilesPL() {
+  for (int t = -1; t <= mNumTiles; ++t) {
+    ResetBuffers(t);
+
+#pragma omp parallel sections num_threads(3)
+    {
+#pragma omp section
+      ReadTile(t + 1);
+
+#pragma omp section
+      ProcessTile(t);
+
+#pragma omp section
+      WriteTile(t - 1);
+    }
+
+    SwapBuffers();
+  }
+}
+
+/**
+ *  \brief sequential non-overlapping of read, computation, write tasks
+ */
+void EpipolarGenerator::ProcessTilesSQ() {
+  for (int t = -1; t <= mNumTiles; ++t) {
+    ResetBuffers(t);
+
+    ReadTile(t + 1);
     ProcessTile(t);
-    WriteTile(t);
+    WriteTile(t - 1);
+
+    SwapBuffers();
   }
 }
 
@@ -290,11 +336,13 @@ void EpipolarGenerator::ProcessTiles() {
  *  \brief
  */
 void EpipolarGenerator::ReadTile(const int tileId) {
+  if (!TileId(tileId)) return;
   const auto [colOffset, rowOffset, numCols, numRows] = mImgTiles[tileId];
   if (0 == numCols || 0 == numRows) return;
   const auto start = chrono::steady_clock::now();
+  //memset(mImgBufRead.get(), 0, mImgBpp * numCols * numRows);
 
-  CvRaster imgRaster(numCols, numRows, mImgCvDT, colOffset, rowOffset, mImgBuffer.get());
+  CvRaster imgRaster(numCols, numRows, mImgCvDT, colOffset, rowOffset, mImgBufRead.get());
   mImgReader->ReadRaster(&imgRaster);
 
   const chrono::duration<double> diff = chrono::steady_clock::now() - start;
@@ -305,16 +353,19 @@ void EpipolarGenerator::ReadTile(const int tileId) {
  *  \brief
  */
 void EpipolarGenerator::ProcessTile(const int tileId) {
+  if (!TileId(tileId)) return;
   const auto [imgColOffset, imgRowOffset, imgNumCols, imgNumRows] = mImgTiles[tileId];
   if (0 == imgNumCols || 0 == imgNumRows) return;
-  const auto start = chrono::steady_clock::now();
-
-  cv::Mat imgMat(imgNumRows, imgNumCols, mImgCvDT, mImgBuffer.get());
-
   const auto [colOffset, rowOffset, numCols, numRows] = mEpiTiles[tileId];
-  cv::Mat epiMat(numRows, numCols, mEpiCvDT, mEpiBuffer.get());
+  const auto start = chrono::steady_clock::now();
+  memset(mMaskBuf.get(), 0, numCols * numRows);
 
-  cv::Mat tfmMat(numRows, numCols, mTfmCvDT, mTfmBuffer.get());
+  cv::Mat imgMat(imgNumRows, imgNumCols, mImgCvDT, mImgBufWork.get());
+  cv::Mat epiMat(numRows, numCols, mEpiCvDT, mEpiBufWork.get());
+
+  cv::Mat tfmMat(numRows, numCols, mTfmCvDT, mTfmBuf.get());
+  tfmMat.forEach<cv::Vec2f>([](cv::Vec2f& tfm, const int*) {
+    tfm[0] = -1; tfm[1] = -1; });
   EpiToImg(tileId, tfmMat);
 
   mRasResample->Resample(imgMat, epiMat, tfmMat);
@@ -327,10 +378,11 @@ void EpipolarGenerator::ProcessTile(const int tileId) {
  *  \brief
  */
 void EpipolarGenerator::WriteTile(const int tileId) {
+  if (!TileId(tileId)) return;
   const auto start = chrono::steady_clock::now();
 
   const auto [colOffset, rowOffset, numCols, numRows] = mEpiTiles[tileId];
-  CvRaster epiRaster(numCols, numRows, mEpiCvDT, colOffset, rowOffset, mEpiBuffer.get());
+  CvRaster epiRaster(numCols, numRows, mEpiCvDT, colOffset, rowOffset, mEpiBufWrit.get());
   mEpiWriter->WriteRaster(&epiRaster);
 
   const chrono::duration<double> diff = chrono::steady_clock::now() - start;
@@ -383,7 +435,7 @@ void EpipolarGenerator::EpiToImg(const int tileId, cv::Mat& tfmMat) {
 
 #pragma omp parallel for
   for (int64_t k = 0; k < numPix; ++k) {
-    if (1 == mMaskBuffer[k]) continue;
+    if (1 == mMaskBuf[k]) continue;
     const int tileCol = int(k % numCols);
     const int tileRow = int(k / numCols);
 
@@ -404,16 +456,17 @@ void EpipolarGenerator::EpiToImg(const int tileId, cv::Mat& tfmMat) {
     const int64 i3 = numCols * tileRowL + tileColL;
     const int64 i4 = numCols * tileRowL + tileColR;
 
-    if (0 == mMaskBuffer[i1] && 0 == mMaskBuffer[i2] &&
-        0 == mMaskBuffer[i3] && 0 == mMaskBuffer[i4]) {
+    if (0 == mMaskBuf[i1] && 0 == mMaskBuf[i2] &&
+        0 == mMaskBuf[i3] && 0 == mMaskBuf[i4]) {
       continue;
     }
 
     auto& tfm = tfmMat.at<cv::Vec2f>(tileRow, tileCol);
 
-    if (1 == mMaskBuffer[i1] && 1 == mMaskBuffer[i2] &&
-        1 == mMaskBuffer[i3] && 1 == mMaskBuffer[i4]) {
+    if (1 == mMaskBuf[i1] && 1 == mMaskBuf[i2] &&
+        1 == mMaskBuf[i3] && 1 == mMaskBuf[i4]) {
       // Bilinear interpolation if all four grid points are valid
+      // \todo re-calculate fraction lookup table at locations 0 ~ mStride -1
       const double xf = double(tileCol - tileColL) / double(tileColR - tileColL);
       const double yf = double(tileRow - tileRowU) / double(tileRowL - tileRowU);
 
@@ -426,7 +479,7 @@ void EpipolarGenerator::EpiToImg(const int tileId, cv::Mat& tfmMat) {
         yf * ((1.0 - xf) * tfm3[0] + xf * tfm4[0]));
       tfm[1] = float((1.0 - yf) * ((1.0 - xf) * tfm1[1] + xf * tfm2[1]) +
         yf * ((1.0 - xf) * tfm3[1] + xf * tfm4[1]));
-      mMaskBuffer[k] = 1;
+      mMaskBuf[k] = 1;
     }
     else {
       // Do actual geometry if any grid point is invalid
@@ -457,6 +510,6 @@ void EpipolarGenerator::EpiToImg(const int tileId, cv::Mat& tfmMat,
     tfm[1] = tfmRow;
 
     const int64_t k = int64_t(numCols) * int64_t(tileRow) + int64_t(tileCol);
-    mMaskBuffer[k] = 1;
+    mMaskBuf[k] = 1;
   }
 }

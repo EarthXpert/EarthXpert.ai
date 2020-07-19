@@ -44,6 +44,7 @@ public:
    */
   EpiModelPair CreateFrameEpiModel(std::shared_ptr<ISensorModel> leftModel,
       std::shared_ptr<ISensorModel> rightModel, int sample, double height);
+
   EpiModelPair CreateRationalEpiModel(std::shared_ptr<RationalModel> leftModel,
       std::shared_ptr<RationalModel> rightModel, int sample=1);
 
@@ -51,8 +52,7 @@ public:
    *  \brief create epipolar models from a pair of stereo images.
    */
   EpiModelPair CreateRationalEpiModel(
-    const std::array<std::shared_ptr<RationalModel>, 2> sensorModels,
-    int sample=1) {
+    const std::array<std::shared_ptr<RationalModel>, 2> sensorModels, int sample=1) {
     return CreateRationalEpiModel(sensorModels[0], sensorModels[1], sample);
   }
 
@@ -67,6 +67,7 @@ public:
 
 private:
   static constexpr int kMaxIters{ 5 };
+  static constexpr int kPosTfm{ 16 };   // position transformation to align
   static constexpr double kHgtTol{ 0.01 }; // Height tolerance [1cm]: good enough
 
   EpipolarOption mEpiOpt{ EpiOpt::eFULL };

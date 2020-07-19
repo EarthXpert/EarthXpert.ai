@@ -7,6 +7,7 @@
 #include "core/utils/typehelper.h"
 #include "core/exceptions/exexcept.h"
 #include "epipolarmodel/epipolarmodel.h"
+#include "core/math/math.h"
 #include "sensormodel/framemodel.h"
 #include "sensormodel/rationalmodel.h"
 #include "sensormodel/utils/utils.h"
@@ -49,7 +50,7 @@ EpiModelPair EpipolarModelFactory::CreateFrameEpiModel(
  *  \return Returns pointer to epipolar model objects.
  */
 EpiModelPair EpipolarModelFactory::CreateRationalEpiModel(
-  std::shared_ptr<RationalModel> leftModel,
+  std::shared_ptr<RationalModel> leftModel, 
   std::shared_ptr<RationalModel> rightModel, const int sample) {
   if (leftModel->GetModelType() != rightModel->GetModelType())
     throw std::exception(_("The stereo pair should be of the same sensor type."));
@@ -64,11 +65,18 @@ EpiModelPair EpipolarModelFactory::CreateRationalEpiModel(
   auto earthEllip = std::make_unique<EarthEllipsoid>();
   earthEllip->SetLsrOrigin(origin);
 
-  const double height{ (lnfc[rnf::eOHEIGHT] + rnfc[rnf::eOHEIGHT]) / 2 };
+  auto EpiGsd = [](const RationalModel* leftModel, 
+    const RationalModel* rightModel, const double height) {
+      const auto leftGsd = CalcGsd(leftModel, height);
+      const auto righttGsd = CalcGsd(rightModel, height);
+      return sqrt(leftGsd * righttGsd);
+  };
 
-  const auto leftGsd = CalcGsd(leftModel.get(), height);
-  const auto righttGsd = CalcGsd(rightModel.get(), height);
-  const double invScale = sqrt(leftGsd * righttGsd) * sample;
+  // \todo determine the rectification height so that the average 
+  // resolution of epipolar is 1:1 before considering the sample
+  double height{ (lnfc[rnf::eOHEIGHT] + rnfc[rnf::eOHEIGHT]) / 2 };
+
+  const double invScale = EpiGsd(leftModel.get(), rightModel.get(), height) * sample;
   const double scale{ 1.0 / invScale };
 
   auto leftFp = CalcFootprint(leftModel.get(), earthEllip.get(), height);
@@ -219,6 +227,9 @@ std::pair<Point2d, Point2d> EpipolarModelFactory::CalcEpiBound(
     if (pixMax.y < pt.y) pixMax.y = pt.y;
   }
 
-  return { cv::Point2d(floor(pixMin.x), floor(pixMin.y)),
-           cv::Point2d(ceil(pixMax.x), ceil(pixMax.y)) };
+  Point2i pMin(floor(pixMin.x), floor(pixMin.y));
+  Point2i pMax(ceil(pixMax.x), ceil(pixMax.y));
+
+  return { cv::Point2d(Stride(pMin.x, kPosTfm), Stride(pMin.y, kPosTfm)),
+           cv::Point2d(Stride(pMax.x, kPosTfm), Stride(pMax.y, kPosTfm)) };
 }

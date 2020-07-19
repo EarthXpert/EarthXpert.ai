@@ -30,7 +30,7 @@ public:
    *  \brief
    */
   EpipolarGenerator(const IRasterResample* rasResample, 
-    size_t memSize, unsigned short stride = 1);
+    size_t memSize, int stride = 1);
 
   EpipolarGenerator(const EpipolarGenerator &) = delete;
   EpipolarGenerator(EpipolarGenerator &&) = delete;
@@ -55,7 +55,7 @@ private:
 
   const IRasterResample* mRasResample{};
   size_t mMemSize{};         // memory size allowed for processing
-  unsigned short mStride{1}; // stride for rigorous epipolar geometry
+  int mStride{1}; // stride for rigorous epipolar geometry
 
   void SetImageParams(IRasterReader* const img);
   void SetEpipolarParams(IRasterWriter* const epi, IEpipolarModel const* epiModel);
@@ -66,18 +66,27 @@ private:
   int64_t GetTilesLimit(const std::vector<RasterWindow>& tiles) const;
 
   int64_t mImgBufNumBytes{};
-  std::unique_ptr<uchar[]> mImgBuffer;    // raw image tile
-  
+  std::unique_ptr<uchar[]> mImgBufRead;   // read buffer of raw image tile
+  std::unique_ptr<uchar[]> mImgBufWork;   // work buffer
+
   int64_t mEpiBufNumBytes{};
-  std::unique_ptr<uchar[]> mEpiBuffer;    // epipolar tile
-  std::unique_ptr<uchar[]> mMaskBuffer;   // epipolar mask
-  std::unique_ptr<uchar[]> mTfmBuffer;    // transfomration map
+  std::unique_ptr<uchar[]> mEpiBufWork;   // work buffer of epipolar tile
+  std::unique_ptr<uchar[]> mEpiBufWrit;   // write buffer
+  std::unique_ptr<uchar[]> mMaskBuf;      // epipolar mask
+  std::unique_ptr<uchar[]> mTfmBuf;       // transfomration map
 
   void AllocateBuffers();
   void ResetBuffers(int tileId);
+  void SwapBuffers();
   void FreeBuffers();
 
   void ProcessTiles();
+  void ProcessTilesPL();
+  void ProcessTilesSQ();
+
+  inline bool TileId(const int tileId) {
+    return (0 <= tileId && tileId < mNumTiles);
+  }
 
   void ReadTile(int tileId);
   void ProcessTile(int tileId);

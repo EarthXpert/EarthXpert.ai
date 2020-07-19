@@ -208,7 +208,7 @@ public:
   /**
    *  \return Returns the middle height
    */
-  double GetMeanHeight() const noexcept override { return mSensorModel->GetMeanHeight(); }
+  virtual double GetMeanHeight() const noexcept override { return mSensorModel->GetMeanHeight(); }
 
 protected:
   std::shared_ptr<ISensorModel> mSensorModel; // image model composing of the stereo model

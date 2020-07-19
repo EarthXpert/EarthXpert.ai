@@ -83,6 +83,11 @@ public:
     return { mEpiRect->mNumCols, mEpiRect->mNumRows };
   }
 
+  /**
+   *  \return Returns the middle height
+   */
+  double GetMeanHeight() const noexcept override { return mEpiRect->mHeight; }
+
 private:
   static constexpr int kMaxIters{ 5 };
   static constexpr double kHgtTol{ 1.0e-4 }; // Height tolerance [0.1mm]?

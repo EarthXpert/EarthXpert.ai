@@ -20,6 +20,7 @@ static constexpr double kTol = 1.0e-3; // [mm]
 static void CreateRationalEpipolarModel(const std::string& leftMdlFile,
   const std::string& rightMdlFile, EpiModelPair& epiModels);
 static void TestRaw2Epi_Epi2Raw_Grid(const IEpipolarModel* epiModel, double tol=kTol);
+static void TestStride(const IEpipolarModel* epiModel, int stride, double tol = kTol);
 
 /**
  *  Test 1: WV01
@@ -108,4 +109,13 @@ void TestRaw2Epi_Epi2Raw_Grid(const IEpipolarModel* epiModel, const double tol) 
   auto maxDiffY = gsd * maxDiffRow;
   ASSERT_LT(maxDiffX, tol) << "max diiference in col";
   ASSERT_LT(maxDiffY, tol) << "max diiference in row";
+}
+
+/**
+ *  \brief first, do Epi2Raw at 1:1; 
+ *         second, do bi-linear interpolation at given stride;
+ *         third, calculate the maximum differences between them.
+ */
+void TestStride(const IEpipolarModel* epiModel, int stride, double tol) {
+
 }

@@ -14,6 +14,8 @@ using Point2f = cv::Point2f;
 using Point3f = cv::Point3f;
 using Point2d = cv::Point2d;
 using Point3d = cv::Point3d;
+using Point2i = cv::Point2i;
+using Point3i = cv::Point3i;
 
 template<typename Ty, typename = std::enable_if_t<std::is_arithmetic_v<Ty>>>
 cv::Point3_<Ty> Point2To3(const cv::Point_<Ty>& point) {
