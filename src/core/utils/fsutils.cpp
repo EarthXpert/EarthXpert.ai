@@ -4,6 +4,9 @@
  */
 #include "core/utils/fsutils.h"
 
+#include <sys/types.h>
+#include <sys/stat.h>
+
 namespace earthxpert::utils {
 /**
  *  \brief insert prefix for filename component
@@ -18,5 +21,35 @@ std::string PathPrefixFilename(
   auto fn = prefix + filePath.filename().string();
 
   return fn;
+}
+
+/**
+ *  \brief Obtain the ID of the physical hard drive where a specified path resides.
+ *
+ *  \param [in] devPath The path to retrieve.
+ *  \todo check device type/class
+ */
+unsigned int GetDiskId(const std::string& devPath) {
+  unsigned int id{};
+
+#if (defined _WIN32 || defined WINCE || defined __CYGWIN__)
+
+  struct _stat s;
+  auto ret = _stat(devPath.c_str(), &s);
+  if (0 == ret) {
+    id = static_cast<unsigned int>(s.st_dev);
+  }
+
+#else
+
+  struct stat s;
+  auto ret = stat(devPath.c_str(), &s);
+  if (-1 != ret) {
+    id = static_cast<unsigned int>(minor(s.st_dev) / 16);
+  }
+
+#endif
+
+  return id;
 }
 }
