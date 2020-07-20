@@ -34,15 +34,19 @@ std::pair<int, int> EstimateTileSize(const size_t memSize, const int bpp,
   return {tileNumCols - balNumCols, tileNumRows - balNumRows};
 }
 
-void FillCorners(const RasterWindow& win, std::array<Point2d, kNCP> corners) {
+/**
+ *  \param [in] win window position
+ *  \param [out] corners corner and edge middle points
+ */
+void FillCorners(const RasterWindow& win, std::array<Point2d, kNCP>& corners) {
   corners[0] = Point2d(win.colOffset, win.rowOffset);
-  corners[1] = Point2d(win.colOffset + win.numCols / 2, win.rowOffset);
-  corners[2] = Point2d(win.colOffset + win.numCols, win.rowOffset);
-  corners[3] = Point2d(win.colOffset + win.numCols, win.rowOffset + win.numRows / 2);
-  corners[4] = Point2d(win.colOffset + win.numCols, win.rowOffset + win.numRows);
-  corners[5] = Point2d(win.colOffset + win.numCols / 2, win.rowOffset + win.numRows);
-  corners[6] = Point2d(win.colOffset, win.rowOffset + win.numRows);
-  corners[7] = Point2d(win.colOffset, win.rowOffset + win.numRows / 2);
+  corners[1] = corners[0] + Point2d(win.numCols / 2, 0);
+  corners[2] = corners[0] + Point2d(win.numCols, 0);
+  corners[3] = corners[0] + Point2d(win.numCols, win.numRows / 2);
+  corners[4] = corners[0] + Point2d(win.numCols, win.numRows);
+  corners[5] = corners[0] + Point2d(win.numCols / 2, win.numRows);
+  corners[6] = corners[0] + Point2d(0, win.numRows);
+  corners[7] = corners[0] + Point2d(0, win.numRows / 2);
 }
 
 /**
