@@ -2,7 +2,7 @@
  *  Copyright (c) 2019.  All rights reserved.
  * -----------------------------------------------------------------------------
  */
-#include "3rdparty/gtest/gtest_main.h"
+#include "3rdparty/gtest/gtest_main_gdal.h"
 #include "testconfig.h"
 
 #include "core/math/constants.h"
@@ -12,7 +12,7 @@
 using namespace earthxpert;
 
 TEST(coordinatetransform, WGS84_UTM) {
-  std::string srcWkt{"EPSG:4326"};
+  std::string srcWkt{"WGS84"};    // EPSG:4326
   OGRSpatialReference srcSrs(srcWkt.c_str());
   
   std::string tgtWkt{"+proj=utm +zone=17 +datum=WGS84 +units=m +no_defs"};
