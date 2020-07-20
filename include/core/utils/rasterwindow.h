@@ -5,6 +5,8 @@
 #pragma once
 
 #include "core/excore.h"
+#include "3rdparty/opencv/exopencv.h"
+
 #include <stdint.h>
 
 namespace earthxpert {
@@ -17,16 +19,26 @@ struct EXCORE_EXPORTS RasterWindow /*: public Rect2i*/ {
   int numCols{};
   int numRows{};
 
+  inline void SetOffsets(const Point2i offset) {
+    SetOffsets(offset.x, offset.y);
+  }
   inline void SetOffsets(const int colOffset, const int rowOffset) {
     this->colOffset = colOffset;
     this->rowOffset = rowOffset;
   }
 
+  inline void SetSize(const cv::Size2i size) {
+    SetSize(size.width, size.height);
+  }
   inline void SetSize(const int numCols, const int numRows) {
     this->numCols = numCols;
     this->numRows = numRows;
   }
 
+  inline void SetWindow(const Point2i offset, cv::Size2i size) {
+    SetOffsets(offset);
+    SetSize(size);
+  }
   inline void SetWindow(const int colOffset, const int rowOffset,
     const int numCols, const int numRows) {
     SetOffsets(colOffset, rowOffset);

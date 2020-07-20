@@ -4,7 +4,7 @@
  */
 #include "rectification/epipolar/epipolargenerator.h"
 #include "core/exceptions/exexcept.h"
-#include "core/math/math.h"
+#include "core/math/utils.h"
 #include "core/utils/irasterresample.h"
 #include "core/utils/layoututils.h"
 #include "core/utils/rasterlayout.h"
@@ -115,34 +115,27 @@ void EpipolarGenerator::LayoutTiles() {
   for (const auto& epiTile : mEpiTiles) {
     FillCorners(epiTile, epiCorners);
 
-    double minImgX = mImgNumCols;
-    double minImgY = mImgNumRows;
-    double maxImgX{};
-    double maxImgY{};
+    Point2d minImgXY(mImgNumCols, mImgNumRows);
+    Point2d maxImgXY(-1, -1);
 
     Point2d imgCorner;
     for (int i = 0; i < kNCP; ++i) {
       mEpiModel->EpiToRaw(epiCorners[i], imgCorner);
       imgCorner = imgCorner - Point2d(0.5, 0.5);
 
-      if (minImgX > imgCorner.x) minImgX = imgCorner.x;
-      if (minImgY > imgCorner.y) minImgY = imgCorner.y;
-      if (maxImgX < imgCorner.x) maxImgX = imgCorner.x;
-      if (maxImgY < imgCorner.y) maxImgY = imgCorner.y;
+      MinMax(minImgXY, maxImgXY, imgCorner);
     }
 
     // add margin and clamp to image extent
-    const int minImgCol = std::clamp(int(floor(minImgX)) - mMarginDim, 0, mImgNumCols - 1);
-    const int minImgRow = std::clamp(int(floor(minImgY)) - mMarginDim, 0, mImgNumRows - 1);
-    const int maxImgCol = std::clamp(int(ceil(maxImgX)) + mMarginDim, 0, mImgNumCols - 1);
-    const int maxImgRow = std::clamp(int(ceil(maxImgY)) + mMarginDim, 0, mImgNumRows - 1);
-
-    const int imgNumCols = maxImgCol - minImgCol + 1;
-    const int imgNumRows = maxImgRow - minImgRow + 1;
+    const Point2i minImgCR(std::clamp(int(floor(minImgXY.x)) - mMarginDim, 0, mImgNumCols - 1),
+                           std::clamp(int(floor(minImgXY.y)) - mMarginDim, 0, mImgNumRows - 1));
+    const Point2i maxImgCR(std::clamp(int(ceil(maxImgXY.x)) + mMarginDim, 0, mImgNumCols - 1),
+                           std::clamp(int(ceil(maxImgXY.y)) + mMarginDim, 0, mImgNumRows - 1));
+    const cv::Size2i imgSize(maxImgCR - minImgCR + Point2i(1, 1));
 
     RasterWindow imgTile;
-    if (1 < imgNumCols && 1 < imgNumRows) {
-      imgTile.SetWindow(minImgCol, minImgRow, imgNumCols, imgNumRows);
+    if (1 < imgSize.width && 1 < imgSize.height) {
+      imgTile.SetWindow(minImgCR, imgSize);
       numImgTiles++;
     }
     mImgTiles.push_back(imgTile);

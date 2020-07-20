@@ -7,6 +7,7 @@
 #include "opencv2/opencv.hpp"
 #include "opencv2/xfeatures2d.hpp"
 
+#include <cmath>
 #include <type_traits>
 
 namespace earthxpert {      // \todo ::thirdparty
@@ -17,6 +18,14 @@ using Point3d = cv::Point3d;
 using Point2i = cv::Point2i;
 using Point3i = cv::Point3i;
 using Rect2i = cv::Rect2i;
+
+inline Point2d xabs(const Point2d& p) {
+  return Point2d(fabs(p.x), fabs(p.y));
+}
+
+inline Point3d xabs(const Point3d& p) {
+  return Point3d(fabs(p.x), fabs(p.y), fabs(p.z));
+}
 
 template<typename Ty, typename = std::enable_if_t<std::is_arithmetic_v<Ty>>>
 cv::Point3_<Ty> Point2To3(const cv::Point_<Ty>& point) {

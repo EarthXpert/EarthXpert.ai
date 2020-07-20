@@ -5,6 +5,7 @@
 #include "3rdparty/gtest/gtest_main_gdal.h"
 #include "testconfig.h"
 
+#include "core/math/utils.h"
 #include "epipolarmodel/epipolarmodel.h"
 #include "epipolarmodel/epipolarmodelfactory.h"
 #include "marshaller/rationalmodelmarshaller.h"
@@ -37,15 +38,15 @@ TEST(epipolarmodelfactory, 052522862010_01_P001_PAN) {
   auto rightEpiModel{ epiModels.second.get() };
 
   auto [lEpiNumCols, lEpiNumRows] = leftEpiModel->GetImageSize();
-  ASSERT_EQ(24266, lEpiNumCols);
-  ASSERT_EQ(21829, lEpiNumRows);
+  ASSERT_EQ(24272, lEpiNumCols);
+  ASSERT_EQ(21856, lEpiNumRows);
   auto [lRawNumCols, lRawNumRows] = leftEpiModel->GetRawImageSize();
   ASSERT_EQ(19274, lRawNumCols);
   ASSERT_EQ(23048, lRawNumRows);
 
   auto [rEpiNumCols, rEpiNumRows] = rightEpiModel->GetImageSize();
-  ASSERT_EQ(24266, rEpiNumCols);
-  ASSERT_EQ(21829, rEpiNumRows);
+  ASSERT_EQ(24272, rEpiNumCols);
+  ASSERT_EQ(21856, rEpiNumRows);
   auto [rRawNumCols, rRawNumRows] = rightEpiModel->GetRawImageSize();
   ASSERT_EQ(19274, rRawNumCols);
   ASSERT_EQ(23048, rRawNumRows);
@@ -64,15 +65,15 @@ TEST(epipolarmodelfactory, po_162796_pan) {
   auto rightEpiModel{ epiModels.second.get() };
 
   auto [lEpiNumCols, lEpiNumRows] = leftEpiModel->GetImageSize();
-  ASSERT_EQ(12947, lEpiNumCols);
-  ASSERT_EQ(12295, lEpiNumRows);
+  ASSERT_EQ(12976, lEpiNumCols);
+  ASSERT_EQ(12304, lEpiNumRows);
   auto [lRawNumCols, lRawNumRows] = leftEpiModel->GetRawImageSize();
   ASSERT_EQ(12122, lRawNumCols);
   ASSERT_EQ(13148, lRawNumRows);
 
   auto [rEpiNumCols, rEpiNumRows] = rightEpiModel->GetImageSize();
-  ASSERT_EQ(12947, rEpiNumCols);
-  ASSERT_EQ(12295, rEpiNumRows);
+  ASSERT_EQ(12976, rEpiNumCols);
+  ASSERT_EQ(12304, rEpiNumRows);
   auto [rRawNumCols, rRawNumRows] = rightEpiModel->GetRawImageSize();
   ASSERT_EQ(12122, rRawNumCols);
   ASSERT_EQ(13148, rRawNumRows);
@@ -91,15 +92,15 @@ TEST(epipolarmodelfactory, zy302a_006911_258169_20170827) {
   auto rightEpiModel{ epiModels.second.get() };
 
   auto [lEpiNumCols, lEpiNumRows] = leftEpiModel->GetImageSize();
-  ASSERT_EQ(20715, lEpiNumCols);
-  ASSERT_EQ(22898, lEpiNumRows);
+  ASSERT_EQ(20736, lEpiNumCols);
+  ASSERT_EQ(22912, lEpiNumRows);
   auto [lRawNumCols, lRawNumRows] = leftEpiModel->GetRawImageSize();
   ASSERT_EQ(24512, lRawNumCols);
   ASSERT_EQ(19996, lRawNumRows);
 
   auto [rEpiNumCols, rEpiNumRows] = rightEpiModel->GetImageSize();
-  ASSERT_EQ(20715, rEpiNumCols);
-  ASSERT_EQ(22898, rEpiNumRows);
+  ASSERT_EQ(20736, rEpiNumCols);
+  ASSERT_EQ(22912, rEpiNumRows);
   auto [rRawNumCols, rRawNumRows] = rightEpiModel->GetRawImageSize();
   ASSERT_EQ(24512, rRawNumCols);
   ASSERT_EQ(19996, rRawNumRows);
@@ -169,10 +170,7 @@ void TestImageToGround_Cube(const IEpipolarModel* leftEpiModel,
   const auto stepLat = (maxLat - minLat) / kNum;
   const auto stepHgt = (maxHgt - minHgt) / kNum;
 
-  double maxDiffLonC{ -1.0 }, maxDiffLatC{ -1.0 }, maxDiffHgtC{ -1.0 };
-  double maxDiffLonE{ -1.0 }, maxDiffLatE{ -1.0 }, maxDiffHgtE{ -1.0 };
-  double maxDiffLonI{ -1.0 }, maxDiffLatI{ -1.0 }, maxDiffHgtI{ -1.0 };
-  double maxDiffLonN{ -1.0 }, maxDiffLatN{ -1.0 }, maxDiffHgtN{ -1.0 };
+  Point3d maxDiffN(-1.0, -1.0, -1.0);
 
   auto leftModel = dynamic_cast<const EpipolarSensorModel*>(leftEpiModel);
   auto rightModel = dynamic_cast<const EpipolarSensorModel*>(rightEpiModel);
@@ -187,9 +185,6 @@ void TestImageToGround_Cube(const IEpipolarModel* leftEpiModel,
 
   int n{};  // # of test points
   int nN{}; // # of NR.
-
-  bool ret;
-  double diffLon{}, diffLat{}, diffHgt{};
 
   for (auto lon = minLon; lon <= maxLon; lon += stepLon) {
     for (auto lat = minLat; lat <= maxLat; lat += stepLat) {
@@ -213,22 +208,12 @@ void TestImageToGround_Cube(const IEpipolarModel* leftEpiModel,
           continue;
 
         Point3d grdN{ ground };
-        ret = smN.ImageToGround(imageL, imageR, grdN);
+        const bool ret = smN.ImageToGround(imageL, imageR, grdN);
         if (ret) {
-          diffLon = fabs(grdN.x - ground.x);
-          if (maxDiffLonN < diffLon)
-            maxDiffLonN = diffLon;
-
-          diffLat = fabs(grdN.y - ground.y);
-          if (maxDiffLatN < diffLat)
-            maxDiffLatN = diffLat;
-
-          diffHgt = fabs(grdN.z - ground.z);
-          if (maxDiffHgtN < diffHgt)
-            maxDiffHgtN = diffHgt;
-
+          Larger(maxDiffN, xabs(grdN - ground));
           ++nN;
         }
+
         ++n;
       }
     }
@@ -237,7 +222,7 @@ void TestImageToGround_Cube(const IEpipolarModel* leftEpiModel,
   ASSERT_LT(0, n) << "Number of test points: " << n;
   ASSERT_EQ(nN, n) << "Number of NR points: " << nN;
 
-  ASSERT_LE(maxDiffLonN, tol) << "Max. longitude difference > 1 mm: " << maxDiffLonN;
-  ASSERT_LE(maxDiffLatN, tol) << "Max.  latitude difference > 1 mm: " << maxDiffLatN;
-  ASSERT_LE(maxDiffHgtN, tolH) << "Max.    height difference > 1 mm: " << maxDiffHgtN;
+  ASSERT_LE(maxDiffN.x, tol) << "Max. longitude difference > 1 mm: " << maxDiffN.x;
+  ASSERT_LE(maxDiffN.y, tol) << "Max.  latitude difference > 1 mm: " << maxDiffN.y;
+  ASSERT_LE(maxDiffN.z, tolH) << "Max.    height difference > 1 mm: " << maxDiffN.z;
 }

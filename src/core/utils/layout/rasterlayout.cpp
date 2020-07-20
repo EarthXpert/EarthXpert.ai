@@ -3,9 +3,11 @@
  * -----------------------------------------------------------------------------
  */
 #include "core/utils/rasterlayout.h"
+#include "core/utils/layoututils.h"
 
 #include <algorithm>
 #include <stdexcept>
+#include <tuple>
 
 using earthxpert::RasterLayout;
 using earthxpert::RasterWindow;
@@ -71,28 +73,20 @@ void RasterLayout::LayoutWindows() {
   if (0 == mWinNumRows) mWinNumRows = mRange.numRows;
 
   std::vector<int> colOffsets;
-  for (int c = 0; c < mRange.numCols; c += mWinNumCols) {
-    colOffsets.push_back(c);
-  }
+  const int numHoriWins = FillGridCorners(mRange.numCols, mWinNumCols, colOffsets);
   std::vector<int> rowOffsets;
-  for (int r = 0; r < mRange.numRows; r += mWinNumRows) {
-    rowOffsets.push_back(r);
-  }
+  const int numVertWins = FillGridCorners(mRange.numRows, mWinNumRows, rowOffsets);
 
-  const int numHoriWins = int(colOffsets.size());
-  const int numVertWins = int(rowOffsets.size());
   const int numWins = numHoriWins * numVertWins;
   
   mWins.resize(numWins);
   for (int w = 0; w < numWins; ++w) {
     int c{}, r{};
     if (LayoutKind::eHORIZONTAL == mLayoutkind) {
-      c = w % numHoriWins;
-      r = w / numHoriWins;
+      std::tie(c, r) = IndexToCR(w, numHoriWins);
     }
     else {
-      c = w / numVertWins;
-      r = w % numVertWins;
+      std::tie(c, r) = IndexToCR(w, numVertWins);
     }
     mWins[w].SetOffsets(colOffsets[c], rowOffsets[r]);
 

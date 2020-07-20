@@ -5,6 +5,7 @@
 #include "3rdparty/gtest/gtest_main_gdal.h"
 #include "testconfig.h"
 
+#include "core/math/utils.h"
 #include "epipolarmodel/epipolarmodel.h"
 #include "epipolarmodel/epipolarmodelfactory.h"
 #include "marshaller/rationalmodelmarshaller.h"
@@ -84,8 +85,7 @@ void CreateRationalEpipolarModel(const std::string& leftMdlFile,
 void TestRaw2Epi_Epi2Raw_Grid(const IEpipolarModel* epiModel, const double tol) {
   auto [rawNumCols, rawNumRows] = epiModel->GetRawImageSize();
 
-  double diffCol{}, diffRow{};
-  double maxDiffCol{ -1.0 }, maxDiffRow{ -1.0 };
+  Point2d maxDiffCR(-1.0, -1.0);
 
   Point2d epi, rawN;
   for (int col = 0; col < rawNumCols; col+=kGridStride)
@@ -94,21 +94,15 @@ void TestRaw2Epi_Epi2Raw_Grid(const IEpipolarModel* epiModel, const double tol) 
       epiModel->RawToEpi(raw, epi);
       epiModel->EpiToRaw(epi, rawN);
 
-      diffCol = fabs(rawN.x - raw.x);
-      if (maxDiffCol < diffCol)
-        maxDiffCol = diffCol;
-      diffRow = fabs(rawN.y - raw.y);
-      if (maxDiffRow < diffRow)
-        maxDiffRow = diffRow;
+      Larger(maxDiffCR, xabs(rawN - raw));
     }
 
   auto sensorModel = epiModel->GetSensorModel();
   auto gsd = CalcGsd(sensorModel, sensorModel->GetMeanHeight());
 
-  auto maxDiffX = gsd * maxDiffCol;
-  auto maxDiffY = gsd * maxDiffRow;
-  ASSERT_LT(maxDiffX, tol) << "max diiference in col";
-  ASSERT_LT(maxDiffY, tol) << "max diiference in row";
+  auto maxDiff = maxDiffCR * gsd;
+  ASSERT_LT(maxDiff.x, tol) << "max diiference in x < 1mm";
+  ASSERT_LT(maxDiff.y, tol) << "max diiference in y < 1mm";
 }
 
 /**

@@ -17,8 +17,8 @@ constexpr int kNCP = 8; // number of corner points
 /**
  *  \return Return the col/row for given linear index of a row-major 2d grid
  */
-inline std::pair<int, int> IndexToCR(const int64_t idx, const int numCols) {
-  return { int(idx % numCols), int(idx / numCols) };
+inline std::pair<int, int> IndexToCR(const int64_t idx, const int step) {
+  return { int(idx % step), int(idx / step) };
 }
 
 /**
@@ -43,6 +43,8 @@ std::pair<int, int> EXCORE_EXPORTS EstimateTileSize(size_t memSize,
 void EXCORE_EXPORTS FillCorners(const RasterWindow& win, 
   std::array<Point2d, kNCP>& corners);
 
+int EXCORE_EXPORTS FillGridCorners(const int num,
+  const int stride, std::vector<int>& gridCorners);
 int EXCORE_EXPORTS FillGridNodes(const int num,
   const int stride, std::vector<int>& gridNodes);
 }

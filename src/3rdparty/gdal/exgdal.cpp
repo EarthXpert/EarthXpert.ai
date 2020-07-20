@@ -4,7 +4,7 @@
  */
 #include "3rdparty/gdal/exgdal.h"
 #include <filesystem>
-#include <iostream>
+//#include <iostream>
 #include <stdexcept>
 
 namespace fs = std::filesystem;
@@ -15,7 +15,7 @@ namespace earthxpert {
  */
 void GDALInitialize() {
   auto data = fs::canonical(fs::current_path() / "../../etc/gdal");
-  std::cout << "GDAL_DATA = " << data << std::endl;
+  //std::cout << "GDAL_DATA = " << data << std::endl;
   CPLSetConfigOption("GDAL_CACHEMAX", "256");
   CPLSetConfigOption("GDAL_DATA", data.string().c_str());
   GDALAllRegister();

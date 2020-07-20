@@ -6,8 +6,8 @@
 #include "3rdparty/gettext/exgettext.h"
 #include "core/utils/typehelper.h"
 #include "core/exceptions/exexcept.h"
+#include "core/math/utils.h"
 #include "epipolarmodel/epipolarmodel.h"
-#include "core/math/math.h"
 #include "sensormodel/framemodel.h"
 #include "sensormodel/rationalmodel.h"
 #include "sensormodel/utils/utils.h"
@@ -194,6 +194,8 @@ double EpipolarModelFactory::CalcEpiRotation(const ISensorModel* leftModel,
     dirLen.push_back(cv::norm(dir));
   }
 
+  // select the longest vector as direction having largest parallax
+  // \todo plot all directions. select median/average of the three longest vectors?
   const auto index = std::distance(std::begin(dirLen),
     std::max_element(std::begin(dirLen), std::end(dirLen)));
   Point2d ed{ epiDir[index] };
@@ -221,10 +223,7 @@ std::pair<Point2d, Point2d> EpipolarModelFactory::CalcEpiBound(
                 -sinRot * p.x() + cosRot * p.y() };
     pt *= scale;
 
-    if (pixMin.x > pt.x) pixMin.x = pt.x;
-    if (pixMin.y > pt.y) pixMin.y = pt.y;
-    if (pixMax.x < pt.x) pixMax.x = pt.x;
-    if (pixMax.y < pt.y) pixMax.y = pt.y;
+    MinMax(pixMin, pixMax, pt);
   }
 
   Point2i pMin(floor(pixMin.x), floor(pixMin.y));
