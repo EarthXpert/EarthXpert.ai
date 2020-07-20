@@ -11,32 +11,38 @@ namespace earthxpert {
 /**
  *  The structure RasterWindow contains the offset and size information.
  */
-struct EXCORE_EXPORTS RasterWindow {
+struct EXCORE_EXPORTS RasterWindow /*: public Rect2i*/ {
   int colOffset{};
   int rowOffset{};
   int numCols{};
   int numRows{};
 
-  void SetOffsets(const int colOffset, const int rowOffset) {
+  inline void SetOffsets(const int colOffset, const int rowOffset) {
     this->colOffset = colOffset;
     this->rowOffset = rowOffset;
   }
 
-  void SetSize(const int numCols, const int numRows) {
+  inline void SetSize(const int numCols, const int numRows) {
     this->numCols = numCols;
     this->numRows = numRows;
   }
 
-  void SetMargins(const int marginCols, const int marginRows) {
+  inline void SetWindow(const int colOffset, const int rowOffset,
+    const int numCols, const int numRows) {
+    SetOffsets(colOffset, rowOffset);
+    SetSize(numCols, numRows);
+  }
+
+  inline void SetMargins(const int marginCols, const int marginRows) {
     colOffset -= marginCols;
     rowOffset -= marginRows;
     numCols += marginCols * 2;
     numRows += marginRows * 2;
   }
 
-  bool IsValid() const noexcept { return (0 < numCols && 0 < numRows); }
+  inline bool IsValid() const noexcept { return (0 < numCols && 0 < numRows); }
 
-  int64_t GetNumPixels() const noexcept { return int64_t(numCols) * int64_t(numRows); }
+  inline int64_t GetNumPixels() const noexcept { return int64_t(numCols) * int64_t(numRows); }
 
   /**
    *  \param [in] rhs Object to test

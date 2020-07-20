@@ -27,6 +27,7 @@ namespace bpo = boost::program_options;
  *      --rightmdl    <path_of_right_model_file>    // "images/img02_rpc.tif"
  *      --bands       [list_of_band_ids]            // "1,2,3"
  *      --sample      [downsample_factor]           // 1
+ *      --stride      [stride interval]             // 1
  *      --grey        [convert_color]               // false
  *      --outdir      [path_of_output_directory]    // "d:/out/"
  *      --resample    [linear|cubic|gaussian|sinc]  // "cubic"
