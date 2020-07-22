@@ -52,6 +52,7 @@ public:
 
 private:
   static constexpr int kTileDim = 256;
+  static constexpr int kMinNumTiles = 4;  // min number of tiles for an overlapped pipeline
 
   const IRasterResample* mRasResample{};
   size_t mMemSize{};         // memory size allowed for processing
@@ -92,11 +93,17 @@ private:
   void ProcessTile(int tileId);
   void WriteTile(int tileId);
 
-  void EpiToImg(int tileId, cv::Mat& tfmMat);
+  void Geotransform(int tileId, cv::Mat& tfmMat);
+  void DensifyPerCells(const int tileId, cv::Mat& tfmMat,
+    const std::vector<int>& gridCols, const std::vector<int>& gridRows);
+  void DensifyPerPixels(const int tileId, cv::Mat& tfmMat,
+    const std::vector<int>& gridCols, const std::vector<int>& gridRows);
   void EpiToImg(int tileId, cv::Mat& tfmMat, int tileCol, int tileRow);
 
   // performance
   EpiGenPerf mPerf;
+
+  void GatherStatistics(int tileId);
 
   // cached information
   int mMarginDim{};

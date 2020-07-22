@@ -11,6 +11,16 @@
 #include <type_traits>
 
 namespace earthxpert {      // \todo ::thirdparty
+template<typename Ty> inline
+cv::Point_<Ty> operator+(const cv::Point_<Ty>& p, const Ty v) {
+  return {p.x + v, p.y + v};
+}
+
+template<typename Ty> inline
+cv::Point_<Ty> operator-(const cv::Point_<Ty>& p, const Ty v) {
+  return { p.x - v, p.y - v };
+}
+
 using Point2f = cv::Point2f;
 using Point3f = cv::Point3f;
 using Point2d = cv::Point2d;

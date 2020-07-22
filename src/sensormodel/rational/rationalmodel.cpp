@@ -263,9 +263,7 @@ bool RationalModel::GroundToImage(const Point3d &ground, Point2d &image) const {
 
   const auto imageApp = SensorToImage(sensor);
   const auto imageAct = ImageApparantToActual(imageApp);
-
-  image.x = imageAct.x + 0.5;
-  image.y = imageAct.y + 0.5;
+  image = imageAct + 0.5;
   return true;
 }
 

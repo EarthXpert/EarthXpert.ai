@@ -200,8 +200,7 @@ size_t StereoModel::ImageToGround(const std::vector<Point2d> &images,
   size_t ret{};
 
   #pragma omp parallel for reduction(+ : ret)
-  for (long i = 0; i < size; ++i)
-  {
+  for (long i = 0; i < size; ++i) {
       const long j = i * numModels;
       auto iterJ = std::next(iter, j);
 

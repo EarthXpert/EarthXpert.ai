@@ -22,9 +22,9 @@ using namespace earthxpert::utils;
 namespace earthxpert {
 namespace detail {
 /**
- *
+ *  \return Return file path of the generated epipolar image
  */
-void GenerateEpipolar(const std::string& imgFile, EpipolarGenerator* epiGen, 
+std::string GenerateEpipolar(const std::string& imgFile, EpipolarGenerator* epiGen, 
   IRasterReader* reader, IEpipolarModel* epiModel, const int stride, 
   const std::string& outPath, const std::string& format, 
   const GDALDataType gdalDT, const int numBands) {
@@ -32,17 +32,19 @@ void GenerateEpipolar(const std::string& imgFile, EpipolarGenerator* epiGen,
   ss << boost::format("epi%1%_") % stride;
 
   auto epiFn = PathPrefixFilename(imgFile, ss.str());
-  fs::path epiFile(outPath + epiFn);
-  if (fs::exists(epiFile)) {
-    fs::remove(epiFile);
+  fs::path epiPath(outPath + epiFn);
+  if (fs::exists(epiPath)) {
+    fs::remove(epiPath);
   }
+  std::string epiFile = epiPath.string();
   std::cout << "epiFile: " << epiFile << std::endl;
 
   auto [epiNumCols, epiNumRows] = epiModel->GetImageSize();
-  RasterWriter epiWriter(epiFile.string(), format,
+  RasterWriter epiWriter(epiFile, format,
     epiNumCols, epiNumRows, gdalDT, numBands);
 
   epiGen->Process(reader, &epiWriter, epiModel);
+  return epiFile;
 }
 }
 
@@ -103,13 +105,15 @@ void GenerateRationalEpipolar(const EpipolarOptions& epiOpt) {
   EpipolarGenerator epiGen(rasResample.get(), epiOpt.memSize, epiOpt.stride);
 
   // generate left epipolar image
-  detail::GenerateEpipolar(epiOpt.leftImgFile, &epiGen, &leftReader,
-    leftEpiModel.get(), epiOpt.stride, epiOpt.outPath, format, gdalDT, epiNumBands);
+  auto leftEpiFile = detail::GenerateEpipolar(epiOpt.leftImgFile, 
+    &epiGen, &leftReader, leftEpiModel.get(), epiOpt.stride,
+    epiOpt.outPath, format, gdalDT, epiNumBands);
   std::cout << ToString(epiGen.GetPerfMettrics());
 
   // generate right epipolar image
-  detail::GenerateEpipolar(epiOpt.rightImgFile, &epiGen, &rightReader,
-    rightEpiModel.get(), epiOpt.stride, epiOpt.outPath, format, gdalDT, epiNumBands);
+  auto rightEpiFile = detail::GenerateEpipolar(epiOpt.rightImgFile, 
+    &epiGen, &rightReader, rightEpiModel.get(), epiOpt.stride, 
+    epiOpt.outPath, format, gdalDT, epiNumBands);
   std::cout << ToString(epiGen.GetPerfMettrics());
 }
 }

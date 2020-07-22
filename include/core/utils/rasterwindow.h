@@ -54,7 +54,10 @@ struct EXCORE_EXPORTS RasterWindow /*: public Rect2i*/ {
 
   inline bool IsValid() const noexcept { return (0 < numCols && 0 < numRows); }
 
-  inline int64_t GetNumPixels() const noexcept { return int64_t(numCols) * int64_t(numRows); }
+  inline int64_t GetNumPixels() const noexcept { return int64_t(numCols) * numRows; }
+
+  std::pair<int, int> GetOffset() const noexcept { return { colOffset, rowOffset }; }
+  std::pair<int, int> GetSize() const noexcept { return { numCols, numRows }; }
 
   /**
    *  \param [in] rhs Object to test
