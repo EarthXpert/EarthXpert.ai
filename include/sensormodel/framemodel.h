@@ -135,7 +135,7 @@ private:
   friend class FrameStereoModel;
 
   static constexpr int kMaxIterG2I{ 10 };
-  static constexpr double kConvergeTolMM{ 0.0001 }; // [mm]
+  static constexpr double kTolMM{ 0.0001 }; // \todo [mm]
 
   ImageModelPolicy mImageModel; // model defining the transformation between
                                 // focal plane and imagery

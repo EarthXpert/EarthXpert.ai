@@ -101,10 +101,10 @@ public:
 
   // sensor correction algorithm
   // my experiments show that eENHANCED is better than eSTANDARD in accuracy at
-  // an amount of 10~15%
+  // an amount of 10~15%, also ensuring higher-order fits better than lower-order
   enum CorrAlgo {
-    eSTANDARD, // standard correction with full pixel coordinates
-    eENHANCED  // enhanced correction with normalized pixel coordinates
+    eSTANDARD, // standard correction with full coordinates [pixel]
+    eENHANCED  // enhanced correction with normalized coordinates
   };
 
   /**
@@ -302,6 +302,9 @@ private:
   std::array<double, NumCorr> mLineCorr{}; // polynomial for line correction
   std::array<double, NumCorr> mSampCorr{}; // polynomial for sample correction
   CorrAlgo mCorrAlgo{eSTANDARD};           // sensor correction method
+
+  // uncertainties for the enhanced algorithm [pixel]
+  std::array<double, 3> mStdCorr{};   // constant, 1st-, 2nd-order coefficients
 
   bool EqualTo(const ISensorModel &rhs) const override;
   void CopyFrom(const RationalModel &rhs);

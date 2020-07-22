@@ -47,10 +47,16 @@ public:
   };
 
   // position of distortion flags in bitset
-  const size_t kRADDIST = 0; // radial
-  const size_t kDECDIST = 1; // decentering
-  const size_t kLINDIST = 2; // linear
-  const size_t kGRDDIST = 3; // grid
+  static constexpr size_t kRADDIST = 0; // radial
+  static constexpr size_t kDECDIST = 1; // decentering
+  static constexpr size_t kLINDIST = 2; // linear
+  static constexpr size_t kGRDDIST = 3; // grid
+
+  // self-calibration: distortion correction algorithm
+  enum CalibAlgo {
+    eSTANDARD, // standard correction with full focal plane coordinates [mm]
+    eENHANCED  // enhanced correction with normalized focal plane coordinates
+  };
 
   /**
    * Constructor
@@ -127,7 +133,9 @@ private:
   std::array<double, NumLinCoef> mLinearDist{};  // linear distortion for non-square, non-orthogonality [B1 B2]
   std::unique_ptr<DistortionGridF> mGridDist;   // grid distortion
 
-  // uncertainties
+  // self-calibration model with added parameters
+
+  // uncertainties [mm]
   double mStdFL{};
   std::array<double, 2> mStdPPA{};
   std::array<double, 3> mStdPC{};
@@ -135,8 +143,6 @@ private:
   std::array<double, NumRadCoef> mStdRadialDist{};
   std::array<double, NumDecCoef> mStdDecentDist{};
   std::array<double, NumLinCoef> mStdLinearDist{};
-
-  // self-calibration model with added parameters
 
   void CheckCamParms() const;
   void CheckDistortions() const;

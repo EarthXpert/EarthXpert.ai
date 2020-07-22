@@ -390,7 +390,12 @@ Point2d FrameModel<ImageModelPolicy>::SensorApparantToActualNP(
   return SensorApparantToActualPPA(sensor, height);
 }
 
-// vertical distortion in camera CS w.r.t. PPA
+/**
+ *  \brief vertical distortion in camera CS w.r.t. PPA at given height
+ *
+ *  \param [in] sensor apparant position on focal plane
+ *  \param [in] height elevation of ground point
+ */
 template <class ImageModelPolicy>
 Point2d FrameModel<ImageModelPolicy>::SensorApparantToActualPPA(
   const Point2d& sensor, const double height) const {
@@ -413,7 +418,7 @@ Point2d FrameModel<ImageModelPolicy>::SensorApparantToActualPPA(
       const auto corr = f_rcP / df_drcP;
 
       rc = rcP - corr;
-      if (fabs(corr) < kConvergeTolMM)
+      if (fabs(corr) < kTolMM)
         break;
 
       rcP = rc;
@@ -432,8 +437,7 @@ Point2d FrameModel<ImageModelPolicy>::SensorApparantToActualPPA(
     const auto h = height * 0.001;
     const auto K = mFrameCP->GetRefractionK(H, h);
 
-    double rcP{ rcp };
-    double rc{};
+    double rcP{ rcp }, rc{};
 
     for (i = 0; i < kMaxIterG2I; ++i) {
       const auto rcP2 = rcP * rcP;
@@ -442,7 +446,7 @@ Point2d FrameModel<ImageModelPolicy>::SensorApparantToActualPPA(
       const auto corr = f_rcP / df_drcP;
 
       rc = rcP - corr;
-      if (fabs(corr) < kConvergeTolMM)
+      if (fabs(corr) < kTolMM)
         break;
 
       rcP = rc;
@@ -457,7 +461,11 @@ Point2d FrameModel<ImageModelPolicy>::SensorApparantToActualPPA(
   return sensorAct;
 }
 
-// optical distortion in focal plane CS w.r.t. PPS
+/**
+ *  \brief optical distortion in focal plane CS w.r.t. PPS
+ *
+ *  \param [in] sensor apparant position on focal plane
+ */
 template <class ImageModelPolicy>
 Point2d FrameModel<ImageModelPolicy>::SensorApparantToActualPPS(
   const Point2d& sensor) const {
@@ -472,11 +480,10 @@ Point2d FrameModel<ImageModelPolicy>::SensorApparantToActualPPS(
 
     for (i = 0; i < kMaxIterG2I; ++i) {
       const auto dGrd = mFrameIP->CalcGridCorr(sensorAct);
-
       const Point2d res{ cRD - (sensorAct + dGrd) };
       sensorAct += res;
 
-      if (fabs(res.x) < kConvergeTolMM && fabs(res.y) < kConvergeTolMM)
+      if (fabs(res.x) < kTolMM && fabs(res.y) < kTolMM)
         break;
     }
 
@@ -490,14 +497,11 @@ Point2d FrameModel<ImageModelPolicy>::SensorApparantToActualPPS(
     for (i = 0; i < kMaxIterG2I; ++i) {
       const auto dRad = mFrameIP->CalcRadialCorr(sensorAct);
       const auto dDec = mFrameIP->CalcDecentCorr(sensorAct);
-
-      // update coordinates
       const auto corr = cEarth - (sensorAct + dRad + dDec);
       sensorAct += corr;
 
-      if (fabs(corr.x) < kConvergeTolMM && fabs(corr.y) < kConvergeTolMM) {
+      if (fabs(corr.x) < kTolMM && fabs(corr.y) < kTolMM)
         break;
-      }
 
       // if corrX or corrY is large, it is not converging. use the original value
       if ((kMaxIterG2I - 1) == i || 10 < fabs(corr.x) || 10 < fabs(corr.y)) {

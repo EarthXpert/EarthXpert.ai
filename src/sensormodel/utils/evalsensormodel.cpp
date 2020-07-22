@@ -3,6 +3,8 @@
  * -----------------------------------------------------------------------------
  */
 #include "sensormodel/utils/evalsensormodel.h"
+#include "sensormodel/framemodel.h"
+#include "sensormodel/rationalmodel.h"
 
 using namespace earthxpert;
 

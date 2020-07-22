@@ -88,18 +88,15 @@ bool RationalStereoModel::ImageToGround(const Point2d& leftImage,
     const auto& x = A.bdcSvd(ComputeFullU | ComputeFullV).solve(b);
     //if () return false;
 
-    ground.x -= x[0];
-    ground.y -= x[1];
-    ground.z -= x[2];
+    ground -= Point3d(x[0], x[1], x[2]);
 
     if (fabs(x[0]) < kTolD && fabs(x[1]) < kTolD && fabs(x[2]) < kTolH)
       break;
   }
 
   // return false if reaching max. iterations
-  if (kMaxIters == iter) {
+  if (kMaxIters == iter) 
     return false;
-  }
 
   return true;
 }
@@ -157,8 +154,7 @@ bool RationalStereoModel::ImageToGround(
 
   int iter{};
   for (iter = 0; iter < kMaxIters; ++iter) {
-    for (int i = 0; i < numRays; ++i)
-    {
+    for (int i = 0; i < numRays; ++i) {
       Point2d imgp;
       auto [dFc_dL, dFc_dP, dFc_dH, dFr_dL, dFr_dP, dFr_dH] =
         CalcJacobian(mRatModels[i], ground, imgp);
@@ -181,9 +177,7 @@ bool RationalStereoModel::ImageToGround(
     const auto& x = (A.transpose() * A).inverse() * (A.transpose() * b);
     //if () return false;
 
-    ground.x -= x[0];
-    ground.y -= x[1];
-    ground.z -= x[2];
+    ground -= Point3d(x[0], x[1], x[2]);
 
     if (fabs(x[0]) < kTolD && fabs(x[1]) < kTolD && fabs(x[2]) < kTolH)
       break;
