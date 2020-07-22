@@ -7,7 +7,7 @@
 #include "core/excore.h"
 #include "3rdparty/opencv/exopencv.h"
 #include "core/utils/rasterwindow.h"
-#include "core/utils/typehelper.h"
+#include "core/math/math.h"
 
 #include <utility>
 #include <vector>
@@ -56,12 +56,34 @@ template <typename Ty> inline Tuple4<Ty&> MatCorners(cv::Mat& mat,
  *  \param [in] rowL row of lower-right corner
  *  \param [in] step width of the image
  */
-inline Tuple4<int64_t> CornersIndex(const int colL, const int rowU,
+inline Tuple4<size_t> CornersIndex(const int colL, const int rowU,
   const int colR, const int rowL, const int step) {
-  const int64_t i1 = int64_t(step) * rowU + colL;
-  const int64_t i2 = int64_t(step) * rowU + colR;
-  const int64_t i3 = int64_t(step) * rowL + colL;
-  const int64_t i4 = int64_t(step) * rowL + colR;
+  const size_t i1 = size_t(step) * rowU + colL;
+  const size_t i2 = size_t(step) * rowU + colR;
+  const size_t i3 = size_t(step) * rowL + colL;
+  const size_t i4 = size_t(step) * rowL + colR;
+  return { i1, i2, i3, i4 };
+}
+
+/**
+ *  \param [in] col column position of pixel
+ *  \param [in] row row position of pixel
+ *  \param [in] step the height of column-major, or the width of row-major
+ *  \param [in] dim number of elements of each pixel
+ */
+template <int order>
+inline Tuple4<size_t> CornersIndex(const int col, const int row,
+  const int step, const int dim) {
+  size_t i1{};
+  if constexpr (eCOLMAHOR == order) {
+    i1 = (size_t(step) * col + row) * dim;
+  }
+  else {
+    i1 = (size_t(step) * row + col) * dim;
+  }
+  const size_t i2 = i1 + dim;
+  const size_t i3 = i1 + size_t(step) * dim;
+  const size_t i4 = i3 + dim;
   return { i1, i2, i3, i4 };
 }
 

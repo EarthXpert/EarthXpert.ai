@@ -231,7 +231,7 @@ find_package(OpenImageIO REQUIRED)
 find_package(PDAL REQUIRED)
 find_package(Protobuf REQUIRED)
 find_package(pybind11 REQUIRED)
-find_package(Qt5 5.11.2 COMPONENTS Core Gui Widgets REQUIRED)
+find_package(Qt5 5.11.2 COMPONENTS Core Gui LinguistTools OpenGL Widgets REQUIRED)
 find_package(Sltbench REQUIRED)
 
 get_target_property(SLTBENCH_INCLUDE_DIRS sltbench INTERFACE_INCLUDE_DIRECTORIES)

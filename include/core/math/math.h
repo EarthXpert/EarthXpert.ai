@@ -4,9 +4,19 @@
  */
 #pragma once
 
+#include "core/utils/typehelper.h"
+
 #include <cmath>
 
 namespace earthxpert {
+/**
+ *  \brief storage order of matrix elements
+ */
+enum MatOrder {
+  eCOLMAHOR,
+  eROWMAJOR
+};
+
 // \return Return exponent of 2
 constexpr inline size_t exp2(const size_t n) {
   return size_t(1) << n;
@@ -42,10 +52,25 @@ template <typename Ty> inline void MinMax(Ty& sval, Ty& lval, const Ty& val) {
   Larger(lval, val);
 }
 
+/**
+ *  \brief weighting coefficients of linear interpolation
+ */
+template<int order, typename Ty>
+inline Tuple4<Ty> LinearWeights(const Ty xf, const Ty yf) {
+  const Ty w4 = xf * yf;
+  const Ty w3 = yf - w4;  // (1 - xf) * yf
+  const Ty w2 = xf - w4;  // xf * (1 - yf)
+  const Ty w1 = Ty(1) - xf - yf + w4;  // (1 - xf) * (1 - yf)
+  if constexpr (eCOLMAHOR == order)
+    return { w1, w3, w2, w4 };
+  else
+    return { w1, w2, w3, w4 };
+};
+
 inline double LinearInterp(const double v1, const double v2, const double v3,
   const double v4, const double xf, const double yf) {
-    return (1.0 - yf) * ((1.0 - xf) * v1 + xf * v2) +
-      yf * ((1.0 - xf) * v3 + xf * v4);
+  return (1.0 - yf) * ((1.0 - xf) * v1 + xf * v2) +
+    yf * ((1.0 - xf) * v3 + xf * v4);
 };
 
 /**

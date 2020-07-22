@@ -222,8 +222,7 @@ Point2d FrameIP::CalcDecentCorr(const Point2d& sensor) const
 
   const auto x2 = sensor.x * sensor.x;
   const auto y2 = sensor.y * sensor.y;
-  const auto rc = sqrt(x2 + y2);
-  const auto rc2 = rc * rc;
+  const auto rc2 = x2 + y2;
   const auto rc4 = rc2 * rc2;
 
   const auto factor = (1.0 + mDecentDist[eP3] * rc2 + mDecentDist[eP4] * rc4);

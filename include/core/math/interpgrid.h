@@ -59,6 +59,7 @@ public:
    * Interpolate a value for the given X,Y position.
    */
   void GetVal(cv::Point_<Ty> point, Ty *const val) const {
+    assert(val);
     GetVal(point.x, point.y, val);
   }
   void GetVal(Ty X, Ty Y, Ty *const val) const;

@@ -11,7 +11,10 @@
 
 namespace earthxpert {
 /**
- *  Encapsulates a calibrated grid of camera lens distortion.
+ *  \brief Encapsulates a calibrated grid of camera lens distortion.
+ *
+ *  \tparam Ty value type such as float, double
+ *  \todo represent node position suing Point_<Ty> 
  */
 template <typename Ty> class EXSENSORMODEL_EXPORTS DistortionGrid {
 public:
@@ -43,8 +46,7 @@ public:
    * \param [in] Y Y position
    * \param [in,out] d Array of interpolated (or extrapolated) distortions
    */
-  bool GetDistortion(const Ty X, const Ty Y,
-    Ty* const d) const {
+  bool GetDistortion(const Ty X, const Ty Y, Ty* const d) const {
     if (mGrid) {
       assert(d);
       mGrid->GetVal(X, Y, d);
