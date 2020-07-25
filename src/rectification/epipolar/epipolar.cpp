@@ -28,9 +28,12 @@ std::string GenerateEpipolar(const std::string& imgFile, EpipolarGenerator* epiG
   IRasterReader* reader, IEpipolarModel* epiModel, const int stride, 
   const std::string& outPath, const std::string& format, 
   const GDALDataType gdalDT, const int numBands) {
+  //std::cout << "rawFile: " << imgFile << std::endl;
+  //const auto [rawNumCols, rawNumRows] = reader->GetSize();
+  //std::cout << "rawNumCols: " << rawNumCols << ", rawNumRows: " << rawNumRows << std::endl;
+
   std::stringstream ss;
   ss << boost::format("epi%1%_") % stride;
-
   auto epiFn = PathPrefixFilename(imgFile, ss.str());
   fs::path epiPath(outPath + epiFn);
   if (fs::exists(epiPath)) {
@@ -42,6 +45,7 @@ std::string GenerateEpipolar(const std::string& imgFile, EpipolarGenerator* epiG
   auto [epiNumCols, epiNumRows] = epiModel->GetImageSize();
   RasterWriter epiWriter(epiFile, format,
     epiNumCols, epiNumRows, gdalDT, numBands);
+  //std::cout << "epiNumCols: " << epiNumCols << ", epiNumRows: " << epiNumRows << std::endl;
 
   epiGen->Process(reader, &epiWriter, epiModel);
   return epiFile;
