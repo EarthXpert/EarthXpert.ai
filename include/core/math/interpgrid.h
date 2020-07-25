@@ -171,8 +171,8 @@ public:
 
 private:
   unsigned int mDim{1};   // Dimension of node points stored in the grid.
-  unsigned int mNumX{0};  // Number of grid points in the X-dimension
-  unsigned int mNumY{0};  // Number of grid points in the Y-dimension
+  unsigned int mNumX{0};  // Number of grid nodes in the X-dimension
+  unsigned int mNumY{0};  // Number of grid nodes in the Y-dimension
   Ty mOffX{0};           // X coordinate offset
   Ty mOffY{0};           // Y coordinate offset
   Ty mSpcX{1};           // X coordinate spacing of grid points

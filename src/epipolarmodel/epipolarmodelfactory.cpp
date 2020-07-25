@@ -79,6 +79,7 @@ EpiModelPair EpipolarModelFactory::CreateRationalEpiModel(
   const double invScale = EpiGsd(leftModel.get(), rightModel.get(), height) * sample;
   const double scale{ 1.0 / invScale };
 
+  // footprint/epipolar boundary in metric unit [meter]
   auto leftFp = CalcFootprint(leftModel.get(), earthEllip.get(), height);
   auto rightFp = CalcFootprint(rightModel.get(), earthEllip.get(), height);
 
@@ -87,6 +88,11 @@ EpiModelPair EpipolarModelFactory::CreateRationalEpiModel(
   const double cosRot{ cos(rotation) };
   const double sinRot{ sin(rotation) };
 
+  // convert footprint in epipolar unit [pixel]
+  //ConvertFootprint(leftFp, scale, cosRot, sinRot);
+  //ConvertFootprint(rightFp, scale, cosRot, sinRot);
+
+  // bounding box in epipolar pixel
   auto [leftEpiMin, leftEpiMax] = CalcEpiBound(leftFp, scale, cosRot, sinRot);
   auto [rightEpiMin, rightEpiMax] = CalcEpiBound(rightFp, scale, cosRot, sinRot);
 
@@ -96,10 +102,8 @@ EpiModelPair EpipolarModelFactory::CreateRationalEpiModel(
     throw EpipolarError(_("CreateRationalEpiModel: not valid"));
   }
 
-  double leftOffsetX{};
-  int leftNumCols{};
-  double rightOffsetX{};
-  int rightNumCols{};
+  double leftOffsetX{}, rightOffsetX{};
+  int leftNumCols{}, rightNumCols{};
 
   switch (mEpiOpt) {
   case EpiOpt::eCOMPACT:
@@ -123,6 +127,8 @@ EpiModelPair EpipolarModelFactory::CreateRationalEpiModel(
   if (1 >= leftNumCols || 1 >= rightNumCols) {
     throw EpipolarError(_("CreateRationalEpiModel: not valid"));
   }
+
+  // \todo based on epipolar options, adjust footprint as epipolar boundary
 
   auto geoGround = std::make_shared<GeographicGroundDeg>(std::move(earthEllip));
   assert(!earthEllip);

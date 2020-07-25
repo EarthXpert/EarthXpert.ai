@@ -343,7 +343,6 @@ void EpipolarGenerator::ProcessTile(const int tileId) {
   mRasResample->Resample(imgMat, epiMat, tfmMat);
 
   //GatherStatistics(tileId);
-
   const chrono::duration<double> diff = chrono::steady_clock::now() - start;
   mPerf.tmProcess += diff.count();
 }
@@ -366,12 +365,31 @@ void EpipolarGenerator::WriteTile(const int tileId) {
 }
 
 /**
- *  \brief Do geometric transformation to populate the map
+ *  \brief Do geometric transformation to populate the map.
+ *  first, do rigorous calculation of corresponding positions on 
+ *  raw images at grid nodes each giving a mark of 
+ *  either eNORM if inside raw tile otherwise eBKGD if outside;
+ *  second, do linear interpolation for a full cell (i.e. four corners
+ *  marked as eNORM), rigorous calculation for a partial cell (i.e.
+ *  1~3 corners being eNORM, skip for empty cell (i.e. four eBKGD corners).
  *
  *  \param [in] tileId the index of tile to process
  *  \param [in] tfmMat transfomration map
+ *  
+ *  \todo first, mark candidate eNORM nodes by identifying cells 
+ *  overlaping/intersecting the epipolar polygon that defines the 
+ *  boundary of valid region, then do rigorous calculation at candidate 
+ *  nodes, retaining the eNORM mark provided the EpiToRaw succeed;
+ *  second, do linear interpolation for a full cell (i.e. four corners
+ *  marked as eNORM), rarely rigorous calculation for a partial cell (i.e.
+ *  1~3 corners being eNORM.
+ *
+ *  \hint (Brehensen) draw line segments of the epipolar polygon on a 
+ *  low-res image downsampled by a factor of mSample to identify cells 
+ *  on the boundary, then do sweep-line to scan internal cells.
  */
 void EpipolarGenerator::Geotransform(const int tileId, cv::Mat& tfmMat) {
+  const auto start = chrono::steady_clock::now();
   const auto [numCols, numRows] = mEpiTiles[tileId].GetSize();
 
   // grid col/row positions for rigorous geometry
@@ -392,6 +410,9 @@ void EpipolarGenerator::Geotransform(const int tileId, cv::Mat& tfmMat) {
     const int tileRow = gridRows[gridRow];
     EpiToImg(tileId, tfmMat, tileCol, tileRow);
   }
+
+  const chrono::duration<double> diff = chrono::steady_clock::now() - start;
+  mPerf.tmRigorous += diff.count();
 
   if (1 == mStride) return;  // Densify non-grid positions
   DensifyPerCells(tileId, tfmMat, gridCols, gridRows);
@@ -432,15 +453,15 @@ void EpipolarGenerator::DensifyPerCells(const int tileId, cv::Mat& tfmMat,
       const auto [tfm1, tfm2, tfm3, tfm4] =
         MatCorners<cv::Vec2f>(tfmMat, tileColL, tileRowU, tileColR, tileRowL);
 
-      for (int c = 0; c < mStride; ++c) {
+      double xf{};
+      for (int c = 0; c < mStride; ++c, xf+= invTileCols) {
         const int tileCol = tileColL + c;
-        const auto xf = double(c) * invTileCols;
 
-        for (int r = 0; r < mStride; ++r) {
+        double yf{};
+        for (int r = 0; r < mStride; ++r, yf+=invTileRows) {
           const int tileRow = tileRowU + r;
           const int64_t k = CRToIndex(tileCol, tileRow, numCols);
           if (eMK_NORM == mMaskBuf[k]) continue;
-          const auto yf = double(r) * invTileRows;
 
           auto& tfm = tfmMat.at<cv::Vec2f>(tileRow, tileCol);
           tfm[0] = float(LinearInterp(tfm1[0], tfm2[0], tfm3[0], tfm4[0], xf, yf));

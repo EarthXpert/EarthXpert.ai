@@ -111,7 +111,7 @@ double CalcGsd(const ISensorModel* sensorModel,
 /**
  *  Image-to-plane projection on ground.
  *
- *  \param [out] plane position on the tangential plane [meter].
+ *  \param [out] rect position on the tangential plane [meter].
  *  \param [in] tolH tolerance for convergence, default to 0.1mm.
  */
 bool ImageToPlane(const Point2d& image, const ISensorModel* sensorModel, 

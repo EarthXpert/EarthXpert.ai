@@ -21,7 +21,7 @@ using namespace earthxpert;
  * \param [in] minX Minimum X-coordinate to cover
  * \param [in] minY Minimum Y-coordinate to cover
  * \param [in] maxX Maximum X-coordinate to cover
- * \param [in] maxXY Maximum Y-coordinate to cover
+ * \param [in] maxY Maximum Y-coordinate to cover
  * \param [in] spcX X spacing of grid points
  * \param [in] spcY Y spacing of grid points
  */
