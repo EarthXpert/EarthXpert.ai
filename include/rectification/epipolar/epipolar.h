@@ -19,6 +19,8 @@ struct EpipolarOptions {
   std::string sensorName;
   std::string leftImgFile;
   std::string leftMdlFile;
+  std::string nadImgFile;
+  std::string nadMdlFile;
   std::string rightImgFile;
   std::string rightMdlFile;
 

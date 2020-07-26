@@ -105,7 +105,7 @@ void EpipolarGenerator::LayoutTiles() {
   RasterLayout rasLayout(mEpiNumCols, mEpiNumRows, tileNumCols, tileNumRows);
   
   mEpiTiles = rasLayout.GetRasterWindows();
-  mNumTiles = int(mEpiTiles.size());
+  mPerf.numTiles = mNumTiles = int(mEpiTiles.size());
 
   // calculate image bound for epipolar tiles
   int numImgTiles{};
@@ -142,9 +142,9 @@ void EpipolarGenerator::LayoutTiles() {
     mImgTiles.push_back(imgTile);
   }
 
-  if (0 == numImgTiles) {
+  mPerf.numImgTiles = numImgTiles;
+  if (0 == numImgTiles) 
     throw EpipolarError("LayoutTiles: empty image tiles");
-  }
 
   AllocateBuffers();
 

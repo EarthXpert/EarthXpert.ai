@@ -13,11 +13,19 @@
 namespace earthxpert {
 //
 struct EpiGenPerf {
-  static constexpr size_t kNT = 8;
+  static constexpr size_t kIS = 2;
+  static constexpr size_t kTM = 8;
   static constexpr size_t kNS = 3;
 
-  // timing
-  union {
+  union {  // tiles
+    struct {
+      int numTiles;
+      int numImgTiles;
+    };
+    std::array<int, kIS> tiles;
+  };
+
+  union {  // timing
     struct {
       double tmTotal;   // total run time
       double tmLayout;
@@ -28,11 +36,10 @@ struct EpiGenPerf {
       double tmDensify;
       double tmWrite;
     };
-    std::array<double, kNT> timing;
+    std::array<double, kTM> timing;
   };
 
-  // statistics
-  union {
+  union {  // cell statistics
     struct {  // number of grid cells
       size_t cellBkgd;   // four grid nodes are background
       size_t cellNorm;
@@ -53,6 +60,7 @@ struct EpiGenPerf {
   EpiGenPerf::EpiGenPerf() { Clear(); }
 
   void Clear() noexcept {
+    tiles.fill(0);
     timing.fill(0.0);
     cells.fill(0);
     pixels.fill(0);
