@@ -21,8 +21,10 @@ public:
   /**
    *  \param [in] sensorModel sensor model associated with the image
    *  \param [in] pos Component position of stereo model
+   *  \param [in] epiBound epipolar boundary of valid region
    */
-  FrameEpipolarModel(std::shared_ptr<FrameModel<ImageModelPolicy>> sensorModel, StereoPos pos);
+  FrameEpipolarModel(std::shared_ptr<FrameModel<ImageModelPolicy>> sensorModel, 
+    StereoPos pos, const Polygon2d& epiBound);
   ~FrameEpipolarModel() = default;
 
   /**

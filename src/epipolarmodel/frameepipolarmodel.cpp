@@ -24,8 +24,10 @@ using earthxpert::Point3d;
  */
 template <class ImageModelPolicy>
 FrameEpipolarModel<ImageModelPolicy>::FrameEpipolarModel(
-  std::shared_ptr<FrameModel<ImageModelPolicy>> sensorModel, StereoPos pos)
-  : EpipolarSensorModel(sensorModel, pos), mFrameModel(sensorModel.get()) {
+  std::shared_ptr<FrameModel<ImageModelPolicy>> sensorModel, 
+  StereoPos pos, const Polygon2d& epiBound)
+  : EpipolarSensorModel(sensorModel, pos, epiBound), 
+    mFrameModel(sensorModel.get()) {
   Initialize();
 }
 

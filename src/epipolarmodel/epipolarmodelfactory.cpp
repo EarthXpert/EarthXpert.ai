@@ -79,7 +79,7 @@ EpiModelPair EpipolarModelFactory::CreateRationalEpiModel(
   const double invScale = EpiGsd(leftModel.get(), rightModel.get(), height) * sample;
   const double scale{ 1.0 / invScale };
 
-  // footprint/epipolar boundary in metric unit [meter]
+  // epipolar footprint/boundary in metric unit [meter]
   auto leftFp = CalcFootprint(leftModel.get(), earthEllip.get(), height);
   auto rightFp = CalcFootprint(rightModel.get(), earthEllip.get(), height);
 
@@ -89,12 +89,12 @@ EpiModelPair EpipolarModelFactory::CreateRationalEpiModel(
   const double sinRot{ sin(rotation) };
 
   // convert footprint in epipolar unit [pixel]
-  //ConvertFootprint(leftFp, scale, cosRot, sinRot);
-  //ConvertFootprint(rightFp, scale, cosRot, sinRot);
+  ConvertEpiFootprint(leftFp, scale, cosRot, sinRot);
+  ConvertEpiFootprint(rightFp, scale, cosRot, sinRot);
 
   // bounding box in epipolar pixel
-  auto [leftEpiMin, leftEpiMax] = CalcEpiBound(leftFp, scale, cosRot, sinRot);
-  auto [rightEpiMin, rightEpiMax] = CalcEpiBound(rightFp, scale, cosRot, sinRot);
+  auto [leftEpiMin, leftEpiMax] = CalcEpiBound(leftFp);
+  auto [rightEpiMin, rightEpiMax] = CalcEpiBound(rightFp);
 
   const double offsetY{ std::min(leftEpiMin.y, rightEpiMin.y) };
   const int numRows{ int(std::max(leftEpiMax.y, rightEpiMax.y) - offsetY + 0.5) };
@@ -129,6 +129,8 @@ EpiModelPair EpipolarModelFactory::CreateRationalEpiModel(
   }
 
   // \todo based on epipolar options, adjust footprint as epipolar boundary
+  //OffsetFootprint(leftFp);
+  //OffsetFootprint(rightFp);
 
   auto geoGround = std::make_shared<GeographicGroundDeg>(std::move(earthEllip));
   assert(!earthEllip);
@@ -136,14 +138,14 @@ EpiModelPair EpipolarModelFactory::CreateRationalEpiModel(
   // left epipolar model
   auto leftRect = std::make_unique<EpipolarRect>(origin, height,
     scale, rotation, Point2d(leftOffsetX, offsetY), leftNumCols, numRows);
-  auto leftEpiModel = std::make_unique<GeoEpipolarModel>(
-    leftModel, EpiStereoPos::eLEFT, std::move(leftRect), geoGround);
+  auto leftEpiModel = std::make_unique<GeoEpipolarModel>(leftModel, 
+    EpiStereoPos::eLEFT, leftFp, std::move(leftRect), geoGround);
 
   // right epipolar model
   auto rightRect = std::make_unique<EpipolarRect>(origin, height,
     scale, rotation, Point2d(rightOffsetX, offsetY), rightNumCols, numRows);
-  auto rightEpiModel = std::make_unique<GeoEpipolarModel>(
-    rightModel, EpiStereoPos::eRIGHT, std::move(rightRect), geoGround);
+  auto rightEpiModel = std::make_unique<GeoEpipolarModel>(rightModel, 
+    EpiStereoPos::eRIGHT, rightFp, std::move(rightRect), geoGround);
 
   return EpiModelPair{ std::move(leftEpiModel), std::move(rightEpiModel) };
 }
@@ -215,21 +217,34 @@ double EpipolarModelFactory::CalcEpiRotation(const ISensorModel* leftModel,
 }
 
 /**
+ *  \brief convert vertex coordinates from rectification CS [meter]
+ *  to epipolar CS [pixel].
+ */
+void EpipolarModelFactory::ConvertEpiFootprint(Polygon2d& fp, 
+  const double scale, const double cosRot, const double sinRot) const {
+  std::vector<PointXYd>& fpPts = fp.outer();
+
+  for (auto& p : fpPts) {
+    Point2d pt{ cosRot * p.x() + sinRot * p.y(),
+                -sinRot * p.x() + cosRot * p.y() };
+    pt *= scale;
+    p.x(pt.x);
+    p.y(pt.y);
+  }
+}
+
+/**
  *  \return Returns the lower-left and upper-right epiolar bounding box [pixel].
  */
-std::pair<Point2d, Point2d> EpipolarModelFactory::CalcEpiBound(
-  const Polygon2d& fp, const double scale, 
-  const double cosRot, const double sinRot) const {
+std::pair<Point2d, Point2d> 
+EpipolarModelFactory::CalcEpiBound(const Polygon2d& fp) const {
   const std::vector<PointXYd>& fpPts = fp.outer();
 
   Point2d pixMin{ DBL_MAX, DBL_MAX };
   Point2d pixMax{ -DBL_MAX, -DBL_MAX };
-  for (auto& p : fpPts) {
-    Point2d pt{ cosRot * p.x() + sinRot * p.y(), 
-                -sinRot * p.x() + cosRot * p.y() };
-    pt *= scale;
-
-    MinMax(pixMin, pixMax, pt);
+  for (const auto& p : fpPts) {
+    MinMax(pixMin.x, pixMax.x, p.x());
+    MinMax(pixMin.y, pixMax.y, p.y());
   }
 
   Point2i pMin(floor(pixMin.x), floor(pixMin.y));

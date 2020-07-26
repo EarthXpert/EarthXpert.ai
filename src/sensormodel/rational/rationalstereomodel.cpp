@@ -5,6 +5,7 @@
 #include "sensormodel/rationalstereomodel.h"
 #include "3rdparty/eigen/exeigen.h"
 #include "sensormodel/rationalmodel.h"
+#include "sensormodel/rmutils.h"
 
 using namespace earthxpert;
 using namespace::Eigen;

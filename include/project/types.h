@@ -12,9 +12,10 @@ namespace earthxpert {
 //
 enum ExPointType {
   eUNUSED = -1,
-  eGCP,
-  eICP,
-  eTP
+  eGCP,   // ground control point
+  eICP,   // independent check point
+  eATP,   // automatic tie point
+  eMTP    // manual tie point
 };
 
 // GroundPoint represents a multi-ray observation
@@ -28,7 +29,7 @@ struct ControlPoint : GroundPoint {
 };
 
 struct TiePoint : GroundPoint {
-  ExPointType pt{ eTP };
+  ExPointType pt{ eATP };
 };
 
 struct ImagePoint {

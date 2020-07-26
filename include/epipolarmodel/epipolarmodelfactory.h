@@ -75,8 +75,9 @@ private:
   double EpipolarModelFactory::CalcEpiRotation(const ISensorModel* leftModel,
     const ISensorModel* rightModel, const EarthEllipsoid* ee, double height, 
     const Polygon2d& leftFp, const Polygon2d& rightFp) const;
-  std::pair<Point2d, Point2d> CalcEpiBound(const Polygon2d& fp,
+  void ConvertEpiFootprint(Polygon2d& fp,
     double scale, double cosRot, double sinRot) const;
+  std::pair<Point2d, Point2d> CalcEpiBound(const Polygon2d& fp) const;
 
   // cached
 };

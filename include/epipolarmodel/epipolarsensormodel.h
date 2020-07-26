@@ -6,6 +6,7 @@
 
 #include "epipolarmodel/iepipolarmodel.h"
 #include "sensormodel/isensormodel.h"
+#include "3rdparty/boost/exboost.h"
 
 #include <memory>
 #include <utility>
@@ -21,8 +22,10 @@ public:
   /**
    *  \param [in] sensorModel sensor model associated with the image
    *  \param [in] pos Component position of stereo model
+   *  \param [in] epiBound epipolar boundary of valid region
    */
-  EpipolarSensorModel(std::shared_ptr<ISensorModel> sensorModel, StereoPos pos);
+  EpipolarSensorModel(std::shared_ptr<ISensorModel> sensorModel, 
+    StereoPos pos, const Polygon2d& epiBound);
   virtual ~EpipolarSensorModel() = default;
 
   /**
@@ -213,6 +216,7 @@ public:
 protected:
   std::shared_ptr<ISensorModel> mSensorModel; // image model composing of the stereo model
   StereoPos mPos{ eIGNORE };    // Component position of stereo model
+  Polygon2d mBound;   // boundary of valid region
 
 private:
   void Initialize();

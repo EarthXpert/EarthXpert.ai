@@ -5,6 +5,7 @@
 #include "sensormodel/rationalmodel.h"
 #include "3rdparty/gdal/exgdal.h"
 #include "core/utils/typehelper.h"
+#include "sensormodel/rmutils.h"
 
 #include <algorithm>
 #include <cassert>

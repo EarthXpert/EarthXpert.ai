@@ -57,8 +57,8 @@ private:
   std::shared_ptr<SpatialReferenceSystem> mGroundSRS;
 
   // uncertainties
-  std::array<double, 3> mStdPosition{};
-  std::array<double, 3> mStdRotation{};
+  std::array<double, 3> mStdPos{};
+  std::array<double, 3> mStdRot{};
 
   void CheckSRS() const;
 

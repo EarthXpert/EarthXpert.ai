@@ -138,11 +138,12 @@ private:
   // uncertainties [mm]
   double mStdFL{};
   std::array<double, 2> mStdPPA{};
-  std::array<double, 3> mStdPC{};
-  std::array<double, 3> mStdIMU{};
   std::array<double, NumRadCoef> mStdRadialDist{};
   std::array<double, NumDecCoef> mStdDecentDist{};
   std::array<double, NumLinCoef> mStdLinearDist{};
+  // \todo covariance between calibration parameters
+  std::array<double, 3> mStdPC{};
+  std::array<double, 3> mStdIMU{};
 
   void CheckCamParms() const;
   void CheckDistortions() const;

@@ -16,7 +16,8 @@ SensorCube::SensorCube(const std::array<double, NumFact>& normalFators,
 }
 
 void SensorCube::Initialize() {
-
+  mScaleLine = mNormalFators[eSLINE] * (1.0 + kMarginRatio);
+  mScaleSamp = mNormalFators[eSSAMP] * (1.0 + kMarginRatio);
 }
 
 int SensorCube::CreateCube(const ISensorModel* sensorModel,

@@ -18,7 +18,8 @@ using earthxpert::Point3d;
  *   \brief construct a frame epipolar model
  */
 EpipolarSensorModel::EpipolarSensorModel(std::shared_ptr<ISensorModel> sensorModel,
-  StereoPos pos) : mSensorModel(sensorModel), mPos(pos) {
+  StereoPos pos, const Polygon2d& epiBound) 
+  : mSensorModel(sensorModel), mPos(pos), mBound(epiBound) {
 }
 
 /**

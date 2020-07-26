@@ -64,6 +64,10 @@ private:
   LayerType mLayerType{ eMODEL };
 
   void Initialize();
+
+  // cached 
+  double mScaleLine{};
+  double mScaleSamp{};
 };
 
 using CubeType = SensorCube::LayerType;

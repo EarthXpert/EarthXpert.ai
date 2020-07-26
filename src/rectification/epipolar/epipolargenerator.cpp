@@ -425,7 +425,7 @@ void EpipolarGenerator::Geotransform(const int tileId, cv::Mat& tfmMat) {
  *  \param [in] tileId the index of tile to process
  *  \param [in] tfmMat transfomration map
  *
- *  \remark 15% faster
+ *  \remark 15% faster than PerPixels
  */
 void EpipolarGenerator::DensifyPerCells(const int tileId, cv::Mat& tfmMat,
   const std::vector<int>& gridCols, const std::vector<int>& gridRows) {
@@ -443,9 +443,8 @@ void EpipolarGenerator::DensifyPerCells(const int tileId, cv::Mat& tfmMat,
     const auto [i1, i2, i3, i4] = CornersIndex(tileColL, tileRowU,
       tileColR, tileRowL, numCols);
 
-    if (MaskAllZero(mMaskBuf.get(), i1, i2, i3, i4)) {
+    if (MaskAllZero(mMaskBuf.get(), i1, i2, i3, i4)) 
       continue;
-    }
     
     if (MaskAllOne(mMaskBuf.get(), i1, i2, i3, i4)) {
       const auto invTileCols = 1.0 / (tileColR - tileColL);
