@@ -48,9 +48,7 @@ public:
 
   ~DisparityMatch() = default;
 
-  MatchType GetMatchType() const noexcept override {
-    return eDISPARITY;
-  }
+  MatchType GetMatchType() const noexcept override { return eDISPARITY; }
 
 private:
   std::vector<DisparityTile> mTiles;

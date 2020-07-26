@@ -157,9 +157,9 @@ std::vector<std::unique_ptr<IEpipolarModel>>
 EpipolarModelFactory::CreateEpipolarModel(
   const std::vector<std::shared_ptr<ISensorModel>> &sensorModels,
   const int sample, const double height) {
-  if (sensorModels.size() < 2) {
+  if (sensorModels.size() < 2) 
     throw std::exception("Require a minimum of two images");
-  }
+  
   return std::vector<std::unique_ptr<IEpipolarModel>>{};
 }
 

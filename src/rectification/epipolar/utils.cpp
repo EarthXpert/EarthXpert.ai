@@ -12,10 +12,10 @@ namespace earthxpert {
 std::string ToString(const EpiGenPerf* perf) {
   std::stringstream ss;
   ss << boost::format("** Performance (%1% tiles) **\n"
-    "Total time(s): %2%\n  Read %3%\n  Process: %4%\n"
-    "    Rigorous: %5%\n    Densify:  %6%\n  Write: %7%\n") % \
+    "Total time(s): %2%\n  Read %3%\n  Process: %4%\n    Rigorous: %5%\n"
+    "    Densify:  %6%\n    Resample: %7%\n  Write: %8%\n") % \
     perf->numTiles % perf->tmTotal % perf->tmRead % perf->tmProcess % \
-    perf->tmRigorous % (perf->tmProcess- perf->tmRigorous) % perf->tmWrite;
+    perf->tmRigorous % perf->tmDensify % perf->tmResample % perf->tmWrite;
 
   const auto totalPix = 
     std::accumulate(perf->pixels.begin(), perf->pixels.end(), 0ULL);

@@ -43,9 +43,7 @@ public:
 
   ~DepthMatch() = default;
 
-  MatchType GetMatchType() const noexcept override {
-    return eDEPTH;
-  }
+  MatchType GetMatchType() const noexcept override { return eDEPTH; }
 
 private:
   std::vector<DepthTile> mTiles;

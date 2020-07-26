@@ -12,12 +12,10 @@
 #include "io/raster/irasterreader.h"
 #include "io/raster/rasterwriter.h"
 
-#include <chrono>
 #include <omp.h>
 #include <tuple>
 
 using namespace earthxpert;
-namespace chrono = std::chrono;
 
 /**
  *  \brief
@@ -28,6 +26,8 @@ EpipolarGenerator::EpipolarGenerator(const IRasterResample* rasResample,
   const size_t memSize, const int stride)
   : mRasResample(rasResample), mMemSize(memSize), mStride(stride) {
   mMarginDim = mRasResample->GetWinDim() / 2;
+  mNumPT = omp_get_max_threads() - 2;   // spare read/write threads
+  //cv::setNumThreads(mNumPT);
 }
 
 /**
@@ -38,7 +38,7 @@ EpipolarGenerator::EpipolarGenerator(const IRasterResample* rasResample,
 bool EpipolarGenerator::Process(IRasterReader *const img, 
   IRasterWriter *const epi, IEpipolarModel const* epiModel) {
   mPerf.Clear();
-  auto start = chrono::steady_clock::now();
+  auto start = mClock.TimeSinceStart();
   omp_set_nested(2);
 
   try {
@@ -52,8 +52,7 @@ bool EpipolarGenerator::Process(IRasterReader *const img,
     throw;
   }
 
-  chrono::duration<double> diff = chrono::steady_clock::now() - start;
-  mPerf.tmTotal = diff.count();
+  mPerf.tmTotal = mClock.TimeSinceStart() - start;
   return true;
 }
 
@@ -96,7 +95,7 @@ void EpipolarGenerator::SetEpipolarParams(
  *  \todo requires 4+ tiles for the overlapped pipeline
  */
 void EpipolarGenerator::LayoutTiles() {
-  const auto start = chrono::steady_clock::now();
+  const auto start = mClock.TimeSinceStart();
 
   // estimate tile size
   const int bpp = 1 +  mTfmBpp + mEpiBpp * 2 + mImgBpp * mSample * mSample * 2;
@@ -148,8 +147,7 @@ void EpipolarGenerator::LayoutTiles() {
 
   AllocateBuffers();
 
-  const chrono::duration<double> diff = chrono::steady_clock::now() - start;
-  mPerf.tmLayout += diff.count();
+  mPerf.tmLayout += mClock.TimeSinceStart() - start;
 }
 
 /**
@@ -209,12 +207,7 @@ void EpipolarGenerator::AllocateBuffers() {
  */
 void EpipolarGenerator::ResetBuffers(const int tileId) {
   if (!TileId(tileId)) return;
-  const auto start = chrono::steady_clock::now();
-
   memset(mEpiBufWork.get(), 0, mEpiBpp * mEpiTiles[tileId].GetNumPixels());
-
-  const chrono::duration<double> diff = chrono::steady_clock::now() - start;
-  mPerf.tmReset += diff.count();
 }
 
 /**
@@ -237,35 +230,11 @@ void EpipolarGenerator::FreeBuffers() {
   mMaskBuf.reset();
 }
 
-/**
- *  \brief pipelined overlapping of read/write and computation tasks
- *  \todo investigate GDAL thread model: does it allow simuteneous read/write of different datasets? 
- */
+ /**
+  *  \brief pipelined overlapping of read, computation, write tasks
+  *  \todo 4x slower than SQ!
+  */
 void EpipolarGenerator::ProcessTiles() {
-  for (int t = -1; t <= mNumTiles; ++t) {
-    ResetBuffers(t);
-
-#pragma omp parallel sections num_threads(2)
-    {
-#pragma omp section
-      {
-        ReadTile(t + 1);
-        WriteTile(t - 1);
-      }
-
-#pragma omp section
-      ProcessTile(t);
-    }
-
-    SwapBuffers();
-  }
-}
-
-/**
- *  \brief pipelined overlapping of read, computation, write tasks
- *  \todo 4x slower than SQ!
- */
-void EpipolarGenerator::ProcessTilesPL() {
   for (int t = -1; t <= mNumTiles; ++t) {
     ResetBuffers(t);
 
@@ -279,6 +248,30 @@ void EpipolarGenerator::ProcessTilesPL() {
 
 #pragma omp section
       WriteTile(t - 1);
+    }
+
+    SwapBuffers();
+  }
+}
+
+/**
+ *  \brief pipelined overlapping of read/write and computation tasks
+ *  \todo investigate GDAL thread model: does it allow simuteneous read/write of different datasets?
+ */
+void EpipolarGenerator::ProcessTilesPL() {
+  for (int t = -1; t <= mNumTiles; ++t) {
+    ResetBuffers(t);
+
+#pragma omp parallel sections num_threads(2)
+    {
+#pragma omp section
+      {
+        ReadTile(t + 1);
+        WriteTile(t - 1);
+      }
+
+#pragma omp section
+      ProcessTile(t);
     }
 
     SwapBuffers();
@@ -309,14 +302,13 @@ void EpipolarGenerator::ReadTile(const int tileId) {
   if (!TileId(tileId)) return;
   const auto [colOffset, rowOffset, numCols, numRows] = mImgTiles[tileId];
   if (0 == numCols || 0 == numRows) return;
-  const auto start = chrono::steady_clock::now();
+  const auto start = mClock.TimeSinceStart();
   //memset(mImgBufRead.get(), 0, size_t(mImgBpp) * numCols * numRows);
 
   CvRaster imgRaster(numCols, numRows, mImgCvDT, colOffset, rowOffset, mImgBufRead.get());
   mImgReader->ReadRaster(&imgRaster);
 
-  const chrono::duration<double> diff = chrono::steady_clock::now() - start;
-  mPerf.tmRead += diff.count();
+  mPerf.tmRead += mClock.TimeSinceStart() - start;
 }
 
 /**
@@ -329,7 +321,7 @@ void EpipolarGenerator::ProcessTile(const int tileId) {
   const auto [imgNumCols, imgNumRows] = mImgTiles[tileId].GetSize();
   if (0 == imgNumCols || 0 == imgNumRows) return;
   const auto [colOffset, rowOffset, numCols, numRows] = mEpiTiles[tileId];
-  const auto start = chrono::steady_clock::now();
+  const auto start = mClock.TimeSinceStart();
   memset(mMaskBuf.get(), eMK_BKGD, size_t(numCols) * numRows);
 
   cv::Mat imgMat(imgNumRows, imgNumCols, mImgCvDT, mImgBufWork.get());
@@ -343,8 +335,7 @@ void EpipolarGenerator::ProcessTile(const int tileId) {
   mRasResample->Resample(imgMat, epiMat, tfmMat);
 
   //GatherStatistics(tileId);
-  const chrono::duration<double> diff = chrono::steady_clock::now() - start;
-  mPerf.tmProcess += diff.count();
+  mPerf.tmProcess += mClock.TimeSinceStart() - start;
 }
 
 /**
@@ -354,14 +345,13 @@ void EpipolarGenerator::ProcessTile(const int tileId) {
  */
 void EpipolarGenerator::WriteTile(const int tileId) {
   if (!TileId(tileId)) return;
-  const auto start = chrono::steady_clock::now();
+  const auto start = mClock.TimeSinceStart();
 
   const auto [colOffset, rowOffset, numCols, numRows] = mEpiTiles[tileId];
   CvRaster epiRaster(numCols, numRows, mEpiCvDT, colOffset, rowOffset, mEpiBufWrit.get());
   mEpiWriter->WriteRaster(&epiRaster);
 
-  const chrono::duration<double> diff = chrono::steady_clock::now() - start;
-  mPerf.tmWrite += diff.count();
+  mPerf.tmWrite += mClock.TimeSinceStart() - start;
 }
 
 /**
@@ -389,7 +379,7 @@ void EpipolarGenerator::WriteTile(const int tileId) {
  *  on the boundary, then do sweep-line to scan internal cells.
  */
 void EpipolarGenerator::Geotransform(const int tileId, cv::Mat& tfmMat) {
-  const auto start = chrono::steady_clock::now();
+  auto start = mClock.TimeSinceStart();
   const auto [numCols, numRows] = mEpiTiles[tileId].GetSize();
 
   // grid col/row positions for rigorous geometry
@@ -401,8 +391,8 @@ void EpipolarGenerator::Geotransform(const int tileId, cv::Mat& tfmMat) {
 
   const int64_t numGridNodes = int64_t(numGridCols) * numGridRows;
 
-  // Do geometry at grid nodes
-#pragma omp parallel for
+  // Do rigorous geometry at grid nodes
+#pragma omp parallel for num_threads(mNumPT)
   for (int64_t n = 0; n < numGridNodes; ++n) {
     const auto [gridCol, gridRow] = IndexToCR(n, numGridCols);
 
@@ -411,12 +401,13 @@ void EpipolarGenerator::Geotransform(const int tileId, cv::Mat& tfmMat) {
     EpiToImg(tileId, tfmMat, tileCol, tileRow);
   }
 
-  const chrono::duration<double> diff = chrono::steady_clock::now() - start;
-  mPerf.tmRigorous += diff.count();
-
+  mPerf.tmRigorous += mClock.TimeSinceStart() - start;
   if (1 == mStride) return;  // Densify non-grid positions
+
+  start = mClock.TimeSinceStart();
   DensifyPerCells(tileId, tfmMat, gridCols, gridRows);
   //DensifyPerPixels(tileId, tfmMat, gridCols, gridRows);
+  mPerf.tmDensify += mClock.TimeSinceStart() - start;
 }
 
 /**
@@ -434,7 +425,7 @@ void EpipolarGenerator::DensifyPerCells(const int tileId, cv::Mat& tfmMat,
   const int numGridRows = int(gridRows.size());
   const int64_t numGridCells = int64_t(numGridCols - 1) * (numGridRows - 1);
 
-#pragma omp parallel for schedule(dynamic, (numGridCols - 1)*2)
+#pragma omp parallel for num_threads(mNumPT) schedule(dynamic, (numGridCols - 1)*2)
   for (int64_t c = 0; c < numGridCells; ++c) {
     const auto [gridCol, gridRow] = IndexToCR(c, numGridCols-1);
 
@@ -499,7 +490,7 @@ void EpipolarGenerator::DensifyPerPixels(const int tileId, cv::Mat& tfmMat,
   const int numGridCols = int(gridCols.size());
   const int numGridRows = int(gridRows.size());
 
-#pragma omp parallel for schedule(dynamic, numCols*16)
+#pragma omp parallel for num_threads(mNumPT) schedule(dynamic, numCols*16)
   for (int64_t k = 0; k < numPix; ++k) {
     if (eMK_NORM == mMaskBuf[k]) continue;
     const auto [tileCol, tileRow] = IndexToCR(k, numCols);

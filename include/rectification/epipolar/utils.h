@@ -14,7 +14,7 @@ namespace earthxpert {
 //
 struct EpiGenPerf {
   static constexpr size_t kIS = 2;
-  static constexpr size_t kTM = 8;
+  static constexpr size_t kTM = 9;
   static constexpr size_t kNS = 3;
 
   union {  // tiles
@@ -34,6 +34,7 @@ struct EpiGenPerf {
       double tmProcess;
       double tmRigorous;
       double tmDensify;
+      double tmResample;
       double tmWrite;
     };
     std::array<double, kTM> timing;

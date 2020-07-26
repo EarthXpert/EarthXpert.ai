@@ -7,6 +7,7 @@
 #include "rectification/epipolar/exepipolar.h"
 #include "rectification/epipolar/utils.h"
 #include "epipolarmodel/iepipolarmodel.h"
+#include "core/system/clock.h"
 #include "core/utils/rasterwindow.h"
 
 #include <memory>
@@ -48,7 +49,10 @@ public:
   /**
    *  \return Returns performance info
    */
-  const EpiGenPerf* GetPerfMettrics() const noexcept { return &mPerf; }
+  const EpiGenPerf* GetPerfMettrics() noexcept { 
+    mPerf.tmResample = mPerf.tmProcess - mPerf.tmRigorous - mPerf.tmDensify;
+    return &mPerf; 
+  }
 
 private:
   static constexpr int kTileDim = 256;
@@ -101,11 +105,13 @@ private:
   void EpiToImg(int tileId, cv::Mat& tfmMat, int tileCol, int tileRow);
 
   // performance
+  Clock mClock;
   EpiGenPerf mPerf;
 
   void GatherStatistics(int tileId);
 
   // cached information
+  int mNumPT{ 1 };    // number of processing threads
   int mMarginDim{};
   int mNumTiles{};
 
