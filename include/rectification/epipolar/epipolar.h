@@ -27,8 +27,9 @@ struct EpipolarOptions {
   std::vector<int> bands;
   int sample{ 1 };
   int stride{ 8 };
-  bool grey{ false };
-  bool oneFile{ false };
+  bool grey{ false };     // convert color image into grey
+  bool oneFile{ false };  // store all epipolar images in one file
+  std::string outOpt;
   std::string outPath;
   std::string resample;
   size_t memSize;  // [unit: bytes]

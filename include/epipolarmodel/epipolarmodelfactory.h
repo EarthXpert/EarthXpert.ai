@@ -25,18 +25,19 @@ using EpiModelPair = std::pair<std::unique_ptr<IEpipolarModel>, std::unique_ptr<
 class EXEPIPOLARMODEL_EXPORTS EpipolarModelFactory {
 public:
   // the epipolar images always have equal number of rows in height and
-  // perhaps different columns in width. This flag specifies the option
+  // perhaps different columns in width. This flag specifies the output option
   // of epipolar width. With eFULL option, the average parallax in X direction
   // will be minimized; while with eCOMPACT option, the average X-parallax has
   // to be calculated for have the epipolar images aligned approximately.
-  enum class EpipolarOption {
+  enum class EpiOutputOption {
     eCOMPACT,  // the smallest width for each epipolar image
     eFULL,     // the largest width for a union of epipolar images
     eINTERSECT // the smallest width for intersection of epipolar images
   };
-  using EpiOpt = EpipolarOption;
+  using EpiOpt = EpiOutputOption;
 
-  EpipolarModelFactory(EpipolarOption epiOpt);
+  EpipolarModelFactory(EpiOutputOption outOpt);
+  EpipolarModelFactory(const std::string& outOpt);
   ~EpipolarModelFactory() = default;
 
   /**
@@ -63,21 +64,20 @@ public:
     const std::vector<std::shared_ptr<ISensorModel>> &sensorModels,
     int sample, double height=0);
 
-  void SetEpipolarOption(const EpipolarOption epiOpt) { mEpiOpt = epiOpt; }
+  void SetEpipolarOption(const EpiOutputOption epiOpt) { mOutOpt = epiOpt; }
 
 private:
   static constexpr int kMaxIters{ 5 };
   static constexpr int kPosTfm{ 16 };   // position transformation to align
   static constexpr double kHgtTol{ 0.01 }; // Height tolerance [1cm]: good enough
 
-  EpipolarOption mEpiOpt{ EpiOpt::eFULL };
+  EpiOutputOption mOutOpt{ EpiOpt::eFULL };
 
   double EpipolarModelFactory::CalcEpiRotation(const ISensorModel* leftModel,
     const ISensorModel* rightModel, const EarthEllipsoid* ee, double height, 
     const Polygon2d& leftFp, const Polygon2d& rightFp) const;
   void ConvertEpiFootprint(Polygon2d& fp,
     double scale, double cosRot, double sinRot) const;
-  std::pair<Point2d, Point2d> CalcEpiBound(const Polygon2d& fp) const;
 
   // cached
 };

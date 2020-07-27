@@ -10,9 +10,9 @@
 namespace chrono = std::chrono;
 
 namespace earthxpert {
-class EXCORE_EXPORTS Clock {
+class EXCORE_EXPORTS WallClock {
 public:
-  Clock() { Start(); }
+  WallClock() { Start(); }
 
   /**
    *  \breif reset start time of the clock

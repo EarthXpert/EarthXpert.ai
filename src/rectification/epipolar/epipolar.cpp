@@ -94,7 +94,7 @@ void GenerateRationalEpipolar(const EpipolarOptions& epiOpt) {
     rmMarshaller.Deserialize(epiOpt.rightMdlFile);
   assert(SensorType::eRATIONAL == rightModel->GetModelType());
 
-  EpipolarModelFactory epiModelFac(FacEpiOpt::eFULL);
+  EpipolarModelFactory epiModelFac(epiOpt.outOpt);
   auto [leftEpiModel, rightEpiModel] = 
     epiModelFac.CreateRationalEpiModel(leftModel, rightModel, epiOpt.sample);
   assert(IEpipolarModel::ePLANERECT == leftEpiModel->GetEpipolarAlgorithm());

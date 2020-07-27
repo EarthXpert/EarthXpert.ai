@@ -7,6 +7,7 @@
 #include "core/utils/typehelper.h"
 #include "core/exceptions/exexcept.h"
 #include "core/math/utils.h"
+#include "core/utils/geomutils.h"
 #include "epipolarmodel/epipolarmodel.h"
 #include "sensormodel/framemodel.h"
 #include "sensormodel/rationalmodel.h"
@@ -19,11 +20,20 @@
 
 using namespace earthxpert;
 
+// output option
+static const std::map<std::string, EpipolarModelFactory::EpiOpt> sOutOptMap = {
+  {"compact", EpipolarModelFactory::EpiOpt::eCOMPACT},
+  {"full", EpipolarModelFactory::EpiOpt::eFULL},
+  {"intersect", EpipolarModelFactory::EpiOpt::eINTERSECT} };
+
 /**
  *  \brief
  */
-EpipolarModelFactory::EpipolarModelFactory(const EpipolarOption epiOpt)
-  : mEpiOpt(epiOpt) {}
+EpipolarModelFactory::EpipolarModelFactory(const EpiOutputOption outOpt)
+  : mOutOpt(outOpt) {}
+
+EpipolarModelFactory::EpipolarModelFactory(const std::string& outOpt)
+  : EpipolarModelFactory(sOutOptMap.at(outOpt)) {}
 
 /**
  *  \brief Create an epipolar models for a stereo pair of frame images.
@@ -93,8 +103,8 @@ EpiModelPair EpipolarModelFactory::CreateRationalEpiModel(
   ConvertEpiFootprint(rightFp, scale, cosRot, sinRot);
 
   // bounding box in epipolar pixel
-  auto [leftEpiMin, leftEpiMax] = CalcEpiBound(leftFp);
-  auto [rightEpiMin, rightEpiMax] = CalcEpiBound(rightFp);
+  auto [leftEpiMin, leftEpiMax] = utils::CalcBound(leftFp, kPosTfm);
+  auto [rightEpiMin, rightEpiMax] = utils::CalcBound(rightFp, kPosTfm);
 
   const double offsetY{ std::min(leftEpiMin.y, rightEpiMin.y) };
   const int numRows{ int(std::max(leftEpiMax.y, rightEpiMax.y) - offsetY + 0.5) };
@@ -105,7 +115,7 @@ EpiModelPair EpipolarModelFactory::CreateRationalEpiModel(
   double leftOffsetX{}, rightOffsetX{};
   int leftNumCols{}, rightNumCols{};
 
-  switch (mEpiOpt) {
+  switch (mOutOpt) {
   case EpiOpt::eCOMPACT:
     leftOffsetX = leftEpiMin.x;
     leftNumCols = int(leftEpiMax.x - leftOffsetX + 0.5);
@@ -159,8 +169,9 @@ EpipolarModelFactory::CreateEpipolarModel(
   const int sample, const double height) {
   if (sensorModels.size() < 2) 
     throw std::exception("Require a minimum of two images");
-  
-  return std::vector<std::unique_ptr<IEpipolarModel>>{};
+
+  std::vector<std::unique_ptr<IEpipolarModel>> epiModels;
+  return epiModels;
 }
 
 /**
@@ -231,25 +242,4 @@ void EpipolarModelFactory::ConvertEpiFootprint(Polygon2d& fp,
     p.x(pt.x);
     p.y(pt.y);
   }
-}
-
-/**
- *  \return Returns the lower-left and upper-right epiolar bounding box [pixel].
- */
-std::pair<Point2d, Point2d> 
-EpipolarModelFactory::CalcEpiBound(const Polygon2d& fp) const {
-  const std::vector<PointXYd>& fpPts = fp.outer();
-
-  Point2d pixMin{ DBL_MAX, DBL_MAX };
-  Point2d pixMax{ -DBL_MAX, -DBL_MAX };
-  for (const auto& p : fpPts) {
-    MinMax(pixMin.x, pixMax.x, p.x());
-    MinMax(pixMin.y, pixMax.y, p.y());
-  }
-
-  Point2i pMin(floor(pixMin.x), floor(pixMin.y));
-  Point2i pMax(ceil(pixMax.x), ceil(pixMax.y));
-
-  return { cv::Point2d(Stride(pMin.x, kPosTfm), Stride(pMin.y, kPosTfm)),
-           cv::Point2d(Stride(pMax.x, kPosTfm), Stride(pMax.y, kPosTfm)) };
 }

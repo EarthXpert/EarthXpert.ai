@@ -105,7 +105,7 @@ private:
   void EpiToImg(int tileId, cv::Mat& tfmMat, int tileCol, int tileRow);
 
   // performance
-  Clock mClock;
+  WallClock mClock;
   EpiGenPerf mPerf;
 
   void GatherStatistics(int tileId);

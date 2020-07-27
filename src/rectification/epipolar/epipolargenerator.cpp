@@ -21,12 +21,15 @@ using namespace earthxpert;
  *  \brief
  * 
  *  \param memSize [in] memory available [unit: bytes]
+ *  \todo hardware configuration: hyper-threading
  */
 EpipolarGenerator::EpipolarGenerator(const IRasterResample* rasResample, 
   const size_t memSize, const int stride)
   : mRasResample(rasResample), mMemSize(memSize), mStride(stride) {
   mMarginDim = mRasResample->GetWinDim() / 2;
+
   mNumPT = omp_get_max_threads() - 2;   // spare read/write threads
+  omp_set_nested(2);
   //cv::setNumThreads(mNumPT);
 }
 
@@ -39,7 +42,6 @@ bool EpipolarGenerator::Process(IRasterReader *const img,
   IRasterWriter *const epi, IEpipolarModel const* epiModel) {
   mPerf.Clear();
   auto start = mClock.TimeSinceStart();
-  omp_set_nested(2);
 
   try {
     SetImageParams(img);

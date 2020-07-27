@@ -212,7 +212,7 @@ endif()
 set(Boost_USE_STATIC_LIBS OFF) 
 set(Boost_USE_MULTITHREADED ON)  
 set(Boost_USE_STATIC_RUNTIME OFF) 
-find_package(Boost 1.71.0 COMPONENTS filesystem iostreams program_options python37) 
+find_package(Boost 1.71.0 COMPONENTS filesystem iostreams math program_options python37 system) 
 
 find_package(Ceres REQUIRED)
 find_package(CGAL REQUIRED)
