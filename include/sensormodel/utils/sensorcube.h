@@ -49,6 +49,9 @@ public:
   int CreateCube(const ISensorModel* sensorModel,
     std::vector<Point2f>& images, std::vector<Point3d>& grounds) const;
 
+  int CreateCubeQC(const ISensorModel* sensorModel,
+    std::vector<Point2f>& images, std::vector<Point3d>& grounds) const;
+
   int CreateCubeFlat(const ISensorModel* sensorModel,
     std::vector<Point2f>& images, std::vector<Point3d>& grounds) const;
   int CreateCubeModel(const ISensorModel* sensorModel,
@@ -58,16 +61,14 @@ private:
   static constexpr double kMarginRatio = 0.1;  // ratio of margin to extend beyound the image scene
 
   std::array<double, NumFact> mNormalFators{}; // normalization factors including offsets & scales
-  int mNumHoriz{};
-  int mNumVert{};
-  int mNumLayers{};
+  int mNumHoriz{10};
+  int mNumVert{10};
+  int mNumLayers{10};
   LayerType mLayerType{ eMODEL };
 
   void Initialize();
 
   // cached 
-  double mScaleLine{};
-  double mScaleSamp{};
 };
 
 using CubeType = SensorCube::LayerType;

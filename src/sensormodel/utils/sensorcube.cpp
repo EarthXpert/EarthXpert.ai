@@ -16,11 +16,20 @@ SensorCube::SensorCube(const std::array<double, NumFact>& normalFators,
 }
 
 void SensorCube::Initialize() {
-  mScaleLine = mNormalFators[eSLINE] * (1.0 + kMarginRatio);
-  mScaleSamp = mNormalFators[eSSAMP] * (1.0 + kMarginRatio);
 }
 
+/**
+ *  \brief create a 3d cube for rational fitting.
+ */
 int SensorCube::CreateCube(const ISensorModel* sensorModel,
+  std::vector<Point2f>& images, std::vector<Point3d>& grounds) const {
+  return 0;
+}
+
+/**
+ *  \brief create a 3d cube for accuracy QC.
+ */
+int SensorCube::CreateCubeQC(const ISensorModel* sensorModel,
   std::vector<Point2f>& images, std::vector<Point3d>& grounds) const {
   return 0;
 }
