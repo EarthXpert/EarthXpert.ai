@@ -29,6 +29,7 @@ struct EpipolarOptions {
   int stride{ 8 };
   bool grey{ false };     // convert color image into grey
   bool oneFile{ false };  // store all epipolar images in one file
+  int outBkgd{ 0 };
   std::string outOpt;
   std::string outPath;
   std::string resample;

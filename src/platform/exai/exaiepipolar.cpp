@@ -54,6 +54,7 @@ int ExaiEpipolar::Execute() {
   epiOpt.stride = vm["stride"].as<int>();
   epiOpt.grey = vm["grey"].as<bool>();
   epiOpt.oneFile = vm["onefile"].as<bool>();
+  epiOpt.outBkgd = vm["outbkgd"].as<int>();
   epiOpt.outOpt = vm["outopt"].as<std::string>();
   epiOpt.outPath = vm["outdir"].as<std::string>();
   epiOpt.resample = vm["resample"].as<std::string>();
@@ -98,6 +99,7 @@ void ExaiEpipolar::AddRationalOptions(bpo::options_description & optDesc) {
     ("stride,d", bpo::value<int>()->default_value(8), "stride interval")
     ("grey,g", bpo::value<bool>()->default_value(false), "convert to grey image")
     ("onefile,f", bpo::value<bool>()->default_value(false), "save two epipolar images in a single file")
+    ("outbkgd", bpo::value<int>()->default_value(0), "output pixel background value")
     ("outopt", bpo::value<std::string>()->default_value("full"), "output option: compact|full|intersect")
     ("outdir,o", bpo::value<std::string>()->required(), "output directory")
     ("resample,r", bpo::value<std::string>()->default_value("cubic"), "resample algorithm: bilinear|cubic|gausian")

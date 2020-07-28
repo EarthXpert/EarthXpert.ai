@@ -26,7 +26,7 @@ namespace detail {
  */
 std::string GenerateEpipolar(const std::string& imgFile, EpipolarGenerator* epiGen, 
   IRasterReader* reader, IEpipolarModel* epiModel, const int stride, 
-  const std::string& outPath, const std::string& format, 
+  const int outBkgd, const std::string& outPath, const std::string& format, 
   const GDALDataType gdalDT, const int numBands) {
   //std::cout << "rawFile: " << imgFile << std::endl;
   //const auto [rawNumCols, rawNumRows] = reader->GetSize();
@@ -48,6 +48,7 @@ std::string GenerateEpipolar(const std::string& imgFile, EpipolarGenerator* epiG
   //std::cout << "epiNumCols: " << epiNumCols << ", epiNumRows: " << epiNumRows << std::endl;
 
   epiGen->Process(reader, &epiWriter, epiModel);
+  epiWriter.SetNodataValues(outBkgd);
   return epiFile;
 }
 }
@@ -111,13 +112,13 @@ void GenerateRationalEpipolar(const EpipolarOptions& epiOpt) {
   // generate left epipolar image
   auto leftEpiFile = detail::GenerateEpipolar(epiOpt.leftImgFile, 
     &epiGen, &leftReader, leftEpiModel.get(), epiOpt.stride,
-    epiOpt.outPath, format, gdalDT, epiNumBands);
+    epiOpt.outBkgd, epiOpt.outPath, format, gdalDT, epiNumBands);
   std::cout << ToString(epiGen.GetPerfMettrics());
 
   // generate right epipolar image
   auto rightEpiFile = detail::GenerateEpipolar(epiOpt.rightImgFile, 
     &epiGen, &rightReader, rightEpiModel.get(), epiOpt.stride, 
-    epiOpt.outPath, format, gdalDT, epiNumBands);
+    epiOpt.outBkgd, epiOpt.outPath, format, gdalDT, epiNumBands);
   std::cout << ToString(epiGen.GetPerfMettrics());
 }
 }

@@ -48,7 +48,7 @@ bool EpipolarGenerator::Process(IRasterReader *const img,
     SetEpipolarParams(epi, epiModel);
 
     LayoutTiles();
-    ProcessTiles();
+    ProcessTiles<ePL3>();
   }
   catch (...) {
     throw;
@@ -103,8 +103,24 @@ void EpipolarGenerator::LayoutTiles() {
   const int bpp = 1 +  mTfmBpp + mEpiBpp * 2 + mImgBpp * mSample * mSample * 2;
   const auto [tileNumCols, tileNumRows] = EstimateTileSize(mMemSize,
     bpp, mEpiNumCols, mEpiNumRows, kTileDim);
-  RasterLayout rasLayout(mEpiNumCols, mEpiNumRows, tileNumCols, tileNumRows);
+
+  mPerf.numImgTiles = DefineTiles(tileNumCols, tileNumRows);
   
+  // \todo RefineTileSize()
+
+  if (0 == mPerf.numImgTiles)
+    throw EpipolarError("LayoutTiles: empty tiles");
+
+  AllocateBuffers();
+  mPerf.tmLayout += mClock.TimeSinceStart() - start;
+}
+
+/**
+ *  \return Return number of valid tiles.
+ */
+int EpipolarGenerator::DefineTiles(const int tileNumCols, const int tileNumRows) {
+  RasterLayout rasLayout(mEpiNumCols, mEpiNumRows, tileNumCols, tileNumRows);
+
   mEpiTiles = rasLayout.GetRasterWindows();
   mPerf.numTiles = mNumTiles = int(mEpiTiles.size());
 
@@ -112,44 +128,47 @@ void EpipolarGenerator::LayoutTiles() {
   int numImgTiles{};
   mImgTiles.clear();
 
-  std::array<Point2d, kNCP> epiCorners;
-
   for (const auto& epiTile : mEpiTiles) {
-    FillCorners(epiTile, epiCorners);
-
-    Point2d minImgXY(mImgNumCols, mImgNumRows);
-    Point2d maxImgXY(-1, -1);
-
-    Point2d imgCorner;
-    for (int i = 0; i < kNCP; ++i) {
-      mEpiModel->EpiToRaw(epiCorners[i], imgCorner);
-      imgCorner = imgCorner - Point2d(0.5, 0.5);
-
-      MinMax(minImgXY, maxImgXY, imgCorner);
-    }
-
-    // add margin and clamp to image extent
-    const Point2i minImgCR(std::clamp(int(floor(minImgXY.x)) - mMarginDim, 0, mImgNumCols - 1),
-                           std::clamp(int(floor(minImgXY.y)) - mMarginDim, 0, mImgNumRows - 1));
-    const Point2i maxImgCR(std::clamp(int(ceil(maxImgXY.x)) + mMarginDim, 0, mImgNumCols - 1),
-                           std::clamp(int(ceil(maxImgXY.y)) + mMarginDim, 0, mImgNumRows - 1));
-    const cv::Size2i imgSize(maxImgCR - minImgCR + Point2i(1, 1));
-
-    RasterWindow imgTile;
-    if (1 < imgSize.width && 1 < imgSize.height) {
-      imgTile.SetWindow(minImgCR, imgSize);
+    const auto imgTile = DefineImgTile(epiTile);
+    if (imgTile.IsValid()) {
       numImgTiles++;
     }
     mImgTiles.push_back(imgTile);
   }
 
-  mPerf.numImgTiles = numImgTiles;
-  if (0 == numImgTiles) 
-    throw EpipolarError("LayoutTiles: empty image tiles");
+  return numImgTiles;
+}
 
-  AllocateBuffers();
+/**
+ *  \brief obtain image tile information given an epipolar tile. 
+ */
+RasterWindow EpipolarGenerator::DefineImgTile(const RasterWindow& epiTile) {
+  std::array<Point2d, kNCP> epiCorners;
+  FillCorners(epiTile, epiCorners);
 
-  mPerf.tmLayout += mClock.TimeSinceStart() - start;
+  Point2d minImgXY(mImgNumCols, mImgNumRows);
+  Point2d maxImgXY(-1, -1);
+
+  Point2d imgCorner;
+  for (int i = 0; i < kNCP; ++i) {
+    mEpiModel->EpiToRaw(epiCorners[i], imgCorner);
+    imgCorner = imgCorner - Point2d(0.5, 0.5);
+
+    MinMax(minImgXY, maxImgXY, imgCorner);
+  }
+
+  // add margin and clamp to image extent
+  const Point2i minImgCR(std::clamp(int(floor(minImgXY.x)) - mMarginDim, 0, mImgNumCols - 1),
+    std::clamp(int(floor(minImgXY.y)) - mMarginDim, 0, mImgNumRows - 1));
+  const Point2i maxImgCR(std::clamp(int(ceil(maxImgXY.x)) + mMarginDim, 0, mImgNumCols - 1),
+    std::clamp(int(ceil(maxImgXY.y)) + mMarginDim, 0, mImgNumRows - 1));
+  const cv::Size2i imgSize(maxImgCR - minImgCR + Point2i(1, 1));
+
+  RasterWindow imgTile;
+  if (1 < imgSize.width && 1 < imgSize.height) {
+    imgTile.SetWindow(minImgCR, imgSize);
+  }
+  return imgTile;
 }
 
 /**
@@ -232,35 +251,11 @@ void EpipolarGenerator::FreeBuffers() {
   mMaskBuf.reset();
 }
 
- /**
-  *  \brief pipelined overlapping of read, computation, write tasks
-  *  \todo 4x slower than SQ!
-  */
-void EpipolarGenerator::ProcessTiles() {
-  for (int t = -1; t <= mNumTiles; ++t) {
-    ResetBuffers(t);
-
-#pragma omp parallel sections num_threads(3)
-    {
-#pragma omp section
-      ReadTile(t + 1);
-
-#pragma omp section
-      ProcessTile(t);
-
-#pragma omp section
-      WriteTile(t - 1);
-    }
-
-    SwapBuffers();
-  }
-}
-
 /**
  *  \brief pipelined overlapping of read/write and computation tasks
  *  \todo investigate GDAL thread model: does it allow simuteneous read/write of different datasets?
  */
-void EpipolarGenerator::ProcessTilesPL() {
+void EpipolarGenerator::ProcessTilesPL2() {
   for (int t = -1; t <= mNumTiles; ++t) {
     ResetBuffers(t);
 
@@ -274,6 +269,30 @@ void EpipolarGenerator::ProcessTilesPL() {
 
 #pragma omp section
       ProcessTile(t);
+    }
+
+    SwapBuffers();
+  }
+}
+
+ /**
+  *  \brief pipelined overlapping of read, computation, write tasks
+  *  \todo 4x slower than SQ!
+  */
+void EpipolarGenerator::ProcessTilesPL3() {
+  for (int t = -1; t <= mNumTiles; ++t) {
+    ResetBuffers(t);
+
+#pragma omp parallel sections num_threads(3)
+    {
+#pragma omp section
+      ReadTile(t + 1);
+
+#pragma omp section
+      ProcessTile(t);
+
+#pragma omp section
+      WriteTile(t - 1);
     }
 
     SwapBuffers();

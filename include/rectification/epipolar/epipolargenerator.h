@@ -55,6 +55,11 @@ public:
   }
 
 private:
+  enum ExecPolicy {
+    ePL2,   // two tasks pipelined 
+    ePL3,   // three tasks pipelined 
+    eSQ     // sequential
+  };
   static constexpr int kTileDim = 256;
   static constexpr int kMinNumTiles = 4;  // min number of tiles for an overlapped pipeline
 
@@ -68,6 +73,8 @@ private:
   std::vector<RasterWindow> mImgTiles;
   std::vector<RasterWindow> mEpiTiles;
   void LayoutTiles();  // layout helper
+  int DefineTiles(int tileNumCols, int tileNumRows);
+  RasterWindow DefineImgTile(const RasterWindow& epiTile);
   int64_t GetTilesLimit(const std::vector<RasterWindow>& tiles) const;
 
   int64_t mImgBufNumBytes{};
@@ -85,8 +92,18 @@ private:
   void SwapBuffers();
   void FreeBuffers();
 
-  void ProcessTiles();
-  void ProcessTilesPL();
+  template <int execPolicy>
+  void ProcessTiles() {
+    if constexpr (ePL2 == execPolicy)
+      ProcessTilesPL2();
+    else if constexpr (ePL3 == execPolicy)
+      ProcessTilesPL3();
+    else
+      ProcessTilesSQ();
+  }
+
+  void ProcessTilesPL2();
+  void ProcessTilesPL3();
   void ProcessTilesSQ();
 
   inline bool TileId(const int tileId) {
