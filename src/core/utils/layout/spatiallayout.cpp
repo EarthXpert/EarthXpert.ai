@@ -87,7 +87,6 @@ void SpatialLayout<Ty>::LayoutTiles() {
     minYs.push_back(y);
   }
 
-
   const int numHoriTiles = int(minXs.size());
   const int numVertTiles = int(minYs.size());
   const int numTiles = numHoriTiles * numVertTiles;

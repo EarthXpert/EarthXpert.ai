@@ -90,7 +90,7 @@ Point3d EarthEllipsoid::LPHToXYZ(const double lon, const double lat,
   const double sp = sin(lat);
 
   const double N = RadiusInPrimeVertical(cp, sp);
-  const double NH = (N + height)* cp;
+  const double NH = (N + height) * cp;
 
   const double cl = cos(lon);
   const double sl = sin(lon);

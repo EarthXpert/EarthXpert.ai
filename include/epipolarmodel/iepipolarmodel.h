@@ -5,6 +5,7 @@
 #pragma once
 
 #include "epipolarmodel/exepipolarmodel.h"
+#include "3rdparty/boost/exboost.h"
 #include "3rdparty/opencv/exopencv.h"
 
 #include <vector>
@@ -97,6 +98,8 @@ public:
    *  \return Returns the internal sensor model
    */
   virtual const ISensorModel* GetSensorModel() const noexcept = 0;
+
+  virtual const Polygon2d& GetBoundary() const noexcept = 0;
 
   /**
    *  \return Returns raster columns & rows of raw image [unit: pixel]

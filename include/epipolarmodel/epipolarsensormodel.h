@@ -6,7 +6,6 @@
 
 #include "epipolarmodel/iepipolarmodel.h"
 #include "sensormodel/isensormodel.h"
-#include "3rdparty/boost/exboost.h"
 
 #include <memory>
 #include <utility>
@@ -81,6 +80,10 @@ public:
    */
   virtual const ISensorModel* GetSensorModel() const noexcept override {
     return mSensorModel.get();
+  }
+
+  const Polygon2d& GetBoundary() const noexcept override {
+    return mBound;
   }
 
   /**
