@@ -76,8 +76,10 @@ private:
   double EpipolarModelFactory::CalcEpiRotation(const ISensorModel* leftModel,
     const ISensorModel* rightModel, const EarthEllipsoid* ee, double height, 
     const Polygon2d& leftFp, const Polygon2d& rightFp) const;
-  void ConvertEpiFootprint(Polygon2d& fp,
-    double scale, double cosRot, double sinRot) const;
+  void ConvertEpiRect(Polygon2d& fp, double scale,
+    double cosRot, double sinRot) const;
+  void ConvertEpiImage(Polygon2d& fp, double offsetX,
+    double offsetY, int numRows) const;
 
   // cached
 };

@@ -68,6 +68,9 @@ void EpipolarGenerator::SetImageParams(IRasterReader* const img) {
   std::tie(mImgNumCols, mImgNumRows) = mImgReader->GetSize();
   mImgCvDT = mImgReader->GetCvDataType();
   mImgBpp = CV_ELEM_SIZE(mImgCvDT);
+
+  mPerf.rawNumCols = mImgNumCols;
+  mPerf.rawNumRows = mImgNumRows;
 }
 
 /**
@@ -81,6 +84,9 @@ void EpipolarGenerator::SetEpipolarParams(
   mEpiCvDT = mEpiWriter->GetCvDataType();
   mEpiBpp = CV_ELEM_SIZE(mEpiCvDT);
 
+  mPerf.epiNumCols = mEpiNumCols;
+  mPerf.epiNumRows = mEpiNumRows;
+
   assert(epiModel);
   mEpiModel = epiModel;
 
@@ -92,12 +98,12 @@ void EpipolarGenerator::SetEpipolarParams(
   const double sample = cv::norm(ic2 - ic) * M_SQRT1_2;
   mSample = std::max<int>(1, std::lround(sample));
   
-  // \todo const auto& bound = mEpiModel->GetBoundary();
-  //mValidRatio = bg::area(bound) / mEpiNumCols / mEpiNumRows;
-  if (kValidRatio < mValidRatio)
+  const auto& bound = mEpiModel->GetBoundary();
+  mPerf.validRatio = bg::area(bound) / mEpiNumCols / mEpiNumRows;
+  //if (kValidRatio < mPerf.validRatio)
     Geotransform = &EpipolarGenerator::GeotransformFull;
-  else
-    Geotransform = &EpipolarGenerator::GeotransformBound;
+  //else
+  //  Geotransform = &EpipolarGenerator::GeotransformBound;
 }
 
 /**

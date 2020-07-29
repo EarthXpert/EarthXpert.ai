@@ -219,7 +219,7 @@ public:
 protected:
   std::shared_ptr<ISensorModel> mSensorModel; // image model composing of the stereo model
   StereoPos mPos{ eIGNORE };    // Component position of stereo model
-  Polygon2d mBound;   // boundary of valid region
+  Polygon2d mBound;   // boundary pixels of valid region w.r.t. the center of UL corner
 
 private:
   void Initialize();

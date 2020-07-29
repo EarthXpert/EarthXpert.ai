@@ -153,6 +153,5 @@ private:
   int mSample{ 1 };
   int mTfmCvDT{ CV_32FC2 };
   int mTfmBpp{ CV_ELEM_SIZE(CV_32FC2) };
-  double mValidRatio{1.0};   // ratio of valid boundary area : epipolar area
 };
 } // namespace earthxpert

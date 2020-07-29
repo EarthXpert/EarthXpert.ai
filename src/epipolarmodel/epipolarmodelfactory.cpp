@@ -99,8 +99,8 @@ EpiModelPair EpipolarModelFactory::CreateRationalEpiModel(
   const double sinRot{ sin(rotation) };
 
   // convert footprint in epipolar unit [pixel]
-  ConvertEpiFootprint(leftFp, scale, cosRot, sinRot);
-  ConvertEpiFootprint(rightFp, scale, cosRot, sinRot);
+  ConvertEpiRect(leftFp, scale, cosRot, sinRot);
+  ConvertEpiRect(rightFp, scale, cosRot, sinRot);
 
   // bounding box in epipolar pixel
   auto [leftEpiMin, leftEpiMax] = utils::CalcBound(leftFp, kPosTfm);
@@ -138,9 +138,9 @@ EpiModelPair EpipolarModelFactory::CreateRationalEpiModel(
     throw EpipolarError(_("CreateRationalEpiModel: not valid"));
   }
 
-  // \todo based on epipolar options, adjust footprint as epipolar boundary
-  //OffsetFootprint(leftFp);
-  //OffsetFootprint(rightFp);
+  // convert to epipolar boundary in image space based on epipolar options.
+  ConvertEpiImage(leftFp, leftOffsetX, offsetY, numRows);
+  ConvertEpiImage(rightFp, rightOffsetX, offsetY, numRows);
 
   auto geoGround = std::make_shared<GeographicGroundDeg>(std::move(earthEllip));
   assert(!earthEllip);
@@ -231,7 +231,7 @@ double EpipolarModelFactory::CalcEpiRotation(const ISensorModel* leftModel,
  *  \brief convert vertex coordinates from rectification CS [meter]
  *  to epipolar CS [pixel].
  */
-void EpipolarModelFactory::ConvertEpiFootprint(Polygon2d& fp, 
+void EpipolarModelFactory::ConvertEpiRect(Polygon2d& fp, 
   const double scale, const double cosRot, const double sinRot) const {
   std::vector<PointXYd>& fpPts = fp.outer();
 
@@ -241,5 +241,18 @@ void EpipolarModelFactory::ConvertEpiFootprint(Polygon2d& fp,
     pt *= scale;
     p.x(pt.x);
     p.y(pt.y);
+  }
+}
+
+/**
+ *  \brief convert rectified footprint to epipolar boundary in image space.
+ */
+void EpipolarModelFactory::ConvertEpiImage(Polygon2d& fp, 
+  const double offsetX, const double offsetY, const int numRows) const {
+  std::vector<PointXYd>& fpPts = fp.outer();
+
+  for (auto& p : fpPts) {
+    p.x(p.x() - offsetX - 0.5);
+    p.y(offsetY + numRows - p.y() - 0.5);
   }
 }

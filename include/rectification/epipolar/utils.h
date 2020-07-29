@@ -13,17 +13,25 @@
 namespace earthxpert {
 //
 struct EpiGenPerf {
-  static constexpr size_t kIS = 2;
-  static constexpr size_t kTM = 9;
-  static constexpr size_t kNS = 3;
+  union {  // images
+    struct {
+      int rawNumCols;
+      int rawNumRows;
+      int epiNumCols;
+      int epiNumRows;
+    };
+    std::array<int, 4> images;
+  };
 
   union {  // tiles
     struct {
       int numTiles;
       int numImgTiles;
     };
-    std::array<int, kIS> tiles;
+    std::array<int, 2> tiles;
   };
+
+  double validRatio{};  // ratio of valid boundary area : epipolar area
 
   union {  // timing
     struct {
@@ -37,7 +45,7 @@ struct EpiGenPerf {
       double tmResample;
       double tmWrite;
     };
-    std::array<double, kTM> timing;
+    std::array<double, 9> timing;
   };
 
   union {  // cell statistics
@@ -46,7 +54,7 @@ struct EpiGenPerf {
       size_t cellNorm;
       size_t cellFast;
     };
-    std::array<size_t, kNS> cells;
+    std::array<size_t, 3> cells;
   };
 
   union { // number of pixels
@@ -55,12 +63,13 @@ struct EpiGenPerf {
       size_t pixNorm;
       size_t pixFast;
     };
-    std::array<size_t, kNS> pixels;
+    std::array<size_t, 3> pixels;
   };
 
   EpiGenPerf::EpiGenPerf() { Clear(); }
 
   void Clear() noexcept {
+    images.fill(0);
     tiles.fill(0);
     timing.fill(0.0);
     cells.fill(0);
