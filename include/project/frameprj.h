@@ -22,16 +22,18 @@ public:
     ePF_P4D       // Pix4D project format: .p4d
   };
 
+  FrameProject(const FrameProject&) = delete;
+  FrameProject(FrameProject&&) = delete;
   ~FrameProject() = default;
+
+  FrameProject& operator=(const FrameProject&) = delete;
+  FrameProject& operator=(FrameProject&&) = delete;
 
   PrjType GetProjectType() const noexcept override { return ePT_FRAME; }
 
-  bool Save();     
-  bool SaveAs(std::string prjPath);    
-  bool Read(std::string prjPath);    
-
 private:
-  bool ReadBingo(std::string prjPath);
-  bool ReadP4d(std::string prjPath);     
 };
+
+using UPFrameProject = std::unique_ptr<FrameProject>;
+using SPFrameProject = std::shared_ptr<FrameProject>;
 }

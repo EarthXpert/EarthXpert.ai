@@ -12,7 +12,7 @@
 #include "marshaller/rationalmodelmarshaller.h"
 #include "rectification/epipolar/epipolargenerator.h"
 
-#include "boost/format.hpp"
+#include <boost/format.hpp>
 #include <iostream>
 #include <sstream>
 

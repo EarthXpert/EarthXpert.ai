@@ -32,19 +32,19 @@
  ****************************************************************************/
 #include "platform/gdal/ogrinfo.h"
 
-#include "commonutils.h"
-#include "cpl_conv.h"
-#include "cpl_error.h"
-#include "cpl_multiproc.h"
-#include "cpl_port.h"
-#include "cpl_string.h"
-#include "cpl_vsi.h"
-#include "gdal_version.h"
-#include "ogr_api.h"
-#include "ogr_feature.h"
-#include "ogr_geometry.h"
-#include "ogr_p.h"
-#include "ogrsf_frmts.h"
+#include <commonutils.h>
+#include <cpl_conv.h>
+#include <cpl_error.h>
+#include <cpl_multiproc.h>
+#include <cpl_port.h>
+#include <cpl_string.h>
+#include <cpl_vsi.h>
+#include <gdal_version.h>
+#include <ogr_api.h>
+#include <ogr_feature.h>
+#include <ogr_geometry.h>
+#include <ogr_p.h>
+#include <ogrsf_frmts.h>
 
 #include <cstdio>
 #include <cstdlib>

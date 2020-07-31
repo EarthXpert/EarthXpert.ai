@@ -4,6 +4,7 @@
  */
 #include "marshaller/framemodelmarshaller.h"
 #include "core/utils/stringutils.h"
+
 #include <cctype>
 #include <fstream>
 #include <iostream>
@@ -161,7 +162,6 @@ void FrameModelMarshaller::ReadGpsImu(const std::string &modelFile) {
     iss >> entryName;
 
     if (line.front() == ' ' && entryName != "LINE" && entryName != "#") {
-      // read param
       photoID = entryName;
       iss >> position[0] >> position[1] >> position[2];
       iss >> rotation[0] >> rotation[1] >> rotation[2];

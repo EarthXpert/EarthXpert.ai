@@ -17,7 +17,7 @@ namespace earthxpert {
 class EXMARSHALLER_EXPORTS EpipolarModelMarshaller
     : public IEpipolarModelMarshaller {
 public:
-  ~EpipolarModelMarshaller() {}
+  ~EpipolarModelMarshaller() = default;
 
   /**
    *  \brief serialize an epipolarmodel into a json file
@@ -26,7 +26,7 @@ public:
    *  \param [in] epiModel the epipolar model to be serialized
    */
   bool Serialize(const std::string &modelFile,
-                 IEpipolarModel const *const epiModel) const override;
+                 IEpipolarModel const* epiModel) const override;
 
   /**
    *  \brief deserialize a json file into an epipolarmodel

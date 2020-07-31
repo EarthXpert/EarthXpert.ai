@@ -8,3 +8,7 @@
 #include <cmath>
 
 using namespace earthxpert;
+
+Project::Project(std::string prjPath) : mPath(std::move(prjPath)) {
+
+}

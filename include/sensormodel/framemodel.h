@@ -12,7 +12,7 @@
 #include "sensormodel/utils/frameip.h"
 #include "sensormodel/utils/frameipcorr.h"
 
-#include "opencv2/core/mat.hpp"
+#include <opencv2/core/mat.hpp>
 
 namespace earthxpert {
 /**

@@ -4,9 +4,10 @@
  */
 #pragma once
 
-#include "opencv2/opencv.hpp"
-#include "opencv2/xfeatures2d.hpp"
+#include "3rdparty/ex3rdparty.h"
 
+#include <opencv2/opencv.hpp>
+#include <opencv2/xfeatures2d.hpp>
 #include <cmath>
 #include <type_traits>
 

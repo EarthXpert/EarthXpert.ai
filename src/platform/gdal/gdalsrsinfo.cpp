@@ -34,9 +34,9 @@
 ****************************************************************************/
 #include "platform/gdal/gdalsrsinfo.h"
 
-#include "commonutils.h"
-#include "cpl_string.h"
-#include "ogrsf_frmts.h"
+#include <commonutils.h>
+#include <cpl_string.h>
+#include <ogrsf_frmts.h>
 
 CPL_CVSID("$Id: gdalsrsinfo.cpp 6574497e5ddfd7c08c094a76756a0ef477cef6a1 2018-04-04 22:15:20 +0200 Even Rouault $")
 

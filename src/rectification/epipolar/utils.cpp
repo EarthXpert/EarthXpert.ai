@@ -3,8 +3,8 @@
  * -----------------------------------------------------------------------------
  */
 #include "rectification/epipolar/utils.h"
-#include "boost/format.hpp"
 
+#include <boost/format.hpp>
 #include <numeric>
 #include <sstream>
 
@@ -12,10 +12,10 @@ namespace earthxpert {
 std::string ToString(const EpiGenPerf* perf) {
   std::stringstream ss;
   ss << boost::format("** Performance (%1% tiles) **\n"
-    "Total time(s): %2%\n  Read %3%\n  Process: %4%\n    Rigorous: %5%\n"
-    "    Densify:  %6%\n    Resample: %7%\n  Write: %8%\n") % \
-    perf->numTiles % perf->tmTotal % perf->tmRead % perf->tmProcess % \
-    perf->tmRigorous % perf->tmDensify % perf->tmResample % perf->tmWrite;
+    "Total time(s): %2%\n  Initial: %3%\n  Read: %4%\n  Process: %5%\n    "
+    "Rigorous: %6%\n    Densify:  %7%\n    Resample: %8%\n  Write: %9%\n") % \
+    perf->numTiles % perf->tmTotal % perf->tmInitial % perf->tmRead % perf->tmProcess %\
+     perf->tmRigorous % perf->tmDensify % perf->tmResample % perf->tmWrite;
 
   const auto totalPix = 
     std::accumulate(perf->pixels.begin(), perf->pixels.end(), 0ULL);

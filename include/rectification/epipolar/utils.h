@@ -36,8 +36,7 @@ struct EpiGenPerf {
   union {  // timing
     struct {
       double tmTotal;   // total run time
-      double tmLayout;
-      double tmReset;
+      double tmInitial;
       double tmRead;
       double tmProcess;
       double tmRigorous;
@@ -45,7 +44,7 @@ struct EpiGenPerf {
       double tmResample;
       double tmWrite;
     };
-    std::array<double, 9> timing;
+    std::array<double, 8> timing;
   };
 
   union {  // cell statistics

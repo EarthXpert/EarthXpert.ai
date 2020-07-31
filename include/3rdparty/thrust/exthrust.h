@@ -5,6 +5,7 @@
 #pragma once
 
 #include "3rdparty/ex3rdparty.h"
+
 #include <thrust/scan.h>
 
 namespace earthxpert::thirdparty {

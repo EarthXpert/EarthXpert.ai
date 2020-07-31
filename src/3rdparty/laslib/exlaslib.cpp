@@ -4,10 +4,10 @@
  */
 #include "3rdparty/laslib/exlaslib.h"
 
-#include "lasindex.hpp"
-#include "lasquadtree.hpp"
-#include "lasreader.hpp"
-#include "boost/format.hpp"
+#include <boost/format.hpp>
+#include <lasindex.hpp>
+#include <lasquadtree.hpp>
+#include <lasreader.hpp>
 #include <memory>
 #include <sstream>
 #include <sys/stat.h>

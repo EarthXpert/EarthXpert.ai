@@ -5,8 +5,9 @@
 #pragma once
 
 #include "3rdparty/ex3rdparty.h"
-#include "ceres/ceres.h"
-#include "ceres/tiny_solver.h"
+
+#include <ceres/ceres.h>
+#include <ceres/tiny_solver.h>
 
 /**
  *  \todo memory pool for small objects

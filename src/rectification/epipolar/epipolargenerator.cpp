@@ -47,8 +47,10 @@ bool EpipolarGenerator::Process(IRasterReader *const img,
   try {
     SetImageParams(img);
     SetEpipolarParams(epi, epiModel);
-
+    
     LayoutTiles();
+    mPerf.tmInitial = mClock.TimeSinceStart() - start;
+
     ProcessTiles<ePL3>();
   }
   catch (...) {
@@ -111,8 +113,6 @@ void EpipolarGenerator::SetEpipolarParams(
  *  \todo requires 4+ tiles for the overlapped pipeline
  */
 void EpipolarGenerator::LayoutTiles() {
-  const auto start = mClock.TimeSinceStart();
-
   // estimate tile size
   const int bpp = 1 +  mTfmBpp + mEpiBpp * 2 + mImgBpp * mSample * mSample * 2;
   const auto [tileNumCols, tileNumRows] = EstimateTileSize(mMemSize,
@@ -126,7 +126,6 @@ void EpipolarGenerator::LayoutTiles() {
     throw EpipolarError("LayoutTiles: empty tiles");
 
   AllocateBuffers();
-  mPerf.tmLayout += mClock.TimeSinceStart() - start;
 }
 
 /**

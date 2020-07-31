@@ -20,7 +20,7 @@ enum ExPointType {
 
 // GroundPoint represents a multi-ray observation
 struct GroundPoint {
-  unsigned int id;
+  std::string id;
   Point3d point;      // XYZ, LPH position
 };
 
@@ -33,8 +33,8 @@ struct TiePoint : GroundPoint {
 };
 
 struct ImagePoint {
-  Point2f point;        // col, row position
-  unsigned int gpId;    // ID of GroundPoint
+  Point2f ip;        //  image position: col, row
+  GroundPoint* gp;    // GroundPoint
 };
 
 // camera infomation

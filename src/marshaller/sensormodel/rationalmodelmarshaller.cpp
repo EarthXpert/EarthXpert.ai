@@ -152,8 +152,7 @@ void RationalModelMarshaller::SerializeRpc(std::ostream& outStream,
  */
 std::unique_ptr<RationalModel>
 RationalModelMarshaller::DeserializeRpb(std::istream& inStream) {
-  double errBias{};
-  double errRand{};
+  double errBias{}, errRand{};
   std::array<double, rnf::NumFact> normalFators{};
   std::array<double, RationalModel::NumCoef> lineNumCoef{};
   std::array<double, RationalModel::NumCoef> lineDenCoef{};
@@ -161,7 +160,6 @@ RationalModelMarshaller::DeserializeRpb(std::istream& inStream) {
   std::array<double, RationalModel::NumCoef> sampDenCoef{};
 
   std::string line;
-
   while (!inStream.eof()) {
     std::getline(inStream, line);
     boost::trim(line);
@@ -216,13 +214,6 @@ RationalModelMarshaller::DeserializeRpb(std::istream& inStream) {
     }
   }
 
-  if (0 == mNumCols) {
-    mNumCols = normalFators[eSSAMP] * 2;
-  }
-  if (0 == mNumRows) {
-    mNumRows = normalFators[eSLINE] * 2;
-  }
-
   auto groundSRS = std::make_shared<SpatialReferenceSystem>("WGS84");
   auto rationalModel = std::make_unique<RationalModel>(mNumCols, mNumRows,
     normalFators, lineNumCoef, lineDenCoef, sampNumCoef, sampDenCoef, groundSRS);
@@ -245,7 +236,6 @@ RationalModelMarshaller::DeserializeRpc(std::istream& inStream) {
   std::array<double, RationalModel::NumCoef> sampDenCoef{};
   
   std::string line;
-
   while (!inStream.eof()) {
     std::getline(inStream, line);
     boost::trim(line);
@@ -294,13 +284,6 @@ RationalModelMarshaller::DeserializeRpc(std::istream& inStream) {
     }
   }
 
-  if (0 == mNumCols) {
-    mNumCols = normalFators[eSSAMP] * 2;
-  }
-  if (0 == mNumRows) {
-    mNumRows = normalFators[eSLINE] * 2;
-  }
-
   auto groundSRS = std::make_shared<SpatialReferenceSystem>("WGS84");
   return std::make_unique<RationalModel>(mNumCols, mNumRows, normalFators,
       lineNumCoef, lineDenCoef, sampNumCoef, sampDenCoef, groundSRS);
@@ -325,10 +308,9 @@ void RationalModelMarshaller::InsertCoefs(std::ostream& outStream,
 void RationalModelMarshaller::ExtractCoefs(std::istream & inStream,
   std::array<double, RationalModel::NumCoef>& coefs) {
   std::string line;
-  boost::trim(line);
-
   for (size_t i = 0; i < RationalModel::NumCoef; ++i) {
     std::getline(inStream, line);
+    boost::trim(line);
     coefs[i] = std::stod(line);
   }
 }

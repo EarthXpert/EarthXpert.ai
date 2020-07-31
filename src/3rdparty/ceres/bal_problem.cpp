@@ -31,10 +31,9 @@
 #include "3rdparty\ceres\bal_problem.h"
 #include "3rdparty\ceres\random.h"
 
-#include "ceres/rotation.h"
-#include "Eigen/Core"
-#include "glog/logging.h"
-
+#include <ceres/rotation.h>
+#include <Eigen/Core>
+#include <glog/logging.h>
 #include <cstdio>
 #include <cstdlib>
 #include <fstream>

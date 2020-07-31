@@ -11,7 +11,6 @@
 #include <ostream>
 
 namespace earthxpert {
-
 /**
  *  Marshall distortion grid files.
  *
@@ -47,10 +46,8 @@ end gridgroup
  */
 class EXMARSHALLER_EXPORTS DistGridMarshaller {
 public:
-  static void Serialize(const std::string &gridFile,
-                        DistortionGridF const *const distGrid);
-  static void Serialize(std::ostream &outStream,
-                        DistortionGridF const *const distGrid);
+  static void Serialize(const std::string &gridFile, DistortionGridF const* distGrid);
+  static void Serialize(std::ostream &outStream, DistortionGridF const* distGrid);
 
   static std::unique_ptr<DistortionGridF> Deserialize(const std::string &gridFile);
   static std::unique_ptr<DistortionGridF> Deserialize(std::istream &inStream);
