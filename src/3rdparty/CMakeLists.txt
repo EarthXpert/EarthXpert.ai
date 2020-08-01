@@ -12,8 +12,7 @@ message(STATUS "Protobuf_LIBRARIES: ${Protobuf_LIBRARIES}")
 message(STATUS "SLTBENCH_LIBS: ${SLTBENCH_LIBS}")
 
 add_definitions(-DEX3RDPARTY_API)
-earthxpert_add_library(ex3rdparty "api"
-  SRCS "boost/exboost.cpp"
+set(ex3rdparty_srcs "boost/exboost.cpp"
        "ceres/bal_problem.cpp"
        "ceres/exceres.cpp"
        "cgal/excgal.cpp"
@@ -27,11 +26,14 @@ earthxpert_add_library(ex3rdparty "api"
        "protobuf/exprotobuf.cpp"
        "qt/exqt.cpp"
        "sltbench/exsltbench.cpp"
-       "thrust/exthrust.cpp"
+       "thrust/exthrust.cpp")
+earthxpert_add_library(ex3rdparty "api"
+  SRCS ${ex3rdparty_srcs}
   ITEMS Boost::boost Boost::filesystem ${CERES_LIBRARY} ${CGAL_LIBRARIES} ${GDAL_LIBRARY} 
         ${GETTEXT_LIBRARY} glog::glog ${GTEST_BOTH_LIBRARIES} ${LASLIB_LIBRARY} 
         ${LIBXML2_LIBRARIES} ${OpenCV_LIBS} ${OpenEXR_LIBS} 
         OpenImageIO::OpenImageIO OpenImageIO::OpenImageIO_Util 
         ${PDAL_LIBRARIES} ${Protobuf_LIBRARIES} Qt5::Widgets ${SLTBENCH_LIBS})
 
+earthxpert_source_group(${ex3rdparty_srcs})
 earthxpert_install_target(ex3rdparty)

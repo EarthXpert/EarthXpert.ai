@@ -13,9 +13,6 @@ public:
   ~P4dPrjMarshaller() = default;
 
   static void Serialize(const std::string& p4dFile, FrameProject const* p4dPrj);
-  static void Serialize(std::ostream& outStream, FrameProject const* p4dPrj);
-
   static std::unique_ptr<FrameProject> Deserialize(const std::string& p4dFile);
-  static std::unique_ptr<FrameProject> Deserialize(std::istream& inStream);
 };
 }

@@ -1,8 +1,7 @@
 project(sensormodel)
 
 add_definitions(-DEXSENSORMODEL_API)
-earthxpert_add_library(sensormodel "api"
-  SRCS "ads/adsmodel.cpp"
+set(sensormodel_srcs "ads/adsmodel.cpp"
        "ads/adsstereomodel.cpp"
        "ads/adsutils.cpp"
        "affine/affinemodel.cpp"
@@ -34,8 +33,11 @@ earthxpert_add_library(sensormodel "api"
        "utils/stereomodelfactory.cpp"
        "utils/utils.cpp"
        "sensormodel.cpp"
-       "sensormodelfactory.cpp"
+       "sensormodelfactory.cpp")
+earthxpert_add_library(sensormodel "api"
+  SRCS ${sensormodel_srcs}
   ITEMS ex3rdparty core
         ${GDAL_LIBRARY} ${GETTEXT_LIBRARY} ${OpenCV_LIBS})
 
+source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR} FILES ${sensormodel_srcs})
 earthxpert_install_target(sensormodel)
