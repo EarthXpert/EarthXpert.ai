@@ -141,12 +141,18 @@ int EpipolarGenerator::DefineTiles(const int tileNumCols, const int tileNumRows)
   mTiles.resize(mNumTiles);
 
   // calculate image bound for epipolar tiles
+  const auto& bound = mEpiModel->GetBoundary();
   int numImgTiles{};
 
 //#pragma omp parallel for reduction(+ : numImgTiles)
   for (int i = 0; i < mNumTiles; ++i) {
     mTiles[i].epiTile = rasLayout.GetRasterWindow(i);
-    
+    //const auto epiPoly = utils::ConvertPolygon(mTiles[i].epiTile);
+    //Polygon2d poly;
+    //bool ret = bg::intersection(epiPoly, bound, poly);
+    //if (ret) {
+    //}
+
     mTiles[i].imgTile = DefineImgTile(mTiles[i].epiTile);
     mTiles[i].hasImgTile = mTiles[i].imgTile.IsValid();
     if (mTiles[i].hasImgTile) {

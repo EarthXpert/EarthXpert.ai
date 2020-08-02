@@ -38,4 +38,9 @@ std::vector<Point2i> ConvertPolygon(const Polygon2d& poly) {
 
   return cvPoly;
 }
+
+Polygon2d EXCORE_EXPORTS ConvertPolygon(const RasterWindow& win) {
+  Polygon2d poly;
+  return poly;
+}
 }

@@ -59,7 +59,7 @@ public:
 
 private:
   static constexpr int kMinNumTiles = 4;  // min number of tiles for an overlapped pipeline
-  static constexpr double kValidRatio = 0.8;  // by trials
+  static constexpr double kValidRatio = 0.85;  // by trials
 
   enum ExecPolicy {
     ePL2,   // two tasks pipelined 
