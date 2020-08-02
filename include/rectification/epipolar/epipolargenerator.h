@@ -24,6 +24,9 @@ class RasterWriter;
 
 /**
  *  The class EpipolarGenerator creates epipolar images from raw images.
+ *  It is not thread-safe to process multiple images using the same 
+ *  generator object. Thus for parallel processing, create a generator 
+ *  object for each thread in the team.
  */
 class EXEPIPOLAR_EXPORTS EpipolarGenerator {
 public:
@@ -56,7 +59,7 @@ public:
 
 private:
   static constexpr int kMinNumTiles = 4;  // min number of tiles for an overlapped pipeline
-  static constexpr double kValidRatio = 0.8;
+  static constexpr double kValidRatio = 0.8;  // by trials
 
   enum ExecPolicy {
     ePL2,   // two tasks pipelined 
@@ -64,19 +67,43 @@ private:
     eSQ     // sequential
   };
 
+  enum GeotransformAlgo {
+    eBOUND,   // optimized algorithm using epipolar boundary
+    eFULL     // general algorithm using full extent
+  };
+
+  struct TileInfo {
+    bool hasImgTile{};
+    GeotransformAlgo geoAlgo{ eFULL };
+    RasterWindow imgTile;
+    RasterWindow epiTile;
+  };
+
+  void Initialize();
+
   const IRasterResample* mRasResample{};
   size_t mMemSize{};         // memory size allowed for processing
   int mStride{1}; // stride for rigorous epipolar geometry
+  GeotransformAlgo mGeoAlgo{eFULL};
 
   void SetImageParams(IRasterReader* const img);
   void SetEpipolarParams(IRasterWriter* const epi, IEpipolarModel const* epiModel);
 
-  std::vector<RasterWindow> mImgTiles;
-  std::vector<RasterWindow> mEpiTiles;
+  std::vector<TileInfo> mTiles;
+
+  inline RasterWindow& ImgTile(const int tileId) { 
+    assert(0 <= tileId && tileId < mNumTiles);
+    return mTiles[tileId].imgTile; 
+  }
+  inline RasterWindow& EpiTile(const int tileId) { 
+    assert(0 <= tileId && tileId < mNumTiles);
+    return mTiles[tileId].epiTile;
+  }
+
   void LayoutTiles();  // layout helper
   int DefineTiles(int tileNumCols, int tileNumRows);
   RasterWindow DefineImgTile(const RasterWindow& epiTile);
-  int64_t GetTilesLimit(const std::vector<RasterWindow>& tiles) const;
+  std::pair<int64_t, int64_t> GetTilesLimit(const std::vector<TileInfo>& tiles) const;
 
   int64_t mImgBufNumBytes{};
   std::unique_ptr<uchar[]> mImgBufRead;   // read buffer of raw image tile
@@ -115,10 +142,10 @@ private:
   void ProcessTile(int tileId);
   void WriteTile(int tileId);
 
-  void (EpipolarGenerator::*Geotransform)(int tileId, cv::Mat& tfmMat) = nullptr;
-  void GeotransformBound(int tileId, cv::Mat& tfmMat);
-  void GeotransformFull(int tileId, cv::Mat& tfmMat);
+  void GeotransformTile(int tileId, cv::Mat& tfmMat);
   
+  void RigorousGridNodes(const int tileId, cv::Mat& tfmMat,
+    const std::vector<int>& gridCols, const std::vector<int>& gridRows);
   void DensifyPerCells(const int tileId, cv::Mat& tfmMat,
     const std::vector<int>& gridCols, const std::vector<int>& gridRows);
   void DensifyPerPixels(const int tileId, cv::Mat& tfmMat,

@@ -246,6 +246,7 @@ void EpipolarModelFactory::ConvertEpiRect(Polygon2d& fp,
 
 /**
  *  \brief convert rectified footprint to epipolar boundary in image space.
+ *  \todo return Returns Polygon2f
  */
 void EpipolarModelFactory::ConvertEpiImage(Polygon2d& fp, 
   const double offsetX, const double offsetY, const int numRows) const {

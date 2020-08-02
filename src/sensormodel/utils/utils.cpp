@@ -176,9 +176,9 @@ Polygon2d CalcFootprint(const ISensorModel* sensorModel,
     ImageToPlane(corners[i], sensorModel, ee, height, fpCorners[i], 0.01);
   }
 
-  Polygon2d fp;
-  bg::assign_points(fp, fpCorners);
-  return fp;
+  Polygon2d poly;
+  bg::assign_points(poly, fpCorners);
+  return poly;
 }
 
 /**

@@ -10,5 +10,6 @@
 
 namespace earthxpert::utils {
 std::pair<Point2d, Point2d> EXCORE_EXPORTS CalcBound(
-  const Polygon2d& fp, int posTfm = 16);
+  const Polygon2d& poly, int posTfm = 16);
+std::vector<Point2i> EXCORE_EXPORTS ConvertPolygon(const Polygon2d& poly);
 } // namespace earthxpert::utils

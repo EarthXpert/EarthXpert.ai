@@ -22,4 +22,29 @@ std::string PathPrefixFilename(
 
   return fn;
 }
+
+/**
+ *  \return Return distance of point to polygon edges.
+ */
+template <typename Ty> Ty distance(const PointXY<Ty>& p, const Polygon2<Ty>& poly) {
+  auto dist = std::numeric_limits<Ty>::max();
+  if (bg::within(p, poly)) {
+    bgc::Segment nearestSeg;
+
+    bg::for_each_segment(poly, [&dist, &p, &nearestSeg](const auto& seg) {
+      double cmpDist = bg::comparable_distance(seg, p);
+      if (cmpDist < dist) {
+        dist = cmpDist;
+        nearestSeg = seg; 
+      }
+    });
+
+    dist = bg::distance(nearestSeg, p);    // calculate exact distance
+  }
+  else {
+    dist = bg::distance(p, poly);
+  }
+
+  return dist;
+}
 }
