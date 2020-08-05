@@ -39,5 +39,6 @@ earthxpert_add_library(sensormodel "api"
   ITEMS ex3rdparty core
         ${GDAL_LIBRARY} ${GETTEXT_LIBRARY} ${OpenCV_LIBS})
 
-source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR} FILES ${sensormodel_srcs})
+#source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR} FILES ${sensormodel_srcs})
+earthxpert_source_group(${sensormodel_srcs})
 earthxpert_install_target(sensormodel)

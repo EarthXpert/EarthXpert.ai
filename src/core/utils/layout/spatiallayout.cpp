@@ -63,8 +63,14 @@ int SpatialLayout<Ty>::SetTileSize(const Ty tileWidth, const Ty tileHeight) {
  */
 template <typename Ty>
 int SpatialLayout<Ty>::SetNumTiles(const int numTiles) {
-  // \todo
-  return static_cast<int>(mTiles.size());
+  const auto ratio = double(mWidth) / mHeight;
+  const auto numSqTiles = sqrt(double(numTiles) / ratio);
+  Ty tileWidth = mWidth / (numSqTiles * ratio);
+  Ty tileHeight = mHeight / numSqTiles;
+
+  //tileWidth = std::max(1, int(tileWidth / kTileDim)) * kTileDim;
+  //tileHeight = std::max(1, int(tileHeight / kTileDim)) * kTileDim;
+  return SetTileSize(tileWidth, tileHeight);
 }
 
 /**
