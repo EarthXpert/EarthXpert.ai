@@ -29,8 +29,8 @@ public:
 
   SpatialLayout(Ty width, Ty height, Ty tileWidth, Ty tileHeight, 
     LayoutKind kind = LayoutKind::eHORIZONTAL);
-  SpatialLayout(Ty minX, Ty minY, Ty width, Ty height,
-    Ty tileWidth, Ty tileHeight, LayoutKind kind = LayoutKind::eHORIZONTAL);
+  SpatialLayout(const SpatialTile<Ty>& range, Ty tileWidth, Ty tileHeight, 
+    LayoutKind kind = LayoutKind::eHORIZONTAL);
   SpatialLayout(const SpatialLayout& rhs) = default;
   SpatialLayout(SpatialLayout&& rhs) noexcept = default;
   ~SpatialLayout() = default;
@@ -41,9 +41,7 @@ public:
   int SetTileSize(Ty tileWidth, Ty tileHeight);
   int SetNumTiles(int numTiles);
 
-  int GetNumTiles() const {
-    return static_cast<int>(mTiles.size());
-  }
+  int GetNumTiles() const { return static_cast<int>(mTiles.size()); }
 
   /**
    *  \param [in] index 0-based position
@@ -57,15 +55,10 @@ public:
   /**
    *  \return Returns const reference to the array of SpatialTile objects.
    */
-  const auto& GetSpatialTiles() const {
-    return mTiles;
-  }
+  const auto& GetSpatialTiles() const { return mTiles; }
 
 private:
-  Ty mMinX{};          // x coordinate at the lower-left corner of region
-  Ty mMinY{};          // y coordinate at the lower-left corner of region
-  Ty mWidth{};         // width of region
-  Ty mHeight{};        // height of region
+  SpatialTile<Ty> mRange; // spatial range to divide into smaller tiles
   Ty mTileWidth{};     // width of tile
   Ty mTileHeight{};    // height of tile
   LayoutKind mLayoutkind{LayoutKind::eHORIZONTAL};  // major direction

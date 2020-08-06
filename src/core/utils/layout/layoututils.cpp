@@ -48,27 +48,4 @@ void FillCorners(const RasterWindow& win, std::array<Point2d, kNCP>& corners) {
   corners[6] = corners[0] + Point2d(0, win.numRows);
   corners[7] = corners[0] + Point2d(0, win.numRows / 2);
 }
-
-/**
- *  \brief fill grid UL corner positions at a given stride
- *  \return Returns number of corners
- */
-int FillGridCorners(const int dim, const int stride, std::vector<int>& gridCorners) {
-  for (int i = 0; i < dim; i += stride) {
-    gridCorners.push_back(i);
-  }
-  return int(gridCorners.size());
-}
-
-/**
- *  \brief fill grid node positions at a given stride
- *  \return Returns number of nodes
- */
-int FillGridNodes(const int dim, const int stride, std::vector<int>& gridNodes) {
-  for (int i = 0; i < dim - 1; i += stride) {
-    gridNodes.push_back(i);
-  }
-  gridNodes.push_back(dim - 1);
-  return int(gridNodes.size());
-}
 }

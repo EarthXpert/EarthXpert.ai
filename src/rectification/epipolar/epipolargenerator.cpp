@@ -440,8 +440,8 @@ void EpipolarGenerator::GeotransformTile(const int tileId, cv::Mat& tfmMat) {
 
   // grid col/row positions for rigorous geometry
   std::vector<int> gridCols, gridRows;
-  FillGridNodes(numCols, mStride, gridCols);
-  FillGridNodes(numRows, mStride, gridRows);
+  FillNodesByStride(numCols, mStride, gridCols);
+  FillNodesByStride(numRows, mStride, gridRows);
 
   RigorousGridNodes(tileId, tfmMat, gridCols, gridRows);
 

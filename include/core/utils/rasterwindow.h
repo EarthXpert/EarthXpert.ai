@@ -11,7 +11,8 @@
 
 namespace earthxpert {
 /**
- *  The structure RasterWindow contains the offset and size information.
+ *  The structure RasterWindow contains the offset and size information
+ *  of a discrete 2D range such as raster image.
  */
 struct EXCORE_EXPORTS RasterWindow /*: public Rect2i*/ {
   int colOffset{};

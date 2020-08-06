@@ -109,8 +109,37 @@ std::pair<int, int> EXCORE_EXPORTS EstimateTileSize(size_t memSize,
 void EXCORE_EXPORTS FillCorners(const RasterWindow& win, 
   std::array<Point2d, kNCP>& corners);
 
-int EXCORE_EXPORTS FillGridCorners(const int num,
-  const int stride, std::vector<int>& gridCorners);
-int EXCORE_EXPORTS FillGridNodes(const int num,
-  const int stride, std::vector<int>& gridNodes);
+/**
+ *  \brief fill grid UL corner positions at a given stride
+ *  \return Returns number of corners
+ */
+template <typename Ty> inline 
+int FillCornersByStride(const Ty dim, const Ty stride, std::vector<Ty>& corners) {
+  for (Ty i = 0; i < dim; i += stride) {
+    corners.push_back(i);
+  }
+  return int(corners.size());
+}
+
+/**
+ *  \brief fill grid node positions at a given stride
+ *  \return Returns number of nodes
+ */
+template <typename Ty> inline
+int FillNodesByStride(const Ty dim, const Ty stride, std::vector<Ty>& nodes) {
+  for (Ty i = 0; i < dim; i += stride) {
+    nodes.push_back(i);
+  }
+  nodes.push_back(dim);
+  return int(nodes.size());
+}
+
+template <> inline 
+int FillNodesByStride(const int dim, const int stride, std::vector<int>& nodes) {
+  for (int i = 0; i < dim - 1; i += stride) {
+    nodes.push_back(i);
+  }
+  nodes.push_back(dim - 1);
+  return int(nodes.size());
+}
 }
