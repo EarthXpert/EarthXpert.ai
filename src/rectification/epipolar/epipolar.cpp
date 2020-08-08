@@ -36,20 +36,17 @@ std::string GenerateEpipolar(const std::string& imgFile, EpipolarGenerator* epiG
   ss << boost::format("epi%1%_") % stride;
   auto epiFn = PathPrefixFilename(imgFile, ss.str());
   fs::path epiPath(outPath + epiFn);
-  if (fs::exists(epiPath)) {
-    fs::remove(epiPath);
-  }
-  std::string epiFile = epiPath.string();
-  std::cout << "epiFile: " << epiFile << std::endl;
+  RemoveFile(epiPath);
+  std::cout << "epiPath: " << epiPath << std::endl;
 
   auto [epiNumCols, epiNumRows] = epiModel->GetImageSize();
-  RasterWriter epiWriter(epiFile, format,
+  RasterWriter epiWriter(epiPath, format,
     epiNumCols, epiNumRows, gdalDT, numBands);
   //std::cout << "epiNumCols: " << epiNumCols << ", epiNumRows: " << epiNumRows << std::endl;
 
   epiGen->Process(reader, &epiWriter, epiModel);
   epiWriter.SetNodataValues(outBkgd);
-  return epiFile;
+  return epiPath.string();
 }
 }
 
@@ -103,7 +100,6 @@ void GenerateRationalEpipolar(const EpipolarOptions& epiOpt) {
   auto format = leftReader.GetFileFormat();
   auto gdalDT = leftReader.GetDataType();
   auto numBands = leftReader.GetNumBands();
-
   const int epiNumBands = (epiOpt.grey && 3 == numBands) ? 1 : numBands;
 
   auto rasResample = std::make_unique<RasterResampleCV>(epiOpt.resample);

@@ -23,6 +23,16 @@ std::string PathPrefixFilename(
   return fn;
 }
 
+bool RemoveAll(const fs::path filePath) {
+  if (!fs::exists(filePath)) return true;
+  return fs::remove_all(filePath);
+}
+
+bool RemoveFile(const fs::path filePath) {
+  if (!fs::exists(filePath)) return true;
+  return fs::remove(filePath);
+}
+
 /**
  *  \brief Obtain the ID of the physical hard drive where a specified path resides.
  *

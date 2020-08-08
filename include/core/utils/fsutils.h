@@ -19,4 +19,7 @@ namespace earthxpert::utils {
  */
 std::string EXCORE_EXPORTS PathPrefixFilename(
   const std::string& fileName, const std::string& prefix);
+
+bool EXCORE_EXPORTS RemoveAll(const fs::path filePath);
+bool EXCORE_EXPORTS RemoveFile(const fs::path filePath);
 } // namespace earthxpert::utils

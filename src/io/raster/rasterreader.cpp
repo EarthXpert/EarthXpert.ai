@@ -31,6 +31,9 @@ RasterReader::RasterReader(const std::string& imageFile, const std::vector<int>&
   Initialize(static_cast<GDALDataset*>(dataset));
 }
 
+RasterReader::RasterReader(const fs::path& imageFile, const std::vector<int>& bands)
+  : RasterReader(imageFile.string(), bands) {}
+
 /**
  *  \brief Construct reader object.
  *

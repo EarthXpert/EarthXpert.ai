@@ -36,6 +36,10 @@ PointcloudWriter::PointcloudWriter(const std::string& lasFile,
   ObtainLasInfo();
 }
 
+PointcloudWriter::PointcloudWriter(const fs::path& lasFile,
+  const FieldGroup fieldGroup, const LASquantizer& quantizer, const std::string format)
+  : PointcloudWriter(lasFile.string(), fieldGroup, quantizer, format) {}
+
 /**
  *  \brief Open/create the las file for write, default to XYZC fields
  *
@@ -45,7 +49,12 @@ PointcloudWriter::PointcloudWriter(const std::string& lasFile,
  */
 PointcloudWriter::PointcloudWriter(const std::string& lasFile,
   const LASquantizer& quantizer, const std::string format)
-  : PointcloudWriter(lasFile, {FieldGroup::kBITXC}, quantizer, format) {
+  : PointcloudWriter(lasFile, { FieldGroup::kBITXC }, quantizer, format) {
+}
+
+PointcloudWriter::PointcloudWriter(const fs::path& lasFile,
+  const LASquantizer& quantizer, const std::string format)
+  : PointcloudWriter(lasFile.string(), quantizer, format) {
 }
 
 /**

@@ -32,6 +32,9 @@ PointcloudReader::PointcloudReader(const std::string& lasFile,
   ObtainLasInfo();
 }
 
+PointcloudReader::PointcloudReader(const fs::path& lasFile, const FieldGroup fieldGroup) 
+  : PointcloudReader(lasFile.string(), fieldGroup) {}
+
 /**
  *  \return Returns metadata tags
  */

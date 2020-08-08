@@ -28,6 +28,9 @@ VectorReader::VectorReader(const std::string& vecFile, const std::vector<LayerIn
   Initialize(static_cast<GDALDataset*>(dataset));
 }
 
+VectorReader::VectorReader(const fs::path& vecFile, const std::vector<LayerInfo>& layersInfo)
+  : VectorReader(vecFile.string(), layersInfo) {}
+
 /**
  *  \brief Construct reader object.
  *

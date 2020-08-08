@@ -27,6 +27,9 @@ RasterWriter::RasterWriter(const std::string& imageFile, const std::vector<int>&
   Initialize(mDataset, bands);
 }
 
+RasterWriter::RasterWriter(const fs::path& imageFile, const std::vector<int>& bands)
+  : RasterWriter(imageFile.string(), bands) {}
+
 /**
  *  \brief Construct writer object for newly created image file.
  *
@@ -39,10 +42,15 @@ RasterWriter::RasterWriter(const std::string& imageFile, const std::vector<int>&
  */
 RasterWriter::RasterWriter(const std::string& imageFile, const std::string format,
   int numCols, int numRows, GDALDataType dataType, int numBands) {
-  mDataset = thirdparty::CreateRasterDataset(imageFile, 
+  mDataset = thirdparty::CreateRasterDataset(imageFile,
     format, numCols, numRows, dataType, numBands);
 
   Initialize(mDataset, std::vector<int>{});
+}
+
+RasterWriter::RasterWriter(const fs::path& imageFile, const std::string format,
+  int numCols, int numRows, GDALDataType dataType, int numBands) 
+  : RasterWriter(imageFile.string(), format, numCols, numRows, dataType, numBands) {
 }
 
 /**
