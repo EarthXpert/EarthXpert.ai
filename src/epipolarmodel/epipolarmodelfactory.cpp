@@ -17,6 +17,7 @@
 #include <cassert>
 #include <cmath>
 #include <deque>
+#include <numeric>
 
 using namespace earthxpert;
 
@@ -194,7 +195,6 @@ double EpipolarModelFactory::CalcEpiRotation(const ISensorModel* leftModel,
   }
 
   std::vector<Point2d> epiDir;  // epipolar direction vectors at corners
-  std::vector<double> dirLen;  // length of direction vectors
   for (auto& point : points) {
     Point3d lsr{ point.x(), point.y(), height };
     auto lph = Rad2Deg(ee->LSRToLPH(lsr));
@@ -210,14 +210,28 @@ double EpipolarModelFactory::CalcEpiRotation(const ISensorModel* leftModel,
 
     const Point2d dir{ rightRect.x() - leftRect.x(), rightRect.y() - leftRect.y() };
     epiDir.push_back(dir);
-    dirLen.push_back(cv::norm(dir));
   }
 
-  // select the longest vector as direction having largest parallax
   // \todo plot all directions. select median/average of the three longest vectors?
-  const auto index = std::distance(std::begin(dirLen),
-    std::max_element(std::begin(dirLen), std::end(dirLen)));
-  Point2d ed{ epiDir[index] };
+  Point2d ed;
+
+  switch (mEpiDir) {
+  case eLONGEST: {// select the longest vector as direction having largest parallax
+    auto it = std::max_element(epiDir.cbegin(), epiDir.cend(),
+      [](const Point2d& da, const Point2d& db) { 
+        return cv::norm(da) < cv::norm(db); });
+    ed = epiDir[std::distance(epiDir.cbegin(), it)];
+  }
+  break;
+
+  case eOVERALL: {// sum all direction vectors
+    ed = std::accumulate(epiDir.cbegin(), epiDir.cend(), Point2d());
+  }
+  break;
+
+  default:
+    assert(false);
+  }
 
   if ((fabs(ed.x) > fabs(ed.y) && 0 > ed.x) ||
     (fabs(ed.x) < fabs(ed.y) && 0 < ed.y)) {

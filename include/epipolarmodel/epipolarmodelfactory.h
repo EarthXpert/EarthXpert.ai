@@ -36,6 +36,12 @@ public:
   };
   using EpiOpt = EpiOutputOption;
 
+  // direction of largest parallax
+  enum EpiDirection {
+    eLONGEST, // select the longest vector
+    eOVERALL  // sum all direction vectors
+  };
+
   EpipolarModelFactory(EpiOutputOption outOpt);
   EpipolarModelFactory(const std::string& outOpt);
   ~EpipolarModelFactory() = default;
@@ -72,6 +78,7 @@ private:
   static constexpr double kHgtTol{ 0.01 }; // Height tolerance [1cm]: good enough
 
   EpiOutputOption mOutOpt{ EpiOpt::eFULL };
+  EpiDirection mEpiDir{ eOVERALL };
 
   double EpipolarModelFactory::CalcEpiRotation(const ISensorModel* leftModel,
     const ISensorModel* rightModel, const EarthEllipsoid* ee, double height, 

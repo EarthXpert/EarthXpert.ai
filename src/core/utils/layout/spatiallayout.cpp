@@ -67,8 +67,8 @@ int SpatialLayout<Ty>::SetNumTiles(const int numTiles) {
   Ty tileWidth = mRange.width / (numSqTiles * ratio);
   Ty tileHeight = mRange.height / numSqTiles;
 
-  //tileWidth = std::max(1, int(tileWidth / kTileDim)) * kTileDim;
-  //tileHeight = std::max(1, int(tileHeight / kTileDim)) * kTileDim;
+  //tileWidth = ceil(tileWidth / kTileDim) * kTileDim;
+  //tileHeight = ceil(tileHeight / kTileDim) * kTileDim;
   return SetTileSize(tileWidth, tileHeight);
 }
 

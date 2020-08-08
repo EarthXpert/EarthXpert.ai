@@ -17,6 +17,10 @@ enum MatOrder {
   eROWMAJOR
 };
 
+constexpr int DivideUp(const int num, const int den) {
+  return (num - 1) / den + 1;
+}
+
 // \return Return exponent of 2
 constexpr inline size_t exp2(const size_t n) {
   return size_t(1) << n;

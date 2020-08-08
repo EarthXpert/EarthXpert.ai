@@ -5,6 +5,7 @@
 #include "core/utils/rasterlayout.h"
 #include "core/utils/layoututils.h"
 #include "core/math/constants.h"
+#include "core/math/math.h"
 
 #include <algorithm>
 #include <stdexcept>
@@ -64,8 +65,8 @@ int RasterLayout::SetNumWindows(const int numWins) {
   int winNumCols = std::lround(mRange.numCols / (numSqWins * ratio));
   int winNumRows = std::lround(mRange.numRows / numSqWins);
   
-  winNumCols = std::max(1, (winNumCols / kTileDim)) * kTileDim;
-  winNumRows = std::max(1, (winNumRows / kTileDim)) * kTileDim;
+  winNumCols = DivideUp(winNumCols, kTileDim) * kTileDim;
+  winNumRows = DivideUp(winNumRows, kTileDim) * kTileDim;
   return SetWindowSize(winNumCols, winNumRows);
 }
 

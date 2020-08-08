@@ -21,6 +21,7 @@ std::pair<int, int> EstimateTileSize(const size_t memSize, const int bpp,
   int tileNumCols = (tileDim < numCols) ? tileDim : numCols;
   int tileNumRows = (tileDim < numRows) ? tileDim : numRows;
 
+  //  \brief balance tile size
   //  \param [in] num total number of pixels
   //  \param [in] tileNum number of tile pixels
   auto balNumTiles = [kTile](const int num, const int tileNum) {

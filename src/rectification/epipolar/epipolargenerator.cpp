@@ -122,8 +122,6 @@ void EpipolarGenerator::LayoutTiles() {
 
   mPerf.numImgTiles = DefineTiles(tileNumCols, tileNumRows);
   
-  // \todo RefineTileSize()
-
   if (0 == mPerf.numImgTiles)
     throw EpipolarError("LayoutTiles: empty tiles");
 
@@ -136,7 +134,9 @@ void EpipolarGenerator::LayoutTiles() {
  */
 int EpipolarGenerator::DefineTiles(const int tileNumCols, const int tileNumRows) {
   RasterLayout rasLayout(mEpiNumCols, mEpiNumRows, tileNumCols, tileNumRows);
-
+  if (kMinNumTiles > rasLayout.GetNumWindows()) {
+    rasLayout.SetNumWindows(kMinNumTiles);
+  }
   mPerf.numTiles = mNumTiles = rasLayout.GetNumWindows();
   mTiles.resize(mNumTiles);
 
@@ -257,7 +257,7 @@ void EpipolarGenerator::AllocateBuffers() {
 }
 
 /**
- *  \brief
+ *  \brief reset buffers to reduce conditional branches
  *
  *  \param [in] tileId the index of tile to reset
  */
@@ -267,7 +267,7 @@ void EpipolarGenerator::ResetBuffers(const int tileId) {
 }
 
 /**
- *  \brief
+ *  \brief swap read/write and work buffers for overlapping
  */
 void EpipolarGenerator::SwapBuffers() {
   std::swap(mImgBufRead, mImgBufWork);
@@ -275,7 +275,7 @@ void EpipolarGenerator::SwapBuffers() {
 }
 
 /**
- *  \brief
+ *  \brief free buffers in case not needed any more
  */
 void EpipolarGenerator::FreeBuffers() {
   mImgBufRead.reset();
