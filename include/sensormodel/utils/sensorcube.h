@@ -16,8 +16,8 @@ namespace earthxpert {
 class ISensorModel;
 
 /**
- *  \brief the class SensorCube creates a 3d cube of image positions and
- *  corresponding ground positions at multiple elevation layers.
+ *  \brief the class SensorCube creates a 2d grid of image positions and
+ *  corresponding 3d cube of ground positions at multiple elevation layers.
  */
 class EXSENSORMODEL_EXPORTS SensorCube {
 public:

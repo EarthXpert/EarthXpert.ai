@@ -6,6 +6,7 @@ message(STATUS "GDAL_LIBRARY: ${GDAL_LIBRARY}")
 message(STATUS "GETTEXT_LIBRARY: ${GETTEXT_LIBRARY}")
 message(STATUS "GTEST_BOTH_LIBRARIES: ${GTEST_BOTH_LIBRARIES}")
 message(STATUS "LASLIB_LIBRARY: ${LASLIB_LIBRARY}")
+message(STATUS "LIBXML2_LIBRARIES: ${LIBXML2_LIBRARIES}")
 message(STATUS "OpenCV_LIBS: ${OpenCV_LIBS}")
 message(STATUS "PDAL_LIBRARIES: ${PDAL_LIBRARIES}")
 message(STATUS "Protobuf_LIBRARIES: ${Protobuf_LIBRARIES}")
@@ -26,7 +27,8 @@ set(ex3rdparty_srcs "boost/exboost.cpp"
        "protobuf/exprotobuf.cpp"
        "qt/exqt.cpp"
        "sltbench/exsltbench.cpp"
-       "thrust/exthrust.cpp")
+       "thrust/exthrust.cpp"
+       "xml/exxml.cpp")
 earthxpert_add_library(ex3rdparty "api"
   SRCS ${ex3rdparty_srcs}
   ITEMS Boost::boost Boost::filesystem ${CERES_LIBRARY} ${CGAL_LIBRARIES} ${GDAL_LIBRARY} 
