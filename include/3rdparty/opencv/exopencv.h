@@ -11,6 +11,8 @@
 #include <cmath>
 #include <type_traits>
 
+namespace x2d = cv::xfeatures2d;
+
 namespace earthxpert {      // \todo ::thirdparty
 template<typename Ty> inline
 cv::Point_<Ty> operator+(const cv::Point_<Ty>& p, const Ty v) {

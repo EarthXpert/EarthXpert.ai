@@ -86,8 +86,8 @@ private:
   int mStride{1}; // stride for rigorous epipolar geometry
   GeotransformAlgo mGeoAlgo{eFULL};
 
-  void SetImageParams(IRasterReader* const img);
-  void SetEpipolarParams(IRasterWriter* const epi, IEpipolarModel const* epiModel);
+  void SetImageParams(IRasterReader* img);
+  void SetEpipolarParams(IRasterWriter* epi, IEpipolarModel const* epiModel);
 
   std::vector<TileInfo> mTiles;
 

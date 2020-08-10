@@ -3,6 +3,7 @@ project(epipolar)
 add_definitions(-DEXEPIPOLAR_API)
 set(epipolar_srcs "epipolar.cpp"
        "epipolargenerator.cpp"
+       "epipolargenerator_layout.cpp"
        "utils.cpp")
 earthxpert_add_library(epipolar "api"
   SRCS ${epipolar_srcs}

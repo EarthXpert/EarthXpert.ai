@@ -7,6 +7,8 @@ set(sfm_srcs "densematch/circleneighbor.cpp"
        "densematch/depthmatch.cpp"
        "densematch/disparitymatch.cpp"
        "densematch/rectneighbor.cpp"
+       "sparsematch/featuredetect.cpp"
+       "sparsematch/featuredetect_layout.cpp"
        "sparsematch/sparsematch.cpp")
 earthxpert_add_library(sfm "api"
   SRCS ${sfm_srcs}
