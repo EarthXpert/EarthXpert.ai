@@ -5,7 +5,7 @@
 #pragma once
 
 #include "rectification/epipolar/exepipolar.h"
-#include "rectification/epipolar/utils.h"
+#include "rectification/epipolar/epiperf.h"
 #include "epipolarmodel/iepipolarmodel.h"
 #include "core/system/clock.h"
 #include "core/utils/rasterwindow.h"

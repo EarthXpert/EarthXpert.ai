@@ -6,7 +6,9 @@
 
 #include "sfm/sparsematch/ifeaturedetect.h"
 #include "3rdparty/opencv/exopencv.h"
+#include "core/system/clock.h"
 #include "core/utils/rasterwindow.h"
+#include "sfm/sparsematch/featdetectperf.h"
 
 namespace earthxpert {
 class IRasterReader;
@@ -72,6 +74,10 @@ private:
   void ReadTile(int tileId);
   void ProcessTile(int tileId);
   void WriteTile(int tileId);
+
+  // performance
+  WallClock mClock;
+  FeatDetectPerf mPerf;
 
   // cached information
   int mNumPT{ 1 };    // number of processing threads

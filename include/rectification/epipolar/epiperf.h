@@ -76,5 +76,5 @@ struct EpiGenPerf {
   }
 };
 
-std::string ToString(const EpiGenPerf* perf);
+std::string EXEPIPOLAR_EXPORTS ToString(const EpiGenPerf* perf);
 }

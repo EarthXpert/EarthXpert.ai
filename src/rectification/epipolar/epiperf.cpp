@@ -2,7 +2,7 @@
  *  Copyright (c) 2020.  All rights reserved.
  * -----------------------------------------------------------------------------
  */
-#include "rectification/epipolar/utils.h"
+#include "rectification/epipolar/epiperf.h"
 
 #include <boost/format.hpp>
 #include <numeric>

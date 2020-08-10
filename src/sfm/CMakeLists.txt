@@ -7,6 +7,7 @@ set(sfm_srcs "densematch/circleneighbor.cpp"
        "densematch/depthmatch.cpp"
        "densematch/disparitymatch.cpp"
        "densematch/rectneighbor.cpp"
+       "sparsematch/featdetectperf.cpp"
        "sparsematch/featuredetect.cpp"
        "sparsematch/featuredetect_layout.cpp"
        "sparsematch/sparsematch.cpp")

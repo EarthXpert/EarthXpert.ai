@@ -29,6 +29,8 @@ void FeatureDetect::Initialize() {
 }
 
 bool FeatureDetect::Process(IRasterReader* const img, cv::FileStorage* fs) {
+  mPerf.Clear();
+  auto start = mClock.TimeSinceStart();
 
   try {
     SetImageParams(img);
@@ -40,6 +42,8 @@ bool FeatureDetect::Process(IRasterReader* const img, cv::FileStorage* fs) {
   catch (...) {
     throw;
   }
+
+  mPerf.tmTotal = mClock.TimeSinceStart() - start;
   return true;
 }
 
@@ -140,9 +144,12 @@ void FeatureDetect::ReadTile(const int tileId) {
   if (!TileId(tileId)) return;
   const auto [colOffset, rowOffset, numCols, numRows] = ImgTile(tileId);
   if (0 == numCols || 0 == numRows) return;
+  const auto start = mClock.TimeSinceStart();
 
   CvRaster raster(numCols, numRows, mImgCvDT, colOffset, rowOffset, mImgBufRead.get());
   mImgReader->ReadRaster(&raster);
+
+  mPerf.tmRead += mClock.TimeSinceStart() - start;
 }
 
 /**
@@ -152,6 +159,9 @@ void FeatureDetect::ReadTile(const int tileId) {
  */
 void FeatureDetect::ProcessTile(const int tileId) {
   if (!TileId(tileId)) return;
+  const auto start = mClock.TimeSinceStart();
+
+  mPerf.tmProcess += mClock.TimeSinceStart() - start;
 }
 
 /**
@@ -161,6 +171,9 @@ void FeatureDetect::ProcessTile(const int tileId) {
  */
 void FeatureDetect::WriteTile(const int tileId) {
   if (!TileId(tileId)) return;
+  const auto start = mClock.TimeSinceStart();
 
   *mFS << mDctBufWrite;
+
+  mPerf.tmWrite += mClock.TimeSinceStart() - start;
 }

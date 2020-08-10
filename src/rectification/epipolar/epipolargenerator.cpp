@@ -257,9 +257,9 @@ void EpipolarGenerator::ProcessTile(const int tileId) {
   if (!TileId(tileId)) return;
   const auto [imgNumCols, imgNumRows] = ImgTile(tileId).GetSize();
   if (0 == imgNumCols || 0 == imgNumRows) return;
+  const auto start = mClock.TimeSinceStart();
 
   const auto [colOffset, rowOffset, numCols, numRows] = EpiTile(tileId);
-  const auto start = mClock.TimeSinceStart();
   memset(mMaskBuf.get(), eMK_BKGD, size_t(numCols) * numRows);
 
   cv::Mat imgMat(imgNumRows, imgNumCols, mImgCvDT, mImgBufWork.get());
