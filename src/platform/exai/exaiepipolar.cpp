@@ -7,7 +7,7 @@
 #include "3rdparty/gdal/exgdal.h"
 #include "core/exceptions/exexcept.h"
 #include "core/utils/rasterresample.h"
-#include "sensormodel/utils/utils.h"
+#include "sensormodel/utils/smutils.h"
 
 #include <iostream>
 

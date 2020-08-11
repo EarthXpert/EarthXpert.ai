@@ -5,7 +5,7 @@
 #include "3rdparty/gtest/gtest_main.h"
 #include "testconfig.h"
 
-#include "core/math/utils.h"
+#include "core/math/mutils.h"
 #include "core/utils/unitutils.h"
 #include "marshaller/rationalmodelmarshaller.h"
 #include "sensormodel/rationalmodel.h"

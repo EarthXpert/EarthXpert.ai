@@ -5,11 +5,11 @@
 #include "3rdparty/gtest/gtest_main_gdal.h"
 #include "testconfig.h"
 
-#include "core/math/utils.h"
+#include "core/math/mutils.h"
 #include "epipolarmodel/epipolarmodel.h"
 #include "epipolarmodel/epipolarmodelfactory.h"
 #include "marshaller/rationalmodelmarshaller.h"
-#include "sensormodel/utils/utils.h"
+#include "sensormodel/utils/smutils.h"
 
 #include <iostream>
 

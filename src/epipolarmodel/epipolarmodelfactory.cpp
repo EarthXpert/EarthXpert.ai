@@ -6,12 +6,12 @@
 #include "3rdparty/gettext/exgettext.h"
 #include "core/utils/typehelper.h"
 #include "core/exceptions/exexcept.h"
-#include "core/math/utils.h"
+#include "core/math/mutils.h"
 #include "core/utils/geomutils.h"
 #include "epipolarmodel/epipolarmodel.h"
 #include "sensormodel/framemodel.h"
 #include "sensormodel/rationalmodel.h"
-#include "sensormodel/utils/utils.h"
+#include "sensormodel/utils/smutils.h"
 
 #include <algorithm>
 #include <cassert>

@@ -6,7 +6,8 @@ set(epipolarmodel_srcs "epipolarmodel.cpp"
        "epipolarrect.cpp"
        "epipolarsensormodel.cpp"
        "frameepipolarmodel.cpp"
-       "utils.cpp")
+       "utils/epiutils.cpp"
+       "utils/evalepipolarmodel.cpp")
 earthxpert_add_library(epipolarmodel "api"
   SRCS ${epipolarmodel_srcs}
   ITEMS ex3rdparty core sensormodel 

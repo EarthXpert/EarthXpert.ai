@@ -11,14 +11,22 @@ using namespace earthxpert;
 /**
  *  \return Returns accuracies in image [pixels] and ground [mm]
  */
-std::pair<float, double> EvalSensorModel::EvalModel(const ISensorModel* model) {
+std::pair<float, double> 
+EvalSensorModel::EvalModel(const ISensorModel* model) {
   return {};
 }
 
-std::pair<float, double> EvalSensorModel::EvalFrameModel(const ISensorModel* model) {
+std::pair<float, double> 
+EvalSensorModel::EvalFrameModel(const ISensorModel* model) {
   return {};
 }
 
-std::pair<float, double> EvalSensorModel::EvalRationalModel(const RationalModel* model) {
+std::pair<float, double> 
+EvalSensorModel::EvalRationalModel(const RationalModel* model) {
+  return {};
+}
+
+float EvalSensorModel::EvalRationalModel(const RationalModel* ellModel, 
+  const RationalModel* mslModel) {
   return {};
 }

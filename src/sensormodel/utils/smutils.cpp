@@ -2,7 +2,7 @@
  *  Copyright (c) 2018.  All rights reserved.
  * -----------------------------------------------------------------------------
  */
-#include "sensormodel/utils/utils.h"
+#include "sensormodel/utils/smutils.h"
 #include "core/utils/unitutils.h"
 #include "core/spatialref/earthellipsoid.h"
 
