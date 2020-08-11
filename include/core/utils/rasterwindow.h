@@ -20,6 +20,28 @@ struct EXCORE_EXPORTS RasterWindow /*: public Rect2i*/ {
   int numCols{};
   int numRows{};
 
+  /**
+   *  Equality operator
+   *
+   *  \param [in] rhs Object to compare with
+   *  \return true if same object or equal, false otherwise.
+   */
+  bool operator==(const RasterWindow& rhs) const {
+    if (colOffset != rhs.colOffset || rowOffset != rhs.rowOffset) return false;
+    if (numCols != rhs.numCols || numRows != rhs.numRows) return false;
+    return true;
+  }
+
+  /**
+   *  Test inequality.
+   *
+   *  \param [in] rhs Object to compare with
+   *  \return true if not equal.
+   */
+  bool operator!=(const RasterWindow& rhs) const {
+    return !(operator==(rhs));
+  }
+
   inline void SetOffsets(const Point2i offset) {
     SetOffsets(offset.x, offset.y);
   }

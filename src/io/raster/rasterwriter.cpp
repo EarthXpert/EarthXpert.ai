@@ -41,7 +41,7 @@ RasterWriter::RasterWriter(const fs::path& imageFile, const std::vector<int>& ba
  *  \param [in] numBands number of bands in the image
  */
 RasterWriter::RasterWriter(const std::string& imageFile, const std::string format,
-  int numCols, int numRows, GDALDataType dataType, int numBands) {
+  const int numCols, const int numRows, const GDALDataType dataType, const int numBands) {
   mDataset = thirdparty::CreateRasterDataset(imageFile,
     format, numCols, numRows, dataType, numBands);
 
@@ -49,7 +49,7 @@ RasterWriter::RasterWriter(const std::string& imageFile, const std::string forma
 }
 
 RasterWriter::RasterWriter(const fs::path& imageFile, const std::string format,
-  int numCols, int numRows, GDALDataType dataType, int numBands) 
+  const int numCols, const int numRows, const GDALDataType dataType, const int numBands)
   : RasterWriter(imageFile.string(), format, numCols, numRows, dataType, numBands) {
 }
 

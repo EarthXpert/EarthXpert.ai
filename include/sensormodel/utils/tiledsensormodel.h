@@ -5,14 +5,18 @@
 #pragma once
 
 #include "sensormodel/sensormodel.h"
+#include "core/utils/rasterwindow.h"
 
 namespace earthxpert {
 /**
  *  The class TiledSensorModel implements the multi-tile logic.
+ *
+ *  \ref OGC Universal Sensor Model
  */
 class EXSENSORMODEL_EXPORTS TiledSensorModel final : public SensorModel {
 public:
-  TiledSensorModel();
+  TiledSensorModel(std::vector<RasterWindow>&& tiles, 
+    std::vector<std::unique_ptr<ISensorModel>>&& models);
 
   TiledSensorModel(const TiledSensorModel& rhs);
   TiledSensorModel(TiledSensorModel&& rhs) noexcept;
@@ -94,8 +98,19 @@ public:
     */
   double GetMeanHeight() const noexcept override;
 
-protected:
-  std::vector<std::unique_ptr<ISensorModel>> mModels;
+  int GetNumTiles() const noexcept { return mNumTiles; }
+
+  const std::vector<RasterWindow>& GetTiles() const noexcept { return mTiles; }
+
+  const std::vector<std::unique_ptr<ISensorModel>>& GetModels() const noexcept {
+    return mModels;
+  }
+
+private:
+  std::vector<RasterWindow> mTiles;   // layout of the entire scene
+  std::vector<std::unique_ptr<ISensorModel>> mModels; // one model per tile
+
+  void Initialize();
 
   bool EqualTo(const ISensorModel& rhs) const override;
   void CopyFrom(const TiledSensorModel& rhs);
@@ -103,5 +118,6 @@ protected:
   void Clear() noexcept;
 
   // cached information
+  int mNumTiles{};
 };
 } // namespace earthxpert

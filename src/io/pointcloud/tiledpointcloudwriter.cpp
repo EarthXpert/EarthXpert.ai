@@ -10,3 +10,22 @@
 
 using namespace earthxpert;
 using pdt = earthxpert::thirdparty::PointDataTraits;
+
+TiledPointcloudWriter::TiledPointcloudWriter(std::vector<SpatialTileD>&& tiles,
+  std::vector<std::string>&& lasFiles, const FieldGroup fieldGroup,
+  std::vector<LASquantizer>&& quantizers, const std::string format)
+  : mTiles(std::move(tiles)), mLasFiles(std::move(lasFiles)), 
+    mFieldGroup(fieldGroup), mQuantizers(quantizers) {
+  Initialize();
+}
+
+TiledPointcloudWriter::TiledPointcloudWriter(std::vector<SpatialTileD>&& tiles,
+  std::vector<std::string>&& lasFiles, std::vector<LASquantizer>&& quantizers,
+  const std::string format) : TiledPointcloudWriter(std::move(tiles), 
+    std::move(lasFiles), { FieldGroup::kBITXC }, std::move(quantizers), format) {
+
+}
+
+void TiledPointcloudWriter::Initialize() {
+  mNumTiles = int(mTiles.size());
+}

@@ -3,6 +3,8 @@
  * -----------------------------------------------------------------------------
  */
 #include "sensormodel/utils/tiledsensormodel.h"
+#include "3rdparty/gettext/exgettext.h"
+#include "core/exceptions/exexcept.h"
 
 #include <algorithm>
 #include <cassert>
@@ -10,7 +12,16 @@
 
 using namespace earthxpert;
 
-TiledSensorModel::TiledSensorModel() {
+TiledSensorModel::TiledSensorModel(std::vector<RasterWindow>&& tiles,
+  std::vector<std::unique_ptr<ISensorModel>>&& models)
+  : mTiles(std::move(tiles)), mModels(std::move(models)) {
+  Initialize();
+}
+
+void TiledSensorModel::Initialize() {
+  mNumTiles = int(mTiles.size());
+  if (mNumTiles != int(mModels.size()))
+    throw std::invalid_argument(_("Incompatible layout"));
 }
 
 /**
@@ -63,7 +74,14 @@ TiledSensorModel& TiledSensorModel::operator=(TiledSensorModel&& rhs) noexcept {
  */
 bool TiledSensorModel::operator==(const TiledSensorModel& rhs) const {
   if (this != &rhs) {
-      return false;
+    if (mNumTiles != rhs.GetNumTiles()) return false;
+
+    auto& rhsTiles = rhs.GetTiles();
+    auto& rhsModels = rhs.GetModels();
+    for (int t = 0; t < mNumTiles; ++t) {
+      if (mTiles[t] != rhsTiles[t]) return false;
+      if (mModels[t] != rhsModels[t]) return false;
+    }
   }
   return true;
 }
