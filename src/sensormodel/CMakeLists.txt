@@ -31,6 +31,7 @@ set(sensormodel_srcs "ads/adsmodel.cpp"
        "utils/sensorcube.cpp"
        "utils/stereomodel.cpp"
        "utils/stereomodelfactory.cpp"
+       "utils/tiledsensormodel.cpp"
        "utils/utils.cpp"
        "sensormodel.cpp"
        "sensormodelfactory.cpp")

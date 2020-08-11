@@ -1,10 +1,16 @@
 project(dataio)
 
 add_definitions(-DEXIO_API)
-set(dataio_srcs "pointcloud/pointcloudreader.cpp"
+set(dataio_srcs "pointcloud/tiledpointcloudreader.cpp"
+       "pointcloud/tiledpointcloudwriter.cpp"
+       "pointcloud/pointcloudreader.cpp"
        "pointcloud/pointcloudwriter.cpp"
+       "raster/tiledrasterreader.cpp"
+       "raster/tiledrasterwriter.cpp"
        "raster/rasterreader.cpp"
        "raster/rasterwriter.cpp"
+       "vector/tiledvectorreader.cpp"
+       "vector/tiledvectorwriter.cpp"
        "vector/vectorreader.cpp"
        "vector/vectorwriter.cpp")
 earthxpert_add_library(dataio "api"
