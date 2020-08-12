@@ -26,7 +26,6 @@ template <typename Ty> class EXCORE_EXPORTS InterpCube {
 public:
   using ValueType = Ty;
 
-  InterpCube() {}
   InterpCube(unsigned int dim, const cv::Point3_<Ty>& min,
     const cv::Point3_<Ty>& max, const cv::Point3_<Ty>& spc);
   InterpCube(unsigned int dim, Ty minX, Ty minY, Ty minZ,
@@ -46,18 +45,6 @@ public:
   }
 
   /**
-   * Set the dimension of points that are stored in the grid.
-   *
-   * \param [in] dim New dimension of points for the grid
-   */
-  void SetDimension(const unsigned int dim) { mDim = dim; }
-
-  void LayoutNodes(const cv::Point3_<Ty>& min,
-    const cv::Point3_<Ty>& max, const cv::Point3_<Ty>& spc);
-  void LayoutNodes(Ty minX, Ty minY, Ty minZ, Ty maxX, Ty maxY, Ty maxZ,
-    Ty spcX, Ty spcY, Ty spcZ);
-
-  /**
    * Interpolate a value for the given X,Y,Z position.
    */
   void GetVal(cv::Point3_<Ty> point, Ty *const val) const {
@@ -69,8 +56,7 @@ public:
   Ty GetVal1(cv::Point3_<Ty> point) const {
     return GetVal1(point.x, point.y, point.z);
   }
-  Ty GetVal1(Ty X, Ty Y, Ty Z) const
-  {
+  Ty GetVal1(Ty X, Ty Y, Ty Z) const {
     assert(1 <= mDim);
     Ty val;
     GetVal(X, Y, Z, &val);
@@ -81,8 +67,7 @@ public:
   std::pair<Ty, Ty> GetVal2(cv::Point3_<Ty> point) const {
     return GetVal2(point.x, point.y, point.z);
   }
-  std::pair<Ty, Ty> GetVal2(Ty X, Ty Y, Ty Z) const
-  {
+  std::pair<Ty, Ty> GetVal2(Ty X, Ty Y, Ty Z) const {
     assert(2 <= mDim);
     Ty val[2];
     GetVal(X, Y, Z, val);
@@ -93,8 +78,7 @@ public:
   Tuple3<Ty> GetVal3(cv::Point3_<Ty> point) const {
     return GetVal3(point.x, point.y, point.z);
   }
-  Tuple3<Ty> GetVal3(Ty X, Ty Y, Ty Z) const
-  {
+  Tuple3<Ty> GetVal3(Ty X, Ty Y, Ty Z) const {
     assert(3 <= mDim);
     Ty val[3];
     GetVal(X, Y, Z, val);
@@ -157,9 +141,7 @@ public:
    *
    * \return Returns size of the data array in bytes.
    */
-  size_t GetSizeBytes() const {
-    return sizeof(Ty) * mNumX * mNumY * mNumZ * mDim;
-  }
+  size_t GetSizeBytes() const { return sizeof(Ty) * mNumX * mNumY * mNumZ * mDim; }
 
 private:
   unsigned int mDim{ 1 };   // Dimension of node points stored in the cube.
@@ -173,6 +155,18 @@ private:
   Ty mSpcY{ 1 };           // Y coordinate spacing of cube points
   Ty mSpcZ{ 1 };           // Z coordinate spacing of cube points
   std::vector<Ty> mCube; // Array of target coordinates for node points
+
+  /**
+   * Set the dimension of points that are stored in the grid.
+   *
+   * \param [in] dim New dimension of points for the grid
+   */
+  void SetDimension(const unsigned int dim) { mDim = dim; }
+
+  void LayoutNodes(const cv::Point3_<Ty>& min,
+    const cv::Point3_<Ty>& max, const cv::Point3_<Ty>& spc);
+  void LayoutNodes(Ty minX, Ty minY, Ty minZ, 
+    Ty length, Ty width, Ty height, Ty spcX, Ty spcY, Ty spcZ);
 
   void CopyFrom(const InterpCube &rhs);
   void MoveFrom(InterpCube &&rhs) noexcept;

@@ -84,26 +84,27 @@ bool InterpCube<Ty>::operator!=(const InterpCube &rhs) const {
 template <typename Ty>
 void InterpCube<Ty>::LayoutNodes(const cv::Point3_<Ty>& min,
   const cv::Point3_<Ty>& max, const cv::Point3_<Ty>& spc) {
-  LayoutNodes(min.x, min.y, min.z, max.x, max.y, max.z, spc.x, spc.y, spc.z);
+  LayoutNodes(min.x, min.y, min.z, max.x-min.x, max.y-min.y, 
+    max.z-min.z, spc.x, spc.y, spc.z);
 }
 
 /**
  * Allocate nodes large enough to cover the cube at the provided spacing.
  *
- * \param [in] minX Minimum X-coordinate to cover
- * \param [in] minY Minimum Y-coordinate to cover
- * \param [in] minZ Minimum Z-coordinate to cover
- * \param [in] maxX Maximum X-coordinate to cover
- * \param [in] maxXY Maximum Y-coordinate to cover
- * \param [in] maxXZ Maximum Z-coordinate to cover
+ * \param [in] minX Minimum X-coordinate 
+ * \param [in] minY Minimum Y-coordinate 
+ * \param [in] minZ Minimum Z-coordinate 
+ * \param [in] legnth horizontal length to cover
+ * \param [in] width horizontal width to cover
+ * \param [in] height vertical extent to cover
  * \param [in] spcX X spacing of cube points
  * \param [in] spcY Y spacing of cube points
  * \param [in] spcZ Z spacing of cube points
  */
 template <typename Ty>
 void InterpCube<Ty>::LayoutNodes(const Ty minX,
-  const Ty minY, const Ty minZ, const Ty maxX, const Ty maxY,
-  const Ty maxZ, const Ty spcX, const Ty spcY, const Ty spcZ) {
+  const Ty minY, const Ty minZ, const Ty length, const Ty width,
+  const Ty height, const Ty spcX, const Ty spcY, const Ty spcZ) {
 }
 
 /**

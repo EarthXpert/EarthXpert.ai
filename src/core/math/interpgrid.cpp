@@ -30,7 +30,15 @@ InterpGrid<Ty>::InterpGrid(const unsigned int dim, const Ty minX, const Ty minY,
   const Ty maxX, const Ty maxY, const Ty spcX, const Ty spcY) 
     : mDim(dim) {
   static_assert(std::is_floating_point_v<Ty>);
-  LayoutNodes(minX, minY, maxX, maxY, spcX, spcY);
+  LayoutNodes(minX, minY, maxX-minX, maxY-minY, spcX, spcY);
+}
+
+template <typename Ty>
+InterpGrid<Ty>::InterpGrid(const unsigned int dim,
+  const SpatialTile<Ty>& range, const Ty spcX, const Ty spcY) 
+  : mDim(dim) {
+  static_assert(std::is_floating_point_v<Ty>);
+  LayoutNodes(range, spcX, spcY);
 }
 
 /**
@@ -119,16 +127,16 @@ bool InterpGrid<Ty>::operator!=(const InterpGrid<Ty> &rhs) const {
 /**
  * Allocate nodes large enough to cover the grid at the provided spacing.
  *
- * \param [in] minX Minimum X-coordinate to cover
- * \param [in] minY Minimum Y-coordinate to cover
- * \param [in] maxX Maximum X-coordinate to cover
- * \param [in] maxY Maximum Y-coordinate to cover
+ * \param [in] minX Minimum X-coordinate 
+ * \param [in] minY Minimum Y-coordinate 
+ * \param [in] width horizontal extent to cover
+ * \param [in] height vertical extent to cover
  * \param [in] spcX X spacing of grid points
  * \param [in] spcY Y spacing of grid points
  */
 template <typename Ty>
 void InterpGrid<Ty>::LayoutNodes(const Ty minX, const Ty minY,
-  const Ty maxX, const Ty maxY, const Ty spcX, const Ty spcY) {
+  const Ty width, const Ty height, const Ty spcX, const Ty spcY) {
   mSpcX = spcX;
   mSpcY = spcY;
   mOffX = minX;
@@ -136,21 +144,21 @@ void InterpGrid<Ty>::LayoutNodes(const Ty minX, const Ty minY,
 
   // Adjust spacing if it is zero.
   if (0 == mSpcX) {
-    mSpcX = (maxX - minX) / 4;
+    mSpcX = width / 4;
     if (0 == mSpcX)
       mSpcX = 1;
   }
   mInvSpcX = 1 / mSpcX;
 
   if (0 == mSpcY) {
-    mSpcY = (maxY - minY) / 4;
+    mSpcY = height / 4;
     if (0 == mSpcY)
       mSpcY = 1;
   }
   mInvSpcY = 1 / mSpcY;
 
-  mNumX = static_cast<unsigned int>((maxX - minX) * mInvSpcX + 0.5) + 1;
-  mNumY = static_cast<unsigned int>((maxY - minY) * mInvSpcY + 0.5) + 1;
+  mNumX = static_cast<unsigned int>(width * mInvSpcX + 0.5) + 1;
+  mNumY = static_cast<unsigned int>(height * mInvSpcY + 0.5) + 1;
 
   mNumX = std::max(mNumX, 2U);
   mNumY = std::max(mNumY, 2U);

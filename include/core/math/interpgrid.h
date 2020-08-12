@@ -5,8 +5,9 @@
 #pragma once
 
 #include "core/excore.h"
-#include "core/utils/typehelper.h"
 #include "3rdparty/opencv/exopencv.h"
+#include "core/utils/typehelper.h"
+#include "core/utils/spatialtile.h"
 
 #include <cassert>
 #include <memory>
@@ -30,7 +31,8 @@ public:
   using ValueType = Ty;
 
   InterpGrid(unsigned int dim, Ty minX, Ty minY, Ty maxX, Ty maxY, Ty spcX,
-             Ty spcY);
+    Ty spcY);
+  InterpGrid(unsigned int dim, const SpatialTile<Ty>& range, Ty spcX, Ty spcY);
   InterpGrid(const InterpGrid &rhs);
   InterpGrid(InterpGrid &&rhs) noexcept;
   ~InterpGrid() = default;
@@ -46,16 +48,6 @@ public:
   }
 
   /**
-   * Set the dimension of points that are stored in the grid.
-   *
-   * \param [in] dim New dimension of points for the grid
-   */
-  void SetDimension(const unsigned int dim) { mDim = dim; }
-
-  void LayoutNodes(Ty minX, Ty minY, Ty maxX, Ty maxY, Ty spcX,
-                       Ty spcY);
-
-  /**
    * Interpolate a value for the given X,Y position.
    */
   void GetVal(cv::Point_<Ty> point, Ty *const val) const {
@@ -68,8 +60,7 @@ public:
   Ty GetVal1(cv::Point_<Ty> point) const {
     return GetVal1(point.x, point.y);
   }
-  Ty GetVal1(Ty X, Ty Y) const
-  {
+  Ty GetVal1(Ty X, Ty Y) const {
     assert(1 <= mDim);
     Ty val;
     GetVal(X, Y, &val);
@@ -80,8 +71,7 @@ public:
   std::pair<Ty, Ty> GetVal2(cv::Point_<Ty> point) const {
     return GetVal2(point.x, point.y);
   }
-  std::pair<Ty, Ty> GetVal2(Ty X, Ty Y) const
-  {
+  std::pair<Ty, Ty> GetVal2(Ty X, Ty Y) const {
     assert(2 <= mDim);
     Ty val[2];
     GetVal(X, Y, val);
@@ -92,8 +82,7 @@ public:
   Tuple3<Ty> GetVal3(cv::Point_<Ty> point) const {
     return GetVal3(point.x, point.y);
   }
-  Tuple3<Ty> GetVal3(Ty X, Ty Y) const
-  {
+  Tuple3<Ty> GetVal3(Ty X, Ty Y) const {
     assert(3 <= mDim);
     Ty val[3];
     GetVal(X, Y, val);
@@ -114,9 +103,7 @@ public:
    * \return Returns {X-offset, Y-offset}
    * \remark The X grid index is computed as (X - offX) / spcX
    */
-  std::pair<Ty, Ty> GetOffsets() const noexcept {
-    return { mOffX, mOffY };
-  }
+  std::pair<Ty, Ty> GetOffsets() const noexcept { return { mOffX, mOffY }; }
 
   /**
    * Get the X- and Y-spacing that are used to compute indices within the
@@ -156,18 +143,14 @@ public:
    *
    * \return Returns Number of grid nodes in X & Y directions
    */
-  std::pair<unsigned int, unsigned int> GetSize() const {
-    return { mNumX, mNumY };
-  }
+  std::pair<unsigned int, unsigned int> GetSize() const { return { mNumX, mNumY }; }
 
   /**
    * Get the size of the data array in bytes.
    *
    * \return Returns size of the data array in bytes.
    */
-  size_t GetSizeBytes() const {
-    return sizeof(Ty) * mNumX * mNumY * mDim;
-  }
+  size_t GetSizeBytes() const { return sizeof(Ty) * mNumX * mNumY * mDim; }
 
 private:
   unsigned int mDim{1};   // Dimension of node points stored in the grid.
@@ -178,6 +161,18 @@ private:
   Ty mSpcX{1};           // X coordinate spacing of grid points
   Ty mSpcY{1};           // Y coordinate spacing of grid points
   std::vector<Ty> mGrid; // Array of target coordinates for node points
+
+  /**
+   * Set the dimension of points that are stored in the grid.
+   *
+   * \param [in] dim New dimension of points for the grid
+   */
+  void SetDimension(const unsigned int dim) { mDim = dim; }
+
+  void LayoutNodes(Ty minX, Ty minY, Ty width, Ty height, Ty spcX, Ty spcY);
+  inline void LayoutNodes(const SpatialTile<Ty>& range, Ty spcX, Ty spcY) {
+    LayoutNodes(range.minX, range.minY, range.width, range.height, spcX, spcY);
+  }
 
   void CopyFrom(const InterpGrid &rhs);
   void MoveFrom(InterpGrid &&rhs) noexcept;

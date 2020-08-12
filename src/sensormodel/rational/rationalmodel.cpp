@@ -269,9 +269,8 @@ bool RationalModel::GroundToImage(const Point3d &ground, Point2d &image) const {
  *  \param [in] sampCorr 2nd-order polynomial for sample correction
  *  \param [in] corrAlgo correction algoirthm
  */
-void RationalModel::SetSensorCorrection(
-    const std::array<double, NumCorr> &lineCorr,
-    const std::array<double, NumCorr> &sampCorr, const CorrAlgo corrAlgo) {
+void RationalModel::SetSensorCorrection(const std::array<double, NumCorr> &lineCorr,
+  const std::array<double, NumCorr> &sampCorr, const CorrAlgo corrAlgo) {
   mLineCorr = lineCorr;
   mSampCorr = sampCorr;
   mCorrAlgo = corrAlgo;
@@ -289,8 +288,7 @@ void RationalModel::SetSensorCorrection(
  *  \param [in] corrAlgo correction algoirthm
  */
 void RationalModel::GetSensorCorrection(std::array<double, NumCorr> &lineCorr,
-                                        std::array<double, NumCorr> &sampCorr,
-                                        const CorrAlgo corrAlgo) const {
+  std::array<double, NumCorr> &sampCorr, const CorrAlgo corrAlgo) const {
   if (mCorrAlgo == corrAlgo) {
     lineCorr = mLineCorr;
     sampCorr = mSampCorr;
@@ -420,7 +418,7 @@ Point2d RationalModel::ImageActualToApparant(const Point2d& image) const {
     const EqualD equalD(0.001);  // [unit: pixel]
     Point2d imageP{ imageApp };
 
-    for (int i = 0; i < 5; ++i) {
+    for (int i = 0; i < kMaxIterIAA; ++i) {
       const auto imageCorr = CalcCorrection(imageApp);
       imageApp = image - imageCorr;
       if (equalD(imageApp.x, imageP.x) && equalD(imageApp.y, imageP.y))
