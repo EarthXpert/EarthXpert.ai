@@ -268,6 +268,8 @@ public:
                            std::array<double, NumCorr> &sampCorr,
                            CorrAlgo corrAlgo = eSTANDARD) const;
 
+  void EnableCubeS2G(bool enable=true);
+
 private:
   friend class RationalStereoModel;
 
@@ -338,6 +340,7 @@ private:
              nfc[eOLINE] + nfc[eSLINE] * sensor.y };
   }
 
+  bool mCorrectionFlag{ false };   // flag indicating the correction status
   Point2d CalcCorrection(const Point2d& image) const;
 
   /**
@@ -407,12 +410,10 @@ private:
   double mTol_r{ 1.0e-7 };
     
   std::array<double, NumInvScl> mInvScale{1.0}; // reciprocal of scale factors
-  std::unique_ptr<InterpCubeD>
-      mCubeS2G; // interpolation cube to provide approximate X, Y coordinates
-                  // for ImageToGround()
+  
+  // interpolation cube to provide approximate X, Y coordinates for ImageToGround()
+  std::unique_ptr<InterpCubeD> mCubeS2G; 
   void BuildCubeS2G();
-
-  bool mHasCorrection{false};
 };
 
 using rnf = NormalizationFactor;

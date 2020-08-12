@@ -58,7 +58,7 @@ RationalModel::RationalModel(const int numCols, const int numRows,
   mTol_c = mInvScale[eISSAMP] * kRatio;
   mTol_r = mInvScale[eISLINE] * kRatio;
 
-  BuildCubeS2G();
+  EnableCubeS2G(false);
 }
 
 RationalModel::RationalModel(const std::array<double, NumFact> &normalFators,
@@ -276,7 +276,7 @@ void RationalModel::SetSensorCorrection(const std::array<double, NumCorr> &lineC
   mCorrAlgo = corrAlgo;
 
   auto NotZero = [](const double val) { return 0.0 != val; };
-  mHasCorrection = std::any_of(std::cbegin(mLineCorr), std::cend(mLineCorr), NotZero) ||
+  mCorrectionFlag = std::any_of(std::cbegin(mLineCorr), std::cend(mLineCorr), NotZero) ||
     std::any_of(std::cbegin(mSampCorr), std::cend(mSampCorr), NotZero);
 }
 
@@ -301,6 +301,16 @@ void RationalModel::GetSensorCorrection(std::array<double, NumCorr> &lineCorr,
   else {
     assert(eSTANDARD == corrAlgo);
   } // convert eENHANCED to eSTANDARD
+}
+
+void RationalModel::EnableCubeS2G(const bool enable) {
+  if (!enable) {
+    mCubeS2G.reset();
+    return;
+  }
+
+  if (!mCubeS2G) 
+    BuildCubeS2G();
 }
 
 /**
@@ -414,7 +424,7 @@ void RationalModel::Clear() noexcept {
 Point2d RationalModel::ImageActualToApparant(const Point2d& image) const {
   Point2d imageApp{ image };
 
-  if (mHasCorrection) {  // apply correction
+  if (mCorrectionFlag) {  // apply correction
     const EqualD equalD(0.001);  // [unit: pixel]
     Point2d imageP{ imageApp };
 
@@ -439,12 +449,10 @@ Point2d RationalModel::ImageActualToApparant(const Point2d& image) const {
  */
 Point2d RationalModel::ImageApparantToActual(const Point2d& image) const {
   Point2d imageAct{ image };
-
-  if (mHasCorrection) {  // apply correction
+  if (mCorrectionFlag) {  // apply correction
     const auto imageCorr = CalcCorrection(image);
     imageAct += imageCorr;
   }
-
   return imageAct;
 }
 
@@ -774,5 +782,5 @@ void RationalModel::BuildCubeS2G() {
     }
   }
 
-  //mCubeS2G = std::move(cubeS2G);
+  mCubeS2G = std::move(cubeS2G);
 }

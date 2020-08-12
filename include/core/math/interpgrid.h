@@ -32,6 +32,8 @@ public:
 
   InterpGrid(unsigned int dim, Ty minX, Ty minY, Ty maxX, Ty maxY, Ty spcX,
     Ty spcY);
+  InterpGrid(unsigned int dim, const cv::Point_<Ty>& min, 
+    const cv::Point_<Ty>& max, const cv::Point_<Ty>& spc);
   InterpGrid(unsigned int dim, const SpatialTile<Ty>& range, Ty spcX, Ty spcY);
   InterpGrid(const InterpGrid &rhs);
   InterpGrid(InterpGrid &&rhs) noexcept;
@@ -170,6 +172,10 @@ private:
   void SetDimension(const unsigned int dim) { mDim = dim; }
 
   void LayoutNodes(Ty minX, Ty minY, Ty width, Ty height, Ty spcX, Ty spcY);
+  inline void LayoutNodes(const cv::Point_<Ty>& min, 
+    const cv::Point_<Ty>& max, const cv::Point_<Ty>& spc) {
+    LayoutNodes(min.x, min.y, max.x-min.x, max.y-min.y, spc.x, spc.y);
+  }
   inline void LayoutNodes(const SpatialTile<Ty>& range, Ty spcX, Ty spcY) {
     LayoutNodes(range.minX, range.minY, range.width, range.height, spcX, spcY);
   }

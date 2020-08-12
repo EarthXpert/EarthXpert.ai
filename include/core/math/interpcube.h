@@ -5,8 +5,8 @@
 #pragma once
 
 #include "core/excore.h"
-#include "core/utils/typehelper.h"
 #include "3rdparty/opencv/exopencv.h"
+#include "core/utils/typehelper.h"
 
 #include <cassert>
 #include <memory>
@@ -23,13 +23,15 @@ namespace earthxpert {
  * \param Ty A fundamental data type of elements on the cube
  */
 template <typename Ty> class EXCORE_EXPORTS InterpCube {
+  static_assert(std::is_floating_point_v<Ty>, "Requires that template argument be floating data type");
+
 public:
   using ValueType = Ty;
 
-  InterpCube(unsigned int dim, const cv::Point3_<Ty>& min,
-    const cv::Point3_<Ty>& max, const cv::Point3_<Ty>& spc);
   InterpCube(unsigned int dim, Ty minX, Ty minY, Ty minZ,
     Ty maxX, Ty maxY, Ty maxZ, Ty spcX, Ty spcY, Ty spcZ);
+  InterpCube(unsigned int dim, const cv::Point3_<Ty>& min,
+    const cv::Point3_<Ty>& max, const cv::Point3_<Ty>& spc);
   InterpCube(const InterpCube &rhs);
   InterpCube(InterpCube &&rhs) noexcept;
   ~InterpCube() = default;
@@ -163,10 +165,21 @@ private:
    */
   void SetDimension(const unsigned int dim) { mDim = dim; }
 
-  void LayoutNodes(const cv::Point3_<Ty>& min,
-    const cv::Point3_<Ty>& max, const cv::Point3_<Ty>& spc);
   void LayoutNodes(Ty minX, Ty minY, Ty minZ, 
     Ty length, Ty width, Ty height, Ty spcX, Ty spcY, Ty spcZ);
+
+  /**
+   * Allocate nodes large enough to cover the cube at the provided spacing.
+   *
+   * \param [in] min Minimum XYZ-coordinate to cover
+   * \param [in] max Maximum XYZ-coordinate to cover
+   * \param [in] spc XYZ spacing of cube points
+   */
+  void LayoutNodes(const cv::Point3_<Ty>& min,
+    const cv::Point3_<Ty>& max, const cv::Point3_<Ty>& spc) {
+    LayoutNodes(min.x, min.y, min.z, max.x - min.x, max.y - min.y,
+      max.z - min.z, spc.x, spc.y, spc.z);
+  }
 
   void CopyFrom(const InterpCube &rhs);
   void MoveFrom(InterpCube &&rhs) noexcept;

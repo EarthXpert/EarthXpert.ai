@@ -16,20 +16,6 @@ using earthxpert::InterpCube;
  * Constructor
  *
  * \param [in] dim Dimension of points for the cube
- * \param [in] min Minimum XYZ-coordinate to cover
- * \param [in] max Maximum XYZ-coordinate to cover
- * \param [in] spc XYZ spacing of cube points
- */
-template <typename Ty>
-InterpCube<Ty>::InterpCube(const unsigned int dim, const cv::Point3_<Ty>& min,
-  const cv::Point3_<Ty>& max, const cv::Point3_<Ty>& spc)
-  : InterpCube(dim, min.x, min.y, min.z, max.x, max.y, max.z, spc.x, spc.y,spc.z) {
-}
-
-/**
- * Constructor
- *
- * \param [in] dim Dimension of points for the cube
  * \param [in] minX Minimum X-coordinate to cover
  * \param [in] minY Minimum Y-coordinate to cover
  * \param [in] minZ Minimum Z-coordinate to cover
@@ -43,10 +29,22 @@ InterpCube<Ty>::InterpCube(const unsigned int dim, const cv::Point3_<Ty>& min,
 template <typename Ty>
 InterpCube<Ty>::InterpCube(const unsigned int dim, const Ty minX,
   const Ty minY, const Ty minZ, const Ty maxX, const Ty maxY,
-  const Ty maxZ, const Ty spcX, const Ty spcY, const Ty spcZ)
-  : mDim(dim) {
-  static_assert(std::is_floating_point_v<Ty>);
-  LayoutNodes(minX, minY, minZ, maxX, maxX, maxZ, spcX, spcY, spcZ);
+  const Ty maxZ, const Ty spcX, const Ty spcY, const Ty spcZ) : mDim(dim) {
+  LayoutNodes(minX, minY, minZ, maxX-minX, maxY-minY, maxZ-minZ, spcX, spcY, spcZ);
+}
+
+/**
+ * Constructor
+ *
+ * \param [in] dim Dimension of points for the cube
+ * \param [in] min Minimum XYZ-coordinate to cover
+ * \param [in] max Maximum XYZ-coordinate to cover
+ * \param [in] spc XYZ spacing of cube points
+ */
+template <typename Ty>
+InterpCube<Ty>::InterpCube(const unsigned int dim, const cv::Point3_<Ty>& min,
+  const cv::Point3_<Ty>& max, const cv::Point3_<Ty>& spc) : mDim(dim) {
+  LayoutNodes(min, max, spc);
 }
 
 template <typename Ty> InterpCube<Ty>::InterpCube(const InterpCube &rhs) {}
@@ -72,20 +70,6 @@ bool InterpCube<Ty>::operator==(const InterpCube &rhs) const {
 template <typename Ty>
 bool InterpCube<Ty>::operator!=(const InterpCube &rhs) const {
   return !(operator==(rhs));
-}
-
-/**
- * Allocate nodes large enough to cover the cube at the provided spacing.
- *
- * \param [in] min Minimum XYZ-coordinate to cover
- * \param [in] max Maximum XYZ-coordinate to cover
- * \param [in] spc XYZ spacing of cube points
- */
-template <typename Ty>
-void InterpCube<Ty>::LayoutNodes(const cv::Point3_<Ty>& min,
-  const cv::Point3_<Ty>& max, const cv::Point3_<Ty>& spc) {
-  LayoutNodes(min.x, min.y, min.z, max.x-min.x, max.y-min.y, 
-    max.z-min.z, spc.x, spc.y, spc.z);
 }
 
 /**
