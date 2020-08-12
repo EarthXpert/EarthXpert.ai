@@ -10,16 +10,7 @@
 #include <execution>
 #include <omp.h>
 
-using earthxpert::GeographicGroundDeg;
-using earthxpert::LocalGroundMe;
-using earthxpert::MapGroundMe;
-using earthxpert::EpipolarModel;
-using earthxpert::EpipolarRect;
-using earthxpert::IEpipolarModel;
-using earthxpert::ISensorModel;
-using earthxpert::InterpGridF;
-using earthxpert::Point2d;
-using earthxpert::Point3d;
+using namespace earthxpert;
 
 /**
  *  Constructor.

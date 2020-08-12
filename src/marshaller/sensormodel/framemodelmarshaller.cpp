@@ -10,12 +10,8 @@
 #include <iostream>
 #include <sstream>
 
-using earthxpert::DigitalFrameModel;
-using earthxpert::FilmFrameModel;
-using earthxpert::FrameIP;
-using earthxpert::FrameModelMarshaller;
-using earthxpert::ISensorModel;
-using earthxpert::utils::CompareI;
+using namespace earthxpert;
+using utils::CompareI;
 
 /**
  *  \brief read from a bingo directory into a framemodel

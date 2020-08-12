@@ -10,16 +10,7 @@
 #include "sensormodel/utils/imagemodel.h"
 #include "sensormodel/utils/satellitedp.h"
 
-using earthxpert::FrameIP;
-using earthxpert::DigitalImageModelImp;
-using earthxpert::ISensorModel;
-using earthxpert::Point2d;
-using earthxpert::Point3d;
-using earthxpert::RollingShutterModel;
-using earthxpert::SatelliteDP;
-using earthxpert::ScannerEP;
-using earthxpert::ScannerEPCorr;
-using earthxpert::SpatialReferenceSystem;
+using namespace earthxpert;
 
 /**
  *  \brief Construct an aerial rolling-shutter geometry model.

@@ -10,13 +10,7 @@
 #include <algorithm>
 #include <cassert>
 
-using earthxpert::EqualD;
-using earthxpert::ISensorModel;
-using earthxpert::Point2d;
-using earthxpert::Point3d;
-using earthxpert::RationalModel;
-using earthxpert::SpatialReferenceSystem;
-using earthxpert::Tuple4d;
+using namespace earthxpert;
 
 static constexpr double kTol = std::numeric_limits<double>::epsilon();
 

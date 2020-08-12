@@ -8,11 +8,7 @@
 #include <cassert>
 #include <cmath>
 
-using earthxpert::EpipolarSensorModel;
-using earthxpert::IEpipolarModel;
-using earthxpert::ISensorModel;
-using earthxpert::Point2d;
-using earthxpert::Point3d;
+using namespace earthxpert;
 
 /**
  *   \brief construct a frame epipolar model

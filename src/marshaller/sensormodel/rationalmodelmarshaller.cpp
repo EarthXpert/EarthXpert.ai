@@ -11,10 +11,8 @@
 #include <map>
 #include <stdexcept>
 
-using earthxpert::ISensorModel;
-using earthxpert::RationalModel;
-using earthxpert::RationalModelMarshaller;
-using earthxpert::utils::CompareI;
+using namespace earthxpert;
+using utils::CompareI;
 
 // rpb entries
 static std::map<std::string, int> sRpbEntryMap = {

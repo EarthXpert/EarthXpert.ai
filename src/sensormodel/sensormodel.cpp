@@ -9,10 +9,7 @@
 //#include <execution>
 #include <omp.h>
 
-using earthxpert::ISensorModel;
-using earthxpert::Point2d;
-using earthxpert::Point3d;
-using earthxpert::SensorModel;
+using namespace earthxpert;
 
 /**
  *  Image-to-ground forward projection.

@@ -8,9 +8,7 @@
 #include <cmath>
 #include <limits>
 
-using earthxpert::EpipolarRect;
-using earthxpert::Point2d;
-using earthxpert::Point3d;
+using namespace earthxpert;
 
 /**
  *  Constructor.

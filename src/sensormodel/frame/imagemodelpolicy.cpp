@@ -9,10 +9,7 @@
 #include <stdexcept>
 #include <type_traits>
 
-using earthxpert::DigitalImageModel;
-using earthxpert::FilmImageModel;
-using earthxpert::DigitalImageModelImp;
-using earthxpert::FilmImageModelImp;
+using namespace earthxpert;
 
 /**
  *  Constructor.

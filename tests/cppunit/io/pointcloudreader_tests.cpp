@@ -13,7 +13,6 @@
 #include <omp.h>
 
 using namespace earthxpert;
-using earthxpert::RegionLayoutD;
 using fgt = FieldGroup;
 
 static constexpr double kTol = 1.0e-6; // [um]

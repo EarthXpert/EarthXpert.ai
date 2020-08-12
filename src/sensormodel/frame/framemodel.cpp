@@ -13,15 +13,7 @@
 #include <numeric>
 #include <stdexcept>
 
-using earthxpert::DigitalImageModel;
-using earthxpert::FilmImageModel;
-using earthxpert::FrameCP;
-using earthxpert::FrameEP;
-using earthxpert::FrameIP;
-using earthxpert::FrameModel;
-using earthxpert::Point2d;
-using earthxpert::Point3d;
-using earthxpert::SpatialReferenceSystem;
+using namespace earthxpert;
 using namespace earthxpert::math;
 
 /**

@@ -13,8 +13,8 @@
 #include <optional>
 
 using namespace earthxpert;
-using earthxpert::thirdparty::CreateLasFilter;
-using earthxpert::thirdparty::PointDataTraits;
+using thirdparty::CreateLasFilter;
+using thirdparty::PointDataTraits;
 
 /**
  *  \brief constractor, open the las file for read

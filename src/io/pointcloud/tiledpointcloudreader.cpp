@@ -13,8 +13,8 @@
 #include <optional>
 
 using namespace earthxpert;
-using earthxpert::thirdparty::CreateLasFilter;
-using earthxpert::thirdparty::PointDataTraits;
+using thirdparty::CreateLasFilter;
+using thirdparty::PointDataTraits;
 
 TiledPointcloudReader::TiledPointcloudReader(std::vector<SpatialTileD>&& tiles,
   std::vector<std::string>&& lasFiles, const FieldGroup fieldGroup) 

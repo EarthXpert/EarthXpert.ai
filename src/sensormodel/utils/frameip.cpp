@@ -10,9 +10,7 @@
 #include <limits>
 #include <numeric>
 
-using earthxpert::DistortionGridF;
-using earthxpert::FrameIP;
-using earthxpert::Point2d;
+using namespace earthxpert;
 
 /**
  * Constructor

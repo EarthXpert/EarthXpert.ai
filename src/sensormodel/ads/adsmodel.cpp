@@ -8,14 +8,7 @@
 #include "sensormodel/scannerimagemodel.h"
 #include "sensormodel/scannerip.h"
 
-using earthxpert::AdsModel;
-using earthxpert::ISensorModel;
-using earthxpert::Point2d;
-using earthxpert::Point3d;
-using earthxpert::ScannerEP;
-using earthxpert::ScannerImageModel;
-using earthxpert::ScannerIP;
-using earthxpert::SpatialReferenceSystem;
+using namespace earthxpert;
 
 /**
  *  \brief Construct an aerial pushbroom geometry model.

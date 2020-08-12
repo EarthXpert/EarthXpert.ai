@@ -5,11 +5,7 @@
 #include "sensormodel/sensormodelfactory.h"
 #include "sensormodel/utils/sensorcube.h"
 
-using earthxpert::DigitalFrameModel;
-using earthxpert::FilmFrameModel;
-using earthxpert::ISensorModel;
-using earthxpert::RationalModel;
-using earthxpert::SensorModelFactory;
+using namespace earthxpert;
 
 /**
  *  \brief

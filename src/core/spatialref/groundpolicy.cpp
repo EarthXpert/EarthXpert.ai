@@ -4,10 +4,7 @@
  */
 #include "core/spatialref/groundpolicy.h"
 
-using earthxpert::LocalGround;
-using earthxpert::MapGround;
-using earthxpert::Point2d;
-using earthxpert::Point3d;
+using namespace earthxpert;
 
 /**
  *  Constructor.
