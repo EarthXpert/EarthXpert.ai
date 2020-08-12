@@ -5,6 +5,7 @@
 #pragma once
 
 #include "core/utils/irasterresample.h"
+#include "3rdparty/gettext/exgettext.h"
 
 #include <stdexcept>
 #include <string>
@@ -34,7 +35,7 @@ public:
       ResampleCV(srcRaster, tgtRaster, tfmRaster);
     }
     else {
-      throw std::invalid_argument("RasterResample: backend algorithm not supported");
+      throw std::invalid_argument(_("RasterResample: backend algorithm not supported"));
     }
   }
 
@@ -43,7 +44,7 @@ public:
       ResampleCV(srcMat, tgtMat, tfmMat);
     }
     else {
-      throw std::invalid_argument("RasterResample: backend algorithm not supported");
+      throw std::invalid_argument(_("RasterResample: backend algorithm not supported"));
     }
   }
 

@@ -320,9 +320,8 @@ bool StereoModel::ImageToGroundNR(const Point2d& leftImage,
     if (kTolZ > fabs(dz)) break;
   }
 
-  if (kMaxIters == i) {
+  if (kMaxIters == i) 
     return false;
-  }
 
   return true;
 }

@@ -90,6 +90,11 @@ public:
   virtual EpipolarAlgo GetEpipolarAlgorithm() const noexcept = 0;
 
   /**
+   *  \return Returns position in epipolar model
+   */
+  virtual StereoPos GetStereoPos() const noexcept = 0;
+
+  /**
    *  \return Returns raster columns & rows of epipolar image [unit: pixel]
    */
   virtual std::pair<int, int> GetImageSize() const noexcept = 0;
@@ -99,6 +104,9 @@ public:
    */
   virtual const ISensorModel* GetSensorModel() const noexcept = 0;
 
+  /**
+   *  \return Returns the footprint in rectification CS
+   */
   virtual const Polygon2d& GetBoundary() const noexcept = 0;
 
   /**

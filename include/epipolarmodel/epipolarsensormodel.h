@@ -33,8 +33,8 @@ public:
    *  \brief Given a 2d poistion on epipolar, output the corresponding position
    * on original image.
    *
-   *  \param [in] epi 2d position (x, y) in epipolar raster coordinate system
-   *  \param [in/out] raw 2d position (x, y) in image raster coordinate system
+   *  \param [in] epi 2d position (x, y) in epipolar raster CS
+   *  \param [in/out] raw 2d position (x, y) in image raster CS
    *  \return Returns true if operation succeeds
    */
   virtual bool EpiToRaw(const Point2d& epi, Point2d& raw) const override;
@@ -43,10 +43,8 @@ public:
    *  \brief Given a list of 2d poistions on epipolar, output the corresponding
    * positions on original image.
    *
-   *  \param [in] epi List of 2d positions (x, y) in epipolar raster coordinate
-   * system
-   *  \param [in] raw List of 2d positions (x, y) in image raster
-   * coordinate system
+   *  \param [in] epi List of 2d positions (x, y) in epipolar raster CS
+   *  \param [in] raw List of 2d positions (x, y) in image raster CS
    *  \return Returns true if operation succeeds
    */
   size_t EpiToRaw(const std::vector<Point2d>& epi, std::vector<Point2d>& raw) const override;
@@ -57,8 +55,8 @@ public:
    *  \brief Given a 2d poistion on image, output the corresponding position on
    * epipolar.
    *
-   *  \param [in] raw 2d position (x, y) in image raster coordinate system
-   *  \param [in] epi 2d position (x, y) in epipolar raster coordinate system
+   *  \param [in] raw 2d position (x, y) in image raster CS
+   *  \param [in] epi 2d position (x, y) in epipolar raster CS
    *  \return Returns true if operation succeeds
    */
   virtual bool RawToEpi(const Point2d& raw, Point2d& epi) const override;
@@ -67,13 +65,16 @@ public:
    *  \brief Given a list of 2d poistions on image, output the corresponding
    * positions on epipolar.
    *
-   *  \param [in] raw List of 2d positions (x, y) in image raster coordinate
-   * system
-   *  \param [in] epi List of 2d positions (x, y) in epipolar raster
-   * coordinate system
+   *  \param [in] raw List of 2d positions (x, y) in image raster CS
+   *  \param [in] epi List of 2d positions (x, y) in epipolar raster CS
    *  \return Returns true if operation succeeds
    */
   size_t RawToEpi(const std::vector<Point2d>& raw, std::vector<Point2d>& epi) const override;
+
+  /**
+   *  \return Returns position in epipolar model
+   */
+  StereoPos GetStereoPos() const noexcept override { return mPos; }
 
   /**
    *  \return Returns the internal sensor model
@@ -82,6 +83,9 @@ public:
     return mSensorModel.get();
   }
 
+  /**
+   *  \return Returns the footprint in rectification CS
+   */
   const Polygon2d& GetBoundary() const noexcept override {
     return mBound;
   }

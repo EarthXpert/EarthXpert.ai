@@ -35,10 +35,10 @@ RationalModel::RationalModel(const int numCols, const int numRows,
                              const std::array<double, NumCoef> &sampNumCoef,
                              const std::array<double, NumCoef> &sampDenCoef,
                              std::shared_ptr<SpatialReferenceSystem> groundSRS)
-    : mNumCols(numCols), mNumRows(numRows),
-      mNormalFators(normalFators), mLineNumCoef(lineNumCoef),
-      mLineDenCoef(lineDenCoef), mSampNumCoef(sampNumCoef),
-      mSampDenCoef(sampDenCoef), mGroundSRS(groundSRS) {
+  : mNumCols(numCols), mNumRows(numRows),
+    mNormalFators(normalFators), mLineNumCoef(lineNumCoef),
+    mLineDenCoef(lineDenCoef), mSampNumCoef(sampNumCoef),
+    mSampDenCoef(sampDenCoef), mGroundSRS(groundSRS) {
   const auto nfc = mNormalFators.data();
 
   // get approximate image dimensions from normalization factors
@@ -546,10 +546,7 @@ bool RationalModel::SensorToGround(const double x, const double y,
   // Partial derivatives of Fc = (Sn/Sd) and Fr = (Ln/Ld) w.r.t. u and v
   // A[2][2] = | dFc_du  dFc_dv |
   //           | dFr_du  dFr_dv |
-  double dFc_du{};
-  double dFc_dv{};
-  double dFr_du{};
-  double dFr_dv{};
+  double dFc_du{}, dFc_dv{}, dFr_du{}, dFr_dv{};
   double invDet{}; // Inverse of determinant of the partial derivative matrix
 
   int iter{};
@@ -566,8 +563,7 @@ bool RationalModel::SensorToGround(const double x, const double y,
     // recompute the partial derivatives of the sample & line w.r.t u, v
     if (recalcFlag) {
       // pre-compute partials TODO
-      double duvw_du[NumCoef];
-      double duvw_dv[NumCoef];
+      double duvw_du[NumCoef], duvw_dv[NumCoef];
       Duvw_du(u, v, w, duvw_du);
       Duvw_dv(u, v, w, duvw_dv);
 
@@ -672,7 +668,8 @@ void RationalModel::CalcTerms(const double L, const double P,
  *  \param [in] H normalized height
  *  \return Returns line numerator, line denominator, sample numerator, sample denominator.
  */
-Tuple4d RationalModel::CalcPolynomials(const double L, const double P, const double H) const {
+Tuple4d RationalModel::CalcPolynomials(const double L, 
+  const double P, const double H) const {
   auto lnc = mLineNumCoef.data();
   auto ldc = mLineDenCoef.data();
   auto snc = mSampNumCoef.data();
@@ -681,10 +678,8 @@ Tuple4d RationalModel::CalcPolynomials(const double L, const double P, const dou
   double LPH[NumCoef];  // combinations of L, P, H for polynomial terms
   CalcTerms(L, P, H, LPH);
 
-  double Ln{}; // Line numerator
-  double Ld{}; // Line denominator
-  double Sn{}; // Sample numerator
-  double Sd{}; // Sample denominator
+  double Ln{}, Ld{}; // Line numerator/denominator
+  double Sn{}, Sd{}; // Sample numerator/denominator
 
   for (int i = 0; i < NumCoef; ++i) {
     Ln += lnc[i] * LPH[i];
@@ -730,8 +725,7 @@ Tuple4d RationalModel::CalcPolynomials(const double L, const double P, const dou
  *    Fr(u, v) = Ln - Ld * r = 0
  */
 bool RationalModel::SensorToGroundLinear(const double x, const double y,
-                                         const double w, double &u,
-                                         double &v) const {
+  const double w, double &u, double &v) const {
   // use short name for convenience
   auto snc = mSampNumCoef.data();
   auto sdc = mSampDenCoef.data();
