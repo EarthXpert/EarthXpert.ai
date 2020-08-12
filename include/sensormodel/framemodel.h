@@ -12,7 +12,7 @@
 #include "sensormodel/utils/frameip.h"
 #include "sensormodel/utils/frameipcorr.h"
 
-#include "opencv2/core/mat.hpp"
+#include <opencv2/core/mat.hpp>
 
 namespace earthxpert {
 /**
@@ -135,7 +135,7 @@ private:
   friend class FrameStereoModel;
 
   static constexpr int kMaxIterG2I{ 10 };
-  static constexpr double kConvergeTolMM{ 0.0001 }; // [mm]
+  static constexpr double kTolMM{ 0.0001 }; // \todo [mm]
 
   ImageModelPolicy mImageModel; // model defining the transformation between
                                 // focal plane and imagery

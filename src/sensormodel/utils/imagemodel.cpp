@@ -9,11 +9,7 @@
 #include <numeric>
 #include <stdexcept>
 
-using earthxpert::EqualD;
-using earthxpert::DigitalImageModelImp;
-using earthxpert::FilmImageModelImp;
-using earthxpert::Point2d;
-using earthxpert::Point3d;
+using namespace earthxpert;
 
 /**
  *  Constructor

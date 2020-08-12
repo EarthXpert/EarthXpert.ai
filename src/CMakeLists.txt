@@ -3,6 +3,21 @@ project(src)
 configure_file(srcconfig.h.in ${CMAKE_BINARY_DIR}/src/srcconfig.h)
 include_directories(${CMAKE_BINARY_DIR}/src/)
 
+function(earthxpert_source_group)
+  foreach(SRC IN ITEMS ${ARGN})
+    if(IS_ABSOLUTE ${SRC})
+      file(RELATIVE_PATH SRC_REL ${CMAKE_CURRENT_SOURCE_DIR} ${SRC})
+    else()
+        set(SRC_REL ${SRC})
+    endif()
+    get_filename_component(SRC_PATH ${SRC_REL} PATH)
+    if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
+      string(REPLACE "/" "\\" SRC_PATH "${SRC_PATH}")
+    endif()
+    source_group(${SRC_PATH} FILES ${SRC})
+  endforeach()
+endfunction(earthxpert_source_group)
+
 function(earthxpert_add_library name libs_dir)
   cmake_parse_arguments(
     EX              # prefix of output variables

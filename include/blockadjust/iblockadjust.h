@@ -6,6 +6,8 @@
 
 #include "blockadjust/exbba.h"
 
+#include <memory>
+
 namespace earthxpert {
 /**
  *  The interface IBlockAdjust defines the behaviours of adjusting/calibrting
@@ -18,4 +20,7 @@ public:
   bool operator==(const IBlockAdjust&rhs) const = delete;
   bool operator!=(const IBlockAdjust&rhs) const = delete;
 };
+
+using UPIBlockAdjust = std::unique_ptr<IBlockAdjust>;
+using SPIBlockAdjust = std::shared_ptr<IBlockAdjust>;
 } // namespace earthxpert

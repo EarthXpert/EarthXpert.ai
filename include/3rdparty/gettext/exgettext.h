@@ -5,7 +5,8 @@
 #pragma once
 
 #include "3rdparty/ex3rdparty.h"
-#include "libintl.h"
+
+#include <libintl.h>
 
 #define _(msgid) gettext(msgid)
 

@@ -5,27 +5,34 @@
 #include "rectification/epipolar/epipolargenerator.h"
 #include "core/exceptions/exexcept.h"
 #include "core/utils/irasterresample.h"
-#include "core/utils/rasterlayout.h"
+#include "core/utils/geomutils.h"
+#include "core/utils/layoututils.h"
 #include "epipolarmodel/iepipolarmodel.h"
 #include "io/raster/irasterreader.h"
 #include "io/raster/rasterwriter.h"
 
-#include <chrono>
 #include <omp.h>
-#include <tuple>
 
 using namespace earthxpert;
-namespace chrono = std::chrono;
 
 /**
  *  \brief
  * 
  *  \param memSize [in] memory available [unit: bytes]
+ *  \todo hardware configuration: hyper-threading
  */
 EpipolarGenerator::EpipolarGenerator(const IRasterResample* rasResample, 
   const size_t memSize, const int stride)
   : mRasResample(rasResample), mMemSize(memSize), mStride(stride) {
+  Initialize();
+}
+
+void EpipolarGenerator::Initialize() {
   mMarginDim = mRasResample->GetWinDim() / 2;
+
+  mNumPT = omp_get_max_threads() - 2;   // spare read/write threads
+  omp_set_nested(2);
+  //cv::setNumThreads(mNumPT);
 }
 
 /**
@@ -36,22 +43,22 @@ EpipolarGenerator::EpipolarGenerator(const IRasterResample* rasResample,
 bool EpipolarGenerator::Process(IRasterReader *const img, 
   IRasterWriter *const epi, IEpipolarModel const* epiModel) {
   mPerf.Clear();
-  auto start = chrono::steady_clock::now();
-  omp_set_nested(2);
+  auto start = mClock.TimeSinceStart();
 
   try {
     SetImageParams(img);
     SetEpipolarParams(epi, epiModel);
-
+    
     LayoutTiles();
-    ProcessTiles();
+    mPerf.tmInitial = mClock.TimeSinceStart() - start;
+
+    ProcessTiles<ePL3>();
   }
   catch (...) {
     throw;
   }
 
-  chrono::duration<double> diff = chrono::steady_clock::now() - start;
-  mPerf.tmTotal = diff.count();
+  mPerf.tmTotal = mClock.TimeSinceStart() - start;
   return true;
 }
 
@@ -64,6 +71,9 @@ void EpipolarGenerator::SetImageParams(IRasterReader* const img) {
   std::tie(mImgNumCols, mImgNumRows) = mImgReader->GetSize();
   mImgCvDT = mImgReader->GetCvDataType();
   mImgBpp = CV_ELEM_SIZE(mImgCvDT);
+
+  mPerf.rawNumCols = mImgNumCols;
+  mPerf.rawNumRows = mImgNumRows;
 }
 
 /**
@@ -77,6 +87,9 @@ void EpipolarGenerator::SetEpipolarParams(
   mEpiCvDT = mEpiWriter->GetCvDataType();
   mEpiBpp = CV_ELEM_SIZE(mEpiCvDT);
 
+  mPerf.epiNumCols = mEpiNumCols;
+  mPerf.epiNumRows = mEpiNumRows;
+
   assert(epiModel);
   mEpiModel = epiModel;
 
@@ -87,122 +100,10 @@ void EpipolarGenerator::SetEpipolarParams(
 
   const double sample = cv::norm(ic2 - ic) * M_SQRT1_2;
   mSample = std::max<int>(1, std::lround(sample));
-}
-
-/**
- *  \brief
- */
-void EpipolarGenerator::LayoutTiles() {
-  static constexpr int kNP = 8;
-  const auto start = chrono::steady_clock::now();
-
-  // estimate tile size
-  const double bpp = 1.0 +  mTfmBpp + mEpiBpp * 2 + mImgBpp * mSample * mSample * 2;
-  int tileDim = int(sqrt(mMemSize / bpp));
-  tileDim = std::max(1, (tileDim / kTileDim)) * kTileDim;
   
-  int tileNumCols = (tileDim < mEpiNumCols) ? tileDim : mEpiNumCols;
-  int tileNumRows = (tileDim < mEpiNumRows) ? tileDim : mEpiNumRows;
-
-  //  \param [in] num total number of pixels
-  //  \param [in] tileNum number of tile pixels
-  auto balNumTiles = [](const int num, const int tileNum) {
-    const int numTiles = (num - 1) / tileNum + 1;
-    return (tileNum * numTiles - num) / (kTileDim * numTiles);
-  };
-    
-  const int balNumCols = balNumTiles(mEpiNumCols, tileNumCols) * kTileDim;
-  const int balNumRows = balNumTiles(mEpiNumRows, tileNumRows) * kTileDim;
-
-  tileNumCols -= balNumCols;
-  tileNumRows -= balNumRows;
-  RasterLayout rasLayout(mEpiNumCols, mEpiNumRows, tileNumCols, tileNumRows);
-  
-  mEpiTiles = rasLayout.GetRasterWindows();
-  mNumTiles = int(mEpiTiles.size());
-
-  // calculate image bound for epipolar tiles
-  int numImgTiles{};
-  mImgTiles.clear();
-
-  std::array<Point2d, kNP> epiCorners;
-  std::array<Point2d, kNP> imgCorners;
-
-  for (const auto [colOffset, rowOffset, numCols, numRows] : mEpiTiles) {
-    epiCorners[0] = Point2d(colOffset, rowOffset);
-    epiCorners[1] = Point2d(colOffset + numCols / 2, rowOffset);
-    epiCorners[2] = Point2d(colOffset + numCols, rowOffset);
-    epiCorners[3] = Point2d(colOffset + numCols, rowOffset + numRows / 2);
-    epiCorners[4] = Point2d(colOffset + numCols, rowOffset + numRows);
-    epiCorners[5] = Point2d(colOffset + numCols / 2, rowOffset + numRows);
-    epiCorners[6] = Point2d(colOffset, rowOffset + numRows);
-    epiCorners[7] = Point2d(colOffset, rowOffset + numRows / 2);
-
-    double minImgX = mImgNumCols;
-    double minImgY = mImgNumRows;
-    double maxImgX{};
-    double maxImgY{};
-
-    for (int i = 0; i < kNP; ++i) {
-      mEpiModel->EpiToRaw(epiCorners[i], imgCorners[i]);
-      imgCorners[i] = imgCorners[i] - Point2d(0.5, 0.5);
-
-      if (minImgX > imgCorners[i].x) minImgX = imgCorners[i].x;
-      if (minImgY > imgCorners[i].y) minImgY = imgCorners[i].y;
-      if (maxImgX < imgCorners[i].x) maxImgX = imgCorners[i].x;
-      if (maxImgY < imgCorners[i].y) maxImgY = imgCorners[i].y;
-    }
-
-    int minImgCol = int(floor(minImgX)) - mMarginDim;
-    int minImgRow = int(floor(minImgY)) - mMarginDim;
-    int maxImgCol = int(ceil(maxImgX)) + mMarginDim;
-    int maxImgRow = int(ceil(maxImgY)) + mMarginDim;
-
-    minImgCol = std::clamp(minImgCol, 0, mImgNumCols - 1);
-    minImgRow = std::clamp(minImgRow, 0, mImgNumRows - 1);
-    maxImgCol = std::clamp(maxImgCol, 0, mImgNumCols - 1);
-    maxImgRow = std::clamp(maxImgRow, 0, mImgNumRows - 1);
-
-    const int imgNumCols = maxImgCol - minImgCol + 1;
-    const int imgNumRows = maxImgRow - minImgRow + 1;
-
-    RasterWindow imgTile;
-    if (1 < imgNumCols && 1 < imgNumRows) {
-      imgTile.colOffset = minImgCol;
-      imgTile.rowOffset = minImgRow;
-      imgTile.numCols = imgNumCols;
-      imgTile.numRows = imgNumRows;
-
-      numImgTiles++;
-    }
-    mImgTiles.push_back(imgTile);
-  }
-
-  if (0 == numImgTiles) {
-    throw EpipolarError("LayoutTiles: empty image tiles");
-  }
-
-  AllocateBuffers();
-
-  const chrono::duration<double> diff = chrono::steady_clock::now() - start;
-  mPerf.tmLayout += diff.count();
-}
-
-/**
- *  \return Returns the max number of pixels to hold any tile
- */
-int64_t EpipolarGenerator::GetTilesLimit(const std::vector<RasterWindow>& tiles) const {
-  int maxTileNumPix{ -1 };
-
-  for (auto& tile : tiles) {
-    if (!tile.IsValid()) continue;
-
-    const auto tileNumPix = tile.GetNumPixels();
-    if (maxTileNumPix < tileNumPix)
-      maxTileNumPix = tileNumPix;
-  }
-
-  return maxTileNumPix;
+  const auto& bound = mEpiModel->GetBoundary();
+  mPerf.validRatio = bg::area(bound) / mEpiNumCols / mEpiNumRows;
+  mGeoAlgo = (kValidRatio < mPerf.validRatio) ? eFULL : eBOUND;
 }
 
 /**
@@ -210,7 +111,8 @@ int64_t EpipolarGenerator::GetTilesLimit(const std::vector<RasterWindow>& tiles)
  *  \todo reduce mMaskBuf to label grid nodes
  */
 void EpipolarGenerator::AllocateBuffers() {
-  const auto imgBufNumPix = GetTilesLimit(mImgTiles);
+  const auto [imgBufNumPix, epiBufNumPix] = GetTilesLimit(mTiles);
+
   const int64_t imgBufNumBytes = mImgBpp * imgBufNumPix;
   if (mImgBufNumBytes < imgBufNumBytes) {
     mImgBufRead.reset();
@@ -220,7 +122,6 @@ void EpipolarGenerator::AllocateBuffers() {
     mImgBufWork.reset(new uchar[mImgBufNumBytes]);
   }
 
-  const auto epiBufNumPix = GetTilesLimit(mEpiTiles);
   const int64_t epiBufNumBytes = mEpiBpp * epiBufNumPix;
   if (mEpiBufNumBytes < epiBufNumBytes) {
     mEpiBufWork.reset();
@@ -237,20 +138,17 @@ void EpipolarGenerator::AllocateBuffers() {
 }
 
 /**
- *  \brief
+ *  \brief reset buffers to reduce conditional branches
+ *
+ *  \param [in] tileId the index of tile to reset
  */
 void EpipolarGenerator::ResetBuffers(const int tileId) {
   if (!TileId(tileId)) return;
-  const auto start = chrono::steady_clock::now();
-
-  memset(mEpiBufWork.get(), 0, mEpiBpp * mEpiTiles[tileId].GetNumPixels());
-
-  const chrono::duration<double> diff = chrono::steady_clock::now() - start;
-  mPerf.tmReset += diff.count();
+  memset(mEpiBufWork.get(), 0, mEpiBpp * EpiTile(tileId).GetNumPixels());
 }
 
 /**
- *  \brief
+ *  \brief swap read/write and work buffers for overlapping
  */
 void EpipolarGenerator::SwapBuffers() {
   std::swap(mImgBufRead, mImgBufWork);
@@ -258,7 +156,7 @@ void EpipolarGenerator::SwapBuffers() {
 }
 
 /**
- *  \brief
+ *  \brief free buffers in case not needed any more
  */
 void EpipolarGenerator::FreeBuffers() {
   mImgBufRead.reset();
@@ -271,9 +169,9 @@ void EpipolarGenerator::FreeBuffers() {
 
 /**
  *  \brief pipelined overlapping of read/write and computation tasks
- *  \todo investigate GDAL thread model: does it allow simuteneous read/write of different datasets? 
+ *  \todo investigate GDAL thread model: does it allow simuteneous read/write of different datasets?
  */
-void EpipolarGenerator::ProcessTiles() {
+void EpipolarGenerator::ProcessTilesPL2() {
   for (int t = -1; t <= mNumTiles; ++t) {
     ResetBuffers(t);
 
@@ -293,11 +191,11 @@ void EpipolarGenerator::ProcessTiles() {
   }
 }
 
-/**
- *  \brief pipelined overlapping of read, computation, write tasks
- *  \todo 4x slower than SQ!
- */
-void EpipolarGenerator::ProcessTilesPL() {
+ /**
+  *  \brief pipelined overlapping of read, computation, write tasks
+  *  \todo Read/Write 4x slower than SQ!
+  */
+void EpipolarGenerator::ProcessTilesPL3() {
   for (int t = -1; t <= mNumTiles; ++t) {
     ResetBuffers(t);
 
@@ -333,32 +231,36 @@ void EpipolarGenerator::ProcessTilesSQ() {
 }
 
 /**
- *  \brief
+ *  \brief read a tile from raw image
+ *
+ *  \param [in] tileId the index of tile to read
  */
 void EpipolarGenerator::ReadTile(const int tileId) {
   if (!TileId(tileId)) return;
-  const auto [colOffset, rowOffset, numCols, numRows] = mImgTiles[tileId];
+  const auto [colOffset, rowOffset, numCols, numRows] = ImgTile(tileId);
   if (0 == numCols || 0 == numRows) return;
-  const auto start = chrono::steady_clock::now();
-  //memset(mImgBufRead.get(), 0, mImgBpp * numCols * numRows);
+  const auto start = mClock.TimeSinceStart();
+  //memset(mImgBufRead.get(), 0, size_t(mImgBpp) * numCols * numRows);
 
   CvRaster imgRaster(numCols, numRows, mImgCvDT, colOffset, rowOffset, mImgBufRead.get());
   mImgReader->ReadRaster(&imgRaster);
 
-  const chrono::duration<double> diff = chrono::steady_clock::now() - start;
-  mPerf.tmRead += diff.count();
+  mPerf.tmRead += mClock.TimeSinceStart() - start;
 }
 
 /**
- *  \brief
+ *  \brief process a tile
+ *
+ *  \param [in] tileId the index of tile to process
  */
 void EpipolarGenerator::ProcessTile(const int tileId) {
   if (!TileId(tileId)) return;
-  const auto [imgColOffset, imgRowOffset, imgNumCols, imgNumRows] = mImgTiles[tileId];
+  const auto [imgNumCols, imgNumRows] = ImgTile(tileId).GetSize();
   if (0 == imgNumCols || 0 == imgNumRows) return;
-  const auto [colOffset, rowOffset, numCols, numRows] = mEpiTiles[tileId];
-  const auto start = chrono::steady_clock::now();
-  memset(mMaskBuf.get(), 0, numCols * numRows);
+  const auto start = mClock.TimeSinceStart();
+
+  const auto [colOffset, rowOffset, numCols, numRows] = EpiTile(tileId);
+  memset(mMaskBuf.get(), eMK_BKGD, size_t(numCols) * numRows);
 
   cv::Mat imgMat(imgNumRows, imgNumCols, mImgCvDT, mImgBufWork.get());
   cv::Mat epiMat(numRows, numCols, mEpiCvDT, mEpiBufWork.get());
@@ -366,135 +268,234 @@ void EpipolarGenerator::ProcessTile(const int tileId) {
   cv::Mat tfmMat(numRows, numCols, mTfmCvDT, mTfmBuf.get());
   tfmMat.forEach<cv::Vec2f>([](cv::Vec2f& tfm, const int*) {
     tfm[0] = -1; tfm[1] = -1; });
-  EpiToImg(tileId, tfmMat);
+  GeotransformTile(tileId, tfmMat);
 
-  mRasResample->Resample(imgMat, epiMat, tfmMat);
+  mRasResample->Resample(imgMat, epiMat, tfmMat); // ResampleTile
 
-  const chrono::duration<double> diff = chrono::steady_clock::now() - start;
-  mPerf.tmProcess += diff.count();
+  //GatherStatistics(tileId);
+  mPerf.tmProcess += mClock.TimeSinceStart() - start;
 }
 
 /**
- *  \brief
+ *  \brief write a tile to epipolar image
+ *
+ *  \param [in] tileId the index of tile to write
  */
 void EpipolarGenerator::WriteTile(const int tileId) {
   if (!TileId(tileId)) return;
-  const auto start = chrono::steady_clock::now();
+  const auto start = mClock.TimeSinceStart();
 
-  const auto [colOffset, rowOffset, numCols, numRows] = mEpiTiles[tileId];
+  const auto [colOffset, rowOffset, numCols, numRows] = EpiTile(tileId);
   CvRaster epiRaster(numCols, numRows, mEpiCvDT, colOffset, rowOffset, mEpiBufWrit.get());
   mEpiWriter->WriteRaster(&epiRaster);
 
-  const chrono::duration<double> diff = chrono::steady_clock::now() - start;
-  mPerf.tmWrite += diff.count();
+  mPerf.tmWrite += mClock.TimeSinceStart() - start;
 }
 
 /**
- *  \brief Do geometric transformation to populate the map
+ *  \brief Do geometric transformation to populate the map.
+ *  first, do rigorous calculation of corresponding positions on
+ *  raw images at grid nodes each giving a mark of
+ *  either eNORM if inside raw tile otherwise eBKGD if outside;
+ *  second, do linear interpolation for a full cell (i.e. four corners
+ *  marked as eNORM), rigorous calculation for a partial cell (i.e.
+ *  1~3 corners being eNORM, skip for empty cell (i.e. four eBKGD corners).
+ *
+ *  \param [in] tileId the index of tile to process
+ *  \param [in] tfmMat transfomration map
+ *
+ *  \todo first, mark candidate eNORM nodes by identifying cells
+ *  overlaping/intersecting the epipolar polygon that defines the
+ *  boundary of valid region, then do rigorous calculation at candidate
+ *  nodes, retaining the eNORM mark provided the EpiToRaw succeed;
+ *  second, do linear interpolation for a full cell (i.e. four corners
+ *  marked as eNORM), rarely rigorous calculation for a partial cell (i.e.
+ *  1~3 corners being eNORM.
+ *
+ *  \hint (Brehensen) draw line segments of the epipolar polygon on a
+ *  low-res image downsampled by a factor of mSample to identify cells
+ *  on the boundary, then do sweep-line to scan internal cells.
  */
-void EpipolarGenerator::EpiToImg(const int tileId, cv::Mat& tfmMat) {
-  const auto [imgColOffset, imgRowOffset, imgNumCols, imgNumRows] = mImgTiles[tileId];
-  const auto [colOffset, rowOffset, numCols, numRows] = mEpiTiles[tileId];
+void EpipolarGenerator::GeotransformTile(const int tileId, cv::Mat& tfmMat) {
+  const auto [numCols, numRows] = EpiTile(tileId).GetSize();
 
   // grid col/row positions for rigorous geometry
-  std::vector<int> gridCols;
-  std::vector<int> gridRows;
+  std::vector<int> gridCols, gridRows;
+  FillNodesByStride(numCols, mStride, gridCols);
+  FillNodesByStride(numRows, mStride, gridRows);
 
-  for (int i = 0; i < numCols - 1; i += mStride) {
-    gridCols.push_back(i);
-  }
-  gridCols.push_back(numCols - 1);
+  RigorousGridNodes(tileId, tfmMat, gridCols, gridRows);
 
-  for (int i = 0; i < numRows - 1; i += mStride) {
-    gridRows.push_back(i);
-  }
-  gridRows.push_back(numRows - 1);
+  DensifyPerCells(tileId, tfmMat, gridCols, gridRows);
+  //DensifyPerPixels(tileId, tfmMat, gridCols, gridRows);
+}
 
-  const int numGridCols = int(gridCols.size());
-  const int numGridRows = int(gridRows.size());
-  assert(2 <= numGridCols);
-  assert(2 <= numGridRows);
+/**
+ *  \brief do rigorous geometric transformation on grid nodes
+ *
+ *  \param [in] tileId the index of tile to process
+ *  \param [in] tfmMat transfomration map
+ */
+void EpipolarGenerator::RigorousGridNodes(const int tileId, cv::Mat& tfmMat,
+  const std::vector<int>& gridCols, const std::vector<int>& gridRows) {
+  auto start = mClock.TimeSinceStart();
+  const int numGridCols = static_cast<int>(gridCols.size());
+  const int numGridRows = static_cast<int>(gridRows.size());
+  assert(2 <= numGridCols && 2 <= numGridRows);
+  const int64_t numGridNodes = int64_t(numGridCols) * numGridRows;
 
-  const int64_t numGridPix = numGridCols * numGridRows;
-
-  // Do geometry at grid points
-#pragma omp parallel for
-  for (int64_t g = 0; g < numGridPix; ++g) {
-    const int gridCol = int(g % numGridCols);
-    const int gridRow = int(g / numGridCols);
+#pragma omp parallel for num_threads(mNumPT)
+  for (int64_t n = 0; n < numGridNodes; ++n) {
+    const auto [gridCol, gridRow] = IndexToCR(n, numGridCols);
 
     const int tileCol = gridCols[gridCol];
     const int tileRow = gridRows[gridRow];
     EpiToImg(tileId, tfmMat, tileCol, tileRow);
   }
 
-  if (1 == mStride) return;
-  
-  // Densify non-grid positions
-  const int64_t numPix = numCols * numRows;
+  mPerf.tmRigorous += mClock.TimeSinceStart() - start;
+}
 
-#pragma omp parallel for
+/**
+ *  \brief densify the geometric transformation at 
+ *  non-grid positions by looping over grid cells
+ *
+ *  \param [in] tileId the index of tile to process
+ *  \param [in] tfmMat transfomration map
+ *
+ *  \remark 15% faster than PerPixels
+ */
+void EpipolarGenerator::DensifyPerCells(const int tileId, cv::Mat& tfmMat,
+  const std::vector<int>& gridCols, const std::vector<int>& gridRows) {
+  if (1 == mStride) return;  
+  const auto start = mClock.TimeSinceStart();
+  const auto [numCols, numRows] = EpiTile(tileId).GetSize();
+  const int numGridCols = int(gridCols.size());
+  const int numGridRows = int(gridRows.size());
+  const int64_t numGridCells = int64_t(numGridCols - 1) * (numGridRows - 1);
+
+#pragma omp parallel for num_threads(mNumPT) schedule(dynamic, (numGridCols - 1)*2)
+  for (int64_t g = 0; g < numGridCells; ++g) {
+    const auto [gridCol, gridRow] = IndexToCR(g, numGridCols-1);
+
+    const auto [tileColL, tileRowU, tileColR, tileRowL] = 
+      GridCorners(gridCols, gridRows, gridCol, gridRow);
+    const auto [i1, i2, i3, i4] = CornersIndex(tileColL, tileRowU,
+      tileColR, tileRowL, numCols);
+
+    if (MaskAllZero(mMaskBuf.get(), i1, i2, i3, i4)) 
+      continue;
+    
+    if (MaskAllOne(mMaskBuf.get(), i1, i2, i3, i4)) {
+      const auto invTileCols = 1.0 / (tileColR - tileColL);
+      const auto invTileRows = 1.0 / (tileRowL - tileRowU);
+      const auto [tfm1, tfm2, tfm3, tfm4] =
+        MatCorners<cv::Vec2f>(tfmMat, tileColL, tileRowU, tileColR, tileRowL);
+
+      double xf{};
+      for (int c = 0; c < mStride; ++c, xf+= invTileCols) {
+        const int tileCol = tileColL + c;
+
+        double yf{};
+        for (int r = 0; r < mStride; ++r, yf+=invTileRows) {
+          const int tileRow = tileRowU + r;
+          const int64_t k = CRToIndex(tileCol, tileRow, numCols);
+          if (eMK_NORM == mMaskBuf[k]) continue;
+
+          auto& tfm = tfmMat.at<cv::Vec2f>(tileRow, tileCol);
+          tfm[0] = float(LinearInterp(tfm1[0], tfm2[0], tfm3[0], tfm4[0], xf, yf));
+          tfm[1] = float(LinearInterp(tfm1[1], tfm2[1], tfm3[1], tfm4[1], xf, yf));
+
+          mMaskBuf[k] = eMK_FAST; 
+        }
+      }
+    }
+    else {
+      for (int c = 0; c < mStride; ++c) {
+        const int tileCol = tileColL + c;
+
+        for (int r = 0; r < mStride; ++r) {
+          const int tileRow = tileRowU + r;
+          const int64_t k = CRToIndex(tileCol, tileRow, numCols);
+          if (eMK_NORM == mMaskBuf[k]) continue;
+
+          EpiToImg(tileId, tfmMat, tileCol, tileRow);
+        }
+      }
+    }
+  }
+  mPerf.tmDensify += mClock.TimeSinceStart() - start;
+}
+
+/** 
+ *  \brief densify the geometric transformation by looping over pixels
+ *
+ *  \param [in] tileId the index of tile to process
+ *  \param [in] tfmMat transfomration map
+ */
+void EpipolarGenerator::DensifyPerPixels(const int tileId, cv::Mat& tfmMat,
+  const std::vector<int>& gridCols, const std::vector<int>& gridRows) {
+  if (1 == mStride) return;  // Densify non-grid positions
+  const auto start = mClock.TimeSinceStart();
+  const auto [numCols, numRows] = EpiTile(tileId).GetSize();
+  const int64_t numPix = int64_t(numCols) * numRows;
+  const int numGridCols = int(gridCols.size());
+  const int numGridRows = int(gridRows.size());
+
+#pragma omp parallel for num_threads(mNumPT) schedule(dynamic, numCols*16)
   for (int64_t k = 0; k < numPix; ++k) {
-    if (1 == mMaskBuf[k]) continue;
-    const int tileCol = int(k % numCols);
-    const int tileRow = int(k / numCols);
+    if (eMK_NORM == mMaskBuf[k]) continue;
+    const auto [tileCol, tileRow] = IndexToCR(k, numCols);
 
-    const bool isGridCol = (0 == tileCol % mStride || tileCol == numCols - 1);
-    const bool isGridRow = (0 == tileRow % mStride || tileRow == numRows - 1);
-    if (isGridCol && isGridRow) continue; // failed grid point
+    //const bool isGridCol = (0 == tileCol % mStride || tileCol == numCols - 1);
+    //const bool isGridRow = (0 == tileRow % mStride || tileRow == numRows - 1);
+    //if (isGridCol && isGridRow) continue; // failed grid point
 
     const int gridCol = std::min(tileCol / mStride, numGridCols - 2);
     const int gridRow = std::min(tileRow / mStride, numGridRows - 2);
 
-    const int tileColL = gridCols[gridCol];
-    const int tileColR = gridCols[gridCol + 1];
-    const int tileRowU = gridRows[gridRow];
-    const int tileRowL = gridRows[gridRow + 1];
+    const auto [tileColL, tileRowU, tileColR, tileRowL] =
+      GridCorners(gridCols, gridRows, gridCol, gridRow);
+    const auto [i1, i2, i3, i4] = CornersIndex(tileColL, tileRowU,
+      tileColR, tileRowL, numCols);
 
-    const int64 i1 = numCols * tileRowU + tileColL;
-    const int64 i2 = numCols * tileRowU + tileColR;
-    const int64 i3 = numCols * tileRowL + tileColL;
-    const int64 i4 = numCols * tileRowL + tileColR;
-
-    if (0 == mMaskBuf[i1] && 0 == mMaskBuf[i2] &&
-        0 == mMaskBuf[i3] && 0 == mMaskBuf[i4]) {
+    if (MaskAllZero(mMaskBuf.get(), i1, i2, i3, i4)) 
       continue;
-    }
 
-    auto& tfm = tfmMat.at<cv::Vec2f>(tileRow, tileCol);
-
-    if (1 == mMaskBuf[i1] && 1 == mMaskBuf[i2] &&
-        1 == mMaskBuf[i3] && 1 == mMaskBuf[i4]) {
+    if (MaskAllOne(mMaskBuf.get(), i1, i2, i3, i4)) {
       // Bilinear interpolation if all four grid points are valid
-      // \todo re-calculate fraction lookup table at locations 0 ~ mStride -1
-      const double xf = double(tileCol - tileColL) / double(tileColR - tileColL);
-      const double yf = double(tileRow - tileRowU) / double(tileRowL - tileRowU);
+      // \todo pre-calculate fraction lookup table at locations 0 ~ mStride -1
+      const auto [tfm1, tfm2, tfm3, tfm4] = 
+        MatCorners<cv::Vec2f>(tfmMat, tileColL, tileRowU, tileColR, tileRowL);
+      const auto xf = double(tileCol - tileColL) / double(tileColR - tileColL);
+      const auto yf = double(tileRow - tileRowU) / double(tileRowL - tileRowU);
 
-      const auto& tfm1 = tfmMat.at<cv::Vec2f>(tileRowU, tileColL);
-      const auto& tfm2 = tfmMat.at<cv::Vec2f>(tileRowU, tileColR);
-      const auto& tfm3 = tfmMat.at<cv::Vec2f>(tileRowL, tileColL);
-      const auto& tfm4 = tfmMat.at<cv::Vec2f>(tileRowL, tileColR);
-
-      tfm[0] = float((1.0 - yf) * ((1.0 - xf) * tfm1[0] + xf * tfm2[0]) +
-        yf * ((1.0 - xf) * tfm3[0] + xf * tfm4[0]));
-      tfm[1] = float((1.0 - yf) * ((1.0 - xf) * tfm1[1] + xf * tfm2[1]) +
-        yf * ((1.0 - xf) * tfm3[1] + xf * tfm4[1]));
-      mMaskBuf[k] = 1;
+      auto& tfm = tfmMat.at<cv::Vec2f>(tileRow, tileCol);
+      tfm[0] = float(LinearInterp(tfm1[0], tfm2[0], tfm3[0], tfm4[0], xf, yf));
+      tfm[1] = float(LinearInterp(tfm1[1], tfm2[1], tfm3[1], tfm4[1], xf, yf));
+      mMaskBuf[k] = eMK_FAST;   
     }
     else {
-      // Do actual geometry if any grid point is invalid
+      // Do actual geometry if any grid node is invalid
       EpiToImg(tileId, tfmMat, tileCol, tileRow);
     }
   }
+  mPerf.tmDensify += mClock.TimeSinceStart() - start;
 }
 
 /**
  *  \brief Do rigorous transformation at given epipolar pixel
+ *
+ *  \param [in] tileId the index of tile to process
+ *  \param [in] tfmMat transfomration map
+ *  \param [in] tileCol column position of an epipolar pixel
+ *  \param [in] tileRow row position of an epipolar pixel
+ *  \param [in] insideImg check if the point inside the image tile
  */
 void EpipolarGenerator::EpiToImg(const int tileId, cv::Mat& tfmMat,
-  const int tileCol, const int tileRow) {
-  const auto [imgColOffset, imgRowOffset, imgNumCols, imgNumRows] = mImgTiles[tileId];
-  const auto [colOffset, rowOffset, numCols, numRows] = mEpiTiles[tileId];
+  const int tileCol, const int tileRow, const bool insideImg) {
+  const auto [imgColOffset, imgRowOffset, imgNumCols, imgNumRows] = ImgTile(tileId);
+  const auto [colOffset, rowOffset, numCols, numRows] = EpiTile(tileId);
 
   Point2d epi(0.5 + colOffset + tileCol, 0.5 + rowOffset + tileRow), img;
   const auto ret = mEpiModel->EpiToRaw(epi, img);
@@ -503,13 +504,28 @@ void EpipolarGenerator::EpiToImg(const int tileId, cv::Mat& tfmMat,
   const float tfmCol = float(img.x - 0.5 - imgColOffset);
   const float tfmRow = float(img.y - 0.5 - imgRowOffset);
 
-  if (0 <= tfmCol && tfmCol < imgNumCols - 1 &&
-    0 <= tfmRow && tfmRow < imgNumRows - 1) {
+  if (!insideImg || (0 <= tfmCol && tfmCol < imgNumCols - 1 &&
+                     0 <= tfmRow && tfmRow < imgNumRows - 1)) {
     auto& tfm = tfmMat.at<cv::Vec2f>(tileRow, tileCol);
     tfm[0] = tfmCol;
     tfm[1] = tfmRow;
 
-    const int64_t k = int64_t(numCols) * int64_t(tileRow) + int64_t(tileCol);
-    mMaskBuf[k] = 1;
+    const int64_t k = CRToIndex(tileCol, tileRow, numCols);
+    mMaskBuf[k] = eMK_NORM; 
+  }
+}
+
+/**
+ *  \brief count number of pixels in each category
+ *
+ *  \param [in] tileId the index of tile to analyze
+ */
+void EpipolarGenerator::GatherStatistics(const int tileId) {
+  const auto [colOffset, rowOffset, numCols, numRows] = EpiTile(tileId);
+  const int64_t numPix = int64_t(numCols) * numRows;
+
+//#pragma omp parallel for reduction(+ : )
+  for (int64_t k = 0; k < numPix; ++k) {
+    mPerf.pixels[mMaskBuf[k]] ++;
   }
 }

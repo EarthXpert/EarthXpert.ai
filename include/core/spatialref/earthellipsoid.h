@@ -61,7 +61,7 @@ public:
    * \param [in] lsr LSR XYZ coordinates [m]
    * \return Returns geographic longitude [rad], geographic latitude [rad], ellipsoidal height [m]
    */
-  Point3d LSRToLPH(const Point3d& lsr) const {
+  inline Point3d LSRToLPH(const Point3d& lsr) const {
     const Point3d xyz = LSRToXYZ(lsr);
     return XYZToLPH(xyz);
   }

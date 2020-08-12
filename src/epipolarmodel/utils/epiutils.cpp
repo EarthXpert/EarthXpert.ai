@@ -2,7 +2,7 @@
  *  Copyright (c) 2020.  All rights reserved.
  * -----------------------------------------------------------------------------
  */
-#include "epipolarmodel/utils.h"
+#include "epipolarmodel/utils/epiutils.h"
 #include "epipolarmodel/epipolarmodel.h"
 #include <sstream>
 

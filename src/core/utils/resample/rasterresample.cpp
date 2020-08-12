@@ -3,7 +3,6 @@
  * -----------------------------------------------------------------------------
  */
 #include "core/utils/rasterresample.h"
-#include "3rdparty/gettext/exgettext.h"
 
 #include "opencv2/imgproc.hpp"
 #include <algorithm>
@@ -47,9 +46,12 @@ int RasterResample<algoBackend>::GetWinDim() const noexcept {
 
 /**
  *  \brief Call cv::remap() to wrap the source raster into the target raster
- *  using the specified 2D position transformation raster:
+ *  using the specified 2D position transformation raster.
  *
- *  \param [in] tfmRaster Resampling transformation of target raster in source raster.
+ *  \param [in] tfmRaster Resampling transformation of target raster in 
+ *              source raster. if source raster has margins, the 2D positions
+ *              should have been tanslated accordingly to be relative to the
+ *              upper-left corner of the source buffer.
  */
 template <int algoBackend>
 void RasterResample<algoBackend>::ResampleCV(CvRaster& srcRaster,

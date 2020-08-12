@@ -21,8 +21,8 @@ using namespace earthxpert;
  *  \param [in] imageFile full path of the image file
  *  \param [in] bands an array of 1-based band indices
  */
-RasterReader::RasterReader(const std::string& imageFile, const std::vector<int>& bands)
-  : mBands(bands) {
+RasterReader::RasterReader(const std::string& imageFile, 
+  const std::vector<int>& bands) : mBands(bands) {
   auto dataset = GDALOpen(imageFile.c_str(), GA_ReadOnly);
   if (!dataset) {
     throw IOError(_("GDAL failed to open image file for read access."));
@@ -31,14 +31,17 @@ RasterReader::RasterReader(const std::string& imageFile, const std::vector<int>&
   Initialize(static_cast<GDALDataset*>(dataset));
 }
 
+RasterReader::RasterReader(const fs::path& imageFile, const std::vector<int>& bands)
+  : RasterReader(imageFile.string(), bands) {}
+
 /**
  *  \brief Construct reader object.
  *
  *  \param [in] dataset an opened dataset for reading
  *  \param [in] bands an array of 1-based band indices
  */
-RasterReader::RasterReader(GDALDataset* dataset, const std::vector<int>& bands)
-  : mBands(bands) {
+RasterReader::RasterReader(GDALDataset* dataset, 
+  const std::vector<int>& bands) : mBands(bands) {
   assert(dataset);
   Initialize(dataset);
 }
@@ -63,8 +66,10 @@ std::unique_ptr<RasterMetadata> RasterReader::GetMetadata() const {
 /**
  *  \return Returns pointer to the spatial coordinate system
  */
-std::unique_ptr<SpatialReferenceSystem> RasterReader::GetCoordinateSystem() const {
-  auto spatialRef = std::make_unique<SpatialReferenceSystem>(mDataset->GetProjectionRef());
+std::unique_ptr<SpatialReferenceSystem> 
+RasterReader::GetCoordinateSystem() const {
+  auto spatialRef = 
+    std::make_unique<SpatialReferenceSystem>(mDataset->GetProjectionRef());
   if (!spatialRef) {
     throw IOError(_("This image file has no infomation on coordinate system "));
   }
@@ -129,7 +134,8 @@ std::unique_ptr<IRaster> RasterReader::ReadRaster(RasterType rasterType) {
  *  \param [in] rasterType type of data structure
  *  \return Returns pointer to raster object holding a pixel block
  */
-std::unique_ptr<IRaster> RasterReader::ReadRaster(const int colOffset, const int rowOffset,
+std::unique_ptr<IRaster> 
+RasterReader::ReadRaster(const int colOffset, const int rowOffset,
   const int numCols, const int numRows, const RasterType rasterType) {
   std::unique_ptr<IRaster> raster;
 

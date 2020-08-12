@@ -5,6 +5,7 @@
 #include "3rdparty/gtest/gtest_main.h"
 #include "testconfig.h"
 
+#include "core/math/mutils.h"
 #include "core/utils/unitutils.h"
 #include "marshaller/rationalmodelmarshaller.h"
 #include "sensormodel/rationalmodel.h"
@@ -156,10 +157,10 @@ void TestImageToGround_Cube(const RationalModel* leftModel, const RationalModel*
   const auto stepLat = (maxLat - minLat) / kNum;
   const auto stepHgt = (maxHgt - minHgt) / kNum;
 
-  double maxDiffLonC{ -1.0 }, maxDiffLatC{ -1.0 }, maxDiffHgtC{ -1.0 };
-  double maxDiffLonE{ -1.0 }, maxDiffLatE{ -1.0 }, maxDiffHgtE{ -1.0 };
-  double maxDiffLonI{ -1.0 }, maxDiffLatI{ -1.0 }, maxDiffHgtI{ -1.0 };
-  double maxDiffLonN{ -1.0 }, maxDiffLatN{ -1.0 }, maxDiffHgtN{ -1.0 };
+  Point3d maxDiffC(-1.0, -1.0, -1.0);
+  Point3d maxDiffE(-1.0, -1.0, -1.0);
+  Point3d maxDiffI(-1.0, -1.0, -1.0);
+  Point3d maxDiffN(-1.0, -1.0, -1.0);
 
   StereoModel smC(leftModel, rightModel);    // Ceres 
   smC.SetForwardAlgorithm(IStereoModel::eSM_CERES);
@@ -206,72 +207,28 @@ void TestImageToGround_Cube(const RationalModel* leftModel, const RationalModel*
         Point3d grdC{ ground };
         ret = smC.ImageToGround(imageL, imageR, grdC);
         if (ret) {
-          diffLon = fabs(grdC.x - ground.x);
-          if (maxDiffLonC < diffLon)
-            maxDiffLonC = diffLon;
-
-          diffLat = fabs(grdC.y - ground.y);
-          if (maxDiffLatC < diffLat)
-            maxDiffLatC = diffLat;
-
-          diffHgt = fabs(grdC.z - ground.z);
-          if (maxDiffHgtC < diffHgt)
-            maxDiffHgtC = diffHgt;
-
+          Larger(maxDiffC, xabs(grdC - ground));
           ++nC;
         }
 
         Point3d grdE{ ground };
         ret = smE.ImageToGround(imageL, imageR, grdE);
         if (ret) {
-          diffLon = fabs(grdE.x - ground.x);
-          if (maxDiffLonE < diffLon)
-            maxDiffLonE = diffLon;
-
-          diffLat = fabs(grdE.y - ground.y);
-          if (maxDiffLatE < diffLat)
-            maxDiffLatE = diffLat;
-
-          diffHgt = fabs(grdE.z - ground.z);
-          if (maxDiffHgtE < diffHgt)
-            maxDiffHgtE = diffHgt;
-
+          Larger(maxDiffE, xabs(grdE - ground));
           ++nE;
         }
 
         Point3d grdI{ ground };
         ret = smI.ImageToGround(imageL, imageR, grdI);
         if (ret) {
-          diffLon = fabs(grdI.x - ground.x);
-          if (maxDiffLonI < diffLon)
-            maxDiffLonI = diffLon;
-
-          diffLat = fabs(grdI.y - ground.y);
-          if (maxDiffLatI < diffLat)
-            maxDiffLatI = diffLat;
-
-          diffHgt = fabs(grdI.z - ground.z);
-          if (maxDiffHgtI < diffHgt)
-            maxDiffHgtI = diffHgt;
-
+          Larger(maxDiffI, xabs(grdI - ground));
           ++nI;
         }
 
         Point3d grdN{ ground };
         ret = smN.ImageToGround(imageL, imageR, grdN);
         if (ret) {
-          diffLon = fabs(grdN.x - ground.x);
-          if (maxDiffLonN < diffLon)
-            maxDiffLonN = diffLon;
-
-          diffLat = fabs(grdN.y - ground.y);
-          if (maxDiffLatN < diffLat)
-            maxDiffLatN = diffLat;
-
-          diffHgt = fabs(grdN.z - ground.z);
-          if (maxDiffHgtN < diffHgt)
-            maxDiffHgtN = diffHgt;
-
+          Larger(maxDiffN, xabs(grdN - ground));
           ++nN;
         }
         ++n;
@@ -285,18 +242,18 @@ void TestImageToGround_Cube(const RationalModel* leftModel, const RationalModel*
   ASSERT_EQ(nI, n) << "Number of interaction points: " << nI;
   ASSERT_EQ(nN, n) << "Number of NR points: " << nN;
 
-  ASSERT_LE(maxDiffLonC, kTol) << "Max. longitude difference > 1 mm: " << maxDiffLonC;
-  ASSERT_LE(maxDiffLatC, kTol) << "Max.  latitude difference > 1 mm: " << maxDiffLatC;
-  ASSERT_LE(maxDiffHgtC, kTolH) << "Max.    height difference > 1 mm: " << maxDiffHgtC;
-  ASSERT_LE(maxDiffLonE, kTol) << "Max. longitude difference > 1 mm: " << maxDiffLonE;
-  ASSERT_LE(maxDiffLatE, kTol) << "Max.  latitude difference > 1 mm: " << maxDiffLatE;
-  ASSERT_LE(maxDiffHgtE, kTolH) << "Max.    height difference > 1 mm: " << maxDiffHgtE;
-  ASSERT_LE(maxDiffLonI, kTol) << "Max. longitude difference > 1 mm: " << maxDiffLonI;
-  ASSERT_LE(maxDiffLatI, kTol) << "Max.  latitude difference > 1 mm: " << maxDiffLatI;
-  ASSERT_LE(maxDiffHgtI, kTolH) << "Max.    height difference > 1 mm: " << maxDiffHgtI;
-  ASSERT_LE(maxDiffLonN, kTol)   << "Max. longitude difference > 1 mm: " << maxDiffLonN;
-  ASSERT_LE(maxDiffLatN, kTol)   << "Max.  latitude difference > 1 mm: " << maxDiffLatN;
-  ASSERT_LE(maxDiffHgtN, kTolH)  << "Max.    height difference > 1 mm: " << maxDiffHgtN;
+  ASSERT_LE(maxDiffC.x, kTol) << "Max. longitude difference > 1 mm: " << maxDiffC.x;
+  ASSERT_LE(maxDiffC.y, kTol) << "Max.  latitude difference > 1 mm: " << maxDiffC.y;
+  ASSERT_LE(maxDiffC.z, kTolH) << "Max.    height difference > 1 mm: " << maxDiffC.z;
+  ASSERT_LE(maxDiffE.x, kTol) << "Max. longitude difference > 1 mm: " << maxDiffE.x;
+  ASSERT_LE(maxDiffE.y, kTol) << "Max.  latitude difference > 1 mm: " << maxDiffE.y;
+  ASSERT_LE(maxDiffE.z, kTolH) << "Max.    height difference > 1 mm: " << maxDiffE.z;
+  ASSERT_LE(maxDiffI.x, kTol) << "Max. longitude difference > 1 mm: " << maxDiffI.x;
+  ASSERT_LE(maxDiffI.y, kTol) << "Max.  latitude difference > 1 mm: " << maxDiffI.y;
+  ASSERT_LE(maxDiffI.z, kTolH) << "Max.    height difference > 1 mm: " << maxDiffI.z;
+  ASSERT_LE(maxDiffN.x, kTol) << "Max. longitude difference > 1 mm: " << maxDiffN.x;
+  ASSERT_LE(maxDiffN.y, kTol) << "Max.  latitude difference > 1 mm: " << maxDiffN.y;
+  ASSERT_LE(maxDiffN.z, kTolH)  << "Max.    height difference > 1 mm: " << maxDiffN.z;
 }
 
 /**

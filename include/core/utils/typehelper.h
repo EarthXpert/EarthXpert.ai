@@ -23,6 +23,9 @@ struct Tuple<1, Ty...> {
 template <typename Ty>
 using Tuple3 = typename Tuple<3, Ty>::type;
 
+template <typename Ty>
+using Tuple4 = typename Tuple<4, Ty>::type;
+
 using Tuple3d = typename Tuple<3, double>::type;
 using Tuple4d = typename Tuple<4, double>::type;
 using Tuple6d = typename Tuple<6, double>::type;

@@ -5,7 +5,8 @@
 #pragma once
 
 #include "3rdparty/ex3rdparty.h"
-#include "Eigen/Eigen"
+
+#include <Eigen/Eigen>
 
 namespace earthxpert::thirdparty {
 } // namespace earthxpert::thirdparty

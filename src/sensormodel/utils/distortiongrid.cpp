@@ -22,10 +22,8 @@ using earthxpert::DistortionGrid;
  */
 template <typename Ty>
 DistortionGrid<Ty>::DistortionGrid(std::string cameraName,
-                                    const std::vector<Ty> &vX,
-                                    const std::vector<Ty> &vY,
-                                    const std::vector<Ty> &vdX,
-                                    const std::vector<Ty> &vdY)
+  const std::vector<Ty> &vX, const std::vector<Ty> &vY,
+  const std::vector<Ty> &vdX, const std::vector<Ty> &vdY)
     : mCameraName(std::move(cameraName)) {
   static_assert(std::is_floating_point<Ty>::value);
   EstablishGrid(vX, vY, vdX, vdY);
@@ -41,9 +39,7 @@ DistortionGrid<Ty>::DistortionGrid(std::string cameraName,
  */
 template <typename Ty>
 DistortionGrid<Ty>::DistortionGrid(const std::vector<Ty> &vX,
-                                    const std::vector<Ty> &vY,
-                                    const std::vector<Ty> &vdX,
-                                    const std::vector<Ty> &vdY) 
+  const std::vector<Ty> &vY, const std::vector<Ty> &vdX, const std::vector<Ty> &vdY) 
     : DistortionGrid("", vX, vY, vdX, vdY) {
 }
 
@@ -135,10 +131,8 @@ bool DistortionGrid<Ty>::operator!=(const DistortionGrid<Ty> &rhs) const {
  * \return true if getting grid points successfully.
  */
 template <typename Ty>
-bool DistortionGrid<Ty>::FetchGrid(unsigned int &numCols,
-                                    unsigned int &numRows, std::vector<Ty> &vX,
-                                    std::vector<Ty> &vY, std::vector<Ty> &vdX,
-                                    std::vector<Ty> &vdY) const {
+bool DistortionGrid<Ty>::FetchGrid(unsigned int &numCols, unsigned int &numRows, 
+  std::vector<Ty> &vX, std::vector<Ty> &vY, std::vector<Ty> &vdX, std::vector<Ty> &vdY) const {
   if (!mGrid)
     return false;
   std::tie(numCols, numRows) = mGrid->GetSize();
@@ -184,9 +178,7 @@ bool DistortionGrid<Ty>::FetchGrid(unsigned int &numCols,
  */
 template <typename Ty>
 void DistortionGrid<Ty>::EstablishGrid(const std::vector<Ty> &vX,
-                                        const std::vector<Ty> &vY,
-                                        const std::vector<Ty> &vdX,
-                                        const std::vector<Ty> &vdY) {
+  const std::vector<Ty> &vY, const std::vector<Ty> &vdX, const std::vector<Ty> &vdY) {
   const auto itX = std::minmax_element(std::begin(vX), std::end(vX));
   const Ty minX = *itX.first;
   const Ty maxX = *itX.second;
@@ -200,15 +192,15 @@ void DistortionGrid<Ty>::EstablishGrid(const std::vector<Ty> &vX,
   auto it = std::adjacent_find(std::begin(vY), std::end(vY), std::less<Ty>());
   const Ty spcY = fabs(*it - *std::next(it));
 
-  mGrid = std::make_unique< InterpGrid<Ty>>(2, minX, minY, maxX, maxY, spcX, spcY);
+  mGrid = std::make_unique<InterpGrid<Ty>>(2, minX, minY, maxX, maxY, spcX, spcY);
   auto grid = mGrid->GetArray();
   auto [numX, numY] = mGrid->GetSize();
 
   const size_t numPts = mGrid->GetNumNodes();
 
   for (size_t k = 0; k < numPts; ++k) {
-    const unsigned int X = static_cast<unsigned int>(k / numY);
-    const unsigned int Y = static_cast<unsigned int>(k % numY);
+    const auto X = static_cast<unsigned int>(k / numY);
+    const auto Y = static_cast<unsigned int>(k % numY);
 
     const size_t idx = size_t(Y) * size_t(numX) + size_t(X);
     grid[k * 2] = vdX[idx];

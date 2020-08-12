@@ -8,17 +8,14 @@
 #include <cassert>
 #include <cmath>
 
-using earthxpert::EpipolarSensorModel;
-using earthxpert::IEpipolarModel;
-using earthxpert::ISensorModel;
-using earthxpert::Point2d;
-using earthxpert::Point3d;
+using namespace earthxpert;
 
 /**
  *   \brief construct a frame epipolar model
  */
 EpipolarSensorModel::EpipolarSensorModel(std::shared_ptr<ISensorModel> sensorModel,
-  StereoPos pos) : mSensorModel(sensorModel), mPos(pos) {
+  StereoPos pos, const Polygon2d& epiBound) 
+  : mSensorModel(sensorModel), mPos(pos), mBound(epiBound) {
 }
 
 /**

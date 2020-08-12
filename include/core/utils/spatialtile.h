@@ -9,7 +9,8 @@
 
 namespace earthxpert {
 /**
- *  The structure SpatialTile contains the offset and size information.
+ *  The structure SpatialTile contains the offset and size information
+ *  of a contineous 2D range.
  *
  *  \param Ty value type of coordinates
  */
@@ -21,9 +22,7 @@ template <typename Ty> struct SpatialTile {
   Ty width{};
   Ty height{};
 
-  bool operator>=(const SpatialTile<Ty>& rhs) const {
-    return ImproperContain(rhs);
-  }
+  bool operator>=(const SpatialTile<Ty>& rhs) const { return ImproperContain(rhs); }
 
   void SetMinXY(const Ty minX, const Ty minY) {
     this->minX = minX;
@@ -35,12 +34,16 @@ template <typename Ty> struct SpatialTile {
     this->height = height;
   }
 
-  void SetMargins(const Ty marginWidth, const Ty marginHeight) {
-    minX -= marginWidth;
-    minY -= marginHeight;
-    width  += marginWidth * 2;
-    height += marginHeight * 2;
+  void SetBuffers(const Ty bufferWidth, const Ty bufferHeight) {
+    minX -= bufferWidth;
+    minY -= bufferHeight;
+    width  += bufferWidth * 2;
+    height += bufferHeight * 2;
   }
+
+  inline bool IsValid() const noexcept { return (0 < width && 0 < height); }
+
+  inline Ty GetArea() const noexcept { return width * height; }
 
   /**
    *  \param [in] rhs Object to test

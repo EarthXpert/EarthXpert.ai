@@ -16,8 +16,8 @@ namespace earthxpert {
 class ISensorModel;
 
 /**
- *  \brief the class SensorCube creates a 3d cube of image positions and
- *  corresponding ground positions at multiple elevation layers.
+ *  \brief the class SensorCube creates a 2d grid of image positions and
+ *  corresponding 3d cube of ground positions at multiple elevation layers.
  */
 class EXSENSORMODEL_EXPORTS SensorCube {
 public:
@@ -46,19 +46,29 @@ public:
     Initialize();
   }
 
-  int CreateCube(const ISensorModel* sensorModel, 
+  int CreateCube(const ISensorModel* sensorModel,
+    std::vector<Point2f>& images, std::vector<Point3d>& grounds) const;
+
+  int CreateCubeQC(const ISensorModel* sensorModel,
+    std::vector<Point2f>& images, std::vector<Point3d>& grounds) const;
+
+  int CreateCubeFlat(const ISensorModel* sensorModel,
+    std::vector<Point2f>& images, std::vector<Point3d>& grounds) const;
+  int CreateCubeModel(const ISensorModel* sensorModel,
     std::vector<Point2f>& images, std::vector<Point3d>& grounds) const;
 
 private:
-  static constexpr double kMarginRatio = 0.1;  // ratio of margin to extend beyound the scene
+  static constexpr double kMarginRatio = 0.1;  // ratio of margin to extend beyound the image scene
 
   std::array<double, NumFact> mNormalFators{}; // normalization factors including offsets & scales
-  int mNumHoriz{};
-  int mNumVert{};
-  int mNumLayers{};
+  int mNumHoriz{10};
+  int mNumVert{10};
+  int mNumLayers{10};
   LayerType mLayerType{ eMODEL };
 
   void Initialize();
+
+  // cached 
 };
 
 using CubeType = SensorCube::LayerType;

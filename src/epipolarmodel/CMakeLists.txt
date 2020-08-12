@@ -1,14 +1,17 @@
 project(epipolarmodel)
 
 add_definitions(-DEXEPIPOLARMODEL_API)
-earthxpert_add_library(epipolarmodel "api"
-  SRCS "epipolarmodel.cpp"
+set(epipolarmodel_srcs "epipolarmodel.cpp"
        "epipolarmodelfactory.cpp"
        "epipolarrect.cpp"
        "epipolarsensormodel.cpp"
        "frameepipolarmodel.cpp"
-       "utils.cpp"
+       "utils/epiutils.cpp"
+       "utils/evalepipolarmodel.cpp")
+earthxpert_add_library(epipolarmodel "api"
+  SRCS ${epipolarmodel_srcs}
   ITEMS ex3rdparty core sensormodel 
-        ${GDAL_LIBRARY} ${GETTEXT_LIBRARY} ${OpenCV_LIBS})
+        Boost::boost ${GDAL_LIBRARY} ${GETTEXT_LIBRARY} ${OpenCV_LIBS})
 
+earthxpert_source_group(${epipolarmodel_srcs})
 earthxpert_install_target(epipolarmodel)

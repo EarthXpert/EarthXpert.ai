@@ -6,24 +6,35 @@
 #include "3rdparty/gettext/exgettext.h"
 #include "core/utils/typehelper.h"
 #include "core/exceptions/exexcept.h"
+#include "core/math/mutils.h"
+#include "core/utils/geomutils.h"
 #include "epipolarmodel/epipolarmodel.h"
-#include "core/math/math.h"
 #include "sensormodel/framemodel.h"
 #include "sensormodel/rationalmodel.h"
-#include "sensormodel/utils/utils.h"
+#include "sensormodel/utils/smutils.h"
 
 #include <algorithm>
 #include <cassert>
 #include <cmath>
 #include <deque>
+#include <numeric>
 
 using namespace earthxpert;
+
+// output option
+static const std::map<std::string, EpipolarModelFactory::EpiOpt> sOutOptMap = {
+  {"compact", EpipolarModelFactory::EpiOpt::eCOMPACT},
+  {"full", EpipolarModelFactory::EpiOpt::eFULL},
+  {"intersect", EpipolarModelFactory::EpiOpt::eINTERSECT} };
 
 /**
  *  \brief
  */
-EpipolarModelFactory::EpipolarModelFactory(const EpipolarOption epiOpt)
-  : mEpiOpt(epiOpt) {}
+EpipolarModelFactory::EpipolarModelFactory(const EpiOutputOption outOpt)
+  : mOutOpt(outOpt) {}
+
+EpipolarModelFactory::EpipolarModelFactory(const std::string& outOpt)
+  : EpipolarModelFactory(sOutOptMap.at(outOpt)) {}
 
 /**
  *  \brief Create an epipolar models for a stereo pair of frame images.
@@ -79,6 +90,7 @@ EpiModelPair EpipolarModelFactory::CreateRationalEpiModel(
   const double invScale = EpiGsd(leftModel.get(), rightModel.get(), height) * sample;
   const double scale{ 1.0 / invScale };
 
+  // epipolar footprint/boundary in metric unit [meter]
   auto leftFp = CalcFootprint(leftModel.get(), earthEllip.get(), height);
   auto rightFp = CalcFootprint(rightModel.get(), earthEllip.get(), height);
 
@@ -87,8 +99,13 @@ EpiModelPair EpipolarModelFactory::CreateRationalEpiModel(
   const double cosRot{ cos(rotation) };
   const double sinRot{ sin(rotation) };
 
-  auto [leftEpiMin, leftEpiMax] = CalcEpiBound(leftFp, scale, cosRot, sinRot);
-  auto [rightEpiMin, rightEpiMax] = CalcEpiBound(rightFp, scale, cosRot, sinRot);
+  // convert footprint in epipolar unit [pixel]
+  ConvertEpiRect(leftFp, scale, cosRot, sinRot);
+  ConvertEpiRect(rightFp, scale, cosRot, sinRot);
+
+  // bounding box in epipolar pixel
+  auto [leftEpiMin, leftEpiMax] = utils::CalcBound(leftFp, kPosTfm);
+  auto [rightEpiMin, rightEpiMax] = utils::CalcBound(rightFp, kPosTfm);
 
   const double offsetY{ std::min(leftEpiMin.y, rightEpiMin.y) };
   const int numRows{ int(std::max(leftEpiMax.y, rightEpiMax.y) - offsetY + 0.5) };
@@ -96,12 +113,10 @@ EpiModelPair EpipolarModelFactory::CreateRationalEpiModel(
     throw EpipolarError(_("CreateRationalEpiModel: not valid"));
   }
 
-  double leftOffsetX{};
-  int leftNumCols{};
-  double rightOffsetX{};
-  int rightNumCols{};
+  double leftOffsetX{}, rightOffsetX{};
+  int leftNumCols{}, rightNumCols{};
 
-  switch (mEpiOpt) {
+  switch (mOutOpt) {
   case EpiOpt::eCOMPACT:
     leftOffsetX = leftEpiMin.x;
     leftNumCols = int(leftEpiMax.x - leftOffsetX + 0.5);
@@ -124,20 +139,24 @@ EpiModelPair EpipolarModelFactory::CreateRationalEpiModel(
     throw EpipolarError(_("CreateRationalEpiModel: not valid"));
   }
 
+  // convert to epipolar boundary in image space based on epipolar options.
+  ConvertEpiImage(leftFp, leftOffsetX, offsetY, numRows);
+  ConvertEpiImage(rightFp, rightOffsetX, offsetY, numRows);
+
   auto geoGround = std::make_shared<GeographicGroundDeg>(std::move(earthEllip));
   assert(!earthEllip);
 
   // left epipolar model
   auto leftRect = std::make_unique<EpipolarRect>(origin, height,
     scale, rotation, Point2d(leftOffsetX, offsetY), leftNumCols, numRows);
-  auto leftEpiModel = std::make_unique<GeoEpipolarModel>(
-    leftModel, EpiStereoPos::eLEFT, std::move(leftRect), geoGround);
+  auto leftEpiModel = std::make_unique<GeoEpipolarModel>(leftModel, 
+    EpiStereoPos::eLEFT, leftFp, std::move(leftRect), geoGround);
 
   // right epipolar model
   auto rightRect = std::make_unique<EpipolarRect>(origin, height,
     scale, rotation, Point2d(rightOffsetX, offsetY), rightNumCols, numRows);
-  auto rightEpiModel = std::make_unique<GeoEpipolarModel>(
-    rightModel, EpiStereoPos::eRIGHT, std::move(rightRect), geoGround);
+  auto rightEpiModel = std::make_unique<GeoEpipolarModel>(rightModel, 
+    EpiStereoPos::eRIGHT, rightFp, std::move(rightRect), geoGround);
 
   return EpiModelPair{ std::move(leftEpiModel), std::move(rightEpiModel) };
 }
@@ -149,10 +168,11 @@ std::vector<std::unique_ptr<IEpipolarModel>>
 EpipolarModelFactory::CreateEpipolarModel(
   const std::vector<std::shared_ptr<ISensorModel>> &sensorModels,
   const int sample, const double height) {
-  if (sensorModels.size() < 2) {
+  if (sensorModels.size() < 2) 
     throw std::exception("Require a minimum of two images");
-  }
-  return std::vector<std::unique_ptr<IEpipolarModel>>{};
+
+  std::vector<std::unique_ptr<IEpipolarModel>> epiModels;
+  return epiModels;
 }
 
 /**
@@ -175,7 +195,6 @@ double EpipolarModelFactory::CalcEpiRotation(const ISensorModel* leftModel,
   }
 
   std::vector<Point2d> epiDir;  // epipolar direction vectors at corners
-  std::vector<double> dirLen;  // length of direction vectors
   for (auto& point : points) {
     Point3d lsr{ point.x(), point.y(), height };
     auto lph = Rad2Deg(ee->LSRToLPH(lsr));
@@ -191,12 +210,28 @@ double EpipolarModelFactory::CalcEpiRotation(const ISensorModel* leftModel,
 
     const Point2d dir{ rightRect.x() - leftRect.x(), rightRect.y() - leftRect.y() };
     epiDir.push_back(dir);
-    dirLen.push_back(cv::norm(dir));
   }
 
-  const auto index = std::distance(std::begin(dirLen),
-    std::max_element(std::begin(dirLen), std::end(dirLen)));
-  Point2d ed{ epiDir[index] };
+  // \todo plot all directions. select median/average of the three longest vectors?
+  Point2d ed;
+
+  switch (mEpiDir) {
+  case eLONGEST: {// select the longest vector as direction having largest parallax
+    auto it = std::max_element(epiDir.cbegin(), epiDir.cend(),
+      [](const Point2d& da, const Point2d& db) { 
+        return cv::norm(da) < cv::norm(db); });
+    ed = epiDir[std::distance(epiDir.cbegin(), it)];
+  }
+  break;
+
+  case eOVERALL: {// sum all direction vectors
+    ed = std::accumulate(epiDir.cbegin(), epiDir.cend(), Point2d());
+  }
+  break;
+
+  default:
+    assert(false);
+  }
 
   if ((fabs(ed.x) > fabs(ed.y) && 0 > ed.x) ||
     (fabs(ed.x) < fabs(ed.y) && 0 < ed.y)) {
@@ -207,29 +242,32 @@ double EpipolarModelFactory::CalcEpiRotation(const ISensorModel* leftModel,
 }
 
 /**
- *  \return Returns the lower-left and upper-right epiolar bounding box [pixel].
+ *  \brief convert vertex coordinates from rectification CS [meter]
+ *  to epipolar CS [pixel].
  */
-std::pair<Point2d, Point2d> EpipolarModelFactory::CalcEpiBound(
-  const Polygon2d& fp, const double scale, 
-  const double cosRot, const double sinRot) const {
-  const std::vector<PointXYd>& fpPts = fp.outer();
+void EpipolarModelFactory::ConvertEpiRect(Polygon2d& fp, 
+  const double scale, const double cosRot, const double sinRot) const {
+  std::vector<PointXYd>& fpPts = fp.outer();
 
-  Point2d pixMin{ DBL_MAX, DBL_MAX };
-  Point2d pixMax{ -DBL_MAX, -DBL_MAX };
   for (auto& p : fpPts) {
-    Point2d pt{ cosRot * p.x() + sinRot * p.y(), 
+    Point2d pt{ cosRot * p.x() + sinRot * p.y(),
                 -sinRot * p.x() + cosRot * p.y() };
     pt *= scale;
-
-    if (pixMin.x > pt.x) pixMin.x = pt.x;
-    if (pixMin.y > pt.y) pixMin.y = pt.y;
-    if (pixMax.x < pt.x) pixMax.x = pt.x;
-    if (pixMax.y < pt.y) pixMax.y = pt.y;
+    p.x(pt.x);
+    p.y(pt.y);
   }
+}
 
-  Point2i pMin(floor(pixMin.x), floor(pixMin.y));
-  Point2i pMax(ceil(pixMax.x), ceil(pixMax.y));
+/**
+ *  \brief convert rectified footprint to epipolar boundary in image space.
+ *  \todo return Returns Polygon2f
+ */
+void EpipolarModelFactory::ConvertEpiImage(Polygon2d& fp, 
+  const double offsetX, const double offsetY, const int numRows) const {
+  std::vector<PointXYd>& fpPts = fp.outer();
 
-  return { cv::Point2d(Stride(pMin.x, kPosTfm), Stride(pMin.y, kPosTfm)),
-           cv::Point2d(Stride(pMax.x, kPosTfm), Stride(pMax.y, kPosTfm)) };
+  for (auto& p : fpPts) {
+    p.x(p.x() - offsetX - 0.5);
+    p.y(offsetY + numRows - p.y() - 0.5);
+  }
 }

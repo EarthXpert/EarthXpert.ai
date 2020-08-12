@@ -6,6 +6,7 @@
 
 #include "io/vector/ivectorreader.h"
 #include "core/datasource/ogrlayer.h"
+#include "core/utils/fsutils.h"
 
 #include <mutex>
 #include <tuple>
@@ -24,6 +25,7 @@ namespace earthxpert {
 class EXIO_EXPORTS VectorReader final : public IVectorReader {
 public:
   VectorReader(const std::string& vecFile, const std::vector<LayerInfo>& layersInfo = {});
+  VectorReader(const fs::path& vecFile, const std::vector<LayerInfo>& layersInfo = {});
   VectorReader(GDALDataset* dataset, const std::vector<LayerInfo>& layersInfo = {});
   VectorReader(const VectorReader&) = delete;
   VectorReader(VectorReader&&) = delete;

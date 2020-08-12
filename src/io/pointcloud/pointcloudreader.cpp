@@ -13,8 +13,8 @@
 #include <optional>
 
 using namespace earthxpert;
-using earthxpert::thirdparty::CreateLasFilter;
-using earthxpert::thirdparty::PointDataTraits;
+using thirdparty::CreateLasFilter;
+using thirdparty::PointDataTraits;
 
 /**
  *  \brief constractor, open the las file for read
@@ -31,6 +31,9 @@ PointcloudReader::PointcloudReader(const std::string& lasFile,
 
   ObtainLasInfo();
 }
+
+PointcloudReader::PointcloudReader(const fs::path& lasFile, const FieldGroup fieldGroup) 
+  : PointcloudReader(lasFile.string(), fieldGroup) {}
 
 /**
  *  \return Returns metadata tags

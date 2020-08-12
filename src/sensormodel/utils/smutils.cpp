@@ -2,7 +2,7 @@
  *  Copyright (c) 2018.  All rights reserved.
  * -----------------------------------------------------------------------------
  */
-#include "sensormodel/utils/utils.h"
+#include "sensormodel/utils/smutils.h"
 #include "core/utils/unitutils.h"
 #include "core/spatialref/earthellipsoid.h"
 
@@ -109,9 +109,29 @@ double CalcGsd(const ISensorModel* sensorModel,
 }
 
 /**
+ *  \brief register multispectral and pan images in raw imagery space by
+ *  calculating a low-order polynomial.
+ *
+ *  \details 1) geometric co-registration: establish a sparse grid on pan image; 
+ *  forward project grid nodes to several elevation layers in ground; 
+ *  backward project ground points to obtain points on mul image; 
+ *  scale coordinates of pan grid nodes, dividing by the known pixel size ratio,
+ *  and calculate the low-oder polynomial used to transform the projected mul points
+ *  to the scaled grid nodes; append the transformation polynomial to
+ *  the mul image positions to correct for and get mul-pan registered positions.
+ *
+ *  2) image co-registration: do image matching for the pan grid nodes w.r.t 
+ *  the mul image to obtain the equivelant projected mul points.
+ */
+void RegisterMulPan(const ISensorModel* mulModel,
+  const ISensorModel* panModel, const int ratio) {
+
+}
+
+/**
  *  Image-to-plane projection on ground.
  *
- *  \param [out] plane position on the tangential plane [meter].
+ *  \param [out] rect position on the tangential plane [meter].
  *  \param [in] tolH tolerance for convergence, default to 0.1mm.
  */
 bool ImageToPlane(const Point2d& image, const ISensorModel* sensorModel, 
@@ -156,9 +176,9 @@ Polygon2d CalcFootprint(const ISensorModel* sensorModel,
     ImageToPlane(corners[i], sensorModel, ee, height, fpCorners[i], 0.01);
   }
 
-  Polygon2d fp;
-  bg::assign_points(fp, fpCorners);
-  return fp;
+  Polygon2d poly;
+  bg::assign_points(poly, fpCorners);
+  return poly;
 }
 
 /**

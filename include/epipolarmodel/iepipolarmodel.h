@@ -5,6 +5,7 @@
 #pragma once
 
 #include "epipolarmodel/exepipolarmodel.h"
+#include "3rdparty/boost/exboost.h"
 #include "3rdparty/opencv/exopencv.h"
 
 #include <vector>
@@ -89,6 +90,11 @@ public:
   virtual EpipolarAlgo GetEpipolarAlgorithm() const noexcept = 0;
 
   /**
+   *  \return Returns position in epipolar model
+   */
+  virtual StereoPos GetStereoPos() const noexcept = 0;
+
+  /**
    *  \return Returns raster columns & rows of epipolar image [unit: pixel]
    */
   virtual std::pair<int, int> GetImageSize() const noexcept = 0;
@@ -99,6 +105,11 @@ public:
   virtual const ISensorModel* GetSensorModel() const noexcept = 0;
 
   /**
+   *  \return Returns the footprint in rectification CS
+   */
+  virtual const Polygon2d& GetBoundary() const noexcept = 0;
+
+  /**
    *  \return Returns raster columns & rows of raw image [unit: pixel]
    */
   virtual std::pair<int, int> GetRawImageSize() const noexcept = 0;
@@ -106,6 +117,7 @@ public:
 
 using EpiAlgo = IEpipolarModel::EpipolarAlgo;
 using EpiStereoPos = IEpipolarModel::StereoPos;
+
 using UPIEpipolarModel = std::unique_ptr<IEpipolarModel>;
 using SPIEpipolarModel = std::shared_ptr<IEpipolarModel>;
 } // namespace earthxpert

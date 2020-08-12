@@ -4,17 +4,14 @@
  */
 #include "marshaller/framemodelmarshaller.h"
 #include "core/utils/stringutils.h"
+
 #include <cctype>
 #include <fstream>
 #include <iostream>
 #include <sstream>
 
-using earthxpert::DigitalFrameModel;
-using earthxpert::FilmFrameModel;
-using earthxpert::FrameIP;
-using earthxpert::FrameModelMarshaller;
-using earthxpert::ISensorModel;
-using earthxpert::utils::CompareI;
+using namespace earthxpert;
+using utils::CompareI;
 
 /**
  *  \brief read from a bingo directory into a framemodel
@@ -161,7 +158,6 @@ void FrameModelMarshaller::ReadGpsImu(const std::string &modelFile) {
     iss >> entryName;
 
     if (line.front() == ' ' && entryName != "LINE" && entryName != "#") {
-      // read param
       photoID = entryName;
       iss >> position[0] >> position[1] >> position[2];
       iss >> rotation[0] >> rotation[1] >> rotation[2];

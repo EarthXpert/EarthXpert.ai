@@ -1,8 +1,7 @@
 project(sensormodel)
 
 add_definitions(-DEXSENSORMODEL_API)
-earthxpert_add_library(sensormodel "api"
-  SRCS "ads/adsmodel.cpp"
+set(sensormodel_srcs "ads/adsmodel.cpp"
        "ads/adsstereomodel.cpp"
        "ads/adsutils.cpp"
        "affine/affinemodel.cpp"
@@ -12,6 +11,7 @@ earthxpert_add_library(sensormodel "api"
        "frame/framemodel.cpp"
        "frame/framestereomodel.cpp"
        "frame/imagemodelpolicy.cpp"
+       "pushbroom/pbutils.cpp"
        "pushbroom/pushbroommodel.cpp"
        "pushbroom/scannerep.cpp"
        "pushbroom/scannerepcorr.cpp"
@@ -21,18 +21,26 @@ earthxpert_add_library(sensormodel "api"
        "rational/rationalstereomodel.cpp"
        "rational/rmutils.cpp"
        "rollingshutter/rollingshuttermodel.cpp"
+       "rollingshutter/rsutils.cpp"
+       "utils/evalsensormodel.cpp"
+       "utils/evalstereomodel.cpp"
        "utils/distortiongrid.cpp"
        "utils/frameip.cpp"
        "utils/imagemodel.cpp"
        "utils/intersecti2g.cpp"
        "utils/satellitedp.cpp"
        "utils/sensorcube.cpp"
+       "utils/smutils.cpp"
        "utils/stereomodel.cpp"
        "utils/stereomodelfactory.cpp"
-       "utils/utils.cpp"
+       "utils/tiledsensormodel.cpp"
        "sensormodel.cpp"
-       "sensormodelfactory.cpp"
+       "sensormodelfactory.cpp")
+earthxpert_add_library(sensormodel "api"
+  SRCS ${sensormodel_srcs}
   ITEMS ex3rdparty core
         ${GDAL_LIBRARY} ${GETTEXT_LIBRARY} ${OpenCV_LIBS})
 
+#source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR} FILES ${sensormodel_srcs})
+earthxpert_source_group(${sensormodel_srcs})
 earthxpert_install_target(sensormodel)

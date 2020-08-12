@@ -10,14 +10,14 @@
  *  computer vision problems.
  *
  *  Usage: exai <command> <command options>
- *    --command        The GDAL command
+ *    --command        The EXAI command
  *    --help, -h       Display help text
  *    --list-commands  List available commands
  *    --version        Show program version
  *
  *    Commands :
  *      epipolar
- *      tortho
+ *      densematch
  *
  *  examples:
  *

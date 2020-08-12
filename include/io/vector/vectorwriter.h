@@ -22,7 +22,10 @@ namespace earthxpert {
 class EXIO_EXPORTS VectorWriter final : public IVectorWriter, public IVectorReader {
 public:
   VectorWriter(const std::string& vecFile, const std::vector<LayerInfo>& layersInfo = {});
+  VectorWriter(const fs::path& vecFile, const std::vector<LayerInfo>& layersInfo = {});
   VectorWriter(const std::string& vecFile, const std::string format,
+    const std::vector<LayerInfo>& layersInfo);
+  VectorWriter(const fs::path& vecFile, const std::string format,
     const std::vector<LayerInfo>& layersInfo);
   VectorWriter(GDALDataset* dataset, const std::vector<LayerInfo>& layersInfo = {});
   VectorWriter(const VectorWriter&) = delete;

@@ -5,8 +5,9 @@
 #pragma once
 
 #include "rectification/epipolar/exepipolar.h"
-#include "rectification/epipolar/utils.h"
+#include "rectification/epipolar/epiperf.h"
 #include "epipolarmodel/iepipolarmodel.h"
+#include "core/system/clock.h"
 #include "core/utils/rasterwindow.h"
 
 #include <memory>
@@ -23,6 +24,9 @@ class RasterWriter;
 
 /**
  *  The class EpipolarGenerator creates epipolar images from raw images.
+ *  It is not thread-safe to process multiple images using the same 
+ *  generator object. Thus for parallel processing, create a generator 
+ *  object for each thread in the team.
  */
 class EXEPIPOLAR_EXPORTS EpipolarGenerator {
 public:
@@ -48,22 +52,58 @@ public:
   /**
    *  \return Returns performance info
    */
-  const EpiGenPerf* GetPerfMettrics() const noexcept { return &mPerf; }
+  const EpiGenPerf* GetPerfMettrics() noexcept { 
+    mPerf.tmResample = mPerf.tmProcess - mPerf.tmRigorous - mPerf.tmDensify;
+    return &mPerf; 
+  }
 
 private:
-  static constexpr int kTileDim = 256;
+  static constexpr int kMinNumTiles = 4;  // min number of tiles for an overlapped pipeline
+  static constexpr double kValidRatio = 0.85;  // by trials
+
+  enum ExecPolicy {
+    ePL2,   // two tasks pipelined 
+    ePL3,   // three tasks pipelined 
+    eSQ     // sequential
+  };
+
+  enum GeotransformAlgo {
+    eBOUND,   // optimized algorithm using epipolar boundary
+    eFULL     // general algorithm using full extent
+  };
+
+  struct TileInfo {
+    bool hasImgTile{};
+    GeotransformAlgo geoAlgo{ eFULL };
+    RasterWindow imgTile;
+    RasterWindow epiTile;
+  };
+
+  void Initialize();
 
   const IRasterResample* mRasResample{};
   size_t mMemSize{};         // memory size allowed for processing
   int mStride{1}; // stride for rigorous epipolar geometry
+  GeotransformAlgo mGeoAlgo{eFULL};
 
-  void SetImageParams(IRasterReader* const img);
-  void SetEpipolarParams(IRasterWriter* const epi, IEpipolarModel const* epiModel);
+  void SetImageParams(IRasterReader* img);
+  void SetEpipolarParams(IRasterWriter* epi, IEpipolarModel const* epiModel);
 
-  std::vector<RasterWindow> mImgTiles;
-  std::vector<RasterWindow> mEpiTiles;
+  std::vector<TileInfo> mTiles;
+
+  inline RasterWindow& ImgTile(const int tileId) { 
+    assert(0 <= tileId && tileId < mNumTiles);
+    return mTiles[tileId].imgTile; 
+  }
+  inline RasterWindow& EpiTile(const int tileId) { 
+    assert(0 <= tileId && tileId < mNumTiles);
+    return mTiles[tileId].epiTile;
+  }
+
   void LayoutTiles();  // layout helper
-  int64_t GetTilesLimit(const std::vector<RasterWindow>& tiles) const;
+  int DefineTiles(int tileNumCols, int tileNumRows);
+  RasterWindow DefineImgTile(const RasterWindow& epiTile);
+  std::pair<int64_t, int64_t> GetTilesLimit(const std::vector<TileInfo>& tiles) const;
 
   int64_t mImgBufNumBytes{};
   std::unique_ptr<uchar[]> mImgBufRead;   // read buffer of raw image tile
@@ -80,8 +120,18 @@ private:
   void SwapBuffers();
   void FreeBuffers();
 
-  void ProcessTiles();
-  void ProcessTilesPL();
+  template <int execPolicy>
+  void ProcessTiles() {
+    if constexpr (ePL2 == execPolicy)
+      ProcessTilesPL2();
+    else if constexpr (ePL3 == execPolicy)
+      ProcessTilesPL3();
+    else
+      ProcessTilesSQ();
+  }
+
+  void ProcessTilesPL2();
+  void ProcessTilesPL3();
   void ProcessTilesSQ();
 
   inline bool TileId(const int tileId) {
@@ -92,13 +142,25 @@ private:
   void ProcessTile(int tileId);
   void WriteTile(int tileId);
 
-  void EpiToImg(int tileId, cv::Mat& tfmMat);
-  void EpiToImg(int tileId, cv::Mat& tfmMat, int tileCol, int tileRow);
+  void GeotransformTile(int tileId, cv::Mat& tfmMat);
+  
+  void RigorousGridNodes(const int tileId, cv::Mat& tfmMat,
+    const std::vector<int>& gridCols, const std::vector<int>& gridRows);
+  void DensifyPerCells(const int tileId, cv::Mat& tfmMat,
+    const std::vector<int>& gridCols, const std::vector<int>& gridRows);
+  void DensifyPerPixels(const int tileId, cv::Mat& tfmMat,
+    const std::vector<int>& gridCols, const std::vector<int>& gridRows);
+  void EpiToImg(int tileId, cv::Mat& tfmMat, 
+    int tileCol, int tileRow, bool insideImg=true);
 
   // performance
+  WallClock mClock;
   EpiGenPerf mPerf;
 
+  void GatherStatistics(int tileId);
+
   // cached information
+  int mNumPT{ 1 };    // number of processing threads
   int mMarginDim{};
   int mNumTiles{};
 

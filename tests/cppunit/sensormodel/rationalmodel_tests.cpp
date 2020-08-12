@@ -5,9 +5,9 @@
 #include "3rdparty/gtest/gtest_main.h"
 #include "testconfig.h"
 
+#include "core/math/mutils.h"
 #include "marshaller/rationalmodelmarshaller.h"
 #include "sensormodel/rationalmodel.h"
-#include <cmath>
 
 using namespace earthxpert;
 using rfm = earthxpert::RationalModel;
@@ -255,8 +255,7 @@ void TestCubeI2G(const RationalModel* rationalModel) {
   const auto stepLat = (maxLat - minLat) / kNum;
   const auto stepHgt = (maxHgt - minHgt) / kNum;
 
-  double maxDiffLon{-1.0};
-  double maxDiffLat{-1.0};
+  Point2d maxDiff(-1.0, -1.0);
 
   int n{};
   for (auto lon = minLon; lon <= maxLon; lon += stepLon) {
@@ -270,22 +269,15 @@ void TestCubeI2G(const RationalModel* rationalModel) {
         Point3d grdI2G{ 0, 0, ground.z };
         rationalModel->ImageToGround(image, grdI2G);
 
-        const auto diffLon = fabs(grdI2G.x - ground.x);
-        if (maxDiffLon < diffLon)
-          maxDiffLon = diffLon;
-
-        const auto diffLat = fabs(grdI2G.y - ground.y);
-        if (maxDiffLat < diffLat)
-          maxDiffLat = diffLat;
-
+        Larger(maxDiff, xabs(Point3To2(grdI2G - ground)));
         ++n;
       }
     }
   }
 
   ASSERT_LT(0, n) << "Number of test points";
-  ASSERT_LE(maxDiffLon, kTol) << "Max. longitude difference > 1 mm";
-  ASSERT_LE(maxDiffLat, kTol) << "Max. latitude difference > 1 mm";
+  ASSERT_LE(maxDiff.x, kTol) << "Max. longitude difference > 1 mm";
+  ASSERT_LE(maxDiff.y, kTol) << "Max. latitude difference > 1 mm";
 }
 
 void TestCubeI2G_Functor(const RationalModel* rationalModel) {
@@ -301,8 +293,7 @@ void TestCubeI2G_Functor(const RationalModel* rationalModel) {
   const auto stepLat = (maxLat - minLat) / kNum;
   const auto stepHgt = (maxHgt - minHgt) / kNum;
 
-  double maxDiffLon{-1.0};
-  double maxDiffLat{-1.0};
+  Point2d maxDiff(-1.0, -1.0);
 
   int n{};
   for (auto lon = minLon; lon <= maxLon; lon += stepLon) {
@@ -316,20 +307,13 @@ void TestCubeI2G_Functor(const RationalModel* rationalModel) {
         Point3d grdI2G{ 0, 0, ground.z };
         (*rationalModel)(image, grdI2G);
 
-        const auto diffLon = fabs(grdI2G.x - ground.x);
-        if (maxDiffLon < diffLon)
-          maxDiffLon = diffLon;
-
-        const auto diffLat = fabs(grdI2G.y - ground.y);
-        if (maxDiffLat < diffLat)
-          maxDiffLat = diffLat;
-
+        Larger(maxDiff, xabs(Point3To2(grdI2G - ground)));
         ++n;
       }
     }
   }
 
   ASSERT_LT(0, n) << "Number of test points";
-  ASSERT_LE(maxDiffLon, kTol) << "Max. longitude difference > 1 mm";
-  ASSERT_LE(maxDiffLat, kTol) << "Max. latitude difference > 1 mm";
+  ASSERT_LE(maxDiff.x, kTol) << "Max. longitude difference > 1 mm";
+  ASSERT_LE(maxDiff.y, kTol) << "Max. latitude difference > 1 mm";
 }

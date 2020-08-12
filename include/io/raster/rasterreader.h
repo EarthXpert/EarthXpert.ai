@@ -5,6 +5,7 @@
 #pragma once
 
 #include "io/raster/irasterreader.h"
+#include "core/utils/fsutils.h"
 #include "core/utils/rasterwindow.h"
 
 #include <mutex>
@@ -25,6 +26,7 @@ class GdalRaster;
 class EXIO_EXPORTS RasterReader final : public IRasterReader {
 public:
   RasterReader(const std::string& imageFile, const std::vector<int>& bands = {});
+  RasterReader(const fs::path& imageFile, const std::vector<int>& bands = {});
   RasterReader(GDALDataset* dataset, const std::vector<int>& bands = {});
   RasterReader(const RasterReader&) = delete;
   RasterReader(RasterReader&&) = delete;
@@ -174,7 +176,7 @@ public:
 private:
   void Initialize(GDALDataset* dataset);
 
-  GDALDatasetUniquePtr mDataset;  // pointer to GDALDataset object
+  UPGDALDataset mDataset;  // pointer to GDALDataset object
   std::vector<int> mBands;  // list of bands to read from
 
   int mMarginCols{};

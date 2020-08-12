@@ -5,6 +5,7 @@
 #pragma once
 
 #include "blockadjust/blockadjust.h"
+#include "sensormodel/rationalmodel.h"
 
 namespace earthxpert {
 /**

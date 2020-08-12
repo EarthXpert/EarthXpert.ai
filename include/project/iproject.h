@@ -6,6 +6,8 @@
 
 #include "project/exproject.h"
 
+#include <memory>
+
 namespace earthxpert {
 /**
  *  The interface IProject defines the functionalities to access entires
@@ -23,4 +25,7 @@ public:
 
   virtual PrjType GetProjectType() const noexcept = 0;
 };
+
+using UPIProject = std::unique_ptr<IProject>;
+using SPIProject = std::shared_ptr<IProject>;
 }

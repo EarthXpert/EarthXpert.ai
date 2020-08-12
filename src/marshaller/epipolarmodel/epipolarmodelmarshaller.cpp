@@ -11,9 +11,7 @@
 #include <iostream>
 #include <sstream>
 
-using earthxpert::EpipolarModel;
-using earthxpert::EpipolarModelMarshaller;
-using earthxpert::IEpipolarModel;
+using namespace earthxpert;
 
 /**
  *  \brief serialize an epipolarmodel into a json file

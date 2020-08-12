@@ -13,7 +13,6 @@
 #include <omp.h>
 
 using namespace earthxpert;
-using earthxpert::RegionLayoutD;
 using fgt = FieldGroup;
 
 static constexpr double kTol = 1.0e-6; // [um]
@@ -255,7 +254,8 @@ TEST(pointcloudreader, ReadPointcloud_LAS_XYZC_TILES) {
   const auto tileWidth = width * 0.5 + 1.0e-6; // increase a little bit to ensure only two horizontal tiles
   const auto tileHeight = height * 0.5 + 1.0e-6;
 
-  RegionLayoutD layout(header->min_x, header->min_y, width, height, tileWidth, tileHeight);
+  SpatialTile<double> range{header->min_x, header->min_y, width, height};
+  RegionLayoutD layout(range, tileWidth, tileHeight);
   auto& tiles = layout.GetSpatialTiles();
 
   ASSERT_EQ(4, tiles.size()) << "number of tiles";
@@ -299,7 +299,8 @@ TEST(pointcloudreader, ReadPointcloudOMP_LAS_XYZ_TILES) {
   const auto tileWidth = width / 25.0 + 1.0e-6; // increase a little bit to ensure only two horizontal tiles
   const auto tileHeight = height / 25.0 + 1.0e-6;
 
-  RegionLayoutD layout(header->min_x, header->min_y, width, height, tileWidth, tileHeight);
+  SpatialTile<double> range{ header->min_x, header->min_y, width, height };
+  RegionLayoutD layout(range, tileWidth, tileHeight);
   auto& tiles = layout.GetSpatialTiles();
 
   ASSERT_EQ(625, tiles.size()) << "number of tiles";

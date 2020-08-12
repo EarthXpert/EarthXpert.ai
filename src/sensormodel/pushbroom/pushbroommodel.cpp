@@ -5,18 +5,7 @@
 #include "sensormodel/pushbroommodel.h"
 #include "3rdparty/gdal/exgdal.h"
 
-using earthxpert::AircraftPolicy;
-using earthxpert::SpacecraftPolicy;
-using earthxpert::ISensorModel;
-using earthxpert::Point2d;
-using earthxpert::Point3d;
-using earthxpert::PushbroomModel;
-using earthxpert::SatelliteDP;
-using earthxpert::ScannerEP;
-using earthxpert::ScannerEPCorr;
-using earthxpert::ScannerImageModel;
-using earthxpert::ScannerIP;
-using earthxpert::SpatialReferenceSystem;
+using namespace earthxpert;
 
 /**
  *  \brief Construct an aerial pushbroom geometry model.

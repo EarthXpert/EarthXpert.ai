@@ -16,6 +16,7 @@ enum class LayoutKind;
 /**
  *  The class RasterLayout formulate the non-overlapping tiling of image
  *  in raster coodinate system.
+ *  \remark a specialization of template class SpatialLayout.
  */
 class EXCORE_EXPORTS RasterLayout {
 public:

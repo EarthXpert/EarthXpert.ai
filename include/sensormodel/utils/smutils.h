@@ -20,6 +20,9 @@ double EXSENSORMODEL_EXPORTS CalcGsd(const ISensorModel* sensorModel, double hei
 double EXSENSORMODEL_EXPORTS CalcGsd(const ISensorModel* sensorModel,
   const EarthEllipsoid* ee, double height);
 
+void EXSENSORMODEL_EXPORTS RegisterMulPan(const ISensorModel* mulModel,
+  const ISensorModel* panModel, int ratio = 4);
+
 bool EXSENSORMODEL_EXPORTS ImageToPlane(const Point2d& raw,
   const ISensorModel* sensorModel, const EarthEllipsoid* ee, 
   const double height, PointXYd& rect, double tolH=1.0e-4);

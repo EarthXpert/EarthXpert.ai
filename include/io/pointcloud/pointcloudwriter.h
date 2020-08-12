@@ -5,9 +5,10 @@
 #pragma once
 
 #include "io/pointcloud/ipointcloudwriter.h"
+#include "core/utils/fsutils.h"
 
-#include "lasquantizer.hpp"
-#include "laswriter.hpp"
+#include <lasquantizer.hpp>
+#include <laswriter.hpp>
 #include <mutex>
 #include <vector>
 
@@ -29,7 +30,11 @@ public:
    */
   PointcloudWriter(const std::string& lasFile, const FieldGroup fieldGroup,
     const LASquantizer& quantizer, const std::string format = "LAS");
-  PointcloudWriter(const std::string& lasFile, 
+  PointcloudWriter(const fs::path& lasFile, const FieldGroup fieldGroup,
+    const LASquantizer& quantizer, const std::string format = "LAS");
+  PointcloudWriter(const std::string& lasFile,
+    const LASquantizer& quantizer, const std::string format = "LAS");
+  PointcloudWriter(const fs::path& lasFile,
     const LASquantizer& quantizer, const std::string format = "LAS");
   PointcloudWriter(const PointcloudWriter&) = delete;
   PointcloudWriter(PointcloudWriter&&) = delete;

@@ -25,6 +25,9 @@ VectorWriter::VectorWriter(const std::string& vecFile, const std::vector<LayerIn
   Initialize(mDataset, layersInfo);
 }
 
+VectorWriter::VectorWriter(const fs::path& vecFile, const std::vector<LayerInfo>& layersInfo) 
+  : VectorWriter(vecFile.string(), layersInfo) {}
+
 /**
  *  \brief Construct writer object for newly created vector data source.
  *
@@ -38,6 +41,10 @@ VectorWriter::VectorWriter(const std::string& vecFile, const std::string format,
 
   Initialize(mDataset, {});
 }
+
+VectorWriter::VectorWriter(const fs::path& vecFile, const std::string format,
+  const std::vector<LayerInfo>& layersInfo) 
+  : VectorWriter(vecFile.string(), format, layersInfo) {}
 
 /**
  *  \brief Initialize both reader and writer components for existing vector data source.

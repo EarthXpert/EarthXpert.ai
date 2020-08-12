@@ -5,17 +5,12 @@
 #include "sensormodel/rationalmodel.h"
 #include "3rdparty/gdal/exgdal.h"
 #include "core/utils/typehelper.h"
+#include "sensormodel/rmutils.h"
 
 #include <algorithm>
 #include <cassert>
 
-using earthxpert::EqualD;
-using earthxpert::ISensorModel;
-using earthxpert::Point2d;
-using earthxpert::Point3d;
-using earthxpert::RationalModel;
-using earthxpert::SpatialReferenceSystem;
-using earthxpert::Tuple4d;
+using namespace earthxpert;
 
 static constexpr double kTol = std::numeric_limits<double>::epsilon();
 
@@ -40,10 +35,10 @@ RationalModel::RationalModel(const int numCols, const int numRows,
                              const std::array<double, NumCoef> &sampNumCoef,
                              const std::array<double, NumCoef> &sampDenCoef,
                              std::shared_ptr<SpatialReferenceSystem> groundSRS)
-    : mNumCols(numCols), mNumRows(numRows),
-      mNormalFators(normalFators), mLineNumCoef(lineNumCoef),
-      mLineDenCoef(lineDenCoef), mSampNumCoef(sampNumCoef),
-      mSampDenCoef(sampDenCoef), mGroundSRS(groundSRS) {
+  : mNumCols(numCols), mNumRows(numRows),
+    mNormalFators(normalFators), mLineNumCoef(lineNumCoef),
+    mLineDenCoef(lineDenCoef), mSampNumCoef(sampNumCoef),
+    mSampDenCoef(sampDenCoef), mGroundSRS(groundSRS) {
   const auto nfc = mNormalFators.data();
 
   // get approximate image dimensions from normalization factors
@@ -63,7 +58,7 @@ RationalModel::RationalModel(const int numCols, const int numRows,
   mTol_c = mInvScale[eISSAMP] * kRatio;
   mTol_r = mInvScale[eISLINE] * kRatio;
 
-  BuildCubeS2G();
+  EnableCubeS2G(false);
 }
 
 RationalModel::RationalModel(const std::array<double, NumFact> &normalFators,
@@ -263,9 +258,7 @@ bool RationalModel::GroundToImage(const Point3d &ground, Point2d &image) const {
 
   const auto imageApp = SensorToImage(sensor);
   const auto imageAct = ImageApparantToActual(imageApp);
-
-  image.x = imageAct.x + 0.5;
-  image.y = imageAct.y + 0.5;
+  image = imageAct + 0.5;
   return true;
 }
 
@@ -276,15 +269,14 @@ bool RationalModel::GroundToImage(const Point3d &ground, Point2d &image) const {
  *  \param [in] sampCorr 2nd-order polynomial for sample correction
  *  \param [in] corrAlgo correction algoirthm
  */
-void RationalModel::SetSensorCorrection(
-    const std::array<double, NumCorr> &lineCorr,
-    const std::array<double, NumCorr> &sampCorr, const CorrAlgo corrAlgo) {
+void RationalModel::SetSensorCorrection(const std::array<double, NumCorr> &lineCorr,
+  const std::array<double, NumCorr> &sampCorr, const CorrAlgo corrAlgo) {
   mLineCorr = lineCorr;
   mSampCorr = sampCorr;
   mCorrAlgo = corrAlgo;
 
   auto NotZero = [](const double val) { return 0.0 != val; };
-  mHasCorrection = std::any_of(std::cbegin(mLineCorr), std::cend(mLineCorr), NotZero) ||
+  mCorrectionFlag = std::any_of(std::cbegin(mLineCorr), std::cend(mLineCorr), NotZero) ||
     std::any_of(std::cbegin(mSampCorr), std::cend(mSampCorr), NotZero);
 }
 
@@ -296,8 +288,7 @@ void RationalModel::SetSensorCorrection(
  *  \param [in] corrAlgo correction algoirthm
  */
 void RationalModel::GetSensorCorrection(std::array<double, NumCorr> &lineCorr,
-                                        std::array<double, NumCorr> &sampCorr,
-                                        const CorrAlgo corrAlgo) const {
+  std::array<double, NumCorr> &sampCorr, const CorrAlgo corrAlgo) const {
   if (mCorrAlgo == corrAlgo) {
     lineCorr = mLineCorr;
     sampCorr = mSampCorr;
@@ -310,6 +301,16 @@ void RationalModel::GetSensorCorrection(std::array<double, NumCorr> &lineCorr,
   else {
     assert(eSTANDARD == corrAlgo);
   } // convert eENHANCED to eSTANDARD
+}
+
+void RationalModel::EnableCubeS2G(const bool enable) {
+  if (!enable) {
+    mCubeS2G.reset();
+    return;
+  }
+
+  if (!mCubeS2G) 
+    BuildCubeS2G();
 }
 
 /**
@@ -423,11 +424,11 @@ void RationalModel::Clear() noexcept {
 Point2d RationalModel::ImageActualToApparant(const Point2d& image) const {
   Point2d imageApp{ image };
 
-  if (mHasCorrection) {  // apply correction
+  if (mCorrectionFlag) {  // apply correction
     const EqualD equalD(0.001);  // [unit: pixel]
     Point2d imageP{ imageApp };
 
-    for (int i = 0; i < 5; ++i) {
+    for (int i = 0; i < kMaxIterIAA; ++i) {
       const auto imageCorr = CalcCorrection(imageApp);
       imageApp = image - imageCorr;
       if (equalD(imageApp.x, imageP.x) && equalD(imageApp.y, imageP.y))
@@ -448,12 +449,10 @@ Point2d RationalModel::ImageActualToApparant(const Point2d& image) const {
  */
 Point2d RationalModel::ImageApparantToActual(const Point2d& image) const {
   Point2d imageAct{ image };
-
-  if (mHasCorrection) {  // apply correction
+  if (mCorrectionFlag) {  // apply correction
     const auto imageCorr = CalcCorrection(image);
     imageAct += imageCorr;
   }
-
   return imageAct;
 }
 
@@ -547,10 +546,7 @@ bool RationalModel::SensorToGround(const double x, const double y,
   // Partial derivatives of Fc = (Sn/Sd) and Fr = (Ln/Ld) w.r.t. u and v
   // A[2][2] = | dFc_du  dFc_dv |
   //           | dFr_du  dFr_dv |
-  double dFc_du{};
-  double dFc_dv{};
-  double dFr_du{};
-  double dFr_dv{};
+  double dFc_du{}, dFc_dv{}, dFr_du{}, dFr_dv{};
   double invDet{}; // Inverse of determinant of the partial derivative matrix
 
   int iter{};
@@ -567,8 +563,7 @@ bool RationalModel::SensorToGround(const double x, const double y,
     // recompute the partial derivatives of the sample & line w.r.t u, v
     if (recalcFlag) {
       // pre-compute partials TODO
-      double duvw_du[NumCoef];
-      double duvw_dv[NumCoef];
+      double duvw_du[NumCoef], duvw_dv[NumCoef];
       Duvw_du(u, v, w, duvw_du);
       Duvw_dv(u, v, w, duvw_dv);
 
@@ -673,7 +668,8 @@ void RationalModel::CalcTerms(const double L, const double P,
  *  \param [in] H normalized height
  *  \return Returns line numerator, line denominator, sample numerator, sample denominator.
  */
-Tuple4d RationalModel::CalcPolynomials(const double L, const double P, const double H) const {
+Tuple4d RationalModel::CalcPolynomials(const double L, 
+  const double P, const double H) const {
   auto lnc = mLineNumCoef.data();
   auto ldc = mLineDenCoef.data();
   auto snc = mSampNumCoef.data();
@@ -682,10 +678,8 @@ Tuple4d RationalModel::CalcPolynomials(const double L, const double P, const dou
   double LPH[NumCoef];  // combinations of L, P, H for polynomial terms
   CalcTerms(L, P, H, LPH);
 
-  double Ln{}; // Line numerator
-  double Ld{}; // Line denominator
-  double Sn{}; // Sample numerator
-  double Sd{}; // Sample denominator
+  double Ln{}, Ld{}; // Line numerator/denominator
+  double Sn{}, Sd{}; // Sample numerator/denominator
 
   for (int i = 0; i < NumCoef; ++i) {
     Ln += lnc[i] * LPH[i];
@@ -731,8 +725,7 @@ Tuple4d RationalModel::CalcPolynomials(const double L, const double P, const dou
  *    Fr(u, v) = Ln - Ld * r = 0
  */
 bool RationalModel::SensorToGroundLinear(const double x, const double y,
-                                         const double w, double &u,
-                                         double &v) const {
+  const double w, double &u, double &v) const {
   // use short name for convenience
   auto snc = mSampNumCoef.data();
   auto sdc = mSampDenCoef.data();
@@ -783,5 +776,5 @@ void RationalModel::BuildCubeS2G() {
     }
   }
 
-  //mCubeS2G = std::move(cubeS2G);
+  mCubeS2G = std::move(cubeS2G);
 }

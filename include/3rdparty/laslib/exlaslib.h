@@ -6,11 +6,11 @@
 
 #include "3rdparty/ex3rdparty.h"
 
-#include "lasdefinitions.hpp"
-#include "lasfilter.hpp"
-#include "lasquantizer.hpp"
-#include "laszip.hpp"
-#include "lasutility.hpp"
+#include <lasdefinitions.hpp>
+#include <lasfilter.hpp>
+#include <lasquantizer.hpp>
+#include <laszip.hpp>
+#include <lasutility.hpp>
 #include <map>
 #include <memory>
 #include <string>

@@ -10,33 +10,25 @@
 #include <execution>
 #include <omp.h>
 
-using earthxpert::GeographicGroundDeg;
-using earthxpert::LocalGroundMe;
-using earthxpert::MapGroundMe;
-using earthxpert::EpipolarModel;
-using earthxpert::EpipolarRect;
-using earthxpert::IEpipolarModel;
-using earthxpert::ISensorModel;
-using earthxpert::InterpGridF;
-using earthxpert::Point2d;
-using earthxpert::Point3d;
+using namespace earthxpert;
 
 /**
  *  Constructor.
  *
  *  \param [in] sensorModel sensor model associated with the image
+ *  \param [in] pos Component position of stereo model
  *  \param [in] epiRect epipolar rectification defining the transform
  *              between the epipolar model coordinate system and epipolar
  *              raster coordinate system for the image.
- *  \param [in] pos Component position of stereo model
+ *  \param [in] epiBound epipolar boundary of valid region
  *  \param [in] groundPolicy ground policy
  *  \remark This implementation requires that the stereo pair are of the same sensro type.
  */
 template <class GroundPolicy>
 EpipolarModel<GroundPolicy>::EpipolarModel(std::shared_ptr<ISensorModel> sensorModel,
-  StereoPos pos, std::unique_ptr<EpipolarRect>&& epiRect, 
+  StereoPos pos, const Polygon2d& epiBound, std::unique_ptr<EpipolarRect>&& epiRect, 
   std::shared_ptr<GroundPolicy> groundPolicy)
-    : EpipolarSensorModel(sensorModel, pos), 
+    : EpipolarSensorModel(sensorModel, pos, epiBound),
       mEpiRect(std::move(epiRect)), mGroundPolicy(groundPolicy) {
   assert(GroundPolicy::kGroundType == sensorModel->GetSrsType());
   mOrigin = mEpiRect->mOrigin;

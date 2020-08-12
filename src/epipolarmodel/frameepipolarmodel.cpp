@@ -10,22 +10,17 @@
 #include <cassert>
 #include <cmath>
 
-using earthxpert::FrameEpipolarModel;
-using earthxpert::DigitalImageModel;
-using earthxpert::FilmImageModel;
-using earthxpert::FrameModel;
-using earthxpert::IEpipolarModel;
-using earthxpert::ISensorModel;
-using earthxpert::Point2d;
-using earthxpert::Point3d;
+using namespace earthxpert;
 
 /**
  *   \brief construct a frame epipolar model
  */
 template <class ImageModelPolicy>
 FrameEpipolarModel<ImageModelPolicy>::FrameEpipolarModel(
-  std::shared_ptr<FrameModel<ImageModelPolicy>> sensorModel, StereoPos pos)
-  : EpipolarSensorModel(sensorModel, pos), mFrameModel(sensorModel.get()) {
+  std::shared_ptr<FrameModel<ImageModelPolicy>> sensorModel, 
+  StereoPos pos, const Polygon2d& epiBound)
+  : EpipolarSensorModel(sensorModel, pos, epiBound), 
+    mFrameModel(sensorModel.get()) {
   Initialize();
 }
 

@@ -13,15 +13,7 @@
 #include <numeric>
 #include <stdexcept>
 
-using earthxpert::DigitalImageModel;
-using earthxpert::FilmImageModel;
-using earthxpert::FrameCP;
-using earthxpert::FrameEP;
-using earthxpert::FrameIP;
-using earthxpert::FrameModel;
-using earthxpert::Point2d;
-using earthxpert::Point3d;
-using earthxpert::SpatialReferenceSystem;
+using namespace earthxpert;
 using namespace earthxpert::math;
 
 /**
@@ -270,7 +262,6 @@ bool FrameModel<ImageModelPolicy>::GroundToSensor(const Point3d &ground,
   const double scale = -f / denom;
   sensor.x = scale * cam.at<double>(0);
   sensor.y = scale * cam.at<double>(1);
-
   return true;
 }
 
@@ -301,7 +292,6 @@ bool FrameModel<ImageModelPolicy>::SensorActualToApparant(
 
   // atmospheric refraction & earth curvature
   sensorApp = SensorActualToApparantPPA(sensorApp, height);
-
   return true;
 }
 
@@ -314,9 +304,7 @@ Point2d FrameModel<ImageModelPolicy>::SensorActualToApparantPPS(
   Point2d sensorApp = sensor + dRad + dDec;
 
   const auto dGrd = mFrameIP->CalcGridCorr(sensorApp);
-  sensorApp += dGrd;
-
-  return sensorApp;
+  return (sensorApp + dGrd);
 }
 
 // vertical distortion in camera CS w.r.t. PPA
@@ -383,7 +371,6 @@ bool FrameModel<ImageModelPolicy>::SensorApparantToActual(
 
   // optical distortion in focal plane CS w.r.t. PPS
   sensorAct = SensorApparantToActualPPS(sensorAct);
-
   return true;
 }
 
@@ -395,13 +382,18 @@ Point2d FrameModel<ImageModelPolicy>::SensorApparantToActualNP(
   return SensorApparantToActualPPA(sensor, height);
 }
 
-// vertical distortion in camera CS w.r.t. PPA
+/**
+ *  \brief vertical distortion in camera CS w.r.t. PPA at given height
+ *
+ *  \param [in] sensor apparant position on focal plane
+ *  \param [in] height elevation of ground point
+ */
 template <class ImageModelPolicy>
 Point2d FrameModel<ImageModelPolicy>::SensorApparantToActualPPA(
   const Point2d& sensor, const double height) const {
   auto sensorAct = sensor;
 
-  int nIter;
+  int i;
 
   // earth curvature
   if (mFrameCP->ApplyCurvature()) {
@@ -411,20 +403,20 @@ Point2d FrameModel<ImageModelPolicy>::SensorApparantToActualPPA(
     double rcP{ rcp }; // radius from previous iteration
     double rc{};     // new radius after correction
 
-    for (nIter = 0; nIter < kMaxIterG2I; ++nIter) {
+    for (i = 0; i < kMaxIterG2I; ++i) {
       const auto rcP2 = rcP * rcP;
       const auto f_rcP = rcP + Hh * mCurvFactor * rcP2 * rcP - rcp;
       const auto df_drcP = 1.0 + 3.0 * Hh * mCurvFactor * rcP2;
       const auto corr = f_rcP / df_drcP;
 
       rc = rcP - corr;
-      if (fabs(corr) < kConvergeTolMM)
+      if (fabs(corr) < kTolMM)
         break;
 
       rcP = rc;
     }
 
-    if (kMaxIterG2I == nIter)
+    if (kMaxIterG2I == i)
       return { 0.0, 0.0 };
 
     sensorAct *= rc / rcp;
@@ -437,23 +429,22 @@ Point2d FrameModel<ImageModelPolicy>::SensorApparantToActualPPA(
     const auto h = height * 0.001;
     const auto K = mFrameCP->GetRefractionK(H, h);
 
-    double rcP{ rcp };
-    double rc{};
+    double rcP{ rcp }, rc{};
 
-    for (nIter = 0; nIter < kMaxIterG2I; ++nIter) {
+    for (i = 0; i < kMaxIterG2I; ++i) {
       const auto rcP2 = rcP * rcP;
       const auto f_rcP = rcP - K * rcP * (1.0 + rcP2 * mInvF2) - rcp;
       const auto df_drcP = 1.0 - K * (1.0 + 3.0 * rcP2 * mInvF2);
       const auto corr = f_rcP / df_drcP;
 
       rc = rcP - corr;
-      if (fabs(corr) < kConvergeTolMM)
+      if (fabs(corr) < kTolMM)
         break;
 
       rcP = rc;
     }
 
-    if (kMaxIterG2I == nIter)
+    if (kMaxIterG2I == i)
       return { 0.0, 0.0 };
 
     sensorAct *= rc / rcp;
@@ -462,56 +453,56 @@ Point2d FrameModel<ImageModelPolicy>::SensorApparantToActualPPA(
   return sensorAct;
 }
 
-// optical distortion in focal plane CS w.r.t. PPS
+/**
+ *  \brief optical distortion in focal plane CS w.r.t. PPS
+ *
+ *  \param [in] sensor apparant position on focal plane
+ */
 template <class ImageModelPolicy>
 Point2d FrameModel<ImageModelPolicy>::SensorApparantToActualPPS(
   const Point2d& sensor) const {
   auto sensorAct = sensor;
 
-  int nIter;
+  int i;
   auto [hasRadialDist, hasDecentDist, hasGridDist] = mFrameIP->GetDistFlags();
 
   // distortion grid from added parameters
   if (hasGridDist) {
     const Point2d cRD{ sensorAct }; // fixed position
 
-    for (nIter = 0; nIter < kMaxIterG2I; ++nIter) {
+    for (i = 0; i < kMaxIterG2I; ++i) {
       const auto dGrd = mFrameIP->CalcGridCorr(sensorAct);
-
       const Point2d res{ cRD - (sensorAct + dGrd) };
       sensorAct += res;
 
-      if (fabs(res.x) < kConvergeTolMM && fabs(res.y) < kConvergeTolMM)
+      if (fabs(res.x) < kTolMM && fabs(res.y) < kTolMM)
         break;
     }
 
-    if (kMaxIterG2I == nIter)
+    if (kMaxIterG2I == i)
       return { 0.0, 0.0 };
   }
 
   if (hasRadialDist || hasDecentDist) {
     const Point2d cEarth{ sensorAct };
 
-    for (nIter = 0; nIter < kMaxIterG2I; ++nIter) {
+    for (i = 0; i < kMaxIterG2I; ++i) {
       const auto dRad = mFrameIP->CalcRadialCorr(sensorAct);
       const auto dDec = mFrameIP->CalcDecentCorr(sensorAct);
-
-      // update coordinates
       const auto corr = cEarth - (sensorAct + dRad + dDec);
       sensorAct += corr;
 
-      if (fabs(corr.x) < kConvergeTolMM && fabs(corr.y) < kConvergeTolMM) {
+      if (fabs(corr.x) < kTolMM && fabs(corr.y) < kTolMM)
         break;
-      }
 
       // if corrX or corrY is large, it is not converging. use the original value
-      if ((kMaxIterG2I - 1) == nIter || 10 < fabs(corr.x) || 10 < fabs(corr.y)) {
+      if ((kMaxIterG2I - 1) == i || 10 < fabs(corr.x) || 10 < fabs(corr.y)) {
         sensorAct = cEarth;
         break;
       }
     }
 
-    if (kMaxIterG2I == nIter)
+    if (kMaxIterG2I == i)
       return { 0.0, 0.0 };
   }
 
@@ -521,9 +512,8 @@ Point2d FrameModel<ImageModelPolicy>::SensorApparantToActualPPS(
 /**
  *  \brief helper of copy constructor & assignment.
  */
-template <class ImageModelPolicy>
-void FrameModel<ImageModelPolicy>::CopyFrom(
-    const FrameModel<ImageModelPolicy> &rhs) {
+template <class ImageModelPolicy> void 
+FrameModel<ImageModelPolicy>::CopyFrom(const FrameModel<ImageModelPolicy> &rhs) {
   mImageModel = rhs.mImageModel;
   mFrameIP = rhs.mFrameIP;
   mFrameEP = rhs.mFrameEP->Clone();
@@ -532,13 +522,11 @@ void FrameModel<ImageModelPolicy>::CopyFrom(
 /**
  *  \brief helper of move constructor & assignment.
  */
-template <class ImageModelPolicy>
-void FrameModel<ImageModelPolicy>::MoveFrom(
-  FrameModel<ImageModelPolicy> &&rhs) noexcept {
+template <class ImageModelPolicy> void
+FrameModel<ImageModelPolicy>::MoveFrom(FrameModel<ImageModelPolicy> &&rhs) noexcept {
   mImageModel = std::move(rhs.mImageModel);
   mFrameIP = std::move(rhs.mFrameIP);
   mFrameEP = std::move(rhs.mFrameEP);
-
   rhs.Clear();
 }
 

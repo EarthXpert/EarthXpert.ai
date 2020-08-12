@@ -3,7 +3,8 @@
  * ----------------------------------------------------------------------
  */
 #include "core/math/interpgrid.h"
-#include "core/utils/typehelper.h"
+#include "core/math/math.h"
+#include "core/utils/layoututils.h"
 
 #include <algorithm>
 #include <cmath>
@@ -11,7 +12,7 @@
 #include <cstring>
 #include <type_traits>
 
-using earthxpert::InterpGrid;
+using namespace earthxpert;
 
 /**
  * Constructor
@@ -20,7 +21,7 @@ using earthxpert::InterpGrid;
  * \param [in] minX Minimum X-coordinate to cover
  * \param [in] minY Minimum Y-coordinate to cover
  * \param [in] maxX Maximum X-coordinate to cover
- * \param [in] maxXY Maximum Y-coordinate to cover
+ * \param [in] maxY Maximum Y-coordinate to cover
  * \param [in] spcX X spacing of grid points
  * \param [in] spcY Y spacing of grid points
  */
@@ -28,8 +29,20 @@ template <typename Ty>
 InterpGrid<Ty>::InterpGrid(const unsigned int dim, const Ty minX, const Ty minY, 
   const Ty maxX, const Ty maxY, const Ty spcX, const Ty spcY) 
     : mDim(dim) {
-  static_assert(std::is_floating_point_v<Ty>);
-  LayoutNodes(minX, minY, maxX, maxY, spcX, spcY);
+  LayoutNodes(minX, minY, maxX-minX, maxY-minY, spcX, spcY);
+}
+
+template <typename Ty>
+InterpGrid<Ty>::InterpGrid(unsigned int dim, const cv::Point_<Ty>& min,
+  const cv::Point_<Ty>& max, const cv::Point_<Ty>& spc) {
+  LayoutNodes(min, max, spc);
+}
+
+template <typename Ty>
+InterpGrid<Ty>::InterpGrid(const unsigned int dim,
+  const SpatialTile<Ty>& range, const Ty spcX, const Ty spcY) 
+  : mDim(dim) {
+  LayoutNodes(range, spcX, spcY);
 }
 
 /**
@@ -92,15 +105,12 @@ bool InterpGrid<Ty>::operator==(const InterpGrid<Ty> &rhs) const {
     if (mDim != rhs.mDim || mNumX != rhs.mNumX || mNumY != rhs.mNumY) {
       return false;
     }
-
     Equal<Ty> Eq(std::numeric_limits<Ty>::min());
 
     if (!Eq(mOffX, rhs.mOffX) || !Eq(mOffY, rhs.mOffY))
       return false;
-
     if (!Eq(mSpcX, rhs.mSpcX) || !Eq(mSpcY, rhs.mSpcY))
       return false;
-
     if (mGrid != rhs.mGrid)
       return false;
   }
@@ -121,16 +131,16 @@ bool InterpGrid<Ty>::operator!=(const InterpGrid<Ty> &rhs) const {
 /**
  * Allocate nodes large enough to cover the grid at the provided spacing.
  *
- * \param [in] minX Minimum X-coordinate to cover
- * \param [in] minY Minimum Y-coordinate to cover
- * \param [in] maxX Maximum X-coordinate to cover
- * \param [in] maxY Maximum Y-coordinate to cover
+ * \param [in] minX Minimum X-coordinate 
+ * \param [in] minY Minimum Y-coordinate 
+ * \param [in] width horizontal extent to cover
+ * \param [in] height vertical extent to cover
  * \param [in] spcX X spacing of grid points
  * \param [in] spcY Y spacing of grid points
  */
 template <typename Ty>
 void InterpGrid<Ty>::LayoutNodes(const Ty minX, const Ty minY,
-  const Ty maxX, const Ty maxY, const Ty spcX, const Ty spcY) {
+  const Ty width, const Ty height, const Ty spcX, const Ty spcY) {
   mSpcX = spcX;
   mSpcY = spcY;
   mOffX = minX;
@@ -138,21 +148,21 @@ void InterpGrid<Ty>::LayoutNodes(const Ty minX, const Ty minY,
 
   // Adjust spacing if it is zero.
   if (0 == mSpcX) {
-    mSpcX = (maxX - minX) / 4;
+    mSpcX = width / 4;
     if (0 == mSpcX)
       mSpcX = 1;
   }
   mInvSpcX = 1 / mSpcX;
 
   if (0 == mSpcY) {
-    mSpcY = (maxY - minY) / 4;
+    mSpcY = height / 4;
     if (0 == mSpcY)
       mSpcY = 1;
   }
   mInvSpcY = 1 / mSpcY;
 
-  mNumX = static_cast<unsigned int>((maxX - minX) * mInvSpcX + 0.5) + 1;
-  mNumY = static_cast<unsigned int>((maxY - minY) * mInvSpcY + 0.5) + 1;
+  mNumX = static_cast<unsigned int>(width * mInvSpcX + 0.5) + 1;
+  mNumY = static_cast<unsigned int>(height * mInvSpcY + 0.5) + 1;
 
   mNumX = std::max(mNumX, 2U);
   mNumY = std::max(mNumY, 2U);
@@ -172,6 +182,7 @@ void InterpGrid<Ty>::LayoutNodes(const Ty minX, const Ty minY,
  */
 template <typename Ty>
 void InterpGrid<Ty>::GetNodes(cv::Point_<Ty> *const nodes) const {
+  assert(nodes);
   size_t k = 0;
   for (unsigned int i = 0; i < mNumX; ++i) {
     const Ty X = mOffX + i * mSpcX;
@@ -185,6 +196,7 @@ void InterpGrid<Ty>::GetNodes(cv::Point_<Ty> *const nodes) const {
 
 template <typename Ty>
 void InterpGrid<Ty>::GetNodes(Ty *const nodes) const {
+  assert(nodes);
   size_t k = 0;
   for (unsigned int i = 0; i < mNumX; ++i) {
     const Ty X = mOffX + i * mSpcX;
@@ -206,6 +218,7 @@ void InterpGrid<Ty>::GetNodes(Ty *const nodes) const {
  */
 template <typename Ty>
 void InterpGrid<Ty>::GetVal(const Ty X, const Ty Y, Ty *const val) const {
+  assert(val);
   const Ty fIdxX = (X - mOffX) * mInvSpcX;
   const Ty fIdxY = (Y - mOffY) * mInvSpcY;
 
@@ -217,20 +230,13 @@ void InterpGrid<Ty>::GetVal(const Ty X, const Ty Y, Ty *const val) const {
   // Fractional values for interpolation
   const Ty xf = fIdxX - idxX;
   const Ty yf = fIdxY - idxY;
-  const Ty wt1 = (1 - xf) * (1 - yf);
-  const Ty wt2 = (1 - xf) * yf;
-  const Ty wt3 = xf * (1 - yf);
-  const Ty wt4 = xf * yf;
-
-  const size_t idx1 = size_t(mDim) * (size_t(idxX) * size_t(mNumY) + size_t(idxY));
-  const size_t idx2 = idx1 + size_t(mDim);
-  const size_t idx3 = idx1 + size_t(mDim) * size_t(mNumY);
-  const size_t idx4 = idx2 + size_t(mDim) * size_t(mNumY);
+  const auto [w1, w2, w3, w4] = LinearWeights<MatOrder::eCOLMAHOR>(xf, yf);
+  const auto [i1, i2, i3, i4] = CornersIndex<MatOrder::eCOLMAHOR>(idxX, idxY, mNumY, mDim);
 
   // Interpolate the values.
   for (unsigned int i = 0; i < mDim; ++i) {
-    val[i] = wt1 * mGrid[idx1 + i] + wt2 * mGrid[idx2 + i] +
-             wt3 * mGrid[idx3 + i] + wt4 * mGrid[idx4 + i];
+    val[i] = w1 * mGrid[i1 + i] + w2 * mGrid[i2 + i] +
+             w3 * mGrid[i3 + i] + w4 * mGrid[i4 + i];
   }
 }
 

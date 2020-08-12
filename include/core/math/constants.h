@@ -49,4 +49,6 @@ constexpr inline double Meter2USFeet(const double meter) {
 constexpr double kWGS84_A = 6378137.0;  // equatorial radius [unit: meter]
 constexpr double kWGS84_B = 6356752.3142; // polar radius
 constexpr double kWGS84_ECCSQ = 6.69437999014e-3; // first eccentricity squared
+
+constexpr int kTileDim = 256;   // tile size of raster image
 } // namespace earthxpert

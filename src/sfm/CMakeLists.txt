@@ -1,15 +1,20 @@
 project(sfm)
 
 add_definitions(-DEXSFM_API)
-earthxpert_add_library(sfm "api"
-  SRCS "densematch/circleneighbor.cpp"
+set(sfm_srcs "densematch/circleneighbor.cpp"
        "densematch/densematch.cpp"
        "densematch/densematchfactory.cpp"
        "densematch/depthmatch.cpp"
        "densematch/disparitymatch.cpp"
        "densematch/rectneighbor.cpp"
-       "sparsematch/sparsematch.cpp"
+       "sparsematch/featdetectperf.cpp"
+       "sparsematch/featuredetect.cpp"
+       "sparsematch/featuredetect_layout.cpp"
+       "sparsematch/sparsematch.cpp")
+earthxpert_add_library(sfm "api"
+  SRCS ${sfm_srcs}
   ITEMS ex3rdparty core dataio epipolarmodel sensormodel
         ${GDAL_LIBRARY} ${GETTEXT_LIBRARY} ${OpenCV_LIBS})
 
+earthxpert_source_group(${sfm_srcs})
 earthxpert_install_target(sfm)

@@ -5,9 +5,10 @@
 #pragma once
 
 #include "io/pointcloud/ipointcloudreader.h"
+#include "core/utils/fsutils.h"
 #include "core/utils/spatialtile.h"
 
-#include "lasreader.hpp"
+#include <lasreader.hpp>
 #include <iostream>
 #include <mutex>
 #include <vector>
@@ -25,6 +26,7 @@ namespace earthxpert {
 class EXIO_EXPORTS PointcloudReader final : public IPointcloudReader {
 public:
   PointcloudReader(const std::string& lasFile, FieldGroup fieldGroup = {});
+  PointcloudReader(const fs::path& lasFile, FieldGroup fieldGroup = {});
   PointcloudReader(const PointcloudReader &) = delete;
   PointcloudReader(PointcloudReader &&) = delete;
   ~PointcloudReader() = default;

@@ -12,14 +12,15 @@ namespace earthxpert {
 //
 enum ExPointType {
   eUNUSED = -1,
-  eGCP,
-  eICP,
-  eTP
+  eGCP,   // ground control point
+  eICP,   // independent check point
+  eATP,   // automatic tie point
+  eMTP    // manual tie point
 };
 
 // GroundPoint represents a multi-ray observation
 struct GroundPoint {
-  unsigned int id;
+  std::string id;
   Point3d point;      // XYZ, LPH position
 };
 
@@ -28,12 +29,12 @@ struct ControlPoint : GroundPoint {
 };
 
 struct TiePoint : GroundPoint {
-  ExPointType pt{ eTP };
+  ExPointType pt{ eATP };
 };
 
 struct ImagePoint {
-  Point2f point;        // col, row position
-  unsigned int gpId;    // ID of GroundPoint
+  Point2f ip;        //  image position: col, row
+  GroundPoint* gp;    // GroundPoint
 };
 
 // camera infomation

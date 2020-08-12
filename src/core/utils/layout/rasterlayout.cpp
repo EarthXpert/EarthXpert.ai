@@ -3,9 +3,13 @@
  * -----------------------------------------------------------------------------
  */
 #include "core/utils/rasterlayout.h"
+#include "core/utils/layoututils.h"
+#include "core/math/constants.h"
+#include "core/math/math.h"
 
 #include <algorithm>
 #include <stdexcept>
+#include <tuple>
 
 using earthxpert::RasterLayout;
 using earthxpert::RasterWindow;
@@ -19,7 +23,7 @@ using earthxpert::RasterWindow;
  */
 RasterLayout::RasterLayout(const int numCols, const int numRows,
   const int winNumCols, const int winNumRows, const LayoutKind kind)
-  : RasterLayout(RasterWindow{ 0, 0, numCols, numRows }, winNumCols, winNumRows, kind) {
+  : RasterLayout(RasterWindow{0, 0, numCols, numRows}, winNumCols, winNumRows, kind) {
 }
 
 /**
@@ -56,8 +60,14 @@ int RasterLayout::SetWindowSize(const int winNumCols, const int winNumRows) {
  *  \return Returns actual number of tiles.
  */
 int RasterLayout::SetNumWindows(const int numWins) {
-  // \todo
-  return static_cast<int>(mWins.size());
+  const auto ratio = double(mRange.numCols) / mRange.numRows;
+  const auto numSqWins = sqrt(double(numWins) / ratio);
+  int winNumCols = std::lround(mRange.numCols / (numSqWins * ratio));
+  int winNumRows = std::lround(mRange.numRows / numSqWins);
+  
+  winNumCols = DivideUp(winNumCols, kTileDim) * kTileDim;
+  winNumRows = DivideUp(winNumRows, kTileDim) * kTileDim;
+  return SetWindowSize(winNumCols, winNumRows);
 }
 
 /**
@@ -71,30 +81,22 @@ void RasterLayout::LayoutWindows() {
   if (0 == mWinNumRows) mWinNumRows = mRange.numRows;
 
   std::vector<int> colOffsets;
-  for (int c = 0; c < mRange.numCols; c += mWinNumCols) {
-    colOffsets.push_back(c);
-  }
+  const int numHoriWins = FillCornersByStride(mRange.numCols, mWinNumCols, colOffsets);
   std::vector<int> rowOffsets;
-  for (int r = 0; r < mRange.numRows; r += mWinNumRows) {
-    rowOffsets.push_back(r);
-  }
+  const int numVertWins = FillCornersByStride(mRange.numRows, mWinNumRows, rowOffsets);
 
-  const int numHoriWins = int(colOffsets.size());
-  const int numVertWins = int(rowOffsets.size());
   const int numWins = numHoriWins * numVertWins;
   
   mWins.resize(numWins);
   for (int w = 0; w < numWins; ++w) {
     int c{}, r{};
     if (LayoutKind::eHORIZONTAL == mLayoutkind) {
-      c = w % numHoriWins;
-      r = w / numHoriWins;
+      std::tie(c, r) = IndexToCR(w, numHoriWins);
     }
     else {
-      c = w / numVertWins;
-      r = w % numVertWins;
+      std::tie(r, c) = IndexToCR(w, numVertWins);
     }
-    mWins[w].SetOffsets(colOffsets[c], rowOffsets[r]);
+    mWins[w].SetOffsets(mRange.colOffset+colOffsets[c], mRange.rowOffset+rowOffsets[r]);
 
     const int winNumCols = std::min(mWinNumCols, mRange.numCols - colOffsets[c]);
     const int winNumRows = std::min(mWinNumRows, mRange.numRows - rowOffsets[r]);
