@@ -28,4 +28,7 @@ public:
   virtual void Resample(CvRaster& srcRaster, CvRaster& tgtRaster, CvRaster& posRaster) const = 0;
   virtual void Resample(cv::Mat& srcMat, cv::Mat& tgtMat, cv::Mat& posMat) const = 0;
 };
+
+using UPIRasterResample = std::unique_ptr<IRasterResample>;
+using SPIRasterResample = std::shared_ptr<IRasterResample>;
 }

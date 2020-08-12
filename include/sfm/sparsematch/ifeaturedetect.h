@@ -6,6 +6,8 @@
 
 #include "sfm/exsfm.h"
 
+#include <memory>
+
 namespace earthxpert {
 /**
  *  The interface IFeatureDetect defines the behaviours of feature detection algorithms.
@@ -22,4 +24,7 @@ public:
 
   virtual ~IFeatureDetect() = default;
 };
+
+using UPIFeatureDetect = std::unique_ptr<IFeatureDetect>;
+using SPIFeatureDetect = std::shared_ptr<IFeatureDetect>;
 }
