@@ -14,7 +14,11 @@
 namespace earthxpert {
 /**
  *  The class EpipolarModel defines a sensor-independent algorithm
- *  for generating epipolar images from image products with sensor models.
+ *  for generating epipolar images from imagery products with sensor models.
+ *  For raw images, their epipolar model represents the geometry needed when
+ *  generating OrthoReady products; for vendor-provided OR products with
+ *  rational models, their epipolar model may represent a better geometry
+ *  in terms of maximizing x-parallax while minimizng y-parallax.
  *
  *  \tparam GroundPolicy defines the behaviour of and relationshp between
  * the model coordinate system and the rectification coordinate system
@@ -120,4 +124,10 @@ private:
 using GeoEpipolarModel = EpipolarModel<GeographicGroundDeg>;
 using LocalEpipolarModel = EpipolarModel<LocalGroundMe>;
 using MapEpipolarModel = EpipolarModel<MapGroundMe>;
+
+// typically for satellite remote sensing
+template <class GroundPolicy>
+using OrthoReadyModel = EpipolarModel<GroundPolicy>;
+
+using GeoOrthoReadyModel = OrthoReadyModel<GeographicGroundDeg>;
 } // namespace earthxpert

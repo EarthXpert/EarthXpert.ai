@@ -23,6 +23,10 @@ static void CreateRationalEpipolarModel(const std::string& leftMdlFile,
 static void TestRaw2Epi_Epi2Raw_Grid(const IEpipolarModel* epiModel, double tol=kTol);
 static void TestStride(const IEpipolarModel* epiModel, int stride, double tol = kTol);
 
+static void TestCubeI2G(const ISensorModel* epiSensorModel);
+static void TestImageToGround_Cube(const ISensorModel* leftEpiSensorModel,
+  const ISensorModel* rightSensorModel);
+
 /**
  *  Test 1: WV01
  */
@@ -111,5 +115,21 @@ void TestRaw2Epi_Epi2Raw_Grid(const IEpipolarModel* epiModel, const double tol) 
  *         third, calculate the maximum differences between them.
  */
 void TestStride(const IEpipolarModel* epiModel, int stride, double tol) {
+
+}
+
+/**
+ *  \breif sensor model of epipolar image via the chain between
+ *  epipolar image space, rectification space, and raw image space.
+ */
+void TestCubeI2G(const ISensorModel* epiSensorModel) {
+
+}
+
+/**
+ *  \breif stereo model composed of epipolar images as OrthoReady product
+ */
+void TestImageToGround_Cube(const ISensorModel* leftEpiSensorModel,
+  const ISensorModel* rightSensorModel) {
 
 }

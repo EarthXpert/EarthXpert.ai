@@ -23,7 +23,9 @@ class RasterReader;
 class RasterWriter;
 
 /**
- *  The class EpipolarGenerator creates epipolar images from raw images.
+ *  The class EpipolarGenerator creates epipolar images from raw images
+ *  given an epipolar model. In satellite remote sensing, these 
+ *  epipolar images are also named as OrthoReady stereo product.
  *  It is not thread-safe to process multiple images using the same 
  *  generator object. Thus for parallel processing, create a generator 
  *  object for each thread in the team.
@@ -181,4 +183,7 @@ private:
   int mTfmCvDT{ CV_32FC2 };
   int mTfmBpp{ CV_ELEM_SIZE(CV_32FC2) };
 };
+
+// typically for satellite remote sensing
+using OrthoReadyGenerator = EpipolarGenerator;
 } // namespace earthxpert
