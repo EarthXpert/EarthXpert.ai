@@ -5,8 +5,8 @@
 #pragma once
 
 #include "core/math/graphfit.h"
-#include "core/math/fitpoints.h"
 #include "core/exceptions/exexcept.h"
+#include "core/math/fitpoints.h"
 #include "core/parallel/exomp.h"
 
 #include <opencv2/imgproc.hpp>
@@ -57,7 +57,7 @@ GraphFit::GraphFit(const Solver::Options& options) : mOptions(options) {
 bool GraphFit::FitLineCeres(const std::vector<Point2d>& points, 
   std::vector<double>& pb, Solver::Summary& summary) {
   if (2 > points.size())
-    throw std::invalid_argument("FitLine: must have 2+ points");
+    throw std::invalid_argument(_("FitLine: must have 2+ points"));
 
   return FitPoints<Point2d, LinearFitResidual>(points, pb, mOptions, summary);
 }
@@ -65,7 +65,7 @@ bool GraphFit::FitLineCeres(const std::vector<Point2d>& points,
 bool GraphFit::FitLineCeresRobust(const std::vector<Point2d>& points, 
   std::vector<double>& pb, Solver::Summary& summary) {
   if (2 > points.size())
-    throw std::invalid_argument("FitLine: must have 2+ points");
+    throw std::invalid_argument(_("FitLine: must have 2+ points"));
 
   auto lossFunc = std::make_unique<CauchyLoss>(0.5);
   return FitPoints<Point2d, LinearFitResidual, CauchyLoss>(points,
@@ -78,7 +78,7 @@ bool GraphFit::FitLineCeresRobust(const std::vector<Point2d>& points,
 bool GraphFit::FitLineCv(const std::vector<Point2d>& points, cv::Vec2d& pb) {
   const int n = int(points.size());
   if (2 > n)
-    throw std::invalid_argument("FitLine: must have 2+ points");
+    throw std::invalid_argument(_("FitLine: must have 2+ points"));
 
   cv::Mat A(n, 2, CV_64FC1);
   cv::Mat b(n, 1, CV_64FC1);
@@ -103,7 +103,7 @@ bool GraphFit::FitLineCv(const std::vector<Point2d>& points, cv::Vec2d& pb) {
 bool GraphFit::FitLineCv(const std::vector<Point2d>& points, std::array<double, 2>& pb) {
   const int n = int(points.size());
   if (2 > n)
-    throw std::invalid_argument("FitLine: must have 2+ points");
+    throw std::invalid_argument(_("FitLine: must have 2+ points"));
 
   cv::Vec4d line;
   cv::fitLine(points, line, cv::DIST_L2, 0, 0.01, 0.01);
@@ -122,7 +122,7 @@ bool GraphFit::FitLineCv(const std::vector<Point2d>& points, std::array<double, 
 bool GraphFit::FitLineEigen(const std::vector<Point2d>& points, std::vector<double>& pb) {
   const int n = int(points.size());
   if (2 > n)
-    throw std::invalid_argument("FitLine: must have 2+ points");
+    throw std::invalid_argument(_("FitLine: must have 2+ points"));
 
   if (pb.empty()) {
     pb.resize(2, 0.0);
@@ -167,7 +167,7 @@ bool GraphFit::FitLineEigen(const std::vector<Point2d>& points, std::vector<doub
 bool GraphFit::FitLineCeres(const std::vector<Point3d>& points,
   std::vector<double>& pb, Solver::Summary& summary) {
   if (2 > points.size())
-    throw std::invalid_argument("FitLine: must have 2+ points");
+    throw std::invalid_argument(_("FitLine: must have 2+ points"));
 
   return false;
 }
@@ -177,7 +177,7 @@ bool GraphFit::FitLineCeres(const std::vector<Point3d>& points,
  */
 bool GraphFit::FitLineCv(const std::vector<Point3d>& points, cv::Vec6d& pb) {
   if (2 > points.size())
-    throw std::invalid_argument("FitLine: must have 2+ points");
+    throw std::invalid_argument(_("FitLine: must have 2+ points"));
 
   cv::fitLine(points, pb, cv::DIST_L2, 0, 0.01, 0.01);
   return true;
@@ -203,7 +203,7 @@ bool GraphFit::FitLineCv(const std::vector<Point3d>& points, cv::Vec6d& pb) {
 bool GraphFit::FitCurveCeres(const std::vector<Point2d>& points,
   std::vector<double>& pb, Solver::Summary& summary) {
   if (2 > points.size())
-    throw std::invalid_argument("FitExponentialCurve: must have 2+ points");
+    throw std::invalid_argument(_("FitExponentialCurve: must have 2+ points"));
 
   return FitPoints<Point2d, ExponentialFitResidual>(points,
     pb, mOptions, summary);
@@ -230,7 +230,7 @@ bool GraphFit::FitCurveCeres(const std::vector<Point2d>& points,
 bool GraphFit::FitPlaneCeres(const std::vector<Point3d>& points,
   std::vector<double>& pb, Solver::Summary& summary) {
   if (3 > points.size())
-    throw std::invalid_argument("FitPlane: must have 3+ points");
+    throw std::invalid_argument(_("FitPlane: must have 3+ points"));
 
   return FitPoints<Point3d, LinearFitResidual>(points, pb, mOptions, summary);
 }

@@ -26,7 +26,7 @@ void EpipolarGenerator::LayoutTiles() {
   mPerf.numImgTiles = DefineTiles(tileNumCols, tileNumRows);
   
   if (0 == mPerf.numImgTiles)
-    throw EpipolarError("LayoutTiles: empty tiles");
+    throw EpipolarError(_("LayoutTiles: empty tiles"));
 
   AllocateBuffers();
 }

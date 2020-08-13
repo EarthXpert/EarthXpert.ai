@@ -3,3 +3,4 @@
  * -----------------------------------------------------------------------------
  */
 #include "sfm/densematch/depthmatch.h"
+#include "core/exceptions/exexcept.h"

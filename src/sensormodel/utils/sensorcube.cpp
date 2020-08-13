@@ -3,6 +3,7 @@
  * -----------------------------------------------------------------------------
  */
 #include "sensormodel/utils/sensorcube.h"
+#include "core/exceptions/exexcept.h"
 #include "sensormodel/isensormodel.h"
 
 using namespace earthxpert;

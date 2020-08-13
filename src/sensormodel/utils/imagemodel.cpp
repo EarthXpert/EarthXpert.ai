@@ -3,11 +3,11 @@
  * -----------------------------------------------------------------------------
  */
 #include "sensormodel/utils/imagemodel.h"
+#include "core/exceptions/exexcept.h"
 #include "core/utils/typehelper.h"
 
 #include <algorithm>
 #include <numeric>
-#include <stdexcept>
 
 using namespace earthxpert;
 
@@ -24,17 +24,17 @@ DigitalImageModelImp::DigitalImageModelImp(const int numCols, const int numRows,
     : mNumCols(numCols), mNumRows(numRows), mPixSizeX(pixSizeX), mPixSizeY(pixSizeY) {
   // Check for image dimension
   if (mNumCols <= 0 || mNumRows <= 0) {
-    throw std::invalid_argument("Image dimension must be positive");
+    throw std::invalid_argument(_("Image dimension must be positive"));
   }
 
   constexpr auto tol{0.001}; // [unit: um]
 
   if (mPixSizeX < tol) {
-    throw std::invalid_argument("Pixel size in X-direction is too small");
+    throw std::invalid_argument(_("Pixel size in X-direction is too small"));
   }
 
   if (mPixSizeY < tol) {
-    throw std::invalid_argument("Pixel size in Y-direction is too small");
+    throw std::invalid_argument(_("Pixel size in Y-direction is too small"));
   }
 
   // calculate origin and reciprocals
@@ -84,7 +84,7 @@ FilmImageModelImp::FilmImageModelImp(const int numCols, const int numRows,
       mXYToC(xyToC), mXYToR(xyToR) {
   // Check for image dimension
   if (mNumCols <= 0 || mNumRows <= 0) {
-    throw std::invalid_argument("Image dimension must be positive");
+    throw std::invalid_argument(_("Image dimension must be positive"));
   }
 
   constexpr auto tol = std::numeric_limits<double>::epsilon();
@@ -92,12 +92,12 @@ FilmImageModelImp::FilmImageModelImp(const int numCols, const int numRows,
   // Check for singular transformation coefficients.
   const auto cr2XY = mCRToX[1] * mCRToY[2] - mCRToX[2] * mCRToY[1];
   if (fabs(cr2XY) < tol) {
-    throw std::underflow_error("Image-To-FocalPlane trnasformation is singular");
+    throw std::underflow_error(_("Image-To-FocalPlane trnasformation is singular"));
   }
 
   const auto xy2CR = mXYToC[1] * mXYToR[2] - mXYToC[2] * mXYToR[1];
   if (fabs(xy2CR) < tol) {
-    throw std::underflow_error("FocalPlane-To-Image trnasformation is singular");
+    throw std::underflow_error(_("FocalPlane-To-Image trnasformation is singular"));
   }
 }
 

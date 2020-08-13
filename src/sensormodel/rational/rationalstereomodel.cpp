@@ -4,6 +4,7 @@
  */
 #include "sensormodel/rationalstereomodel.h"
 #include "3rdparty/eigen/exeigen.h"
+#include "core/exceptions/exexcept.h"
 #include "sensormodel/rationalmodel.h"
 #include "sensormodel/rmutils.h"
 

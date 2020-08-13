@@ -3,6 +3,7 @@
  * -----------------------------------------------------------------------------
  */
 #include "sensormodel/utils/smutils.h"
+#include "core/exceptions/exexcept.h"
 #include "core/utils/unitutils.h"
 #include "core/spatialref/earthellipsoid.h"
 

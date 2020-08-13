@@ -7,7 +7,7 @@
 
 #include "core/utils/spatiallayout.h"
 #include "io/pointcloud/pointcloudreader.h"
-#include "boost/format.hpp"
+#include <boost/format.hpp>
 #include <array>
 #include <iostream>
 #include <omp.h>

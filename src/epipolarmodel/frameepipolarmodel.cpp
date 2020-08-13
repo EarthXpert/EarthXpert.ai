@@ -3,6 +3,7 @@
  * -----------------------------------------------------------------------------
  */
 #include "epipolarmodel/frameepipolarmodel.h"
+#include "core/exceptions/exexcept.h"
 #include "sensormodel/frameep.h"
 #include "sensormodel/framemodel.h"
 

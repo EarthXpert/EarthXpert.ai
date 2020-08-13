@@ -3,10 +3,10 @@
  * -----------------------------------------------------------------------------
  */
 #include "core/utils/spatiallayout.h"
+#include "core/exceptions/exexcept.h"
 #include "core/utils/layoututils.h"
 
 #include <algorithm>
-#include <stdexcept>
 
 using earthxpert::SpatialLayout;
 using earthxpert::SpatialTile;
@@ -77,7 +77,7 @@ int SpatialLayout<Ty>::SetNumTiles(const int numTiles) {
  */
 template <typename Ty> void SpatialLayout<Ty>::LayoutTiles() {
   if (mRange.width < mTileWidth || mRange.height < mTileHeight) {
-    throw std::invalid_argument("Thw tile size should be less than or equal to the region size");
+    throw std::invalid_argument(_("The tile size should be less than or equal to the region size"));
   }
   if (0 == mTileWidth) mTileWidth = mRange.width;
   if (0 == mTileHeight) mTileHeight = mRange.height;

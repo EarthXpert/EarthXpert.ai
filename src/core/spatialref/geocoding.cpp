@@ -3,8 +3,7 @@
  * -----------------------------------------------------------------------------
  */
 #include "core/spatialref/geocoding.h"
-
-#include <stdexcept>
+#include "core/exceptions/exexcept.h"
 
 using earthxpert::Geocoding;
 using earthxpert::Point2d;
@@ -14,7 +13,7 @@ Geocoding::Geocoding(const double originX, const double originY,
     : mOriginX(originX), mOriginY(originY), mPixelSizeX(pixelSizeX),
   mPixelSizeY(pixelSizeY) {
   if (mPixelSizeX == 0 || mPixelSizeY == 0) {
-    throw std::invalid_argument("Pixel ground size must be positive.");
+    throw std::invalid_argument(_("Pixel ground size must be positive."));
   }
 
   mInvPixX = 1.0 / mPixelSizeX;

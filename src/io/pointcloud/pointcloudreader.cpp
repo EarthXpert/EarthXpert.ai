@@ -3,7 +3,6 @@
  * -----------------------------------------------------------------------------
  */
 #include "io/pointcloud/pointcloudreader.h"
-#include "3rdparty/gettext/exgettext.h"
 #include "3rdparty/laslib/exlaslib.h"
 #include "core/datasource/pointcloudutils.h"
 #include "core/exceptions/exexcept.h"

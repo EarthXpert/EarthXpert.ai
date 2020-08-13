@@ -4,6 +4,7 @@
  */
 #include "sensormodel/adsmodel.h"
 #include "3rdparty/gdal/exgdal.h"
+#include "core/exceptions/exexcept.h"
 #include "sensormodel/scannerep.h"
 #include "sensormodel/scannerimagemodel.h"
 #include "sensormodel/scannerip.h"

@@ -5,6 +5,7 @@
 #pragma once
 
 #include <stdexcept>
+#include "3rdparty/gettext/exgettext.h"
 
 namespace earthxpert {
   /**

@@ -3,6 +3,7 @@
  * -----------------------------------------------------------------------------
  */
 #include "sfm/densematch/densematch.h"
+#include "core/exceptions/exexcept.h"
 
 #include <algorithm>
 #include <cmath>

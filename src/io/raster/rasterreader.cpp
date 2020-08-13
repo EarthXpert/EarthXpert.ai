@@ -3,7 +3,6 @@
  * -----------------------------------------------------------------------------
  */
 #include "io/raster/rasterreader.h"
-#include "3rdparty/gettext/exgettext.h"
 #include "core/datasource/cvraster.h"
 #include "core/datasource/gdalraster.h"
 #include "core/datasource/rasterutils.h"

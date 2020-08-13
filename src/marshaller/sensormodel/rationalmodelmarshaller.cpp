@@ -3,13 +3,13 @@
  * -----------------------------------------------------------------------------
  */
 #include "marshaller/rationalmodelmarshaller.h"
+#include "core/exceptions/exexcept.h"
 #include "core/utils/stringutils.h"
 #include "sensormodel/rationalmodel.h"
 
 #include <boost/algorithm/string.hpp>
 #include <fstream>
 #include <map>
-#include <stdexcept>
 
 using namespace earthxpert;
 using utils::CompareI;
@@ -65,7 +65,7 @@ void RationalModelMarshaller::Serialize(const std::string &modelFile,
 
   std::ofstream outStream(modelFile.c_str());
   if (!outStream.good()) {
-    throw std::invalid_argument("Cannot create file.");
+    throw std::invalid_argument(_("Cannot create file."));
   }
 
   if (eRPB == coefFormat) {
@@ -75,7 +75,7 @@ void RationalModelMarshaller::Serialize(const std::string &modelFile,
     return SerializeRpc(outStream, rationalModel);
   }
   else {
-    throw std::invalid_argument("Not a rational model file.");
+    throw std::invalid_argument(_("Not a rational model file."));
   }
 }
 
@@ -92,7 +92,7 @@ RationalModelMarshaller::Deserialize(const std::string &modelFile) {
 
   std::ifstream inStream(modelFile.c_str());
   if (!inStream.good()) {
-    throw std::invalid_argument("Failed to open file.");
+    throw std::invalid_argument(_("Failed to open file."));
   }
 
   if (eRPB == coefFormat) {
@@ -100,7 +100,7 @@ RationalModelMarshaller::Deserialize(const std::string &modelFile) {
   } else if (eRPC == coefFormat) {
     return DeserializeRpc(inStream);
   } else {
-    throw std::invalid_argument("Not a rational model file."); 
+    throw std::invalid_argument(_("Not a rational model file.")); 
   }
 }
 
@@ -118,7 +118,7 @@ RationalModelMarshaller::GetCoefFormat(const std::string& modelFile) const {
     return eRPC;
   }
   else {
-    throw std::invalid_argument("Not a rational model file.");
+    throw std::invalid_argument(_("Not a rational model file."));
   }
 }
 
@@ -168,7 +168,7 @@ RationalModelMarshaller::DeserializeRpb(std::istream& inStream) {
       boost::algorithm::token_compress_on);
 
     if (tokens.empty() || 3 < tokens.size()) {
-      throw std::exception("Each line contains 1 to 3 tokens");
+      throw std::exception(_("Each line contains 1 to 3 tokens"));
     }
 
     const auto& key = tokens[0];
@@ -244,7 +244,7 @@ RationalModelMarshaller::DeserializeRpc(std::istream& inStream) {
       boost::algorithm::token_compress_on);
 
     if (2 > tokens.size()) {
-      throw std::exception("Each line contains 2+ tokens");
+      throw std::exception(_("Each line contains 2+ tokens"));
     }
 
     const auto& key = tokens[0];

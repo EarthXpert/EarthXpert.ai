@@ -22,7 +22,7 @@ VectorReader::VectorReader(const std::string& vecFile, const std::vector<LayerIn
   : mLayersInfo(layersInfo) {
   auto dataset = GDALOpenEx(vecFile.c_str(), GDAL_OF_VECTOR, nullptr, nullptr, nullptr);
   if (!dataset) {
-    throw IOError("OGR failed to open vector data source for read access.");
+    throw IOError(_("OGR failed to open vector data source for read access."));
   }
 
   Initialize(static_cast<GDALDataset*>(dataset));

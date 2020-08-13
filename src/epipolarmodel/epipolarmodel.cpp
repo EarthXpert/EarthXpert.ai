@@ -3,6 +3,7 @@
  * -----------------------------------------------------------------------------
  */
 #include "epipolarmodel/epipolarmodel.h"
+#include "core/exceptions/exexcept.h"
 
 #include <algorithm>
 #include <cmath>
@@ -131,7 +132,7 @@ EpipolarModel<GroundPolicy>::BuildGridI2G(const int numCols, const int numRows) 
     auto grdHgt = RawToRect(gridNodes[i], rect);
 
     if (!grdHgt)
-      throw std::exception("BuildGridI2G: failed to project.");
+      throw std::exception(_("BuildGridI2G: failed to project."));
 
     grid[i] = grdHgt.value() - mHeight;
   }

@@ -3,6 +3,7 @@
  * -----------------------------------------------------------------------------
  */
 #include "sensormodel/imagemodelpolicy.h"
+#include "core/exceptions/exexcept.h"
 
 #include <algorithm>
 #include <cassert>
@@ -21,7 +22,7 @@ using namespace earthxpert;
 DigitalImageModel::DigitalImageModel(std::shared_ptr<DigitalImageModelImp> imgModel)
     : mImgModel(imgModel) {
     if (!mImgModel)
-      throw std::invalid_argument("Parameter is empty: imgModel");
+      throw std::invalid_argument(_("Parameter is empty: imgModel"));
 }
 
 DigitalImageModel::DigitalImageModel(const DigitalImageModel &rhs) {}
@@ -76,7 +77,7 @@ void DigitalImageModel::MoveFrom(DigitalImageModel &&rhs) noexcept {
 FilmImageModel::FilmImageModel(std::unique_ptr<FilmImageModelImp> &&imgModel)
   : mImgModel(std::move(imgModel)) {
   if (!mImgModel)
-    throw std::invalid_argument("Parameter is empty: imgModel");
+    throw std::invalid_argument(_("Parameter is empty: imgModel"));
 }
 
 FilmImageModel::FilmImageModel(const FilmImageModel &rhs) {}

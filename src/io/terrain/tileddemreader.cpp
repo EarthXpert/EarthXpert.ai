@@ -3,3 +3,4 @@
  * -----------------------------------------------------------------------------
  */
 #include "io/terrain/tileddemreader.h"
+#include "core/exceptions/exexcept.h"

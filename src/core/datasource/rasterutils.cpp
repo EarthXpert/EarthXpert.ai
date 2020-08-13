@@ -59,7 +59,7 @@ namespace detail {
 int ConvertPixelType(const GDALDataType gdalType, const int numBands) {
   const auto it = detail::sDataTypesG2C.find(gdalType);
   if (detail::sDataTypesG2C.end() == it) {
-    throw std::invalid_argument("Unknown GDAL data type");
+    throw std::invalid_argument(_("Unknown GDAL data type"));
   }
 
   return CV_MAKETYPE(it->second, numBands);
@@ -76,7 +76,7 @@ std::pair<GDALDataType, int> EXCORE_EXPORTS ConvertPixelType(const int cvType) {
 
   const auto it = detail::sDataTypesC2G.find(depth);
   if (detail::sDataTypesC2G.end() == it) {
-    throw std::invalid_argument("Unknown OpenCV depth type");
+    throw std::invalid_argument(_("Unknown OpenCV depth type"));
   }
 
   return {it->second, CV_MAT_CN(cvType) };
@@ -131,7 +131,7 @@ void FillMargins(CvRaster* const raster, MarginFillDim dim) {
     detail::FillMargin<ReplicationFill>(raster, dim);
     break;
   default:
-    throw std::invalid_argument("Invalid margin kind");
+    throw std::invalid_argument(_("Invalid margin kind"));
   }
 }
 
@@ -192,7 +192,7 @@ std::unique_ptr<CvRaster> ConvertRaster(const GdalRaster* gdalRaster) {
 std::unique_ptr<CvRaster> ConvertRaster(const GdalRaster* gdalRaster, const int band) {
   auto numBands = gdalRaster->GetNumBands();
   if (band >= numBands) {
-    throw std::out_of_range("band ID is out of range");
+    throw std::out_of_range(_("band ID is out of range"));
   }
 
   auto [numCols, numRows] = gdalRaster->GetSize();
@@ -223,7 +223,7 @@ std::vector<std::unique_ptr<CvRaster>> EXCORE_EXPORTS ConvertRaster(
   std::vector<int> cvtBands{bands};
   const int numBands = gdalRaster->GetNumBands();
   if (numBands < bands.size()) {
-    throw std::invalid_argument("Requested bands are larger than the available bands");
+    throw std::invalid_argument(_("Requested bands are larger than the available bands"));
   }
   if (bands.empty()) {
     cvtBands.resize(numBands);
@@ -232,7 +232,7 @@ std::vector<std::unique_ptr<CvRaster>> EXCORE_EXPORTS ConvertRaster(
   else {
     auto [itMin, itMax] = std::minmax_element(cvtBands.begin(), cvtBands.end());
     if (0 > * itMin || numBands <= *itMax) {
-      throw std::out_of_range("Requested bands are out of the range of available bands");
+      throw std::out_of_range(_("Requested bands are out of the range of available bands"));
     }
   }
 
@@ -250,7 +250,12 @@ std::vector<std::unique_ptr<CvRaster>> EXCORE_EXPORTS ConvertRaster(
  *  \param [in] cvRaster pointer to OpenCV raster object
  *  \return Return pointer to GDAL raster object
  */
-std::unique_ptr<GdalRaster> ConvertRaster(const CvRaster* gdalRaster) {
+std::unique_ptr<GdalRaster> ConvertRaster(const CvRaster* cvRaster) {
+  //cv::split();
+  return nullptr;
+}
+
+std::unique_ptr<GdalRaster> ConvertRaster(const CvRaster* cvRaster, const int band) {
   return nullptr;
 }
 }

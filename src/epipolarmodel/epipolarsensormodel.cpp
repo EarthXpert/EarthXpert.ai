@@ -3,6 +3,7 @@
  * -----------------------------------------------------------------------------
  */
 #include "epipolarmodel/epipolarsensormodel.h"
+#include "core/exceptions/exexcept.h"
 
 #include <array>
 #include <cassert>

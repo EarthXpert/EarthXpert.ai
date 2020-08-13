@@ -3,6 +3,7 @@
  * -----------------------------------------------------------------------------
  */
 #include "marshaller/framemodelmarshaller.h"
+#include "core/exceptions/exexcept.h"
 #include "core/utils/stringutils.h"
 
 #include <cctype>

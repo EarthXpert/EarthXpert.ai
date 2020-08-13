@@ -3,6 +3,7 @@
  * -----------------------------------------------------------------------------
  */
 #include "marshaller/epipolarmodelmarshaller.h"
+#include "core/exceptions/exexcept.h"
 #include "epipolarmodel/epipolarmodel.h"
 
 #include <cereal/archives/json.hpp>

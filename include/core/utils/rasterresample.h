@@ -5,9 +5,8 @@
 #pragma once
 
 #include "core/utils/irasterresample.h"
-#include "3rdparty/gettext/exgettext.h"
+#include "core/exceptions/exexcept.h"
 
-#include <stdexcept>
 #include <string>
 
 namespace earthxpert {

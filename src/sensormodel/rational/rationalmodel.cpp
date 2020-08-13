@@ -4,6 +4,7 @@
  */
 #include "sensormodel/rationalmodel.h"
 #include "3rdparty/gdal/exgdal.h"
+#include "core/exceptions/exexcept.h"
 #include "core/utils/typehelper.h"
 #include "sensormodel/rmutils.h"
 
@@ -772,7 +773,7 @@ void RationalModel::BuildCubeS2G() {
   {
     if (!SensorToGround(cubeNodes[i].x, cubeNodes[i].y, cubeNodes[i].z,
                         cube[i*2], cube[i*2 + 1])) {
-      throw std::exception("RationalModel: SensorToGround failed to project.");
+      throw std::exception(_("RationalModel: SensorToGround failed to project."));
     }
   }
 

@@ -20,7 +20,7 @@ using namespace earthxpert;
 VectorWriter::VectorWriter(const std::string& vecFile, const std::vector<LayerInfo>& layersInfo) {
   mDataset = static_cast<GDALDataset*>(GDALOpenEx(vecFile.c_str(), GDAL_OF_UPDATE, nullptr, nullptr, nullptr));
   if (!mDataset) {
-    throw IOError("OGR failed to open vector data source for write acess.");
+    throw IOError(_("OGR failed to open vector data source for write acess."));
   }
   Initialize(mDataset, layersInfo);
 }

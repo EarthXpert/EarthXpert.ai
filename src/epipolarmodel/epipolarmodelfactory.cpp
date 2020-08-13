@@ -3,7 +3,6 @@
  * -----------------------------------------------------------------------------
  */
 #include "epipolarmodel/epipolarmodelfactory.h"
-#include "3rdparty/gettext/exgettext.h"
 #include "core/utils/typehelper.h"
 #include "core/exceptions/exexcept.h"
 #include "core/math/mutils.h"
@@ -169,7 +168,7 @@ EpipolarModelFactory::CreateEpipolarModel(
   const std::vector<std::shared_ptr<ISensorModel>> &sensorModels,
   const int sample, const double height) {
   if (sensorModels.size() < 2) 
-    throw std::exception("Require a minimum of two images");
+    throw std::exception(_("Require a minimum of two images"));
 
   std::vector<std::unique_ptr<IEpipolarModel>> epiModels;
   return epiModels;

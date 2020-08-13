@@ -3,6 +3,7 @@
  * ----------------------------------------------------------------------
  */
 #include "blockadjust/framebba.h"
+#include "core/exceptions/exexcept.h"
 
 #include <cassert>
 #include <cmath>

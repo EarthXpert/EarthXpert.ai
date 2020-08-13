@@ -3,12 +3,12 @@
  * -----------------------------------------------------------------------------
  */
 #include "core/utils/rasterlayout.h"
+#include "core/exceptions/exexcept.h"
 #include "core/utils/layoututils.h"
 #include "core/math/constants.h"
 #include "core/math/math.h"
 
 #include <algorithm>
-#include <stdexcept>
 #include <tuple>
 
 using earthxpert::RasterLayout;
@@ -75,7 +75,7 @@ int RasterLayout::SetNumWindows(const int numWins) {
  */
 void RasterLayout::LayoutWindows() {
   if (mRange.numCols < mWinNumCols || mRange.numRows < mWinNumRows) {
-    throw std::invalid_argument("Thw window size should be less than or equal to the image size");
+    throw std::invalid_argument(_("The window size should be less than or equal to the image size"));
   }
   if (0 == mWinNumCols) mWinNumCols = mRange.numCols;
   if (0 == mWinNumRows) mWinNumRows = mRange.numRows;
