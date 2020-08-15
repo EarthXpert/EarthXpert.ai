@@ -13,7 +13,7 @@
 
 using namespace earthxpert;
 using thirdparty::CreateLasFilter;
-using thirdparty::PointDataTraits;
+using pdt = thirdparty::PointDataTraits;
 
 /**
  *  \brief constractor, open the las file for read
@@ -31,7 +31,8 @@ PointcloudReader::PointcloudReader(const std::string& lasFile,
   ObtainLasInfo();
 }
 
-PointcloudReader::PointcloudReader(const fs::path& lasFile, const FieldGroup fieldGroup) 
+PointcloudReader::PointcloudReader(const fs::path& lasFile, 
+  const FieldGroup fieldGroup) 
   : PointcloudReader(lasFile.string(), fieldGroup) {}
 
 /**
@@ -64,7 +65,8 @@ std::pair<float, float> PointcloudReader::GetBuffers() const noexcept {
 /**
  *  \return Returns pointer to the spatial coordinate system
  */
-std::unique_ptr<SpatialReferenceSystem> PointcloudReader::GetCoordinateSystem() const {
+std::unique_ptr<SpatialReferenceSystem> 
+PointcloudReader::GetCoordinateSystem() const {
   return nullptr;
 }
 
@@ -94,7 +96,6 @@ PointcloudReader::ReadPointcloud(const size_t start, const size_t numPoints) {
 
   auto pc = std::make_unique<Pointcloud>(numPoints, mFieldGroup);
   ReadPointcloud(pc.get());
-
   return pc;
 }
 
@@ -107,10 +108,10 @@ PointcloudReader::ReadPointcloud(const size_t start, const size_t numPoints) {
  *                  The requested fields must be available from the dataset.
  *  \return Returns number of points actually read
  */
-size_t PointcloudReader::ReadPointcloud(const size_t start, Pointcloud* const pointCloud) {
+size_t PointcloudReader::ReadPointcloud(const size_t start, 
+  Pointcloud* const pointCloud) {
   std::lock_guard<std::mutex> lock(mMutex);
   mReader->seek(start);
-
   return ReadPointcloud(pointCloud);
 }
 
@@ -125,7 +126,8 @@ size_t PointcloudReader::ReadPointcloud(const size_t start, Pointcloud* const po
  *  \return Return Pointcloud container object.
  */
 std::unique_ptr<Pointcloud> PointcloudReader::ReadPointcloud(
-  const double minX, const double minY, const double width, const double height) {
+  const double minX, const double minY, 
+  const double width, const double height) {
   return ReadPointcloud({ minX, minY,width, height });
 }
 
@@ -228,10 +230,10 @@ void PointcloudReader::ObtainLasInfo() {
   //mTransform = mReader->get_transform();
 
   const int fmt = mHeader->point_data_format;
-  if (!PointDataTraits::IsValidFormat(fmt)) {
+  if (!pdt::IsValidFormat(fmt)) {
     throw IOError(_("ObtainLasInfo"));
   }
-  assert(PointDataTraits::IsValidRecordLength(mHeader->point_data_record_length));
+  assert(pdt::IsValidRecordLength(mHeader->point_data_record_length));
 
   mFileFieldGroup = FormatToFieldGroup(fmt);
 
@@ -255,5 +257,6 @@ void PointcloudReader::ObtainLasInfo() {
   assert(mHeader->number_of_point_records == mFilePointCount);  // extended_number_of_point_records
 
   mFileBBox2D.SetMinXY(mHeader->min_x, mHeader->min_y);
-  mFileBBox2D.SetSize(mHeader->max_x - mHeader->min_x, mHeader->max_y - mHeader->min_y);
+  mFileBBox2D.SetSize(mHeader->max_x - mHeader->min_x, 
+    mHeader->max_y - mHeader->min_y);
 }

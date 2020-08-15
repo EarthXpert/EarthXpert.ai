@@ -46,7 +46,13 @@ public:
   using CostPolicyType = CostFunc;
   using NeighborPolicyType = Neighborhood;
 
+  DisparityMatch();
+  DisparityMatch(const DisparityMatch&) = delete;
+  DisparityMatch(DisparityMatch&&) = delete;
   ~DisparityMatch() = default;
+
+  DisparityMatch& operator=(const DisparityMatch&) = delete;
+  DisparityMatch& operator=(DisparityMatch&&) = delete;
 
   MatchType GetMatchType() const noexcept override { return eDISPARITY; }
 

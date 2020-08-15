@@ -78,8 +78,16 @@ GdalRaster::GdalRaster(const int numCols, const int numRows,
  */
 bool GdalRaster::operator==(const GdalRaster& rhs) const {
   if (this != &rhs) {
-    // TODO
-    return false;
+    if (mNumCols != rhs.mNumCols || mNumRows != rhs.mNumRows) 
+      return false;
+    if (mDataType != rhs.mDataType || mNumBands != rhs.mNumBands) 
+      return false;
+    if (mColOffset != rhs.mColOffset || mRowOffset != rhs.mRowOffset) 
+      return false;
+    if (mMarginCols != rhs.mMarginCols || 
+      mMarginRows != rhs.mMarginRows || mMarginKind != rhs.mMarginKind) 
+      return false;
+    // mBuffer
   }
   return true;
 }

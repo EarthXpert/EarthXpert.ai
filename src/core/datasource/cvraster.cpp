@@ -93,7 +93,16 @@ CvRaster::CvRaster(const int numCols, const int numRows,
  */
 bool CvRaster::operator==(const CvRaster& rhs) const {
   if (this != &rhs) {
-    return false;
+    if (mNumCols != rhs.mNumCols || mNumRows != rhs.mNumRows) 
+      return false;
+    if (mDataType != rhs.mDataType || mNumBands != rhs.mNumBands) 
+      return false;
+    if (mColOffset != rhs.mColOffset || mRowOffset != rhs.mRowOffset) 
+      return false;
+    if (mMarginCols != rhs.mMarginCols || 
+      mMarginRows != rhs.mMarginRows || mMarginKind != rhs.mMarginKind) 
+      return false;
+    //if (mMat != rhs.mMat) return false;
   }
   return true;
 }

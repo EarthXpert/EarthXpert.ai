@@ -44,13 +44,14 @@ DigitalImageModelImp::DigitalImageModelImp(const int numCols, const int numRows,
 }
 
 bool DigitalImageModelImp::operator==(const DigitalImageModelImp &rhs) const {
-  if (mNumCols != rhs.mNumCols || mNumRows != rhs.mNumRows)
-    return false;
+  if (this != &rhs) {
+    if (mNumCols != rhs.mNumCols || mNumRows != rhs.mNumRows)
+      return false;
 
-  const EqualD equalD;
-  if (!equalD(mPixSizeX, rhs.mPixSizeX) || !equalD(mPixSizeY, rhs.mPixSizeY))
-    return false;
-
+    const EqualD equalD;
+    if (!equalD(mPixSizeX, rhs.mPixSizeX) || !equalD(mPixSizeY, rhs.mPixSizeY))
+      return false;
+  }
   return true;
 }
 
@@ -102,24 +103,24 @@ FilmImageModelImp::FilmImageModelImp(const int numCols, const int numRows,
 }
 
 bool FilmImageModelImp::operator==(const FilmImageModelImp &rhs) const {
-  if (mNumCols != rhs.mNumCols || mNumRows != rhs.mNumRows)
-    return false;
+  if (this != &rhs) {
+    if (mNumCols != rhs.mNumCols || mNumRows != rhs.mNumRows)
+      return false;
 
-  const EqualD equalD;
-
-  if (!std::equal(std::cbegin(mCRToX), std::cend(mCRToX),
-                  std::cbegin(rhs.mCRToX), equalD))
-    return false;
-  if (!std::equal(std::cbegin(mCRToY), std::cend(mCRToY),
-                  std::cbegin(rhs.mCRToY), equalD))
-    return false;
-  if (!std::equal(std::cbegin(mXYToC), std::cend(mXYToC),
-                  std::cbegin(rhs.mXYToC), equalD))
-    return false;
-  if (!std::equal(std::cbegin(mXYToR), std::cend(mXYToR),
-                  std::cbegin(rhs.mXYToR), equalD))
-    return false;
-
+    const EqualD equalD;
+    if (!std::equal(std::cbegin(mCRToX), std::cend(mCRToX),
+      std::cbegin(rhs.mCRToX), equalD))
+      return false;
+    if (!std::equal(std::cbegin(mCRToY), std::cend(mCRToY),
+      std::cbegin(rhs.mCRToY), equalD))
+      return false;
+    if (!std::equal(std::cbegin(mXYToC), std::cend(mXYToC),
+      std::cbegin(rhs.mXYToC), equalD))
+      return false;
+    if (!std::equal(std::cbegin(mXYToR), std::cend(mXYToR),
+      std::cbegin(rhs.mXYToR), equalD))
+      return false;
+  }
   return true;
 }
 

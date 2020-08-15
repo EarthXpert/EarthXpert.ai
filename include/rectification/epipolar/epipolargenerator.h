@@ -40,9 +40,10 @@ public:
 
   EpipolarGenerator(const EpipolarGenerator &) = delete;
   EpipolarGenerator(EpipolarGenerator &&) = delete;
+  ~EpipolarGenerator() = default;
+
   EpipolarGenerator &operator=(const EpipolarGenerator &) = delete;
   EpipolarGenerator &operator=(EpipolarGenerator &&) = delete;
-  ~EpipolarGenerator() = default;
 
   /**
    *  \brief

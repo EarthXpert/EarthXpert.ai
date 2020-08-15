@@ -19,7 +19,7 @@ using earthxpert::DenseMatch;
  *
  *  \return Retruns true if successful, false otherwise.
  */
-bool DenseMatch::Match(IRaster* map) {
+bool DenseMatch::Process(IRaster* map) {
   try {
     LayoutTiles();
     MatchTiles();

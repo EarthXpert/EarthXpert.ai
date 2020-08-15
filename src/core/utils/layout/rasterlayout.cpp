@@ -23,8 +23,8 @@ using earthxpert::RasterWindow;
  */
 RasterLayout::RasterLayout(const int numCols, const int numRows,
   const int winNumCols, const int winNumRows, const LayoutKind kind)
-  : RasterLayout(RasterWindow{0, 0, numCols, numRows}, winNumCols, winNumRows, kind) {
-}
+  : RasterLayout(RasterWindow{0, 0, numCols, numRows}, 
+                 winNumCols, winNumRows, kind) {}
 
 /**
  *  \param [in] range raster range to divide into smaller windows
@@ -34,7 +34,8 @@ RasterLayout::RasterLayout(const int numCols, const int numRows,
  */
 RasterLayout::RasterLayout(const RasterWindow& range,
   const int winNumCols, const int winNumRows, const LayoutKind kind)
-  : mRange(range), mWinNumCols(winNumCols), mWinNumRows(winNumRows), mLayoutkind(kind) {
+  : mRange(range), mWinNumCols(winNumCols), 
+    mWinNumRows(winNumRows), mLayoutkind(kind) {
   LayoutWindows();
 }
 
@@ -75,15 +76,18 @@ int RasterLayout::SetNumWindows(const int numWins) {
  */
 void RasterLayout::LayoutWindows() {
   if (mRange.numCols < mWinNumCols || mRange.numRows < mWinNumRows) {
-    throw std::invalid_argument(_("The window size should be less than or equal to the image size"));
+    throw std::invalid_argument(_("The window size "
+      "should be less than or equal to the image size"));
   }
   if (0 == mWinNumCols) mWinNumCols = mRange.numCols;
   if (0 == mWinNumRows) mWinNumRows = mRange.numRows;
 
   std::vector<int> colOffsets;
-  const int numHoriWins = FillCornersByStride(mRange.numCols, mWinNumCols, colOffsets);
+  const int numHoriWins = 
+    FillCornersByStride(mRange.numCols, mWinNumCols, colOffsets);
   std::vector<int> rowOffsets;
-  const int numVertWins = FillCornersByStride(mRange.numRows, mWinNumRows, rowOffsets);
+  const int numVertWins = 
+    FillCornersByStride(mRange.numRows, mWinNumRows, rowOffsets);
 
   const int numWins = numHoriWins * numVertWins;
   
@@ -96,10 +100,13 @@ void RasterLayout::LayoutWindows() {
     else {
       std::tie(r, c) = IndexToCR(w, numVertWins);
     }
-    mWins[w].SetOffsets(mRange.colOffset+colOffsets[c], mRange.rowOffset+rowOffsets[r]);
+    mWins[w].SetOffsets(mRange.colOffset+colOffsets[c], 
+      mRange.rowOffset+rowOffsets[r]);
 
-    const int winNumCols = std::min(mWinNumCols, mRange.numCols - colOffsets[c]);
-    const int winNumRows = std::min(mWinNumRows, mRange.numRows - rowOffsets[r]);
+    const int winNumCols = 
+      std::min(mWinNumCols, mRange.numCols - colOffsets[c]);
+    const int winNumRows = 
+      std::min(mWinNumRows, mRange.numRows - rowOffsets[r]);
     mWins[w].SetSize(winNumCols, winNumRows);
   }
 }

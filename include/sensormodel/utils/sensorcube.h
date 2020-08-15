@@ -23,9 +23,9 @@ class EXSENSORMODEL_EXPORTS SensorCube {
 public:
   // option of layers in ground
   enum LayerType {
-    eFLAT,   // vertical layers that are flat planar in ground
-    eMODEL   // vertical layers in model SRS, that are spherical for geographic SRS, 
-             // flat for local SRS, pseudo-flat for map projection
+    eFLAT,   // rectilinear: vertical layers that are flat planar in ground
+    eMODEL   // curvilinear: vertical layers in model SRS, that are spherical 
+    // for geographic SRS, flat for local SRS, pseudo-flat for map projection
   };
 
   SensorCube(const std::array<double, NumFact>& normalFators,

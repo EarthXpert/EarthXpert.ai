@@ -39,7 +39,7 @@ operator=(DigitalImageModel &&rhs) noexcept {
 }
 
 bool DigitalImageModel::operator==(const DigitalImageModel &rhs) const {
-  return true;
+  return (*mImgModel == *rhs.mImgModel);
 }
 
 bool DigitalImageModel::operator!=(const DigitalImageModel &rhs) const {

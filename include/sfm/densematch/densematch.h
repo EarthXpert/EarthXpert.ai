@@ -21,12 +21,12 @@ public:
   }
 
   /**
-   *  \param [out] map the depth map where the element value represents the
+   *  \param [out] dm the depth map where the element value represents the
    *  the depth of the corresonding pixel.
    *
    *  \return Retruns true if successful, false otherwise.
    */
-  bool Match(IRaster* map) override;
+  bool Process(IRaster* dm) override;
 
 protected:
   // smooth condition depending on cost type and loss type

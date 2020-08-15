@@ -43,7 +43,8 @@ int ExaiEpipolar::Execute() {
   epiOpt.sensorName = vm["sensorname"].as<std::string>();
   const auto st = SensorNameToType(epiOpt.sensorName);
   if (SensorType::eRATIONAL != st && SensorType::eFRAME != st) {
-    throw std::invalid_argument("Epipolar not implemented fro sensor: " + epiOpt.sensorName);
+    throw std::invalid_argument(_("Epipolar not implemented "
+      "for sensor type: " + epiOpt.sensorName));
   }
 
   epiOpt.leftImgFile = vm["leftimg"].as<std::string>();

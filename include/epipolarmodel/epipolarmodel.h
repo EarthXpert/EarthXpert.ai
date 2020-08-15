@@ -42,7 +42,12 @@ public:
   EpipolarModel(std::shared_ptr<ISensorModel> sensorModel, StereoPos pos,
     const Polygon2d& epiBound, std::unique_ptr<EpipolarRect> &&epiRect, 
     std::shared_ptr<GroundPolicy> groundPolicy);
+  EpipolarModel(const EpipolarModel& rhs) = delete;
+  EpipolarModel(EpipolarModel&& rhs) = delete;
   ~EpipolarModel() = default;
+
+  EpipolarModel& operator=(const EpipolarModel& rhs) = delete;
+  EpipolarModel& operator=(EpipolarModel&& rhs) noexcept = delete;
 
   /**
    *  Epipolar-to-raw transform.

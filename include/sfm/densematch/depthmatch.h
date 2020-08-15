@@ -41,7 +41,13 @@ public:
   using CostPolicyType = CostFunc;
   using NeighborPolicyType = Neighborhood;
 
+  DepthMatch();
+  DepthMatch(const DepthMatch&) = delete;
+  DepthMatch(DepthMatch&&) = delete;
   ~DepthMatch() = default;
+
+  DepthMatch& operator=(const DepthMatch&) = delete;
+  DepthMatch& operator=(DepthMatch&&) = delete;
 
   MatchType GetMatchType() const noexcept override { return eDEPTH; }
 

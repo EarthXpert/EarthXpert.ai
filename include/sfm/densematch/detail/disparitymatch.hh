@@ -5,6 +5,10 @@
 
 namespace earthxpert {
 template <class GeometryModel, class CostFunc, class Neighborhood>
+DisparityMatch<GeometryModel, CostFunc, Neighborhood>::DisparityMatch() {
+}
+
+template <class GeometryModel, class CostFunc, class Neighborhood>
 int DisparityMatch<GeometryModel, CostFunc, Neighborhood>::LayoutTiles() {
   return 0;
 }
