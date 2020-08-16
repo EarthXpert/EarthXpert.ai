@@ -4,6 +4,8 @@
  */
 #include "core/utils/stringutils.h"
 
+#include <algorithm>
+
 namespace earthxpert::utils {
 /**
  *  \brief compare two string case-insensitive
@@ -19,5 +21,20 @@ bool CompareI(const std::string& str1, const std::string& str2) {
         return (c1 == c2 ||
           std::toupper(c1) == std::toupper(c2));
       }));
+}
+
+/**
+ *  \return Returns length of longest common substring
+ */
+int lcs(const char* s1, const int m, const char* s2, const int n, int count) {
+  if (0 == m || 0 == n)
+    return count;
+
+  if (s1[m - 1] == s2[n - 1]) {
+    count = lcs(s1, m - 1, s2, n - 1, count + 1);
+  }
+
+  return std::max(count, 
+    std::max(lcs(s1, m, s2, n - 1, 0), lcs(s1, m - 1, s2, n, 0)));
 }
 }

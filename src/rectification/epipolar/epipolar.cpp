@@ -9,6 +9,7 @@
 #include "epipolarmodel/epipolarmodelfactory.h"
 #include "io/raster/rasterreader.h"
 #include "io/raster/rasterwriter.h"
+#include "marshaller/epipolarmodelmarshaller.h"
 #include "marshaller/rationalmodelmarshaller.h"
 #include "rectification/epipolar/epipolargenerator.h"
 
@@ -116,5 +117,10 @@ void GenerateRationalEpipolar(const EpipolarOptions& epiOpt) {
     &epiGen, &rightReader, rightEpiModel.get(), epiOpt.stride, 
     epiOpt.outBkgd, epiOpt.outPath, format, gdalDT, epiNumBands);
   std::cout << ToString(epiGen.GetPerfMettrics());
+
+  std::string modelFile;
+
+  EpipolarModelMarshaller marshaller;
+  marshaller.Serialize(modelFile, leftEpiModel.get());
 }
 }

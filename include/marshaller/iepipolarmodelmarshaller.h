@@ -5,12 +5,12 @@
 #pragma once
 
 #include "marshaller/exmarshaller.h"
+#include "marshaller/marshalltypes.h"
 #include "epipolarmodel/epipolarmodel.h"
 
 #include <memory>
 
 namespace earthxpert {
-
 /**
  *  The class EpipolarModelMarshaller serialize and deserialize the
  *  epipolar model and links to associated sensor models.

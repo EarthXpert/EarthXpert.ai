@@ -38,5 +38,11 @@ public:
   Deserialize(const std::string &modelFile) const override;
 
 private:
+  MarshallLib mMLib{ eFileStorage };
+
+  bool SerializeFS(const std::string& modelFile,
+    IEpipolarModel const* epiModel) const;
+  std::unique_ptr<IEpipolarModel>
+    DeserializeFS(const std::string& modelFile) const;
 };
 } // namespace earthxpert

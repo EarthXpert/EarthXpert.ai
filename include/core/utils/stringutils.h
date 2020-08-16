@@ -16,4 +16,6 @@ namespace earthxpert::utils {
  *  \return Returns true if two strings are equal case-insensitive
  */
 bool EXCORE_EXPORTS CompareI(const std::string& str1, const std::string& str2);
+
+int EXCORE_EXPORTS lcs(const char* s1, int m, const char* s2, int n, int count);
 } // namespace earthxpert::utils

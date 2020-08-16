@@ -60,6 +60,7 @@ public:
 
 private:
   template<typename> friend class EpipolarModel;
+  friend class EpipolarModelMarshaller;
 
   Point3d mOrigin{0, 0, 0};     // Origin of epi coordinate system
   double mHeight{0.0};   // Rectification height [meter]
