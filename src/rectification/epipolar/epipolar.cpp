@@ -98,29 +98,39 @@ void GenerateRationalEpipolar(const EpipolarOptions& epiOpt) {
     epiModelFac.CreateRationalEpiModel(leftModel, rightModel, epiOpt.sample);
   assert(IEpipolarModel::ePLANERECT == leftEpiModel->GetEpipolarAlgorithm());
 
-  auto format = leftReader.GetFileFormat();
-  auto gdalDT = leftReader.GetDataType();
-  auto numBands = leftReader.GetNumBands();
-  const int epiNumBands = (epiOpt.grey && 3 == numBands) ? 1 : numBands;
 
   auto rasResample = std::make_unique<RasterResampleCV>(epiOpt.resample);
   EpipolarGenerator epiGen(rasResample.get(), epiOpt.memSize, epiOpt.stride);
 
   // generate left epipolar image
+  auto format = leftReader.GetFileFormat();
+  auto gdalDT = leftReader.GetDataType();
+  auto numBands = leftReader.GetNumBands();
+  int epiNumBands = (epiOpt.grey && 3 == numBands) ? 1 : numBands;
+
   auto leftEpiFile = detail::GenerateEpipolar(epiOpt.leftImgFile, 
     &epiGen, &leftReader, leftEpiModel.get(), epiOpt.stride,
     epiOpt.outBkgd, epiOpt.outPath, format, gdalDT, epiNumBands);
   std::cout << ToString(epiGen.GetPerfMettrics());
 
-  // generate right epipolar image
-  auto rightEpiFile = detail::GenerateEpipolar(epiOpt.rightImgFile, 
+  // generate right epipolar image, allowing for in-compatible image files
+  format = rightReader.GetFileFormat();   
+  gdalDT = rightReader.GetDataType();
+  numBands = rightReader.GetNumBands();
+  epiNumBands = (epiOpt.grey && 3 == numBands) ? 1 : numBands;
+
+  auto rightEpiFile = detail::GenerateEpipolar(epiOpt.rightImgFile,
     &epiGen, &rightReader, rightEpiModel.get(), epiOpt.stride, 
     epiOpt.outBkgd, epiOpt.outPath, format, gdalDT, epiNumBands);
   std::cout << ToString(epiGen.GetPerfMettrics());
 
-  std::string modelFile;
+  const auto& epiModelFn = PathReplaceExt(epiOpt.leftImgFile, ".json");
+  fs::path epiModelPath(epiOpt.outPath + epiModelFn);
+  RemoveFile(epiModelPath);
+  std::cout << "epiModelPath: " << epiModelPath << std::endl << std::endl;
 
   EpipolarModelMarshaller marshaller;
-  marshaller.Serialize(modelFile, leftEpiModel.get());
+  marshaller.Serialize(epiModelPath.string(), epiOpt.leftMdlFile, 
+    leftEpiModel.get(), epiOpt.rightMdlFile, rightEpiModel.get());
 }
 }

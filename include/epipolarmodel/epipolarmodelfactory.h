@@ -14,7 +14,6 @@
 
 namespace earthxpert {
 class EarthEllipsoid;
-using EpiModelPair = std::pair<std::unique_ptr<IEpipolarModel>, std::unique_ptr<IEpipolarModel>>;
 
 /**
  *  The class EpipolarModelFactory defines the behaviours for creating

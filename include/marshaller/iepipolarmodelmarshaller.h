@@ -22,13 +22,13 @@ public:
   /**
    *  \brief
    */
-  virtual bool Serialize(const std::string &modelFile,
-                         IEpipolarModel const *const epiModel) const = 0;
+  virtual bool Serialize(const std::string& epiMdlFile,
+    const std::string& leftMdlFile, IEpipolarModel const* leftEpiModel,
+    const std::string& rightMdlFile, IEpipolarModel const* rightEpiModel) const = 0;
 
   /**
    *  \brief
    */
-  virtual std::unique_ptr<IEpipolarModel>
-  Deserialize(const std::string &modelFile) const = 0;
+  virtual EpiModelPair Deserialize(const std::string &modelFile) const = 0;
 };
 } // namespace earthxpert

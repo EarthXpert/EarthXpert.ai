@@ -22,27 +22,27 @@ public:
   /**
    *  \brief serialize an epipolarmodel into a json file
    *
-   *  \param [in] modelFile name of the file to be serialized to
+   *  \param [in] epiMdlFile name of the file to be serialized to
    *  \param [in] epiModel the epipolar model to be serialized
    */
-  bool Serialize(const std::string &modelFile,
-                 IEpipolarModel const* epiModel) const override;
+  bool Serialize(const std::string &epiMdlFile, 
+    const std::string& leftMdlFile, IEpipolarModel const* leftEpiModel,
+    const std::string& rightMdlFile, IEpipolarModel const* rightEpiModel) const override;
 
   /**
    *  \brief deserialize a json file into an epipolarmodel
    *
-   *  \param [in] modelFile name of the file to be deserialized
+   *  \param [in] epiMdlFile name of the file to be deserialized
    *  \return the pointer to the epipolar model
    */
-  std::unique_ptr<IEpipolarModel>
-  Deserialize(const std::string &modelFile) const override;
+  EpiModelPair Deserialize(const std::string & epiMdlFile) const override;
 
 private:
   MarshallLib mMLib{ eFileStorage };
 
-  bool SerializeFS(const std::string& modelFile,
-    IEpipolarModel const* epiModel) const;
-  std::unique_ptr<IEpipolarModel>
-    DeserializeFS(const std::string& modelFile) const;
+  bool SerializeFS(const std::string& epiMdlFile,
+    const std::string& leftMdlFile, IEpipolarModel const* leftEpiModel,
+    const std::string& rightMdlFile, IEpipolarModel const* rightEpiModel) const;
+  EpiModelPair DeserializeFS(const std::string& epiMdlFile) const;
 };
 } // namespace earthxpert

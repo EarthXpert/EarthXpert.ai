@@ -9,6 +9,7 @@
 #include "3rdparty/opencv/exopencv.h"
 
 #include <vector>
+#include <utility>
 
 namespace earthxpert {
 class ISensorModel;
@@ -120,4 +121,6 @@ using EpiStereoPos = IEpipolarModel::StereoPos;
 
 using UPIEpipolarModel = std::unique_ptr<IEpipolarModel>;
 using SPIEpipolarModel = std::shared_ptr<IEpipolarModel>;
+
+using EpiModelPair = std::pair<UPIEpipolarModel, UPIEpipolarModel>;
 } // namespace earthxpert

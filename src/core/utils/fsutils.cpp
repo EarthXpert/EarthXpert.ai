@@ -13,22 +13,36 @@ namespace earthxpert::utils {
  *
  *  \param [in] fileName input full path filename
  *  \param [in] prefix string to be inserted
- *  \return Returns file path with prefix
+ *  \return Returns filename with prefix
  */
-std::string PathPrefixFilename(
-  const std::string& fileName, const std::string& prefix) {
+std::string 
+PathPrefixFilename(const std::string& fileName, const std::string& prefix) {
   fs::path filePath(fileName);
   auto fn = prefix + filePath.filename().string();
 
   return fn;
 }
 
-bool RemoveAll(const fs::path filePath) {
+/**
+ *  \brief replace extention for filename component
+ *
+ *  \param [in] fileName input full path filename
+ *  \param [in] ext new extension
+ *  \return Returns filename with new extension
+ */
+std::string
+PathReplaceExt(const std::string& fileName, const std::string& ext) {
+  fs::path filePath(fileName);
+  auto fn = filePath.stem().string() + ext;
+  return fn;
+}
+
+bool RemoveAll(const fs::path& filePath) {
   if (!fs::exists(filePath)) return true;
   return fs::remove_all(filePath);
 }
 
-bool RemoveFile(const fs::path filePath) {
+bool RemoveFile(const fs::path& filePath) {
   if (!fs::exists(filePath)) return true;
   return fs::remove(filePath);
 }

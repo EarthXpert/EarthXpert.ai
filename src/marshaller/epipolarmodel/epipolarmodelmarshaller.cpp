@@ -3,9 +3,13 @@
  * -----------------------------------------------------------------------------
  */
 #include "marshaller/epipolarmodelmarshaller.h"
+#include "3rdparty/boost/exboost.h"
 #include "3rdparty/opencv/exopencv.h"
 #include "core/exceptions/exexcept.h"
 #include "epipolarmodel/epipolarmodel.h"
+#include "marshaller/rationalmodelmarshaller.h"
+
+#include <sstream>
 
 using namespace earthxpert;
 using cvFS = cv::FileStorage;
@@ -17,11 +21,12 @@ using cvFS = cv::FileStorage;
  *  \param [in] epiModel the epipolar model to be serialized
  *
  */
-bool EpipolarModelMarshaller::Serialize(const std::string &modelFile, 
-    IEpipolarModel const *const epiModel) const {
+bool EpipolarModelMarshaller::Serialize(const std::string& epiMdlFile,
+  const std::string& leftMdlFile, IEpipolarModel const* leftEpiModel,
+  const std::string& rightMdlFile, IEpipolarModel const* rightEpiModel) const {
   switch (mMLib) {
   case eFileStorage:
-    return SerializeFS(modelFile, epiModel);
+    return SerializeFS(epiMdlFile, leftMdlFile, leftEpiModel, rightMdlFile, rightEpiModel);
 
   default:
     return false;
@@ -35,37 +40,58 @@ bool EpipolarModelMarshaller::Serialize(const std::string &modelFile,
  *
  *  \return the pointer to the epipolar model
  */
-std::unique_ptr<IEpipolarModel>
+EpiModelPair
 EpipolarModelMarshaller::Deserialize(const std::string &modelFile) const {
   switch (mMLib) {
   case eFileStorage:
     return DeserializeFS(modelFile);
 
   default:
-    return std::unique_ptr<IEpipolarModel>();
+    throw std::invalid_argument(_("Deserialize"));
   }
 }
 
-bool EpipolarModelMarshaller::SerializeFS(const std::string& modelFile,
-  IEpipolarModel const* epiModel) const {
-  auto em = dynamic_cast<GeoEpipolarModel const*>(epiModel);
-  if (!em) {
+bool EpipolarModelMarshaller::SerializeFS(const std::string& epiMdlFile,
+  const std::string& leftMdlFile, IEpipolarModel const* leftEpiModel,
+  const std::string& rightMdlFile, IEpipolarModel const* rightEpiModel) const {
+  auto lem = dynamic_cast<GeoEpipolarModel const*>(leftEpiModel);
+  if (!lem) {
     throw std::invalid_argument(_("GeoEpipolarModel expected"));
   }
+  auto& lr = *(lem->mEpiRect);
+  auto [leftNumCols, leftNumRows] = lem->GetRawImageSize();
+  std::stringstream lss;
+  lss << bg::wkt(lem->mBound);
 
-  cvFS fs(modelFile, cvFS::WRITE);
+  auto rem = dynamic_cast<GeoEpipolarModel const*>(rightEpiModel);
+  if (!rem) {
+    throw std::invalid_argument(_("GeoEpipolarModel expected"));
+  }
+  auto& rr = *(rem->mEpiRect);
+  auto [rightNumCols, rightNumRows] = rem->GetRawImageSize();
+  std::stringstream rss;
+  rss << bg::wkt(rem->mBound);
 
-  auto& rt = *(em->mEpiRect);
-  fs << "origin" << rt.mOrigin << "height" << rt.mHeight << "scale" << rt.mScale 
-     << "rotation" << rt.mRotation << "offset" << rt.mOffset 
-     << "numCols" << rt.mNumCols << "numRows" << rt.mNumRows;
+  cvFS fs(epiMdlFile, cvFS::WRITE);
+  fs << "origin" << Point3d(Rad2Deg(lr.mOrigin.x), Rad2Deg(lr.mOrigin.y), lr.mHeight) 
+     << "scale" << lr.mScale << "rotation" << Rad2Deg(lr.mRotation) 
+     << "leftRawSize" << cv::Size2i(leftNumCols, leftNumRows) 
+     << "leftMdlFile" << leftMdlFile << "leftStereoPos" << lem->mPos 
+     << "leftBound" << lss.str() << "leftOffset" << lr.mOffset 
+     << "leftEpiSize" << cv::Size2i(lr.mNumCols, lr.mNumRows)
+     << "rightRawSize" << cv::Size2i(rightNumCols, rightNumRows)
+     << "rightMdlFile" << rightMdlFile << "rightStereoPos" << rem->mPos 
+     << "rightBound" << rss.str() << "rightOffset" << rr.mOffset 
+     << "rightEpiSize" << cv::Size2i(rr.mNumCols, rr.mNumRows);
 
-  //auto& ee = *(em->mGroundPolicy->GetEarthEllipsoid());
+  //auto& lee = *(lem->mGroundPolicy->GetEarthEllipsoid());
 
   return true;
 }
 
-std::unique_ptr<IEpipolarModel>
-EpipolarModelMarshaller::DeserializeFS(const std::string& modelFile) const {
-  return std::unique_ptr<IEpipolarModel>();
+EpiModelPair
+EpipolarModelMarshaller::DeserializeFS(const std::string& epiMdlFile) const {
+  cvFS fs(epiMdlFile, cvFS::READ);
+
+  return EpiModelPair{};
 }
