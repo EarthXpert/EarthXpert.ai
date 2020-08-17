@@ -123,13 +123,19 @@ void GenerateRationalEpipolar(const EpipolarOptions& epiOpt) {
     epiOpt.outBkgd, epiOpt.outPath, format, gdalDT, epiNumBands);
   std::cout << ToString(epiGen.GetPerfMettrics());
 
-  const auto& epiModelFn = PathReplaceExt(epiOpt.leftImgFile, ".json");
-  fs::path epiModelPath(epiOpt.outPath + epiModelFn);
+  // save epipolar model information
+  std::string leftImgFile = fs::path(epiOpt.leftImgFile).stem().string();
+  std::string rightImgFile = fs::path(epiOpt.rightImgFile).stem().string();
+  const auto epiModelFn = CombineFilenames(leftImgFile, rightImgFile);
+  fs::path epiModelPath(epiOpt.outPath + epiModelFn + ".json");
   RemoveFile(epiModelPath);
   std::cout << "epiModelPath: " << epiModelPath << std::endl << std::endl;
 
-  EpipolarModelMarshaller marshaller;
-  marshaller.Serialize(epiModelPath.string(), epiOpt.leftMdlFile, 
-    leftEpiModel.get(), epiOpt.rightMdlFile, rightEpiModel.get());
+  std::vector<EpiModelInfo> epiModels{ 
+    {epiOpt.leftMdlFile, leftEpiFile, leftEpiModel.get()},
+    {epiOpt.rightMdlFile, rightEpiFile, rightEpiModel.get()} };
+
+  EpipolarStereoMarshaller marshaller;
+  marshaller.Serialize(epiModelPath.string(), epiModels);
 }
 }

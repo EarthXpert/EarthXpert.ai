@@ -61,17 +61,17 @@ static constexpr size_t kRPC_COEFF_KEY_IDX = 15;  // position of index component
  */
 void RationalModelMarshaller::Serialize(const std::string &modelFile,
     RationalModel const *const rationalModel) {
-  const auto coefFormat = GetCoefFormat(modelFile);
+  const auto fmt = GetCoefFormat(modelFile);
 
   std::ofstream outStream(modelFile.c_str());
   if (!outStream.good()) {
     throw std::invalid_argument(_("Cannot create file."));
   }
 
-  if (eRPB == coefFormat) {
+  if (eRPB == fmt) {
     return SerializeRpb(outStream, rationalModel);
   }
-  else if (eRPC == coefFormat) {
+  else if (eRPC == fmt) {
     return SerializeRpc(outStream, rationalModel);
   }
   else {
@@ -88,16 +88,16 @@ void RationalModelMarshaller::Serialize(const std::string &modelFile,
  */
 std::unique_ptr<RationalModel>
 RationalModelMarshaller::Deserialize(const std::string &modelFile) {
-  const auto coefFormat = GetCoefFormat(modelFile);
+  const auto fmt = GetCoefFormat(modelFile);
 
   std::ifstream inStream(modelFile.c_str());
   if (!inStream.good()) {
     throw std::invalid_argument(_("Failed to open file."));
   }
 
-  if (eRPB == coefFormat) {
+  if (eRPB == fmt) {
     return DeserializeRpb(inStream);
-  } else if (eRPC == coefFormat) {
+  } else if (eRPC == fmt) {
     return DeserializeRpc(inStream);
   } else {
     throw std::invalid_argument(_("Not a rational model file.")); 
@@ -147,6 +147,7 @@ void RationalModelMarshaller::SerializeRpc(std::ostream& outStream,
  *  \brief Deserialize from .RPB file
  *
  *  \param [in] inStream input stream
+ *  \todo string_view
  */
 std::unique_ptr<RationalModel>
 RationalModelMarshaller::DeserializeRpb(std::istream& inStream) {

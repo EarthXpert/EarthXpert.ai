@@ -387,7 +387,7 @@ private:
   }
 
   void CalcTerms(const Point3d &uvw, double *const LPH) const {
-      CalcTerms(uvw.x, uvw.y, uvw.z, LPH);
+    CalcTerms(uvw.x, uvw.y, uvw.z, LPH);
   }
   void CalcTerms(double L, double P, double H, double *const LPH) const;
 

@@ -83,12 +83,14 @@ void ExaiEpipolar::AddFrameOptions(bpo::options_description& optDesc) {
 }
 
 /**
- *  \brief
+ *  \brief setup cli parameters
+ *  \todo auto find model files.
  */
 void ExaiEpipolar::AddRationalOptions(bpo::options_description & optDesc) {
     optDesc.add_options()
     ("sensorname", bpo::value<std::string>()->required(), "sensor name: frame|rational")
     ("prjdir", bpo::value<std::string>(), "project directory or file")
+    //("images,i", bpo::value<std::string>()->multitoken(), "list of 2 or 3 images")
     ("leftimg", bpo::value<std::string>()->required(), "left/fore image file")
     ("leftmdl", bpo::value<std::string>()->required(), "left/fore model file")
     ("nadimg", bpo::value<std::string>()->default_value(""), "nadir image file")

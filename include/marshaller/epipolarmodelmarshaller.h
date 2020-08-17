@@ -11,38 +11,39 @@
 namespace earthxpert {
 
 /**
- *  The class EpipolarModelMarshaller serialize and deserialize the
+ *  The class EpipolarStereoMarshaller serialize and deserialize the
  *  epipolar model and links to associated sensor models.
  */
-class EXMARSHALLER_EXPORTS EpipolarModelMarshaller
-    : public IEpipolarModelMarshaller {
+class EXMARSHALLER_EXPORTS EpipolarStereoMarshaller final
+    : public IEpipolarStereoMarshaller {
 public:
-  ~EpipolarModelMarshaller() = default;
+  EpipolarStereoMarshaller(MarshallLib mLib= eFileStorage) : mMLib(mLib) {}
+  ~EpipolarStereoMarshaller() = default;
 
   /**
-   *  \brief serialize an epipolarmodel into a json file
+   *  \brief serialize an epipolar model into a json file
    *
    *  \param [in] epiMdlFile name of the file to be serialized to
    *  \param [in] epiModel the epipolar model to be serialized
    */
-  bool Serialize(const std::string &epiMdlFile, 
-    const std::string& leftMdlFile, IEpipolarModel const* leftEpiModel,
-    const std::string& rightMdlFile, IEpipolarModel const* rightEpiModel) const override;
+  bool Serialize(const std::string& epiMdlFile, 
+    const std::vector<EpiModelInfo>& epiModels) const override;
 
   /**
-   *  \brief deserialize a json file into an epipolarmodel
+   *  \brief deserialize a json file into an epipolar model
    *
    *  \param [in] epiMdlFile name of the file to be deserialized
    *  \return the pointer to the epipolar model
    */
-  EpiModelPair Deserialize(const std::string & epiMdlFile) const override;
+  std::vector<UPIEpipolarModel> Deserialize(const std::string & epiMdlFile) const override;
 
 private:
   MarshallLib mMLib{ eFileStorage };
 
-  bool SerializeFS(const std::string& epiMdlFile,
-    const std::string& leftMdlFile, IEpipolarModel const* leftEpiModel,
-    const std::string& rightMdlFile, IEpipolarModel const* rightEpiModel) const;
-  EpiModelPair DeserializeFS(const std::string& epiMdlFile) const;
+  bool SerializeFS(const std::string& epiMdlFile, const std::vector<EpiModelInfo>& epiModels) const;
+  std::vector<UPIEpipolarModel> DeserializeFS(const std::string& epiMdlFile) const;
+
+  bool CheckEpiStereo(const std::vector<EpiModelInfo>& epiModels) const;
+  bool CheckEpiStereo(const std::vector<UPIEpipolarModel>& epiModels) const;
 };
 } // namespace earthxpert
