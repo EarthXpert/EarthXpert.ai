@@ -98,7 +98,6 @@ void GenerateRationalEpipolar(const EpipolarOptions& epiOpt) {
     epiModelFac.CreateRationalEpiModel(leftModel, rightModel, epiOpt.sample);
   assert(IEpipolarModel::ePLANERECT == leftEpiModel->GetEpipolarAlgorithm());
 
-
   auto rasResample = std::make_unique<RasterResampleCV>(epiOpt.resample);
   EpipolarGenerator epiGen(rasResample.get(), epiOpt.memSize, epiOpt.stride);
 
