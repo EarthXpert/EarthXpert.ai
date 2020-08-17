@@ -16,8 +16,8 @@ using namespace earthxpert;
 /**
  *  Constructor.
  *
- *  \param [in] sensorModel sensor model associated with the image
  *  \param [in] pos Component position of stereo model
+ *  \param [in] sensorModel sensor model associated with the image
  *  \param [in] epiRect epipolar rectification defining the transform
  *              between the epipolar model coordinate system and epipolar
  *              raster coordinate system for the image.
@@ -26,10 +26,10 @@ using namespace earthxpert;
  *  \remark This implementation requires that the stereo pair are of the same sensro type.
  */
 template <class GroundPolicy>
-EpipolarModel<GroundPolicy>::EpipolarModel(std::shared_ptr<ISensorModel> sensorModel,
-  StereoPos pos, const Polygon2d& epiBound, std::unique_ptr<EpipolarRect>&& epiRect, 
-  std::shared_ptr<GroundPolicy> groundPolicy)
-    : EpipolarSensorModel(sensorModel, pos, epiBound),
+EpipolarModel<GroundPolicy>::EpipolarModel(StereoPos pos, 
+  std::shared_ptr<ISensorModel> sensorModel, const Polygon2d& epiBound, 
+  std::unique_ptr<EpipolarRect>&& epiRect, std::shared_ptr<GroundPolicy> groundPolicy)
+    : EpipolarSensorModel(pos, sensorModel, epiBound),
       mEpiRect(std::move(epiRect)), mGroundPolicy(groundPolicy) {
   assert(GroundPolicy::kGroundType == sensorModel->GetSrsType());
   mOrigin = mEpiRect->mOrigin;

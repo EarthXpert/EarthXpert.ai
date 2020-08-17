@@ -17,10 +17,9 @@ using namespace earthxpert;
  *   \brief construct a frame epipolar model
  */
 template <class ImageModelPolicy>
-FrameEpipolarModel<ImageModelPolicy>::FrameEpipolarModel(
-  std::shared_ptr<FrameModel<ImageModelPolicy>> sensorModel, 
-  StereoPos pos, const Polygon2d& epiBound)
-  : EpipolarSensorModel(sensorModel, pos, epiBound), 
+FrameEpipolarModel<ImageModelPolicy>::FrameEpipolarModel(StereoPos pos, 
+  std::shared_ptr<FrameModel<ImageModelPolicy>> sensorModel, const Polygon2d& epiBound)
+  : EpipolarSensorModel(pos, sensorModel, epiBound), 
     mFrameModel(sensorModel.get()) {
   Initialize();
 }

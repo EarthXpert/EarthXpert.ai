@@ -19,12 +19,12 @@ class EXEPIPOLARMODEL_EXPORTS EpipolarSensorModel
   : public IEpipolarModel, public ISensorModel{
 public:
   /**
-   *  \param [in] sensorModel sensor model associated with the image
    *  \param [in] pos Component position of stereo model
+   *  \param [in] sensorModel sensor model associated with the image
    *  \param [in] epiBound epipolar boundary of valid region
    */
-  EpipolarSensorModel(std::shared_ptr<ISensorModel> sensorModel, 
-    StereoPos pos, const Polygon2d& epiBound);
+  EpipolarSensorModel(StereoPos pos, 
+    std::shared_ptr<ISensorModel> sensorModel, const Polygon2d& epiBound);
   virtual ~EpipolarSensorModel() = default;
 
   /**
@@ -221,8 +221,8 @@ public:
   virtual double GetMeanHeight() const noexcept override { return mSensorModel->GetMeanHeight(); }
 
 protected:
-  std::shared_ptr<ISensorModel> mSensorModel; // image model composing of the stereo model
   StereoPos mPos{ eIGNORE };    // Component position of stereo model
+  std::shared_ptr<ISensorModel> mSensorModel; // image model composing of the stereo model
   Polygon2d mBound;   // boundary pixels of valid region w.r.t. the center of UL corner
 
 private:

@@ -14,9 +14,9 @@ using namespace earthxpert;
 /**
  *   \brief construct a frame epipolar model
  */
-EpipolarSensorModel::EpipolarSensorModel(std::shared_ptr<ISensorModel> sensorModel,
-  StereoPos pos, const Polygon2d& epiBound) 
-  : mSensorModel(sensorModel), mPos(pos), mBound(epiBound) {
+EpipolarSensorModel::EpipolarSensorModel(StereoPos pos, 
+  std::shared_ptr<ISensorModel> sensorModel, const Polygon2d& epiBound) 
+  : mPos(pos), mSensorModel(sensorModel), mBound(epiBound) {
 }
 
 /**

@@ -148,14 +148,14 @@ EpiModelPair EpipolarModelFactory::CreateRationalEpiModel(
   // left epipolar model
   auto leftRect = std::make_unique<EpipolarRect>(origin, height,
     scale, rotation, Point2d(leftOffsetX, offsetY), leftNumCols, numRows);
-  auto leftEpiModel = std::make_unique<GeoEpipolarModel>(leftModel, 
-    EpiStereoPos::eLEFT, leftFp, std::move(leftRect), geoGround);
+  auto leftEpiModel = std::make_unique<GeoEpipolarModel>(EpiStereoPos::eLEFT, 
+    leftModel, leftFp, std::move(leftRect), geoGround);
 
   // right epipolar model
   auto rightRect = std::make_unique<EpipolarRect>(origin, height,
     scale, rotation, Point2d(rightOffsetX, offsetY), rightNumCols, numRows);
-  auto rightEpiModel = std::make_unique<GeoEpipolarModel>(rightModel, 
-    EpiStereoPos::eRIGHT, rightFp, std::move(rightRect), geoGround);
+  auto rightEpiModel = std::make_unique<GeoEpipolarModel>(EpiStereoPos::eRIGHT, 
+    rightModel, rightFp, std::move(rightRect), geoGround);
 
   return EpiModelPair{ std::move(leftEpiModel), std::move(rightEpiModel) };
 }

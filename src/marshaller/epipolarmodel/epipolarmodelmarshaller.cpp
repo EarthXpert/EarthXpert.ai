@@ -13,41 +13,42 @@
 
 using namespace earthxpert;
 using CvFS = cv::FileStorage;
+using CvFN = cv::FileNode;
 
+// ingested persistence
 struct EpiModelRecord {
   EpiStereoPos epiPos{ EpiStereoPos::eIGNORE };
   cv::Size2i rawSize;
   std::string mdlFile;
-  std::string fp;
+  std::string bound;
   Point2d offset;
   cv::Size2i epiSize;
+
+  void write(CvFS& fs) const {
+    fs << "{" << "epiPos" << epiPos << "rawSize" << rawSize << "mdlFile" << mdlFile 
+      << "bound" << bound << "offset" << offset << "epiSize" << epiSize << "}";
+  }
+
+  void read(const cv::FileNode& node) {
+    node["epiPos"] >> epiPos;
+    node["rawSize"] >> rawSize;
+    node["mdlFile"] >> mdlFile;
+    node["bound"] >> bound;
+    node["offset"] >> offset;
+    node["epiSize"] >> epiSize;
+  }
 };
 
-namespace cv {
-static inline void write(CvFS& fs, const EpiModelRecord& rec) {
-  write(fs, rec.epiPos);
-  write(fs, rec.rawSize);
-  write(fs, rec.mdlFile);
-  write(fs, rec.fp);
-  write(fs, rec.offset);
-  write(fs, rec.epiSize);
+static inline void write(CvFS& fs, const std::string&, const EpiModelRecord& r) {
+  r.write(fs);
 }
 
-cv::FileStorage& operator<<(CvFS& fs, const EpiModelRecord& rec) {
-  fs << "{";
-  write(fs, rec);
-  fs << "}";
-  return fs;
-}
-
-void operator>>(const cv::FileNode& node, EpiModelRecord& rec) {
-  node["leftStereoPos"] >> rec.epiPos;
-  node["leftRawSize"] >> rec.rawSize;
-  node["leftMdlFile"] >> rec.mdlFile;
-  node["leftBound"] >> rec.fp;
-  node["leftOffset"] >> rec.offset;
-  node["leftEpiSize"] >> rec.epiSize;
-}
+static inline void read(const CvFN& node, EpiModelRecord& r, 
+  const EpiModelRecord& default_value = EpiModelRecord()) {
+  if (node.empty())
+    r = default_value;
+  else
+    r.read(node);
 }
 
 /**
@@ -113,7 +114,7 @@ bool EpipolarModelMarshaller::SerializeFS(const std::string& epiMdlFile,
     throw std::invalid_argument(_("SerializeFS: failed to open for write"));
   }
 
-  std::vector<EpiModelRecord> recs{ 
+  std::vector<EpiModelRecord> epiModels{ 
     {lem->mPos, cv::Size2i(leftNumCols, leftNumRows), leftMdlFile,
      lss.str(), lr.mOffset, cv::Size2i(lr.mNumCols, lr.mNumRows)}, 
     {rem->mPos, cv::Size2i(rightNumCols, rightNumRows), rightMdlFile,
@@ -121,17 +122,7 @@ bool EpipolarModelMarshaller::SerializeFS(const std::string& epiMdlFile,
 
   fs << "origin" << Point3d(Rad2Deg(lr.mOrigin.x), Rad2Deg(lr.mOrigin.y), lr.mHeight)
     << "scale" << lr.mScale << "rotation" << Rad2Deg(lr.mRotation)
-    << "leftStereoPos" << lem->mPos 
-    << "leftRawSize" << cv::Size2i(leftNumCols, leftNumRows) 
-    << "leftMdlFile" << leftMdlFile 
-    << "leftBound" << lss.str() << "leftOffset" << lr.mOffset 
-    << "leftEpiSize" << cv::Size2i(lr.mNumCols, lr.mNumRows)
-    << "rightStereoPos" << rem->mPos 
-    << "rightRawSize" << cv::Size2i(rightNumCols, rightNumRows)
-    << "rightMdlFile" << rightMdlFile 
-    << "rightBound" << rss.str() << "rightOffset" << rr.mOffset 
-    << "rightEpiSize" << cv::Size2i(rr.mNumCols, rr.mNumRows);
-    //<< "EpiStereo" << recs;
+    << "EpiStereo" << epiModels;
 
   //auto& lee = *(lem->mGroundPolicy->GetEarthEllipsoid());
 
@@ -147,15 +138,6 @@ EpipolarModelMarshaller::DeserializeFS(const std::string& epiMdlFile) const {
   if (!fs.isOpened()) {
     throw std::invalid_argument(_("DeserializeFS: failed to open for read"));
   }
-  RationalModelMarshaller rmMarshaller;
-
-  EpiStereoPos leftPos{}, rightPos{};
-  cv::Size2i leftRawSize, rightRawSize;
-  std::string leftMdlFile, rightMdlFile;
-  std::string leftFp, rightFp;
-  Polygon2d leftBound, rightBound;
-  Point2d leftOffset, rightOffset;
-  cv::Size2i leftEpiSize, rightEpiSize;
 
   Point3d origin;
   fs["origin"] >> origin;
@@ -169,31 +151,11 @@ EpipolarModelMarshaller::DeserializeFS(const std::string& epiMdlFile) const {
   fs["rotation"] >> rotation;
   rotation = Deg2Rad(rotation);
 
-  fs["leftStereoPos"] >> leftPos;
-  fs["leftRawSize"] >> leftRawSize;
-  fs["leftMdlFile"] >> leftMdlFile;
-  rmMarshaller.SetImageSize(leftRawSize.width, leftRawSize.height);
-  std::shared_ptr<RationalModel> leftModel = rmMarshaller.Deserialize(leftMdlFile);
-  assert(SensorType::eRATIONAL == leftModel->GetModelType());
+  std::vector<EpiModelRecord> ems;
+  fs["EpiStereo"] >> ems;
+  assert(2 == ems.size());
 
-  fs["leftBound"] >> leftFp;
-  bg::read_wkt(leftFp, leftBound);
-
-  fs["leftOffset"] >> leftOffset;
-  fs["leftEpiSize"] >> leftEpiSize;
-
-  fs["rightStereoPos"] >> rightPos;
-  fs["rightRawSize"] >> rightRawSize;
-  fs["rightMdlFile"] >> rightMdlFile;
-  rmMarshaller.SetImageSize(rightRawSize.width, rightRawSize.height);
-  std::shared_ptr<RationalModel> rightModel = rmMarshaller.Deserialize(rightMdlFile);
-  assert(SensorType::eRATIONAL == rightModel->GetModelType());
-
-  fs["rightBound"] >> rightFp;
-  bg::read_wkt(rightFp, rightBound);
-
-  fs["rightOffset"] >> rightOffset;
-  fs["rightEpiSize"] >> rightEpiSize;
+  RationalModelMarshaller rmMarshaller;
 
   auto earthEllip = std::make_unique<EarthEllipsoid>();
   earthEllip->SetLsrOrigin(origin);
@@ -201,16 +163,30 @@ EpipolarModelMarshaller::DeserializeFS(const std::string& epiMdlFile) const {
   assert(!earthEllip);
 
   // left epipolar model
+  rmMarshaller.SetImageSize(ems[0].rawSize.width, ems[0].rawSize.height);
+  std::shared_ptr<RationalModel> leftModel = rmMarshaller.Deserialize(ems[0].mdlFile);
+  assert(SensorType::eRATIONAL == leftModel->GetModelType());
+
+  Polygon2d leftBound;
+  bg::read_wkt(ems[0].bound, leftBound);
+
   auto leftRect = std::make_unique<EpipolarRect>(origin, height,
-    scale, rotation, leftOffset, leftEpiSize.width, leftEpiSize.height);
-  auto leftEpiModel = std::make_unique<GeoEpipolarModel>(leftModel,
-    leftPos, leftBound, std::move(leftRect), geoGround);
+    scale, rotation, ems[0].offset, ems[0].epiSize.width, ems[0].epiSize.height);
+  auto leftEpiModel = std::make_unique<GeoEpipolarModel>(ems[0].epiPos,
+    leftModel, leftBound, std::move(leftRect), geoGround);
 
   // right epipolar model
+  rmMarshaller.SetImageSize(ems[1].rawSize.width, ems[1].rawSize.height);
+  std::shared_ptr<RationalModel> rightModel = rmMarshaller.Deserialize(ems[1].mdlFile);
+  assert(SensorType::eRATIONAL == rightModel->GetModelType());
+
+  Polygon2d righftBound;
+  bg::read_wkt(ems[1].bound, righftBound);
+
   auto rightRect = std::make_unique<EpipolarRect>(origin, height,
-    scale, rotation, rightOffset, rightEpiSize.width, rightEpiSize.height);
-  auto rightEpiModel = std::make_unique<GeoEpipolarModel>(rightModel,
-    rightPos, rightBound, std::move(rightRect), geoGround);
+    scale, rotation, ems[1].offset, ems[1].epiSize.width, ems[1].epiSize.height);
+  auto rightEpiModel = std::make_unique<GeoEpipolarModel>(ems[1].epiPos, 
+    rightModel, righftBound, std::move(rightRect), geoGround);
 
   return EpiModelPair{ std::move(leftEpiModel), std::move(rightEpiModel) };
 }
