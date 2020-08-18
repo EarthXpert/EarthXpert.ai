@@ -262,3 +262,16 @@ SpatialTileD Pointcloud::ObtainBoundingBox2D() const noexcept {
   return { mOrigin.x + double(minX), mOrigin.y + double(minY), 
     double(maxX) - double(minX), double(maxY) - double(minY) };
 }
+
+void Pointcloud::Swap(Pointcloud& rhs) noexcept {
+  std::swap(mPointCapacity, rhs.mPointCapacity);
+  std::swap(mFieldGroup, rhs.mFieldGroup);
+  std::swap(mOrigin, rhs.mOrigin);
+  std::swap(mXYZ, rhs.mXYZ);
+  std::swap(mCla, rhs.mCla);
+  std::swap(mIntensity, rhs.mIntensity);
+  std::swap(mRGB, rhs.mRGB);
+  //std::swap(mTime, rhs.mTime);
+  std::swap(mPointCount, rhs.mPointCount);
+  //std::swap(mData, rhs.mData); ?
+}

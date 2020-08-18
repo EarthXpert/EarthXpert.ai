@@ -20,7 +20,7 @@ namespace earthxpert {
 /**
  *  The class Pointcloud stores an array of points in groups of fields.
  *
- *  \todo optimize performance
+ *  \todo optimize performance: accept pre-allocated buffers
  *  \todo the container size is 1 if the corresponding field is equal for all points
  */
 class EXCORE_EXPORTS Pointcloud {
@@ -478,6 +478,8 @@ public:
    */
   SpatialTileD ObtainBoundingBox2D() const noexcept;
 
+  void Swap(Pointcloud& rhs) noexcept;
+
 private:
   size_t mPointCapacity{};  // max number of points to be able to hold
   FieldGroup mFieldGroup;   // available field groups
@@ -527,6 +529,13 @@ private:
   std::tuple<std::vector<XYZF>*, std::vector<Classification>*, std::vector<Intensity>*, 
     std::vector<RGB16>*> mData{ &mXYZ, &mCla, &mIntensity, &mRGB }; // indexed by kPOS
 };
+
 using UPPointcloud = std::unique_ptr<Pointcloud>;
 using SPPointcloud = std::shared_ptr<Pointcloud>;
+}
+
+// overload std::swap
+namespace std {
+inline void swap(earthxpert::Pointcloud& lhs, 
+  earthxpert::Pointcloud& rhs) noexcept { lhs.Swap(rhs); }
 }
