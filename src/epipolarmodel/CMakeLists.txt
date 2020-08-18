@@ -2,9 +2,9 @@ project(epipolarmodel)
 
 add_definitions(-DEXEPIPOLARMODEL_API)
 set(epipolarmodel_srcs "epipolarmodel.cpp"
-       "epipolarmodelfactory.cpp"
        "epipolarrect.cpp"
        "epipolarsensormodel.cpp"
+       "epipolarstereofactory.cpp"
        "frameepipolarmodel.cpp"
        "utils/epiutils.cpp"
        "utils/evalepipolarmodel.cpp")

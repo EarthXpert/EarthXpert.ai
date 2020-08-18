@@ -2,7 +2,7 @@
  *  Copyright (c) 2018.  All rights reserved.
  * -----------------------------------------------------------------------------
  */
-#include "marshaller/epipolarmodelmarshaller.h"
+#include "marshaller/epipolarstereomarshaller.h"
 #include "3rdparty/boost/exboost.h"
 #include "3rdparty/opencv/exopencv.h"
 #include "core/exceptions/exexcept.h"
@@ -26,8 +26,8 @@ struct EpiModelRecord {
   std::string epiFile;
 
   void write(CvFS& fs) const {
-    fs << "{" << "epiPos" << epiPos << "rawSize" << rawSize 
-      << "mdlFile" << mdlFile << "bound" << bound << "offset" << offset 
+    fs << "{" << "epiPos" << epiPos << "rawSize" << rawSize
+      << "mdlFile" << mdlFile << "bound" << bound << "offset" << offset
       << "epiSize" << epiSize << "epiFile" << epiFile << "}";
   }
 
@@ -46,7 +46,7 @@ static inline void write(CvFS& fs, const std::string&, const EpiModelRecord& r) 
   r.write(fs);
 }
 
-static inline void read(const CvFN& node, EpiModelRecord& r, 
+static inline void read(const CvFN& node, EpiModelRecord& r,
   const EpiModelRecord& default_value = EpiModelRecord()) {
   if (node.empty())
     r = default_value;
@@ -119,7 +119,7 @@ bool EpipolarStereoMarshaller::SerializeFS(const std::string& epiMdlFile,
     std::stringstream ss;
     ss << bg::wkt(epiMdl->mBound);
 
-    epiMdlRecs.push_back(EpiModelRecord{ epiMdl->mPos, 
+    epiMdlRecs.push_back(EpiModelRecord{ epiMdl->mPos,
       cv::Size2i(rawNumCols, rawNumRows),
       em.sensorMdlFile, ss.str(), epiRect.mOffset,
       cv::Size2i(epiRect.mNumCols, epiRect.mNumRows), em.epiImgFile });

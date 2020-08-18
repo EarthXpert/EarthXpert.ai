@@ -6,10 +6,10 @@
 #include "core/utils/fsutils.h"
 #include "core/utils/rasterresample.h"
 #include "epipolarmodel/epipolarmodel.h"
-#include "epipolarmodel/epipolarmodelfactory.h"
+#include "epipolarmodel/epipolarstereofactory.h"
 #include "io/raster/rasterreader.h"
 #include "io/raster/rasterwriter.h"
-#include "marshaller/epipolarmodelmarshaller.h"
+#include "marshaller/epipolarstereomarshaller.h"
 #include "marshaller/rationalmodelmarshaller.h"
 #include "rectification/epipolar/epipolargenerator.h"
 
@@ -93,9 +93,9 @@ void GenerateRationalEpipolar(const EpipolarOptions& epiOpt) {
     rmMarshaller.Deserialize(epiOpt.rightMdlFile);
   assert(SensorType::eRATIONAL == rightModel->GetModelType());
 
-  EpipolarModelFactory epiModelFac(epiOpt.outOpt);
+  EpipolarStereoFactory epiModelFac(epiOpt.outOpt);
   auto [leftEpiModel, rightEpiModel] = 
-    epiModelFac.CreateRationalEpiModel(leftModel, rightModel, epiOpt.sample);
+    epiModelFac.CreateRationalEpiStereo(leftModel, rightModel, epiOpt.sample);
   assert(IEpipolarModel::ePLANERECT == leftEpiModel->GetEpipolarAlgorithm());
 
   auto rasResample = std::make_unique<RasterResampleCV>(epiOpt.resample);

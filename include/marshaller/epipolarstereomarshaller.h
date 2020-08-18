@@ -4,7 +4,7 @@
  */
 #pragma once
 
-#include "marshaller/iepipolarmodelmarshaller.h"
+#include "marshaller/iepipolarstereomarshaller.h"
 
 #include <memory>
 

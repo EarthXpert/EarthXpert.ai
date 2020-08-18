@@ -2,7 +2,7 @@
  *  Copyright (c) 2018.  All rights reserved.
  * -----------------------------------------------------------------------------
  */
-#include "epipolarmodel/epipolarmodelfactory.h"
+#include "epipolarmodel/epipolarstereofactory.h"
 #include "core/utils/typehelper.h"
 #include "core/exceptions/exexcept.h"
 #include "core/math/mutils.h"
@@ -21,19 +21,19 @@
 using namespace earthxpert;
 
 // output option
-static const std::map<std::string, EpipolarModelFactory::EpiOpt> sOutOptMap = {
-  {"compact", EpipolarModelFactory::EpiOpt::eCOMPACT},
-  {"full", EpipolarModelFactory::EpiOpt::eFULL},
-  {"intersect", EpipolarModelFactory::EpiOpt::eINTERSECT} };
+static const std::map<std::string, EpipolarStereoFactory::EpiOpt> sOutOptMap = {
+  {"compact", EpipolarStereoFactory::EpiOpt::eCOMPACT},
+  {"full", EpipolarStereoFactory::EpiOpt::eFULL},
+  {"intersect", EpipolarStereoFactory::EpiOpt::eINTERSECT} };
 
 /**
  *  \brief
  */
-EpipolarModelFactory::EpipolarModelFactory(const EpiOutputOption outOpt)
+EpipolarStereoFactory::EpipolarStereoFactory(const EpiOutputOption outOpt)
   : mOutOpt(outOpt) {}
 
-EpipolarModelFactory::EpipolarModelFactory(const std::string& outOpt)
-  : EpipolarModelFactory(sOutOptMap.at(outOpt)) {}
+EpipolarStereoFactory::EpipolarStereoFactory(const std::string& outOpt)
+  : EpipolarStereoFactory(sOutOptMap.at(outOpt)) {}
 
 /**
  *  \brief Create an epipolar models for a stereo pair of frame images.
@@ -43,7 +43,7 @@ EpipolarModelFactory::EpipolarModelFactory(const std::string& outOpt)
  *  \param [in] height the optional average height used for epipolar rectficiation
  *  \return Returns pointers to epipolar model objects.
  */
-EpiModelPair EpipolarModelFactory::CreateFrameEpiModel(
+EpiModelPair EpipolarStereoFactory::CreateFrameEpiStereo(
   std::shared_ptr<ISensorModel> leftModel,
   std::shared_ptr<ISensorModel> rightModel,
   const int sample, const double height) {
@@ -59,8 +59,8 @@ EpiModelPair EpipolarModelFactory::CreateFrameEpiModel(
  *  \param [in] rightModel sensor model associated with the right image
  *  \return Returns pointer to epipolar model objects.
  */
-EpiModelPair EpipolarModelFactory::CreateRationalEpiModel(
-  std::shared_ptr<RationalModel> leftModel, 
+EpiModelPair EpipolarStereoFactory::CreateRationalEpiStereo(
+  std::shared_ptr<RationalModel> leftModel,
   std::shared_ptr<RationalModel> rightModel, const int sample) {
   if (leftModel->GetModelType() != rightModel->GetModelType())
     throw std::exception(_("The stereo pair should be of the same sensor type."));
@@ -75,14 +75,14 @@ EpiModelPair EpipolarModelFactory::CreateRationalEpiModel(
   auto earthEllip = std::make_unique<EarthEllipsoid>();
   earthEllip->SetLsrOrigin(origin);
 
-  auto EpiGsd = [](const RationalModel* leftModel, 
+  auto EpiGsd = [](const RationalModel* leftModel,
     const RationalModel* rightModel, const double height) {
       const auto leftGsd = CalcGsd(leftModel, height);
       const auto righttGsd = CalcGsd(rightModel, height);
       return sqrt(leftGsd * righttGsd);
   };
 
-  // \todo determine the rectification height so that the average 
+  // \todo determine the rectification height so that the average
   // resolution of epipolar is 1:1 before considering the sample
   double height{ (lnfc[rnf::eOHEIGHT] + rnfc[rnf::eOHEIGHT]) / 2 };
 
@@ -109,7 +109,7 @@ EpiModelPair EpipolarModelFactory::CreateRationalEpiModel(
   const double offsetY{ std::min(leftEpiMin.y, rightEpiMin.y) };
   const int numRows{ int(std::max(leftEpiMax.y, rightEpiMax.y) - offsetY + 0.5) };
   if (1 >= numRows) {
-    throw EpipolarError(_("CreateRationalEpiModel: not valid"));
+    throw EpipolarError(_("CreateRationalEpiStereo: not valid"));
   }
 
   double leftOffsetX{}, rightOffsetX{};
@@ -135,7 +135,7 @@ EpiModelPair EpipolarModelFactory::CreateRationalEpiModel(
   }
 
   if (1 >= leftNumCols || 1 >= rightNumCols) {
-    throw EpipolarError(_("CreateRationalEpiModel: not valid"));
+    throw EpipolarError(_("CreateRationalEpiStereo: not valid"));
   }
 
   // convert to epipolar boundary in image space based on epipolar options.
@@ -148,13 +148,13 @@ EpiModelPair EpipolarModelFactory::CreateRationalEpiModel(
   // left epipolar model
   auto leftRect = std::make_unique<EpipolarRect>(origin, height,
     scale, rotation, Point2d(leftOffsetX, offsetY), leftNumCols, numRows);
-  auto leftEpiModel = std::make_unique<GeoEpipolarModel>(EpiStereoPos::eLEFT, 
+  auto leftEpiModel = std::make_unique<GeoEpipolarModel>(EpiStereoPos::eLEFT,
     leftModel, leftFp, std::move(leftRect), geoGround);
 
   // right epipolar model
   auto rightRect = std::make_unique<EpipolarRect>(origin, height,
     scale, rotation, Point2d(rightOffsetX, offsetY), rightNumCols, numRows);
-  auto rightEpiModel = std::make_unique<GeoEpipolarModel>(EpiStereoPos::eRIGHT, 
+  auto rightEpiModel = std::make_unique<GeoEpipolarModel>(EpiStereoPos::eRIGHT,
     rightModel, rightFp, std::move(rightRect), geoGround);
 
   return EpiModelPair{ std::move(leftEpiModel), std::move(rightEpiModel) };
@@ -163,11 +163,11 @@ EpiModelPair EpipolarModelFactory::CreateRationalEpiModel(
 /**
  *  \brief
  */
-std::vector<std::unique_ptr<IEpipolarModel>> 
-EpipolarModelFactory::CreateEpipolarModel(
+std::vector<std::unique_ptr<IEpipolarModel>>
+EpipolarStereoFactory::CreateEpipolarStereo(
   const std::vector<std::shared_ptr<ISensorModel>> &sensorModels,
   const int sample, const double height) {
-  if (sensorModels.size() < 2) 
+  if (sensorModels.size() < 2)
     throw std::exception(_("Require a minimum of two images"));
 
   std::vector<std::unique_ptr<IEpipolarModel>> epiModels;
@@ -181,8 +181,8 @@ EpipolarModelFactory::CreateEpipolarModel(
  *
  *  \return Return rotation angle of epipolar direction [rad]
  */
-double EpipolarModelFactory::CalcEpiRotation(const ISensorModel* leftModel,
-  const ISensorModel* rightModel, const EarthEllipsoid* ee, const double height, 
+double EpipolarStereoFactory::CalcEpiRotation(const ISensorModel* leftModel,
+  const ISensorModel* rightModel, const EarthEllipsoid* ee, const double height,
   const Polygon2d& leftFp, const Polygon2d& rightFp) const {
   std::vector<PointXYd> points;
   bool ret = bg::intersection(leftFp, rightFp, points);
@@ -217,7 +217,7 @@ double EpipolarModelFactory::CalcEpiRotation(const ISensorModel* leftModel,
   switch (mEpiDir) {
   case eLONGEST: {// select the longest vector as direction having largest parallax
     auto it = std::max_element(epiDir.cbegin(), epiDir.cend(),
-      [](const Point2d& da, const Point2d& db) { 
+      [](const Point2d& da, const Point2d& db) {
         return cv::norm(da) < cv::norm(db); });
     ed = epiDir[std::distance(epiDir.cbegin(), it)];
   }
@@ -244,7 +244,7 @@ double EpipolarModelFactory::CalcEpiRotation(const ISensorModel* leftModel,
  *  \brief convert vertex coordinates from rectification CS [meter]
  *  to epipolar CS [pixel].
  */
-void EpipolarModelFactory::ConvertEpiRect(Polygon2d& fp, 
+void EpipolarStereoFactory::ConvertEpiRect(Polygon2d& fp,
   const double scale, const double cosRot, const double sinRot) const {
   std::vector<PointXYd>& fpPts = fp.outer();
 
@@ -261,7 +261,7 @@ void EpipolarModelFactory::ConvertEpiRect(Polygon2d& fp,
  *  \brief convert rectified footprint to epipolar boundary in image space.
  *  \todo return Returns Polygon2f
  */
-void EpipolarModelFactory::ConvertEpiImage(Polygon2d& fp, 
+void EpipolarStereoFactory::ConvertEpiImage(Polygon2d& fp,
   const double offsetX, const double offsetY, const int numRows) const {
   std::vector<PointXYd>& fpPts = fp.outer();
 

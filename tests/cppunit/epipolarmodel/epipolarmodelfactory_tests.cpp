@@ -7,7 +7,7 @@
 
 #include "core/math/mutils.h"
 #include "epipolarmodel/epipolarmodel.h"
-#include "epipolarmodel/epipolarmodelfactory.h"
+#include "epipolarmodel/epipolarstereofactory.h"
 #include "marshaller/rationalmodelmarshaller.h"
 #include "sensormodel/utils/stereomodel.h"
 
@@ -114,8 +114,8 @@ void CreateRationalEpipolarModel(const std::string& leftMdlFile,
   std::shared_ptr<RationalModel> leftModel = rmMarshaller.Deserialize(leftMdlFile);
   std::shared_ptr<RationalModel> rightModel = rmMarshaller.Deserialize(rightMdlFile);
 
-  EpipolarModelFactory epiModelFac(FacEpiOpt::eFULL);
-  auto [leftEpiModel, rightEpiModel] = epiModelFac.CreateRationalEpiModel(leftModel, rightModel);
+  EpipolarStereoFactory epiModelFac(FacEpiOpt::eFULL);
+  auto [leftEpiModel, rightEpiModel] = epiModelFac.CreateRationalEpiStereo(leftModel, rightModel);
   ASSERT_TRUE(IEpipolarModel::ePLANERECT == leftEpiModel->GetEpipolarAlgorithm());
   ASSERT_TRUE(IEpipolarModel::ePLANERECT == rightEpiModel->GetEpipolarAlgorithm());
 
