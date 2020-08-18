@@ -130,7 +130,6 @@ EpipolarModel<GroundPolicy>::BuildGridI2G(const int numCols, const int numRows) 
   for (size_t i = 0; i < numNodes; ++i) {
     Point2d rect;
     auto grdHgt = RawToRect(gridNodes[i], rect);
-
     if (!grdHgt)
       throw std::exception(_("BuildGridI2G: failed to project."));
 

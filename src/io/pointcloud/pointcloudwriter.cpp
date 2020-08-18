@@ -99,13 +99,11 @@ size_t PointcloudWriter::WritePointcloud(Pointcloud const* const pointCloud) {
  */
 size_t PointcloudWriter::WritePointcloud(Pointcloud const* const pointCloud,
   const size_t start, const size_t numPoints) {
-  if (pointCloud->GetFieldGroup() > mFieldGroup) {
+  if (pointCloud->GetFieldGroup() > mFieldGroup) 
     throw std::out_of_range(_("Fields to be written are out of the range of write fields"));
-  }
   const auto pointCount = pointCloud->GetPointCount();
-  if (!pointCloud || 0 == pointCount) {
+  if (!pointCloud || 0 == pointCount) 
     return 0;
-  }
 
   bool offset{true};  //
 

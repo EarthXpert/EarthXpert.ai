@@ -62,7 +62,7 @@ private:
 
   std::vector<cv::KeyPoint> mKpBufWork;    // key points
   std::vector<cv::KeyPoint> mKpBufWrite; 
-  cv::Mat mDctBufWork;                      // descriptors
+  cv::Mat mDctBufWork;                     // descriptors
   cv::Mat mDctBufWrite;
 
   void AllocateBuffers();

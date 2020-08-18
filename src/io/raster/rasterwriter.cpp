@@ -19,9 +19,8 @@ using namespace earthxpert;
  */
 RasterWriter::RasterWriter(const std::string& imageFile, const std::vector<int>& bands) {
   mDataset = static_cast<GDALDataset*>(GDALOpen(imageFile.c_str(), GA_Update));
-  if (!mDataset) {
+  if (!mDataset) 
     throw IOError(_("GDAL failed to open image file for write access."));
-  }
 
   Initialize(mDataset, bands);
 }
@@ -157,9 +156,8 @@ void RasterWriter::WriteRaster(const CvRaster* raster) {
     for (int r = 0; r < writeNumRows; ++r) {
       const auto err = band->RasterIO(GF_Write, writeColOff, writeRowOff + r,
         writeNumCols, 1, writeRow, writeNumCols, 1, mGdalDT, 0, 0, nullptr);
-      if (CE_None != err) {
+      if (CE_None != err) 
         throw IOError(_("Failure when reading by RasterIO"));
-      }
 
       writeRow += rowNumBytes;
     }
@@ -189,9 +187,8 @@ void RasterWriter::WriteRaster(const CvRaster* raster) {
       const auto err = mDataset->RasterIO(GF_Write, writeColOff, writeRowOff + r,
         writeNumCols, 1, gdalBuffer.get(), writeNumCols, 1, mGdalDT,
         mWriteNumBands, mBands.data(), 0, 0, 0, nullptr);
-      if (CE_None != err) {
+      if (CE_None != err) 
         throw IOError(_("Failure when writing by RasterIO"));
-      }
 
       writeRow += rowNumBytes;
     }
@@ -206,9 +203,8 @@ void RasterWriter::WriteRaster(const CvRaster* raster) {
 void RasterWriter::WriteRaster(const GdalRaster* raster) {
   std::unique_lock<std::shared_mutex> lock(mMutex);
   const auto gdalDT = raster->GetDataType();
-  if (gdalDT != mGdalDT) {
+  if (gdalDT != mGdalDT) 
     throw std::invalid_argument(_("The data type of raster object is not compatible with image file"));
-  }
 
   const int64_t rowNumBytes = raster->GetRowNumBytes();
   const int64_t bandNumBytes = raster->GetBandNumBytes();
@@ -225,9 +221,8 @@ void RasterWriter::WriteRaster(const GdalRaster* raster) {
     for (int r = 0; r < writeNumRows; ++r) {
       const auto err = band->RasterIO(GF_Write, writeColOff, writeRowOff + r,
         writeNumCols, 1, writeRow, writeNumCols, 1, mGdalDT, 0, 0, nullptr);
-      if (CE_None != err) {
+      if (CE_None != err) 
         throw IOError(_("Failure when reading by RasterIO"));
-      }
 
       writeRow += rowNumBytes;
     }
@@ -265,9 +260,8 @@ void RasterWriter::ObtainDatasetInfo() {
 std::tuple<RasterWindow, int64_t>
 RasterWriter::ObtainWriteWindow(const IRaster* raster) const {
   const int numBands = raster->GetNumBands();
-  if (numBands != mWriteNumBands) {
+  if (numBands != mWriteNumBands) 
     throw std::invalid_argument(_("Number of bands is different"));
-  }
 
   const auto [colOffset, rowOffset] = raster->GetOffsets();
   const auto [numCols, numRows] = raster->GetSize();

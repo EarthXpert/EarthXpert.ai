@@ -26,34 +26,30 @@ using earthxpert::DistortionGridF;
  */
 void DistGridMarshaller::Serialize(const std::string &gridFile,
                                    DistortionGridF const *const distGrid) {
-  if (!distGrid || !distGrid->HasGrid()) {
+  if (!distGrid || !distGrid->HasGrid()) 
     throw std::invalid_argument(_("Given distortion grid should contain valid data."));
-  }
 
-  std::ofstream outStream(gridFile.c_str());
-  if (!outStream.good()) {
+  std::ofstream ofs(gridFile.c_str());
+  if (!ofs.good()) 
     throw std::invalid_argument(_("Cannot create file."));
-  }
 
-  Serialize(outStream, distGrid);
+  Serialize(ofs, distGrid);
 }
 
 /**
  *  Serialize a distortion grid into a std::ostream.
  *
- *  \param [in/out] outStream destination stream
+ *  \param [in/out] outS destination stream
  *  \param [in] distGrid pointer to a DistortionGrid object
  *  \throw if the output stream is not valid
  *  \throw if distGrid is null, or contains no grid data
  */
-void DistGridMarshaller::Serialize(std::ostream &outStream,
+void DistGridMarshaller::Serialize(std::ostream &outS,
                                    DistortionGridF const *const distGrid) {
-  if (!outStream.good()) {
+  if (!outS.good()) 
     throw std::invalid_argument(_("Invalid output stream"));
-  }
-  if (!distGrid || !distGrid->HasGrid()) {
+  if (!distGrid || !distGrid->HasGrid()) 
     throw std::invalid_argument(_("Given distortion grid should contain valid data."));
-  }
 
   unsigned int gridCols{};
   unsigned int gridRows{};
@@ -63,38 +59,37 @@ void DistGridMarshaller::Serialize(std::ostream &outStream,
   std::vector<float> vdY;
 
   const auto bOk = distGrid->FetchGrid(gridCols, gridRows, vX, vY, vdX, vdY);
-  if (!bOk) {
+  if (!bOk) 
     throw std::exception(_("Given distortion grid is invalid"));
-  }
 
-  outStream << "file_version: 1\n\n";
+  outS << "file_version: 1\n\n";
 
-  outStream << "begin gridgroup \"Image deformation grids\"\n";
-  outStream << "    enabled:     yes\n";
-  outStream << "    order_index: 0\n";
-  outStream << "    camera_name: \"" << distGrid->GetCameraName() << "\"\n";
-  outStream << "    description: \"BINGO self calibration grid - from all "
+  outS << "begin gridgroup \"Image deformation grids\"\n";
+  outS << "    enabled:     yes\n";
+  outS << "    order_index: 0\n";
+  outS << "    camera_name: \"" << distGrid->GetCameraName() << "\"\n";
+  outS << "    description: \"BINGO self calibration grid - from all "
                "additional parameters\"\n\n";
 
-  outStream << "    begin grid \"Image deformation grid 1\"\n";
-  outStream << "        enabled:       yes\n";
-  outStream << "        inverse_scale: 1.000000\n";
-  outStream << "        columns:       " << gridCols << "\n";
-  outStream << "        rows:          " << gridRows << "\n";
-  outStream << "        description:   \"Created by program BgExport\"\n\n";
+  outS << "    begin grid \"Image deformation grid 1\"\n";
+  outS << "        enabled:       yes\n";
+  outS << "        inverse_scale: 1.000000\n";
+  outS << "        columns:       " << gridCols << "\n";
+  outS << "        rows:          " << gridRows << "\n";
+  outS << "        description:   \"Created by program BgExport\"\n\n";
 
-  outStream << "        begin gridpoints\n";
+  outS << "        begin gridpoints\n";
 
   const size_t numPts = size_t(gridCols) * size_t(gridRows);
   for (size_t k = 0; k < numPts; ++k) {
     // format "            %11.4f %11.4f %11.4f %11.4f" TODO
-    outStream << vX[k] - vdX[k] << vY[k] - vdY[k] << vX[k] << vY[k];
+    outS << vX[k] - vdX[k] << vY[k] - vdY[k] << vX[k] << vY[k];
   }
 
-  outStream << "        end gridpoints\n";
+  outS << "        end gridpoints\n";
 
-  outStream << "    end grid\n";
-  outStream << "end gridgroup\n";
+  outS << "    end grid\n";
+  outS << "end gridgroup\n";
 }
 
 /**
@@ -106,26 +101,24 @@ void DistGridMarshaller::Serialize(std::ostream &outStream,
  */
 std::unique_ptr<DistortionGridF>
 DistGridMarshaller::Deserialize(const std::string &gridFile) {
-  std::ifstream inStream(gridFile.c_str());
-  if (!inStream.good()) {
+  std::ifstream ifs(gridFile.c_str());
+  if (!ifs.good())
     throw std::invalid_argument(_("Failed to open file."));
-  }
-  return Deserialize(inStream);
+  return Deserialize(ifs);
 }
 
 /**
  *  Deserialize a calibration grid from std::istream.
  *
- *  \param [in] inStream input stream.
+ *  \param [in] inS input stream.
  *  \return new instance of DistortionGrid
  *  \throw if the stream is not good
  *  \throw if the information inside the stream is not properly formated
  */
 std::unique_ptr<DistortionGridF>
-DistGridMarshaller::Deserialize(std::istream &inStream) {
-  if (!inStream.good()) {
+DistGridMarshaller::Deserialize(std::istream &inS) {
+  if (!inS.good()) 
     throw std::invalid_argument(_("Invalid stream"));
-  }
 
   int gridCols{0};
   int gridRows{0};
@@ -133,10 +126,10 @@ DistGridMarshaller::Deserialize(std::istream &inStream) {
 
   std::string line;
 
-  while (!inStream.eof()) {
+  while (!inS.eof()) {
     size_t pos;
 
-    std::getline(inStream, line);
+    std::getline(inS, line);
     if (std::string::npos != (pos = line.find("camera_name:"))) {
       camName = line.substr(pos + 13);
       camName.erase(std::remove(std::begin(camName), std::end(camName), '\"'),
@@ -151,9 +144,8 @@ DistGridMarshaller::Deserialize(std::istream &inStream) {
       break;
   }
 
-  if (0 == gridCols || 0 == gridRows) {
+  if (0 == gridCols || 0 == gridRows) 
     throw std::exception(_("Invalid Z/I grid format"));
-  }
 
   const size_t numGridPts = size_t(gridCols) * size_t(gridRows);
   std::vector<float> vX(numGridPts);
@@ -162,16 +154,15 @@ DistGridMarshaller::Deserialize(std::istream &inStream) {
   std::vector<float> vdY(numGridPts);
 
   for (size_t i = 0; i < numGridPts; ++i) {
-    std::getline(inStream, line);
+    std::getline(inS, line);
     boost::trim(line);
 
     std::vector<std::string> tokens;
     boost::split(tokens, line, boost::is_any_of(" \t\n"),
                  boost::algorithm::token_compress_on);
 
-    if (4 != tokens.size()) {
+    if (4 != tokens.size()) 
       throw std::exception(_("Each line of grid point must contain 4 numbers"));
-    }
 
     vX[i] = std::stod(tokens[2]);
     vY[i] = std::stod(tokens[3]);
@@ -179,13 +170,12 @@ DistGridMarshaller::Deserialize(std::istream &inStream) {
     vdY[i] = vY[i] - std::stod(tokens[1]);
   }
 
-  std::getline(inStream, line);
-  if (std::string::npos == line.find("end gridpoints")) {
+  std::getline(inS, line);
+  if (std::string::npos == line.find("end gridpoints")) 
     throw std::exception(_("Invalid Z/I grid format"));
-  }
 
-  std::getline(inStream, line); // skip "    end grid"
-  std::getline(inStream, line); // skip "end gridgroup"
+  std::getline(inS, line); // skip "    end grid"
+  std::getline(inS, line); // skip "end gridgroup"
 
   return std::make_unique<DistortionGridF>(camName, vX, vY, vdX, vdY);
 }

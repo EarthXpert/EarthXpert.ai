@@ -103,9 +103,8 @@ bool EpipolarStereoMarshaller::SerializeFS(const std::string& epiMdlFile,
 
   for (const auto& em : epiModels) {
     auto epiMdl = dynamic_cast<GeoEpipolarModel const*>(em.epiModel);
-    if (!epiMdl) {
+    if (!epiMdl) 
       throw std::invalid_argument(_("GeoEpipolarModel expected"));
-    }
 
     auto& epiRect = *(epiMdl->mEpiRect);
     if (!origin) {
@@ -126,9 +125,8 @@ bool EpipolarStereoMarshaller::SerializeFS(const std::string& epiMdlFile,
   }
 
   CvFS fs(epiMdlFile, CvFS::WRITE);
-  if (!fs.isOpened()) {
+  if (!fs.isOpened()) 
     throw std::invalid_argument(_("SerializeFS: failed to open for write"));
-  }
 
   fs << "signature" << "exai.epipolar" << "version" << std::vector<int>{1, 0, 0}
     << "origin" << origin.value() << "scale" << scale << "rotation" << rotation
@@ -142,9 +140,8 @@ bool EpipolarStereoMarshaller::SerializeFS(const std::string& epiMdlFile,
 std::vector<UPIEpipolarModel> EpipolarStereoMarshaller::DeserializeFS(
   const std::string& epiMdlFile) const {
   CvFS fs(epiMdlFile, CvFS::READ);
-  if (!fs.isOpened()) {
+  if (!fs.isOpened()) 
     throw std::invalid_argument(_("DeserializeFS: failed to open for read"));
-  }
 
   std::string signature;
   fs["signature"] >> signature;

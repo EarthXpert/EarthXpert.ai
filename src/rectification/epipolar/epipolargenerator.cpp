@@ -55,7 +55,7 @@ bool EpipolarGenerator::Process(IRasterReader *const img,
     ProcessTiles<ePL3>();
   }
   catch (...) {
-    throw;
+    throw EpipolarError(_("Process failed"));
   }
 
   mPerf.tmTotal = mClock.TimeSinceStart() - start;

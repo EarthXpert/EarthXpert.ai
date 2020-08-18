@@ -108,9 +108,8 @@ EpiModelPair EpipolarStereoFactory::CreateRationalEpiStereo(
 
   const double offsetY{ std::min(leftEpiMin.y, rightEpiMin.y) };
   const int numRows{ int(std::max(leftEpiMax.y, rightEpiMax.y) - offsetY + 0.5) };
-  if (1 >= numRows) {
+  if (1 >= numRows) 
     throw EpipolarError(_("CreateRationalEpiStereo: not valid"));
-  }
 
   double leftOffsetX{}, rightOffsetX{};
   int leftNumCols{}, rightNumCols{};
@@ -134,9 +133,8 @@ EpiModelPair EpipolarStereoFactory::CreateRationalEpiStereo(
     assert(false && "undefined epipolar option");
   }
 
-  if (1 >= leftNumCols || 1 >= rightNumCols) {
+  if (1 >= leftNumCols || 1 >= rightNumCols) 
     throw EpipolarError(_("CreateRationalEpiStereo: not valid"));
-  }
 
   // convert to epipolar boundary in image space based on epipolar options.
   ConvertEpiImage(leftFp, leftOffsetX, offsetY, numRows);

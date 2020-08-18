@@ -20,9 +20,8 @@ std::unique_ptr<FrameProject>
 P4dPrjMarshaller::Deserialize(const std::string& p4dFile) {
   UPxmlTextReader reader(
     xmlReaderForFile(p4dFile.c_str(), nullptr, 0), &xmlFreeTextReader);
-  if (!reader) {
+  if (!reader) 
     throw std::invalid_argument(_("P4dPrjMarshaller: not a valid .xml"));
-  }
 
   return {};
 }

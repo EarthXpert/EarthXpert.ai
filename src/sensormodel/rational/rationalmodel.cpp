@@ -689,9 +689,8 @@ Tuple4d RationalModel::CalcPolynomials(const double L,
     Sd += sdc[i] * LPH[i];
   }
 
-  if (fabs(Ld) < kTol || fabs(Sd) < kTol) {
+  if (fabs(Ld) < kTol || fabs(Sd) < kTol) 
     throw std::underflow_error("RationalModel: denominator is 0 in rational model");
-  }
 
   return { Ln, Ld, Sn, Sd };
 }

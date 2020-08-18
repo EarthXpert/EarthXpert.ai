@@ -86,9 +86,8 @@ std::unique_ptr<Pointcloud> PointcloudReader::ReadPointcloud() {
  */
 std::unique_ptr<Pointcloud>
 PointcloudReader::ReadPointcloud(const size_t start, const size_t numPoints) {
-  if (start + numPoints > mFilePointCount) {
+  if (start + numPoints > mFilePointCount) 
     throw std::out_of_range(_("ReadPointcloud: requested too many points"));
-  }
 
   std::lock_guard<std::mutex> lock(mMutex);
   mReader->seek(start);
@@ -196,12 +195,10 @@ PointcloudReader::ReadPointcloud(const SpatialTileD& tile) {
  */
 size_t PointcloudReader::ReadPointcloud(Pointcloud* const pointCloud) {
   assert(pointCloud);
-  if (pointCloud->GetFieldGroup() > mFieldGroup) {
+  if (pointCloud->GetFieldGroup() > mFieldGroup) 
     throw std::out_of_range(_("Requested fields are out of the range of read fields"));
-  }
-  if (0 == pointCloud->GetPointCapacity()) {
+  if (0 == pointCloud->GetPointCapacity()) 
     throw std::invalid_argument(_("ReadPointcloud: pointCloud's buffer is empty"));
-  }
 
   pointCloud->SetOrigin(Point3d(mHeader->x_offset,
     mHeader->y_offset, mHeader->z_offset));
@@ -229,9 +226,8 @@ void PointcloudReader::ObtainLasInfo() {
   //mTransform = mReader->get_transform();
 
   const int fmt = mHeader->point_data_format;
-  if (!pdt::IsValidFormat(fmt)) {
+  if (!pdt::IsValidFormat(fmt)) 
     throw IOError(_("ObtainLasInfo"));
-  }
   assert(pdt::IsValidRecordLength(mHeader->point_data_record_length));
 
   mFileFieldGroup = FormatToFieldGroup(fmt);
@@ -250,9 +246,8 @@ void PointcloudReader::ObtainLasInfo() {
   }
 
   mFilePointCount = mReader->npoints;
-  if (0 == mFilePointCount) {
+  if (0 == mFilePointCount) 
     throw IOError(_("ObtainLasInfo: empty points file"));
-  }
   assert(mHeader->number_of_point_records == mFilePointCount);  // extended_number_of_point_records
 
   mFileBBox2D.SetMinXY(mHeader->min_x, mHeader->min_y);

@@ -61,18 +61,17 @@ static constexpr size_t kRPC_COEFF_KEY_IDX = 15;  // position of index component
  */
 void RationalModelMarshaller::Serialize(const std::string &modelFile,
     RationalModel const *const rationalModel) {
-  const auto fmt = GetCoefFormat(modelFile);
+  const auto fmt = GetFormat(modelFile);
 
-  std::ofstream outStream(modelFile.c_str());
-  if (!outStream.good()) {
+  std::ofstream ofs(modelFile.c_str());
+  if (!ofs.good()) 
     throw std::invalid_argument(_("Cannot create file."));
-  }
 
   if (eRPB == fmt) {
-    return SerializeRpb(outStream, rationalModel);
+    return SerializeRpb(ofs, rationalModel);
   }
   else if (eRPC == fmt) {
-    return SerializeRpc(outStream, rationalModel);
+    return SerializeRpc(ofs, rationalModel);
   }
   else {
     throw std::invalid_argument(_("Not a rational model file."));
@@ -88,18 +87,19 @@ void RationalModelMarshaller::Serialize(const std::string &modelFile,
  */
 std::unique_ptr<RationalModel>
 RationalModelMarshaller::Deserialize(const std::string &modelFile) {
-  const auto fmt = GetCoefFormat(modelFile);
+  const auto fmt = GetFormat(modelFile);
 
-  std::ifstream inStream(modelFile.c_str());
-  if (!inStream.good()) {
+  std::ifstream ifs(modelFile.c_str());
+  if (!ifs.good()) 
     throw std::invalid_argument(_("Failed to open file."));
-  }
 
   if (eRPB == fmt) {
-    return DeserializeRpb(inStream);
-  } else if (eRPC == fmt) {
-    return DeserializeRpc(inStream);
-  } else {
+    return DeserializeRpb(ifs);
+  } 
+  else if (eRPC == fmt) {
+    return DeserializeRpc(ifs);
+  } 
+  else {
     throw std::invalid_argument(_("Not a rational model file.")); 
   }
 }
@@ -109,8 +109,8 @@ RationalModelMarshaller::Deserialize(const std::string &modelFile) {
  *
  *  \param [in] modelFile the name of the input file
  */
-RationalModelMarshaller::CoefFormat 
-RationalModelMarshaller::GetCoefFormat(const std::string& modelFile) const {
+RationalModelMarshaller::RMFormat 
+RationalModelMarshaller::GetFormat(const std::string& modelFile) const {
   if (CompareI(modelFile.substr(modelFile.length() - 4), ".rpb")) {
     return eRPB;
   }
@@ -125,10 +125,10 @@ RationalModelMarshaller::GetCoefFormat(const std::string& modelFile) const {
 /**
  *  \brief seralize a rational model into a .rpb file
  *
- *  \param[in] outStream output stream
+ *  \param[in] outS output stream
  *  \param[in] rationalModel the rational model to be seralized
  */
-void RationalModelMarshaller::SerializeRpb(std::ostream& outStream,
+void RationalModelMarshaller::SerializeRpb(std::ostream& outS,
   const RationalModel* const rationalModel) {
 
 }
@@ -136,21 +136,21 @@ void RationalModelMarshaller::SerializeRpb(std::ostream& outStream,
 /**
  *  \brief seralize a rational model into a rpc.txt file
  *
- *  \param[in] outStream output stream
+ *  \param[in] outS output stream
  *  \param[in] rationalModel the rational model to be seralized
  */
-void RationalModelMarshaller::SerializeRpc(std::ostream& outStream,
+void RationalModelMarshaller::SerializeRpc(std::ostream& outS,
   const RationalModel* const rationalModel) {
 }
 
 /**
  *  \brief Deserialize from .RPB file
  *
- *  \param [in] inStream input stream
+ *  \param [in] inS input stream
  *  \todo string_view
  */
 std::unique_ptr<RationalModel>
-RationalModelMarshaller::DeserializeRpb(std::istream& inStream) {
+RationalModelMarshaller::DeserializeRpb(std::istream& inS) {
   double errBias{}, errRand{};
   std::array<double, rnf::NumFact> normalFators{};
   std::array<double, RationalModel::NumCoef> lineNumCoef{};
@@ -159,8 +159,8 @@ RationalModelMarshaller::DeserializeRpb(std::istream& inStream) {
   std::array<double, RationalModel::NumCoef> sampDenCoef{};
 
   std::string line;
-  while (!inStream.eof()) {
-    std::getline(inStream, line);
+  while (!inS.eof()) {
+    std::getline(inS, line);
     boost::trim(line);
     if (line.empty()) continue;
 
@@ -168,9 +168,8 @@ RationalModelMarshaller::DeserializeRpb(std::istream& inStream) {
     boost::split(tokens, line, boost::is_any_of(" =;,\t\n"),
       boost::algorithm::token_compress_on);
 
-    if (tokens.empty() || 3 < tokens.size()) {
+    if (tokens.empty() || 3 < tokens.size()) 
       throw std::exception(_("Each line contains 1 to 3 tokens"));
-    }
 
     const auto& key = tokens[0];
     
@@ -191,16 +190,16 @@ RationalModelMarshaller::DeserializeRpb(std::istream& inStream) {
       normalFators.at(it->second) = std::stod(tokens[1]);
       break;
     case 10: // lineNumCoef
-      ExtractCoefs(inStream, lineNumCoef);
+      ExtractCoefs(inS, lineNumCoef);
       break;
     case 11: // lineDenCoef
-      ExtractCoefs(inStream, lineDenCoef);
+      ExtractCoefs(inS, lineDenCoef);
       break;
     case 12: // sampNumCoef
-      ExtractCoefs(inStream, sampNumCoef);
+      ExtractCoefs(inS, sampNumCoef);
       break;
     case 13: // sampDenCoef
-      ExtractCoefs(inStream, sampDenCoef);
+      ExtractCoefs(inS, sampDenCoef);
       break;
     case 14: // errBias
       errBias = std::stod(tokens[1]);
@@ -224,10 +223,10 @@ RationalModelMarshaller::DeserializeRpb(std::istream& inStream) {
 /**
  *  \brief Deserialize from rpc.txt file
  *
- *  \param [in] inStream input stream
+ *  \param [in] inS input stream
  */
 std::unique_ptr<RationalModel>
-RationalModelMarshaller::DeserializeRpc(std::istream& inStream) {
+RationalModelMarshaller::DeserializeRpc(std::istream& inS) {
   std::array<double, rnf::NumFact> normalFators{};
   std::array<double, RationalModel::NumCoef> lineNumCoef{};
   std::array<double, RationalModel::NumCoef> lineDenCoef{};
@@ -235,8 +234,8 @@ RationalModelMarshaller::DeserializeRpc(std::istream& inStream) {
   std::array<double, RationalModel::NumCoef> sampDenCoef{};
   
   std::string line;
-  while (!inStream.eof()) {
-    std::getline(inStream, line);
+  while (!inS.eof()) {
+    std::getline(inS, line);
     boost::trim(line);
     if (line.empty()) continue;
 
@@ -244,9 +243,8 @@ RationalModelMarshaller::DeserializeRpc(std::istream& inStream) {
     boost::split(tokens, line, boost::is_any_of(" :\t\n"),
       boost::algorithm::token_compress_on);
 
-    if (2 > tokens.size()) {
+    if (2 > tokens.size()) 
       throw std::exception(_("Each line contains 2+ tokens"));
-    }
 
     const auto& key = tokens[0];
     const auto& value = tokens[1];
@@ -291,24 +289,24 @@ RationalModelMarshaller::DeserializeRpc(std::istream& inStream) {
 /**
  *  \brief insert 20 coefficients
  *
- *  \param [in] outStream output stream
+ *  \param [in] outS output stream
  *  \param [in] coefs 20 coefficients
  */
-void RationalModelMarshaller::InsertCoefs(std::ostream& outStream,
+void RationalModelMarshaller::InsertCoefs(std::ostream& outS,
   const std::array<double, RationalModel::NumCoef>& coefs) {
 }
 
 /**
  *  \brief extract 20 coefficients
  *  
- *  \param [in] inStream input stream
+ *  \param [in] inS input stream
  *  \param [out] coefs 20 coefficients
  */
-void RationalModelMarshaller::ExtractCoefs(std::istream & inStream,
+void RationalModelMarshaller::ExtractCoefs(std::istream & inS,
   std::array<double, RationalModel::NumCoef>& coefs) {
   std::string line;
   for (size_t i = 0; i < RationalModel::NumCoef; ++i) {
-    std::getline(inStream, line);
+    std::getline(inS, line);
     boost::trim(line);
     coefs[i] = std::stod(line);
   }

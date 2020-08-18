@@ -138,12 +138,10 @@ bool DistortionGrid<Ty>::FetchGrid(unsigned int &numCols, unsigned int &numRows,
   std::tie(numCols, numRows) = mGrid->GetSize();
 
   const unsigned int dim = mGrid->GetDimension();
-  if (2 != dim) {
+  if (2 != dim) 
     throw std::exception("Distortion grid must be 2D.");
-  }
 
   const auto numPts = mGrid->GetNumNodes();
-
   vX.resize(numPts);
   vY.resize(numPts);
   vdX.resize(numPts);

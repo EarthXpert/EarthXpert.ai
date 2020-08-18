@@ -6,7 +6,8 @@ set(marshaller_srcs "epipolarmodel/epipolarstereomarshaller.cpp"
        "project/p4dprjmarshaller.cpp"
        "sensormodel/distgridmarshaller.cpp"
        "sensormodel/framemodelmarshaller.cpp"
-       "sensormodel/rationalmodelmarshaller.cpp")
+       "sensormodel/rationalmodelmarshaller.cpp"
+       "sfm/featuremarshaller.cpp")
 earthxpert_add_library(marshaller "api"
   SRCS ${marshaller_srcs}
   ITEMS ex3rdparty core epipolarmodel exproject sensormodel

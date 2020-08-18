@@ -22,12 +22,10 @@ using namespace earthxpert;
  */
 Pointcloud::Pointcloud(const size_t pointCapacity, const FieldGroup fieldGroup)
   : mPointCapacity(pointCapacity), mFieldGroup(fieldGroup) {
-  if (0 == mPointCapacity) {
+  if (0 == mPointCapacity) 
     throw std::invalid_argument(_("pointCapacity"));
-  }
-  if (mFieldGroup.none()) {
+  if (mFieldGroup.none()) 
     throw std::invalid_argument(_("fieldGroup"));
-  }
   mPointCount = mPointCapacity; // default to be capacity
 
   for (auto pos : FieldGroup::kPOS) {

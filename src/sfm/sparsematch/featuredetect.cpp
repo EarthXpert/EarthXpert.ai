@@ -40,7 +40,7 @@ bool FeatureDetect::Process(IRasterReader* const img, cv::FileStorage* fs) {
     ProcessTiles();
   }
   catch (...) {
-    throw;
+    throw SfMError(_("Process failed"));
   }
 
   mPerf.tmTotal = mClock.TimeSinceStart() - start;
@@ -62,6 +62,12 @@ void FeatureDetect::SetImageParams(IRasterReader* const img) {
 void FeatureDetect::SetOutputParams(cv::FileStorage* fs) {
   assert(fs);
   mFS = fs;
+
+  *mFS << "signature" << "exai.featuredetect";
+  *mFS << "version" << std::vector<int>{1, 0, 0};
+  //*mFS << "imgSize";
+  //*mFS << "imgFile";
+  *mFS << "featureType" << mFeatureType;
 }
 
 /**
@@ -161,6 +167,8 @@ void FeatureDetect::ReadTile(const int tileId) {
 void FeatureDetect::ProcessTile(const int tileId) {
   if (!TileId(tileId)) return;
   const auto start = mClock.TimeSinceStart();
+
+  // in-memory ProcessTile(imgMat, kpVec, dctMat)
 
   mPerf.tmProcess += mClock.TimeSinceStart() - start;
 }

@@ -21,9 +21,8 @@ using namespace earthxpert;
 VectorReader::VectorReader(const std::string& vecFile, const std::vector<LayerInfo>& layersInfo)
   : mLayersInfo(layersInfo) {
   auto dataset = GDALOpenEx(vecFile.c_str(), GDAL_OF_VECTOR, nullptr, nullptr, nullptr);
-  if (!dataset) {
+  if (!dataset) 
     throw IOError(_("OGR failed to open vector data source for read access."));
-  }
 
   Initialize(static_cast<GDALDataset*>(dataset));
 }
@@ -66,9 +65,8 @@ std::unique_ptr<VectorMetadata> VectorReader::GetMetadata() const {
 UPSpatialRefSys VectorReader::GetCoordinateSystem() const {
   auto spatialRef = 
     std::make_unique<SpatialReferenceSystem>(mDataset->GetProjectionRef());
-  if (!spatialRef) {
+  if (!spatialRef) 
     throw IOError(_("This data source file has no infomation on coordinate system"));
-  }
   return spatialRef;
 }
 

@@ -4,18 +4,24 @@
  */
 #pragma once
 
-#include "marshaller/iepipolarstereomarshaller.h"
+#include "marshaller/exmarshaller.h"
+#include "marshaller/marshalltypes.h"
+#include "epipolarmodel/epipolarmodel.h"
 
 #include <memory>
 
 namespace earthxpert {
+struct EpiModelInfo {
+  std::string sensorMdlFile;    // path to sensor model file
+  std::string epiImgFile;       // path to the epipolar image file
+  IEpipolarModel const* epiModel{}; // raw pointer to epipolar model object
+};
 
 /**
  *  The class EpipolarStereoMarshaller serialize and deserialize the
  *  epipolar model and links to associated sensor models.
  */
-class EXMARSHALLER_EXPORTS EpipolarStereoMarshaller final
-    : public IEpipolarStereoMarshaller {
+class EXMARSHALLER_EXPORTS EpipolarStereoMarshaller {
 public:
   EpipolarStereoMarshaller(MarshallLib mLib= eFileStorage) : mMLib(mLib) {}
   ~EpipolarStereoMarshaller() = default;
@@ -27,7 +33,7 @@ public:
    *  \param [in] epiModel the epipolar model to be serialized
    */
   bool Serialize(const std::string& epiMdlFile, 
-    const std::vector<EpiModelInfo>& epiModels) const override;
+    const std::vector<EpiModelInfo>& epiModels) const;
 
   /**
    *  \brief deserialize a json file into an epipolar model
@@ -35,7 +41,7 @@ public:
    *  \param [in] epiMdlFile name of the file to be deserialized
    *  \return the pointer to the epipolar model
    */
-  std::vector<UPIEpipolarModel> Deserialize(const std::string & epiMdlFile) const override;
+  std::vector<UPIEpipolarModel> Deserialize(const std::string & epiMdlFile) const;
 
 private:
   MarshallLib mMLib{ eFileStorage };

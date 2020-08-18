@@ -31,9 +31,8 @@ static const std::map<cv::InterpolationFlags, int> sInterpWinMap = {
 template <int algoBackend>
 RasterResample<algoBackend>::RasterResample(const std::string& algo) {
   auto it = sInterpAlgoMap.find(algo);
-  if (it == sInterpAlgoMap.end()) {
+  if (it == sInterpAlgoMap.end()) 
     throw std::invalid_argument(_("RasterResample: algo"));
-  }
   mInterpAlgo = it->second;
 }
 

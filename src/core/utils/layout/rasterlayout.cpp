@@ -75,10 +75,9 @@ int RasterLayout::SetNumWindows(const int numWins) {
  *  \brief Divides image extent into tiles.
  */
 void RasterLayout::LayoutWindows() {
-  if (mRange.numCols < mWinNumCols || mRange.numRows < mWinNumRows) {
+  if (mRange.numCols < mWinNumCols || mRange.numRows < mWinNumRows) 
     throw std::invalid_argument(_("The window size "
       "should be less than or equal to the image size"));
-  }
   if (0 == mWinNumCols) mWinNumCols = mRange.numCols;
   if (0 == mWinNumRows) mWinNumRows = mRange.numRows;
 

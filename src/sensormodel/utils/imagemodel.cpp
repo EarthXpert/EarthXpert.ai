@@ -23,19 +23,14 @@ DigitalImageModelImp::DigitalImageModelImp(const int numCols, const int numRows,
                        const double pixSizeX, const double pixSizeY)
     : mNumCols(numCols), mNumRows(numRows), mPixSizeX(pixSizeX), mPixSizeY(pixSizeY) {
   // Check for image dimension
-  if (mNumCols <= 0 || mNumRows <= 0) {
+  if (mNumCols <= 0 || mNumRows <= 0) 
     throw std::invalid_argument(_("Image dimension must be positive"));
-  }
 
   constexpr auto tol{0.001}; // [unit: um]
-
-  if (mPixSizeX < tol) {
+  if (mPixSizeX < tol) 
     throw std::invalid_argument(_("Pixel size in X-direction is too small"));
-  }
-
-  if (mPixSizeY < tol) {
+  if (mPixSizeY < tol) 
     throw std::invalid_argument(_("Pixel size in Y-direction is too small"));
-  }
 
   // calculate origin and reciprocals
   mOrigin = { mNumCols / 2.0, mNumRows / 2.0 };
@@ -84,22 +79,19 @@ FilmImageModelImp::FilmImageModelImp(const int numCols, const int numRows,
     : mNumCols(numCols), mNumRows(numRows), mCRToX(crToX), mCRToY(crToY),
       mXYToC(xyToC), mXYToR(xyToR) {
   // Check for image dimension
-  if (mNumCols <= 0 || mNumRows <= 0) {
+  if (mNumCols <= 0 || mNumRows <= 0) 
     throw std::invalid_argument(_("Image dimension must be positive"));
-  }
 
   constexpr auto tol = std::numeric_limits<double>::epsilon();
 
   // Check for singular transformation coefficients.
   const auto cr2XY = mCRToX[1] * mCRToY[2] - mCRToX[2] * mCRToY[1];
-  if (fabs(cr2XY) < tol) {
+  if (fabs(cr2XY) < tol) 
     throw std::underflow_error(_("Image-To-FocalPlane trnasformation is singular"));
-  }
 
   const auto xy2CR = mXYToC[1] * mXYToR[2] - mXYToC[2] * mXYToR[1];
-  if (fabs(xy2CR) < tol) {
+  if (fabs(xy2CR) < tol) 
     throw std::underflow_error(_("FocalPlane-To-Image trnasformation is singular"));
-  }
 }
 
 bool FilmImageModelImp::operator==(const FilmImageModelImp &rhs) const {

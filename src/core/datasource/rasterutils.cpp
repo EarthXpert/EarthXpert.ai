@@ -58,9 +58,8 @@ namespace detail {
  */
 int ConvertPixelType(const GDALDataType gdalType, const int numBands) {
   const auto it = detail::sDataTypesG2C.find(gdalType);
-  if (detail::sDataTypesG2C.end() == it) {
+  if (detail::sDataTypesG2C.end() == it) 
     throw std::invalid_argument(_("Unknown GDAL data type"));
-  }
 
   return CV_MAKETYPE(it->second, numBands);
 }
@@ -75,9 +74,8 @@ std::pair<GDALDataType, int> EXCORE_EXPORTS ConvertPixelType(const int cvType) {
   const auto depth = CV_MAT_DEPTH(cvType);
 
   const auto it = detail::sDataTypesC2G.find(depth);
-  if (detail::sDataTypesC2G.end() == it) {
+  if (detail::sDataTypesC2G.end() == it) 
     throw std::invalid_argument(_("Unknown OpenCV depth type"));
-  }
 
   return {it->second, CV_MAT_CN(cvType) };
 }
@@ -191,9 +189,8 @@ std::unique_ptr<CvRaster> ConvertRaster(const GdalRaster* gdalRaster) {
  */
 std::unique_ptr<CvRaster> ConvertRaster(const GdalRaster* gdalRaster, const int band) {
   auto numBands = gdalRaster->GetNumBands();
-  if (band >= numBands) {
+  if (band >= numBands) 
     throw std::out_of_range(_("band ID is out of range"));
-  }
 
   auto [numCols, numRows] = gdalRaster->GetSize();
   auto gdalType = gdalRaster->GetDataType();
@@ -222,18 +219,16 @@ std::vector<std::unique_ptr<CvRaster>> EXCORE_EXPORTS ConvertRaster(
   const GdalRaster* gdalRaster, const std::vector<int>& bands) {
   std::vector<int> cvtBands{bands};
   const int numBands = gdalRaster->GetNumBands();
-  if (numBands < bands.size()) {
+  if (numBands < bands.size()) 
     throw std::invalid_argument(_("Requested bands are larger than the available bands"));
-  }
   if (bands.empty()) {
     cvtBands.resize(numBands);
     std::iota(cvtBands.begin(), cvtBands.end(), 0);
   }
   else {
     auto [itMin, itMax] = std::minmax_element(cvtBands.begin(), cvtBands.end());
-    if (0 > * itMin || numBands <= *itMax) {
+    if (0 > * itMin || numBands <= *itMax) 
       throw std::out_of_range(_("Requested bands are out of the range of available bands"));
-    }
   }
 
   std::vector<std::unique_ptr<CvRaster>> cvRasters;

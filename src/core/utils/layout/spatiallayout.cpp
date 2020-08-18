@@ -76,9 +76,8 @@ int SpatialLayout<Ty>::SetNumTiles(const int numTiles) {
  *  \brief Divides spatial extent into tiles.
  */
 template <typename Ty> void SpatialLayout<Ty>::LayoutTiles() {
-  if (mRange.width < mTileWidth || mRange.height < mTileHeight) {
+  if (mRange.width < mTileWidth || mRange.height < mTileHeight) 
     throw std::invalid_argument(_("The tile size should be less than or equal to the region size"));
-  }
   if (0 == mTileWidth) mTileWidth = mRange.width;
   if (0 == mTileHeight) mTileHeight = mRange.height;
 

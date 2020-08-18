@@ -92,9 +92,8 @@ void StereoModel::Initialize() {
       const auto a = srs->GetSemiMajor();
       const auto ecc2 = srs->GetSquaredEccentricity();
 
-      if (!eq(semiMajor, a) || !eq(eccSq, ecc2)) {
+      if (!eq(semiMajor, a) || !eq(eccSq, ecc2)) 
         throw std::exception(_("StereoModel: in-compatible datum"));
-      }
     }
   }
 
@@ -135,9 +134,8 @@ void StereoModel::SetForwardAlgorithm(const ForwardAlgo fwdAlgo) {
     break;
   }
   case eCA_INTERSECT: {
-    if (eGEO == mSrsType && !(mEarthEllip && mIntersect)) {
+    if (eGEO == mSrsType && !(mEarthEllip && mIntersect)) 
       throw std::exception("StereoModel: SetForwardAlgorithm");
-    }
     break;
   }
   case eSM_NR: {

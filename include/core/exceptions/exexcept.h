@@ -8,35 +8,35 @@
 #include "3rdparty/gettext/exgettext.h"
 
 namespace earthxpert {
+/**
+ *  \brief Reports errors when doing epipolar transformation
+ */
+class EpipolarError : public std::exception {
+public:
   /**
-   *  \brief Reports errors when doing epipolar transformation
+   *  \param [in] message The message string
    */
-  class EpipolarError : public std::exception {
-  public:
-    /**
-     *  \param [in] message The message string
-     */
-    explicit EpipolarError(const std::string& message)
-      : exception(message.c_str()) {}
+  explicit EpipolarError(const std::string& message)
+    : exception(message.c_str()) {}
 
-    explicit EpipolarError(const char *message)
-      : exception(message) {}
-  };
+  explicit EpipolarError(const char *message)
+    : exception(message) {}
+};
 
-  /**
+/**
  *  \brief Reports errors being lacking of valid license
  */
-  class InvalidLicense : public std::exception {
-  public:
-    /**
-     *  \param [in] message The message string
-     */
-    explicit InvalidLicense(const std::string& message)
-      : exception(message.c_str()) {}
+class InvalidLicense : public std::exception {
+public:
+  /**
+   *  \param [in] message The message string
+   */
+  explicit InvalidLicense(const std::string& message)
+    : exception(message.c_str()) {}
 
-    explicit InvalidLicense(const char *message)
-      : exception(message) {}
-  };
+  explicit InvalidLicense(const char *message)
+    : exception(message) {}
+};
 
   /**
  *  \brief Reports IO relevant errors
@@ -64,7 +64,22 @@ public:
   explicit SensorError(const std::string& message)
     : exception(message.c_str()) {}
 
-  explicit SensorError(const char *message)
+  explicit SensorError(const char* message)
+    : exception(message) {}
+};
+
+/**
+ *  \brief Reports sensor model relevant errors such as failure of SfM
+ */
+class SfMError : public std::exception {
+public:
+  /**
+   *  \param [in] message The message string
+   */
+  explicit SfMError(const std::string& message)
+    : exception(message.c_str()) {}
+
+  explicit SfMError(const char* message)
     : exception(message) {}
 };
 } // namespace earthxpert
