@@ -65,8 +65,7 @@ std::pair<float, float> PointcloudReader::GetBuffers() const noexcept {
 /**
  *  \return Returns pointer to the spatial coordinate system
  */
-std::unique_ptr<SpatialReferenceSystem> 
-PointcloudReader::GetCoordinateSystem() const {
+UPSpatialRefSys PointcloudReader::GetCoordinateSystem() const {
   return nullptr;
 }
 

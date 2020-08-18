@@ -21,4 +21,7 @@ public:
 
   PrjType GetProjectType() const noexcept override { return ePT_RATIONAL; }
 };
+
+using UPRationalProject = std::unique_ptr<RationalProject>;
+using SPRationalProject = std::shared_ptr<RationalProject>;
 }

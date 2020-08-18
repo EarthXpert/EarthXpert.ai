@@ -116,4 +116,7 @@ private:
   // cached for convenience/performance
   std::vector<const RationalModel*> mRatModels;   // one model per ray
 };
+
+using UPRationalStereoModel = std::unique_ptr<RationalStereoModel>;
+using SPRationalStereoModel = std::shared_ptr<RationalStereoModel>;
 }

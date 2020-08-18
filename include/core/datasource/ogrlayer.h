@@ -47,4 +47,7 @@ private:
 
   void ObtainLayerInfor();
 };
+
+using UPOgrLayer = std::unique_ptr<OgrLayer>;
+using SPOgrLayer = std::shared_ptr<OgrLayer>;
 } // namespace earthxpert

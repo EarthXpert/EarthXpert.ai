@@ -64,7 +64,7 @@ public:
 
   MarginKind GetMarginKind() const noexcept override { return MarginKind::eCONSTANT; }
 
-  std::unique_ptr<SpatialReferenceSystem> GetCoordinateSystem() const override { return nullptr; }
+  UPSpatialRefSys GetCoordinateSystem() const override { return nullptr; }
 
   std::unique_ptr<Geocoding> GetGeocoding() const override { return nullptr; }
 

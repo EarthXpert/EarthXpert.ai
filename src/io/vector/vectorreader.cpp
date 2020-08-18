@@ -63,10 +63,11 @@ std::unique_ptr<VectorMetadata> VectorReader::GetMetadata() const {
 /**
  *  \return Returns pointer to the spatial coordinate system
  */
-std::unique_ptr<SpatialReferenceSystem> VectorReader::GetCoordinateSystem() const {
-  auto spatialRef = std::make_unique<SpatialReferenceSystem>(mDataset->GetProjectionRef());
+UPSpatialRefSys VectorReader::GetCoordinateSystem() const {
+  auto spatialRef = 
+    std::make_unique<SpatialReferenceSystem>(mDataset->GetProjectionRef());
   if (!spatialRef) {
-    throw IOError("This data source file has no infomation on coordinate system ");
+    throw IOError(_("This data source file has no infomation on coordinate system"));
   }
   return spatialRef;
 }

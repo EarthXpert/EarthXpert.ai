@@ -115,7 +115,7 @@ public:
    *
    *  \return Returns pointer to a coordinate system
    */
-  std::unique_ptr<SpatialReferenceSystem> GetCoordinateSystem() const override;
+  UPSpatialRefSys GetCoordinateSystem() const override;
 
   /**
    *  \brief Fetch the geocoding information of the image file.
@@ -202,4 +202,7 @@ private:
   MarginFlag ObtainMarginFlag(IRaster* const raster) const;
   MarginFillDim ObtainMarginFillDim(IRaster* const raster) const;
 };
+
+using UPRasterReader = std::unique_ptr<RasterReader>;
+using SPRasterReader = std::shared_ptr<RasterReader>;
 } // namespace earthxpert

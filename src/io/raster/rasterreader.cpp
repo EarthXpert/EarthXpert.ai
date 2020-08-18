@@ -65,8 +65,7 @@ std::unique_ptr<RasterMetadata> RasterReader::GetMetadata() const {
 /**
  *  \return Returns pointer to the spatial coordinate system
  */
-std::unique_ptr<SpatialReferenceSystem> 
-RasterReader::GetCoordinateSystem() const {
+UPSpatialRefSys RasterReader::GetCoordinateSystem() const {
   auto spatialRef = 
     std::make_unique<SpatialReferenceSystem>(mDataset->GetProjectionRef());
   if (!spatialRef) {

@@ -32,4 +32,7 @@ public:
    */
   virtual int GetNumFeatures() const noexcept = 0;
 };
+
+using UPILayer = std::unique_ptr<ILayer>;
+using SPILayer = std::shared_ptr<ILayer>;
 } // namespace earthxpert

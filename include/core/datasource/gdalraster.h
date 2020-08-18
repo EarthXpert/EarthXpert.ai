@@ -237,4 +237,7 @@ private:
 
   void ObtainBufferInfo();
 };
+
+using UPGdalRaster = std::unique_ptr<GdalRaster>;
+using SPGdalRaster = std::shared_ptr<GdalRaster>;
 } // namespace earthxpert

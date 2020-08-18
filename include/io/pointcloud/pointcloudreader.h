@@ -67,7 +67,7 @@ public:
   /**
    *  \return Returns pointer to a coordinate system
    */
-  std::unique_ptr<SpatialReferenceSystem> GetCoordinateSystem() const override;
+  UPSpatialRefSys GetCoordinateSystem() const override;
 
   /**
    *  \return Returns total number of points of las file

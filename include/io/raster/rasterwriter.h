@@ -229,4 +229,7 @@ private:
   void ObtainDatasetInfo();
   std::tuple<RasterWindow, int64> ObtainWriteWindow(const IRaster* raster) const;
 };
+
+using UPRasterWriter = std::unique_ptr<RasterWriter>;
+using SPRasterWriter = std::shared_ptr<RasterWriter>;
 } // namespace earthxpert

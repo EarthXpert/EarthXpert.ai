@@ -75,4 +75,7 @@ private:
   double mCosRot{};
   double mSinRot{};
 };
+
+using UPEpipolarRect = std::unique_ptr<EpipolarRect>;
+using SPEpipolarRect = std::shared_ptr<EpipolarRect>;
 } // namespace earthxpert

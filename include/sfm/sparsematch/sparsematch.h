@@ -14,4 +14,7 @@ class EXSFM_EXPORTS SparseMatch : public ISparseMatch {
 public:
   virtual ~SparseMatch() = default;
 };
+
+using UPSparseMatch = std::unique_ptr<SparseMatch>;
+using SPSparseMatch = std::shared_ptr<SparseMatch>;
 }

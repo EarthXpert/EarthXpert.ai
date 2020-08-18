@@ -97,4 +97,7 @@ private:
 
   cv::FileStorage* mFS{};
 };
+
+using UPFeatureDetect = std::unique_ptr<FeatureDetect>;
+using SPFeatureDetect = std::shared_ptr<FeatureDetect>;
 }

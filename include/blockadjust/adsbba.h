@@ -15,4 +15,7 @@ class EXBBA_EXPORTS AdsBBA final : public BlockAdjust {
 public:
   ~AdsBBA() = default;
 };
+
+using UPAdsBBA = std::unique_ptr<AdsBBA>;
+using SPAdsBBA = std::shared_ptr<AdsBBA>;
 } // namespace earthxpert

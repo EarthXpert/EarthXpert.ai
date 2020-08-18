@@ -18,4 +18,7 @@ class ISensorModel;
  */
 class EXSENSORMODEL_EXPORTS FrameStereoModel final : public StereoModel{
 };
+
+using UPFrameStereoModel = std::unique_ptr<FrameStereoModel>;
+using SPFrameStereoModel = std::shared_ptr<FrameStereoModel>;
 }

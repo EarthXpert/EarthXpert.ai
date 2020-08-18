@@ -72,4 +72,7 @@ private:
 };
 
 using CubeType = SensorCube::LayerType;
+
+using UPSensorCube = std::unique_ptr<SensorCube>;
+using SPSensorCube = std::shared_ptr<SensorCube>;
 }

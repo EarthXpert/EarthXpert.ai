@@ -21,4 +21,7 @@ public:
 
   PrjType GetProjectType() const noexcept override { return ePT_ADS; }
 };
+
+using UPAdsProject = std::unique_ptr<AdsProject>;
+using SPAdsProject = std::shared_ptr<AdsProject>;
 }

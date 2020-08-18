@@ -204,4 +204,7 @@ private:
 
   void ObtainMatInfo();
 };
+
+using UPCvRaster = std::unique_ptr<CvRaster>;
+using SPCvRaster = std::shared_ptr<CvRaster>;
 } // namespace earthxpert

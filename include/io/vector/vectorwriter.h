@@ -158,4 +158,7 @@ private:
 
   void ObtainDatasetInfo();
 };
+
+using UPVectorWriter = std::unique_ptr<VectorWriter>;
+using SPVectorWriter = std::shared_ptr<VectorWriter>;
 } // namespace earthxpert

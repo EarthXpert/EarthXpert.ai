@@ -67,7 +67,7 @@ public:
    *
    *  \return Returns pointer to a coordinate system
    */
-  std::unique_ptr<SpatialReferenceSystem> GetCoordinateSystem() const override;
+  UPSpatialRefSys GetCoordinateSystem() const override;
 
   /**
    *  \brief Reads the entire vector.
@@ -118,4 +118,7 @@ private:
 
   void ObtainDatasetInfo();
 };
+
+using UPVectorReader = std::unique_ptr<VectorReader>;
+using SPVectorReader = std::shared_ptr<VectorReader>;
 } // namespace earthxpert

@@ -151,4 +151,7 @@ private:
       mFusedScannerEP; // extrinsic parameters combining original extrinsic
                        // parameters and their corrections
 };
+
+using UPRollingShutterModel = std::unique_ptr<RollingShutterModel>;
+using SPRollingShutterModel = std::shared_ptr<RollingShutterModel>;
 } // namespace earthxpert

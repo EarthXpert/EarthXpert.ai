@@ -21,10 +21,10 @@
 using namespace earthxpert;
 
 // output option
-static const std::map<std::string, EpipolarStereoFactory::EpiOpt> sOutOptMap = {
-  {"compact", EpipolarStereoFactory::EpiOpt::eCOMPACT},
-  {"full", EpipolarStereoFactory::EpiOpt::eFULL},
-  {"intersect", EpipolarStereoFactory::EpiOpt::eINTERSECT} };
+static const std::map<std::string, FacEpiOpt> sOutOptMap = {
+  {"compact", FacEpiOpt::eCOMPACT},
+  {"full", FacEpiOpt::eFULL},
+  {"intersect", FacEpiOpt::eINTERSECT} };
 
 /**
  *  \brief

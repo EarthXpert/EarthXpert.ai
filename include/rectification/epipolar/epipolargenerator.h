@@ -187,4 +187,7 @@ private:
 
 // typically for satellite remote sensing
 using OrthoReadyGenerator = EpipolarGenerator;
+
+using UPEpipolarGenerator = std::unique_ptr<EpipolarGenerator>;
+using SPEpipolarGenerator = std::shared_ptr<EpipolarGenerator>;
 } // namespace earthxpert
