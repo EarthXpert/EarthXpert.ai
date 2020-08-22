@@ -24,6 +24,10 @@ inline char* _(const std::string_view& str) {
 }
 
 namespace thirdparty {
-
+/**
+ *  \brief set the i18n/l10n environment
+ */
+void EX3RDPARTY_EXPORTS ConfigureI18N_GNU(const int category, 
+  const std::string locale, const std::string& domain, const std::string& dir);
 }
 } // namespace earthxpert::thirdparty

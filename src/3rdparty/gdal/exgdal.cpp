@@ -16,10 +16,10 @@ namespace earthxpert {
  *  \brief Initialize GDAL library
  */
 void GDALInitialize() {
-  auto data = fs::canonical(fs::current_path() / "../../etc/gdal");
+  //auto data = fs::canonical(fs::current_path() / "../../etc/gdal");
   //std::cout << "GDAL_DATA = " << data << std::endl;
   CPLSetConfigOption("GDAL_CACHEMAX", "256");
-  CPLSetConfigOption("GDAL_DATA", data.string().c_str());
+  //CPLSetConfigOption("GDAL_DATA", data.string().c_str());
   GDALAllRegister();
 }
 

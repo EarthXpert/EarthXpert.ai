@@ -130,7 +130,7 @@ bool EpipolarStereoMarshaller::SerializeFS(const std::string& epiMdlFile,
 
   fs << "signature" << "exai.epipolar" << "version" << std::vector<int>{1, 0, 0}
     << "origin" << origin.value() << "scale" << scale << "rotation" << rotation
-    << "EpiStereo" << epiMdlRecs;
+    << "epiStereo" << epiMdlRecs;
 
   //auto& lee = *(lem->mGroundPolicy->GetEarthEllipsoid());
 
@@ -161,7 +161,7 @@ std::vector<UPIEpipolarModel> EpipolarStereoMarshaller::DeserializeFS(
   rotation = Deg2Rad(rotation);
 
   std::vector<EpiModelRecord> epiMdlRecs;
-  fs["EpiStereo"] >> epiMdlRecs;
+  fs["epiStereo"] >> epiMdlRecs;
 
   auto earthEllip = std::make_unique<EarthEllipsoid>();
   earthEllip->SetLsrOrigin(origin);
