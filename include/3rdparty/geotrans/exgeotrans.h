@@ -8,8 +8,12 @@
 
 #include <CoordinateConversionException.h>
 #include <CoordinateConversionService.h>
+#include <CoordinateType.h>
+#include <HeightType.h>
 
 namespace ccs = MSP::CCS;
+using ccs_ct = ccs::CoordinateType;
+using ccs_ht = ccs::HeightType;
 
 namespace earthxpert::thirdparty {
 } // namespace earthxpert::thirdparty

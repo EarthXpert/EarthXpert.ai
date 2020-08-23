@@ -6,10 +6,8 @@
 #include <CartesianCoordinates.h>
 #include <CoordinateSystemParameters.h>
 #include <CoordinateTuple.h>
-#include <CoordinateType.h>
 #include <GeodeticCoordinates.h>
 #include <GeodeticParameters.h>
-#include <HeightType.h>
 #include <MGRSorUSNGCoordinates.h>
 #include <UTMCoordinates.h>
 #include <UTMParameters.h>
@@ -65,47 +63,47 @@ static std::string ConvertGeocentricToMgrs(
  * | Geocentric                  | MGRS                        |
  * |-----------------------------+-----------------------------|
  */
-TEST(geotrans, CCS) {
-  const char* WGE = "WGE";
+TEST(geotrans, CCS_WGS84) {
+  const char* datum = "WGE";
 
   // Coordinate System Parameters 
-  ccs::GeodeticParameters ellipsoidParameters(
-    ccs::CoordinateType::geodetic,
-    ccs::HeightType::ellipsoidHeight);
+  ccs::GeodeticParameters ellParam(
+    ccs_ct::geodetic,
+    ccs_ht::ellipsoidHeight);
 
   ccs::CoordinateSystemParameters geocentricParameters(
-    ccs::CoordinateType::geocentric);
+    ccs_ct::geocentric);
 
   ccs::GeodeticParameters mslEgm96Parameters(
-    ccs::CoordinateType::geodetic,
-    ccs::HeightType::EGM96FifteenMinBilinear);
+    ccs_ct::geodetic,
+    ccs_ht::EGM96FifteenMinBilinear);
 
   ccs::UTMParameters utmParameters(
-    ccs::CoordinateType::universalTransverseMercator,
+    ccs_ct::universalTransverseMercator,
     1, 0);
 
   ccs::CoordinateSystemParameters mgrsParameters(
-    ccs::CoordinateType::militaryGridReferenceSystem);
+    ccs_ct::militaryGridReferenceSystem);
 
   // Coordinate Conversion Services 
   ccs::CoordinateConversionService ccsGeodeticToGeocentric(
-    WGE, &ellipsoidParameters, WGE, &geocentricParameters);
+    datum, &ellParam, datum, &geocentricParameters);
 
   ccs::CoordinateConversionService ccsGeocentricToGeodeticMslEgm96(
-    WGE, &geocentricParameters, WGE, &mslEgm96Parameters);
+    datum, &geocentricParameters, datum, &mslEgm96Parameters);
 
   ccs::CoordinateConversionService ccsMslEgm96ToEllHeight(
-    WGE, &mslEgm96Parameters, WGE, &ellipsoidParameters);
+    datum, &mslEgm96Parameters, datum, &ellParam);
   ccs::CoordinateConversionService ccsEllHeightToMslEgm96(
-    WGE, &ellipsoidParameters, WGE, &mslEgm96Parameters);
+    datum, &ellParam, datum, &mslEgm96Parameters);
 
   ccs::CoordinateConversionService ccsGeocentricToUtm(
-    WGE, &geocentricParameters, WGE, &utmParameters);
+    datum, &geocentricParameters, datum, &utmParameters);
   ccs::CoordinateConversionService ccsGeocentricToMgrs(
-    WGE, &geocentricParameters, WGE, &mgrsParameters);
+    datum, &geocentricParameters, datum, &mgrsParameters);
 
   // Geodetic (Ellipsoid Height) to Geocentric
-  double lat = Deg2Rad(43.651070); // [radian]
+  double lat = Deg2Rad(43.651070); // Toronto
   double lon = Deg2Rad(-79.347015);
   double hgt = 0.0;  // [m]
 
@@ -182,6 +180,46 @@ TEST(geotrans, CCS) {
   ASSERT_STREQ(mgrsString.c_str(), "17TPJ3330134446");
 }
 
+TEST(geotrans, CCS_WGS84_NAD27) {
+  const char* datumWgs84 = "WGE";
+  const char* datumNad27 = "NAS-E"; // NAD27 Canada
+
+  ccs::GeodeticParameters ellParam(ccs_ct::geodetic, ccs_ht::ellipsoidHeight);
+  ccs::CoordinateConversionService ccsWgs84ToNad27(
+    datumWgs84, &ellParam, datumNad27, &ellParam);
+  ccs::CoordinateConversionService ccsNad27ToWgs84(
+    datumNad27, &ellParam, datumWgs84, &ellParam);
+
+  ccs::Accuracy sourceAccuracy, targetAccuracy;
+
+  double lat = Deg2Rad(43.651070); // [radian]
+  double lon = Deg2Rad(-79.347015);
+  double hgt = 10000.0;  // [m]
+  std::cout.precision(16);
+
+  ccs::GeodeticCoordinates lph84(ccs_ct::geodetic, lon, lat, hgt);
+  ccs::GeodeticCoordinates lph27;
+  ccsWgs84ToNad27.convertSourceToTarget(
+    &lph84, &sourceAccuracy, lph27, targetAccuracy);
+  ASSERT_NEAR(lph27.latitude(), 0.7618539283318597, kTolR) << "Latitude diff > 1 mm";
+  ASSERT_NEAR(lph27.longitude(), -1.384870849582658, kTolR) << "Latitude diff > 1 mm";
+  ASSERT_NEAR(lph27.height(), 10028.36701276633, kTol) << "Height diff > 1 mm";
+
+  lph84.setHeight(0.0);
+  ccsWgs84ToNad27.convertSourceToTarget(
+    &lph84, &sourceAccuracy, lph27, targetAccuracy);
+  ASSERT_NEAR(lph27.latitude(), 0.7618539268156705, kTolR) << "Latitude diff > 1 mm";
+  ASSERT_NEAR(lph27.longitude(), -1.384870856135546, kTolR) << "Latitude diff > 1 mm";
+  ASSERT_NEAR(lph27.height(), 28.3670127663266, kTol) << "Height diff > 1 mm";
+
+  ccs::GeodeticCoordinates lph84N;
+  ccsNad27ToWgs84.convertSourceToTarget(
+    &lph27, &sourceAccuracy, lph84N, targetAccuracy);
+  ASSERT_NEAR(lph84N.latitude(), lph84.latitude(), kTolR*10) << "Latitude diff > 1 cm";
+  ASSERT_NEAR(lph84N.longitude(), lph84.longitude(), kTolR*10) << "Latitude diff > 1 cm";
+  ASSERT_NEAR(lph84N.height(), lph84.height(), kTol) << "Height diff > 1 mm";
+}
+
  /**
   * Function which uses the given Geodetic (Ellipsoid Height) to Geocentric
   * Coordinate Conversion Service, 'ccsGeodeticToGeocentric', to
@@ -192,8 +230,8 @@ void ConvertGeodeticToGeocentric(
   double lat, double lon, double hgt, double& x, double& y, double& z) {
   ccs::Accuracy sourceAccuracy;
   ccs::Accuracy targetAccuracy;
-  ccs::GeodeticCoordinates lph(ccs::CoordinateType::geodetic, lon, lat, hgt);
-  ccs::CartesianCoordinates xyz(ccs::CoordinateType::geocentric);
+  ccs::GeodeticCoordinates lph(ccs_ct::geodetic, lon, lat, hgt);
+  ccs::CartesianCoordinates xyz(ccs_ct::geocentric);
 
   ccsGeodeticToGeocentric.convertSourceToTarget(
     &lph, &sourceAccuracy, xyz, targetAccuracy);
@@ -213,7 +251,7 @@ void ConvertGeocentricToGeodetic(
   double x, double y, double z, double& lat, double& lon, double& hgt) {
   ccs::Accuracy geocentricAccuracy;
   ccs::Accuracy geodeticAccuracy;
-  ccs::CartesianCoordinates xyz(ccs::CoordinateType::geocentric, x, y, z);
+  ccs::CartesianCoordinates xyz(ccs_ct::geocentric, x, y, z);
   ccs::GeodeticCoordinates lph;
 
   // Note that the Geodetic (Ellipsoid Height) to Geocentric Coordinate
@@ -239,8 +277,8 @@ void ConvertGeocentricToGeodeticMslEgm96(
   double x, double y, double z, double& lat, double& lon, double& hgt) {
   ccs::Accuracy sourceAccuracy;
   ccs::Accuracy targetAccuracy;
-  ccs::CartesianCoordinates xyz(ccs::CoordinateType::geocentric, x, y, z);
-  ccs::GeodeticCoordinates lph(ccs::CoordinateType::geodetic, lon, lat, hgt);
+  ccs::CartesianCoordinates xyz(ccs_ct::geocentric, x, y, z);
+  ccs::GeodeticCoordinates lph(ccs_ct::geodetic, lon, lat, hgt);
 
   ccsGeocentricToGeodeticMslEgm96.convertSourceToTarget(
     &xyz, &sourceAccuracy, lph, targetAccuracy);
@@ -261,7 +299,7 @@ void ConvertMslEgm96ToEllHeight(
   double lat, double lon, double hgtMsl, double& ellHeight) {
   ccs::Accuracy sourceAccuracy;
   ccs::Accuracy targetAccuracy;
-  ccs::GeodeticCoordinates lphMsl(ccs::CoordinateType::geodetic, lon, lat, hgtMsl);
+  ccs::GeodeticCoordinates lphMsl(ccs_ct::geodetic, lon, lat, hgtMsl);
   ccs::GeodeticCoordinates lph;
 
   ccsMslEgm96ToEllHeight.convertSourceToTarget(
@@ -281,7 +319,7 @@ void ConvertEllHeightToMslEgm96(
   double lat, double lon, double ellHeight, double& hgtMsl) {
   ccs::Accuracy sourceAccuracy;
   ccs::Accuracy targetAccuracy;
-  ccs::GeodeticCoordinates lph(ccs::CoordinateType::geodetic, lon, lat, ellHeight);
+  ccs::GeodeticCoordinates lph(ccs_ct::geodetic, lon, lat, ellHeight);
   ccs::GeodeticCoordinates lphMsl;
 
   ccsEllHeightToMslEgm96.convertSourceToTarget(
@@ -301,7 +339,7 @@ void ConvertGeocentricToUtm(
   char& hemisphere, double& easting, double& northing) {
   ccs::Accuracy sourceAccuracy;
   ccs::Accuracy targetAccuracy;
-  ccs::CartesianCoordinates xyz(ccs::CoordinateType::geocentric, x, y, z);
+  ccs::CartesianCoordinates xyz(ccs_ct::geocentric, x, y, z);
   ccs::UTMCoordinates utm;
 
   ccsGeocentricToUtm.convertSourceToTarget(
@@ -323,7 +361,7 @@ std::string ConvertGeocentricToMgrs(
   double x, double y, double z, ccs::Precision::Enum& precision) {
   ccs::Accuracy sourceAccuracy;
   ccs::Accuracy targetAccuracy;
-  ccs::CartesianCoordinates xyz(ccs::CoordinateType::geocentric, x, y, z);
+  ccs::CartesianCoordinates xyz(ccs_ct::geocentric, x, y, z);
   ccs::MGRSorUSNGCoordinates mgrs;
 
   ccsGeocentricToMgrs.convertSourceToTarget(
