@@ -20,6 +20,7 @@ set(ex3rdparty_srcs "boost/exboost.cpp"
        "cuda/excuda.cpp"
        "eigen/exeigen.cpp"
        "gdal/exgdal.cpp"
+       "geotrans/exgeotrans.cpp"
        "gettext/exgettext.cpp"
        "gflags/exgflags.cpp"
        "glog/exglog.cpp"
@@ -38,7 +39,7 @@ set(ex3rdparty_srcs "boost/exboost.cpp"
 earthxpert_add_library(ex3rdparty "api"
   SRCS ${ex3rdparty_srcs}
   ITEMS Boost::boost Boost::filesystem Boost::locale ${CERES_LIBRARY} ${CGAL_LIBRARIES} 
-        ${GDAL_LIBRARY} ${GETTEXT_LIBRARY} glog::glog ${GTEST_BOTH_LIBRARIES}
+        ${GDAL_LIBRARY} ${geotrans_LIBRARY} ${GETTEXT_LIBRARY} glog::glog ${GTEST_BOTH_LIBRARIES}
          ${LASLIB_LIBRARY} ${LIBXML2_LIBRARIES} ${OpenCV_LIBS} ${OpenEXR_LIBS} 
         OpenImageIO::OpenImageIO OpenImageIO::OpenImageIO_Util 
         ${PDAL_LIBRARIES} ${Protobuf_LIBRARIES} Qt5::Widgets ${SLTBENCH_LIBS})
