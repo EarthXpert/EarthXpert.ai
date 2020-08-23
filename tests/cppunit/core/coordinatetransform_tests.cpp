@@ -6,7 +6,7 @@
 #include "testconfig.h"
 
 #include "core/math/constants.h"
-#include "core/spatialref/coordinatetransform.h"
+#include "core/spatialref/gdalct.h"
 #include "core/utils/typehelper.h"
 
 using namespace earthxpert;
@@ -21,8 +21,8 @@ TEST(coordinatetransform, WGS84_UTM) {
   //tgtSrs.SetWellKnownGeogCS("WGS84");
   //tgtSrs.SetUTM(17);
 
-  CoordinateTransform ctG2M(&srcSrs, &tgtSrs);
-  CoordinateTransform ctM2G(&tgtSrs, &srcSrs);
+  GdalCT ctG2M(&srcSrs, &tgtSrs);
+  GdalCT ctM2G(&tgtSrs, &srcSrs);
 
   Point3d ptGeo(Deg2Rad(-79.347015), Deg2Rad(43.651070), 0);  // Toronto
   

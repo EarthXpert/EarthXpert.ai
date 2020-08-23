@@ -1,8 +1,8 @@
 /* -----------------------------------------------------------------------------
- *  Copyright (c) 2020.  All rights reserved.
+ *  Copyright (c) 2019.  All rights reserved.
  * -----------------------------------------------------------------------------
  */
-#include "core/spatialref/coordinatetransform.h"
+#include "core/spatialref/gdalct.h"
 
 using namespace earthxpert;
 using namespace earthxpert::thirdparty;
@@ -13,7 +13,7 @@ using namespace earthxpert::thirdparty;
  * \param [in] srcSrs the source SRS
  * \param [in] tgtSrs the target SRS
  */
-CoordinateTransform::CoordinateTransform(OGRSpatialReference* srcSrs,
+GdalCT::GdalCT(OGRSpatialReference* srcSrs,
   OGRSpatialReference* tgtSrs) {
   Initialize(srcSrs, tgtSrs);
 }
@@ -29,7 +29,7 @@ CoordinateTransform::CoordinateTransform(OGRSpatialReference* srcSrs,
  *  That is, the mappings are X -> lat, Y -> lon. To maintain the backward compatibility,
  *  set the stategy OAMS_TRADITIONAL_GIS_ORDER here.
  */
-CoordinateTransform::CoordinateTransform(const std::string& srcWkt, 
+GdalCT::GdalCT(const std::string& srcWkt, 
   const std::string& tgtWkt) {
     OGRSpatialReference srcSrs(srcWkt.c_str());
     OGRSpatialReference tgtSrs(tgtWkt.c_str());
@@ -42,7 +42,7 @@ CoordinateTransform::CoordinateTransform(const std::string& srcWkt,
     Initialize(&srcSrs, &tgtSrs);
 }
 
-void CoordinateTransform::Initialize(OGRSpatialReference* srcSrs,
+void GdalCT::Initialize(OGRSpatialReference* srcSrs,
   OGRSpatialReference* tgtSrs) {
   mCT.reset(OGRCreateCoordinateTransformation(srcSrs, tgtSrs));
 }
@@ -53,7 +53,7 @@ void CoordinateTransform::Initialize(OGRSpatialReference* srcSrs,
  *  \param [in] points an array of 3D points
  *  \return Returns if the transformation was successful, otherwise false.
  */
-bool CoordinateTransform::Transform(std::vector<Point3d>& points) {
+bool GdalCT::Transform(std::vector<Point3d>& points) {
   bool ret{ true };
   for (auto& point : points) {
     ret = ret && Transform(point);

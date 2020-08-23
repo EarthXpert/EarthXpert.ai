@@ -1,32 +1,29 @@
 /* -----------------------------------------------------------------------------
- *  Copyright (c) 2020.  All rights reserved.
+ *  Copyright (c) 2019.  All rights reserved.
  * -----------------------------------------------------------------------------
  */
 #pragma once
 
-#include "core/excore.h"
+#include "core/spatialref/ict.h"
 #include "3rdparty/gdal/exgdal.h"
-#include "3rdparty/opencv/exopencv.h"
 
 #include <memory>
-#include <vector>
 
 namespace earthxpert {
 /**
- *  The class CoordinateTransform provides service of coordinate 
- *  transformation from a source coordinate system to a target coordinate system  
+ *  The class GdalCT provides service of coordinate transformation 
+ *  from a source coordinate system to a target coordinate system  
  *  with OGR as backend.
  */
-class EXCORE_EXPORTS CoordinateTransform
-{
+class EXCORE_EXPORTS GdalCT final : public ICT {
 public:
-  CoordinateTransform(OGRSpatialReference* srcSrs, OGRSpatialReference* tgtSrs);
-  CoordinateTransform(const std::string& srcWkt, const std::string& tgtWkt);
-  ~CoordinateTransform() = default;
+  GdalCT(OGRSpatialReference* srcSrs, OGRSpatialReference* tgtSrs);
+  GdalCT(const std::string& srcWkt, const std::string& tgtWkt);
+  ~GdalCT() = default;
 
   /**
    *  \return Returns the backend OGRCoordinateTransformation object. 
-   *  CoordinateTransform exports partially the OGR functions. The caller could 
+   *  GdalCT exports partially the OGR functions. The caller could 
    *  exploit the full OGR capabilities via the returned object pointer.
    */
   OGRCoordinateTransformation* GetCT() { return mCT.get(); }
@@ -40,7 +37,7 @@ public:
    *
    *  \return Returns if the transformation was successful, otherwise false.
    */
-  inline bool Transform(double& x, double& y, double& z) {
+  bool Transform(double& x, double& y, double& z) override {
     return mCT->Transform(1, &x, &y, &z);
   }
 
@@ -51,7 +48,7 @@ public:
    *
    *  \return Returns if the transformation was successful, otherwise false.
    */
-  inline bool Transform(Point3d& point) {
+  bool Transform(Point3d& point) override {
     return mCT->Transform(1, &point.x, &point.y, &point.z);
   }
 
@@ -61,7 +58,7 @@ public:
    *  \param [in] points an array of 3D points
    *  \return Returns if the transformation was successful, otherwise false.
    */
-  bool Transform(std::vector<Point3d>& points);
+  bool Transform(std::vector<Point3d>& points) override;
 
 private:
   std::unique_ptr<OGRCoordinateTransformation> mCT;
@@ -69,4 +66,3 @@ private:
   void Initialize(OGRSpatialReference* srcSrs, OGRSpatialReference* tgtSrs);
 };
 } // namespace earthxpert
-
