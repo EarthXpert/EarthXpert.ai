@@ -1,4 +1,4 @@
-project(sfm)
+project(sfm CXX)
 
 add_definitions(-DEXSFM_API)
 set(sfm_srcs "densematch/circleneighbor.cpp"

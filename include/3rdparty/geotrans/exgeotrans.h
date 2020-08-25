@@ -14,6 +14,7 @@
 namespace ccs = MSP::CCS;
 using ccs_ct = ccs::CoordinateType;
 using ccs_ht = ccs::HeightType;
+using ccs2 = ccs::CoordinateConversionService;
 
 namespace earthxpert::thirdparty {
 } // namespace earthxpert::thirdparty

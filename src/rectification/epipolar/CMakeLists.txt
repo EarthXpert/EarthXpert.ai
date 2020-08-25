@@ -1,4 +1,4 @@
-project(epipolar)
+project(epipolar CXX)
 
 add_definitions(-DEXEPIPOLAR_API)
 set(epipolar_srcs "epiperf.cpp"

@@ -19,27 +19,20 @@ using namespace earthxpert;
 static constexpr double kTolR = Deg2Rad(1.0e-8);   // [mm]
 static constexpr double kTol = 1.0e-3;   // [mm]
 
-static void ConvertGeodeticToGeocentric(
-  ccs::CoordinateConversionService& ccsGeodeticToGeocentric,
+static void ConvertGeodeticToGeocentric(ccs2& ccsGeodeticToGeocentric,
   double lat, double lon, double hgt, double& x, double& y, double& z);
-static void ConvertGeocentricToGeodetic(
-  ccs::CoordinateConversionService& ccsGeodeticToGeocentric,
+static void ConvertGeocentricToGeodetic(ccs2& ccsGeodeticToGeocentric,
   double x, double y, double z, double& lat, double& lon, double& hgt);
-static void ConvertGeocentricToGeodeticMslEgm96(
-  ccs::CoordinateConversionService& ccsGeocentricToGeodeticMslEgm96,
+static void ConvertGeocentricToGeodeticMslEgm96(ccs2& ccsGeocentricToGeodeticMslEgm96,
   double x, double y, double z, double& lat, double& lon, double& hgt);
-static void ConvertMslEgm96ToEllHeight(
-  ccs::CoordinateConversionService& ccsMslEgm96ToEllHeight,
+static void ConvertMslEgm96ToEllHeight(ccs2& ccsMslEgm96ToEllHeight,
   double lat, double lon, double hgtMsl, double& ellHeight);
-static void ConvertEllHeightToMslEgm96(
-  ccs::CoordinateConversionService& ccsEllHeightToMslEgm96,
+static void ConvertEllHeightToMslEgm96(ccs2& ccsEllHeightToMslEgm96,
   double lat, double lon, double ellHeight, double& hgtMsl);
-static void ConvertGeocentricToUtm(
-  ccs::CoordinateConversionService& ccsGeocentricToUtm,
+static void ConvertGeocentricToUtm(ccs2& ccsGeocentricToUtm,
   double x, double y, double z, long& zone, char& hemisphere,
   double& easting, double& northing);
-static std::string ConvertGeocentricToMgrs(
-  ccs::CoordinateConversionService& ccsGeocentricToMgrs,
+static std::string ConvertGeocentricToMgrs(ccs2& ccsGeocentricToMgrs,
   double x, double y, double z, ccs::Precision::Enum& precision);
 
 /**
@@ -86,20 +79,20 @@ TEST(geotrans, CCS_WGS84) {
     ccs_ct::militaryGridReferenceSystem);
 
   // Coordinate Conversion Services 
-  ccs::CoordinateConversionService ccsGeodeticToGeocentric(
+  ccs2 ccsGeodeticToGeocentric(
     datum, &ellParam, datum, &geocentricParameters);
 
-  ccs::CoordinateConversionService ccsGeocentricToGeodeticMslEgm96(
+  ccs2 ccsGeocentricToGeodeticMslEgm96(
     datum, &geocentricParameters, datum, &mslEgm96Parameters);
 
-  ccs::CoordinateConversionService ccsMslEgm96ToEllHeight(
+  ccs2 ccsMslEgm96ToEllHeight(
     datum, &mslEgm96Parameters, datum, &ellParam);
-  ccs::CoordinateConversionService ccsEllHeightToMslEgm96(
+  ccs2 ccsEllHeightToMslEgm96(
     datum, &ellParam, datum, &mslEgm96Parameters);
 
-  ccs::CoordinateConversionService ccsGeocentricToUtm(
+  ccs2 ccsGeocentricToUtm(
     datum, &geocentricParameters, datum, &utmParameters);
-  ccs::CoordinateConversionService ccsGeocentricToMgrs(
+  ccs2 ccsGeocentricToMgrs(
     datum, &geocentricParameters, datum, &mgrsParameters);
 
   // Geodetic (Ellipsoid Height) to Geocentric
@@ -185,10 +178,8 @@ TEST(geotrans, CCS_WGS84_NAD27) {
   const char* datumNad27 = "NAS-E"; // NAD27 Canada
 
   ccs::GeodeticParameters ellParam(ccs_ct::geodetic, ccs_ht::ellipsoidHeight);
-  ccs::CoordinateConversionService ccsWgs84ToNad27(
-    datumWgs84, &ellParam, datumNad27, &ellParam);
-  ccs::CoordinateConversionService ccsNad27ToWgs84(
-    datumNad27, &ellParam, datumWgs84, &ellParam);
+  ccs2 ccsWgs84ToNad27(datumWgs84, &ellParam, datumNad27, &ellParam);
+  ccs2 ccsNad27ToWgs84(datumNad27, &ellParam, datumWgs84, &ellParam);
 
   ccs::Accuracy sourceAccuracy, targetAccuracy;
 
@@ -225,11 +216,9 @@ TEST(geotrans, CCS_WGS84_NAD27) {
   * Coordinate Conversion Service, 'ccsGeodeticToGeocentric', to
   * convert the given lat, lon, and hgt to x, y, z coordinates.
   **/
-void ConvertGeodeticToGeocentric(
-  ccs::CoordinateConversionService& ccsGeodeticToGeocentric,
+void ConvertGeodeticToGeocentric(ccs2& ccsGeodeticToGeocentric,
   double lat, double lon, double hgt, double& x, double& y, double& z) {
-  ccs::Accuracy sourceAccuracy;
-  ccs::Accuracy targetAccuracy;
+  ccs::Accuracy sourceAccuracy, targetAccuracy;
   ccs::GeodeticCoordinates lph(ccs_ct::geodetic, lon, lat, hgt);
   ccs::CartesianCoordinates xyz(ccs_ct::geocentric);
 
@@ -246,11 +235,9 @@ void ConvertGeodeticToGeocentric(
  * Coordinate Conversion Service, 'ccsGeodeticToGeocentric', to
  * convert the given x, y, z coordinates to a lat, lon, and hgt.
  **/
-void ConvertGeocentricToGeodetic(
-  ccs::CoordinateConversionService& ccsGeodeticToGeocentric,
+void ConvertGeocentricToGeodetic(ccs2& ccsGeodeticToGeocentric,
   double x, double y, double z, double& lat, double& lon, double& hgt) {
-  ccs::Accuracy geocentricAccuracy;
-  ccs::Accuracy geodeticAccuracy;
+  ccs::Accuracy geocentricAccuracy, geodeticAccuracy;
   ccs::CartesianCoordinates xyz(ccs_ct::geocentric, x, y, z);
   ccs::GeodeticCoordinates lph;
 
@@ -272,11 +259,9 @@ void ConvertGeocentricToGeodetic(
  * Coordinate Conversion Service, 'ccsGeocentricToGeodeticMslEgm96', to
  * convert the given x, y, z coordinates to a lat, lon, and hgt.
  **/
-void ConvertGeocentricToGeodeticMslEgm96(
-  ccs::CoordinateConversionService& ccsGeocentricToGeodeticMslEgm96,
+void ConvertGeocentricToGeodeticMslEgm96(ccs2& ccsGeocentricToGeodeticMslEgm96,
   double x, double y, double z, double& lat, double& lon, double& hgt) {
-  ccs::Accuracy sourceAccuracy;
-  ccs::Accuracy targetAccuracy;
+  ccs::Accuracy sourceAccuracy, targetAccuracy;
   ccs::CartesianCoordinates xyz(ccs_ct::geocentric, x, y, z);
   ccs::GeodeticCoordinates lph(ccs_ct::geodetic, lon, lat, hgt);
 
@@ -294,11 +279,9 @@ void ConvertGeocentricToGeodeticMslEgm96(
  * 'ccsMslEgm96ToEllHeight', to convert the given MSL hgt at the
  * given lat, lon, to an Ellipsoid hgt.
  **/
-void ConvertMslEgm96ToEllHeight(
-  ccs::CoordinateConversionService& ccsMslEgm96ToEllHeight,
+void ConvertMslEgm96ToEllHeight(ccs2& ccsMslEgm96ToEllHeight,
   double lat, double lon, double hgtMsl, double& ellHeight) {
-  ccs::Accuracy sourceAccuracy;
-  ccs::Accuracy targetAccuracy;
+  ccs::Accuracy sourceAccuracy, targetAccuracy;
   ccs::GeodeticCoordinates lphMsl(ccs_ct::geodetic, lon, lat, hgtMsl);
   ccs::GeodeticCoordinates lph;
 
@@ -314,11 +297,9 @@ void ConvertMslEgm96ToEllHeight(
  * 'ccsEllHeightToMslEgm96', to convert the given Ellipsoid hgt at
  * the given lat, lon, to an MSL hgt.
  **/
-void ConvertEllHeightToMslEgm96(
-  ccs::CoordinateConversionService& ccsEllHeightToMslEgm96,
+void ConvertEllHeightToMslEgm96(ccs2& ccsEllHeightToMslEgm96,
   double lat, double lon, double ellHeight, double& hgtMsl) {
-  ccs::Accuracy sourceAccuracy;
-  ccs::Accuracy targetAccuracy;
+  ccs::Accuracy sourceAccuracy, targetAccuracy;
   ccs::GeodeticCoordinates lph(ccs_ct::geodetic, lon, lat, ellHeight);
   ccs::GeodeticCoordinates lphMsl;
 
@@ -333,12 +314,10 @@ void ConvertEllHeightToMslEgm96(
  * Service, 'ccsGeocentricToUtm', to convert the given x, y, z coordinates
  * a UTM zone, hemisphere, Easting and Northing.
  **/
-void ConvertGeocentricToUtm(
-  ccs::CoordinateConversionService& ccsGeocentricToUtm,
+void ConvertGeocentricToUtm(ccs2& ccsGeocentricToUtm,
   double x, double y, double z, long& zone,
   char& hemisphere, double& easting, double& northing) {
-  ccs::Accuracy sourceAccuracy;
-  ccs::Accuracy targetAccuracy;
+  ccs::Accuracy sourceAccuracy, targetAccuracy;
   ccs::CartesianCoordinates xyz(ccs_ct::geocentric, x, y, z);
   ccs::UTMCoordinates utm;
 
@@ -356,11 +335,9 @@ void ConvertGeocentricToUtm(
  * Service, 'ccsGeocentricToMgrs', to convert the given x, y, z coordinates
  * to an MGRS string and precision.
  **/
-std::string ConvertGeocentricToMgrs(
-  ccs::CoordinateConversionService& ccsGeocentricToMgrs,
+std::string ConvertGeocentricToMgrs(ccs2& ccsGeocentricToMgrs,
   double x, double y, double z, ccs::Precision::Enum& precision) {
-  ccs::Accuracy sourceAccuracy;
-  ccs::Accuracy targetAccuracy;
+  ccs::Accuracy sourceAccuracy, targetAccuracy;
   ccs::CartesianCoordinates xyz(ccs_ct::geocentric, x, y, z);
   ccs::MGRSorUSNGCoordinates mgrs;
 
