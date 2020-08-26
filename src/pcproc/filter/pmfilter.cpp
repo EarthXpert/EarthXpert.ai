@@ -8,6 +8,10 @@
 
 using namespace earthxpert;
 
+void PMFilter::SetParams() {
+
+}
+
 bool PMFilter::ProcessExai(Pointcloud* const pc) {
   return true;
 }

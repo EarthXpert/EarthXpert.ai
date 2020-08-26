@@ -17,11 +17,19 @@ public:
     ePDAL     // PDAL backend
   };
 
+  struct PMFParams {
+
+  };
+
   ~PMFilter() = default;
+
+  void SetParams();
 
   bool Process(Pointcloud* pc) override { return ProcessExai(pc); }
 
   bool ProcessExai(Pointcloud* pc);
   bool ProcessPdal(Pointcloud* pc);
+
+private:
 };
 }
