@@ -3,7 +3,7 @@ project(tests_cppunit_epimodel CXX)
 add_cppunit_test(epipolarmodel_tests 
   ex3rdparty core dataio epipolarmodel marshaller sensormodel
   ${GDAL_LIBRARY} ${OpenCV_LIBS})
-add_cppunit_test(epipolarmodelfactory_tests 
+add_cppunit_test(epipolarstereofactory_tests 
   ex3rdparty core dataio epipolarmodel marshaller sensormodel
   ${GDAL_LIBRARY} ${OpenCV_LIBS})
 if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
@@ -17,9 +17,11 @@ ${TESTS_BIN_DIR};$ENV{PATH}")
   message(STATUS "Tests_Epimodel_Path: ${TESTS_EPIMODEL_PATH}")
   set_tests_properties(epipolarmodel_tests 
     PROPERTIES ENVIRONMENT "${TESTS_EPIMODEL_PATH}")
+  set_tests_properties(epipolarstereofactory_tests 
+    PROPERTIES ENVIRONMENT "${TESTS_EPIMODEL_PATH}")
 endif()
 
 if(EARTHXPERT_INSTALL_TESTS_CPPUNIT)
   earthxpert_install_test(epipolarmodel_tests)
-  earthxpert_install_test(epipolarmodelfactory_tests)
+  earthxpert_install_test(epipolarstereofactory_tests)
 endif()
