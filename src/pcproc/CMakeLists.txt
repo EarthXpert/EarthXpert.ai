@@ -2,7 +2,7 @@ project(pcproc CXX)
 
 add_definitions(-DEXPCPROC_API)
 set(pcproc_srcs "filter/pcfilter.cpp"
-       "filter/pmfilter.cpp")
+  "filter/pmfilter.cpp")
 earthxpert_add_library(pcproc "api"
   SRCS ${pcproc_srcs}
   ITEMS ex3rdparty core  

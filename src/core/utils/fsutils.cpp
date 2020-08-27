@@ -74,7 +74,20 @@ std::string
 PathPrefixFilename(const std::string& fileName, const std::string& prefix) {
   fs::path filePath(fileName);
   auto fn = prefix + filePath.filename().string();
+  return fn;
+}
 
+/**
+ *  \brief insert suffix for filename component
+ *
+ *  \param [in] fileName input full path filename
+ *  \param [in] suffix string to append
+ *  \return Returns filename with suffix
+ */
+std::string
+PathSuffixFilename(const std::string& fileName, const std::string& suffix) {
+  fs::path filePath(fileName);
+  auto fn = filePath.filename().string() + suffix;
   return fn;
 }
 

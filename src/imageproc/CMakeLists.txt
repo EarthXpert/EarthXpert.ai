@@ -1,8 +1,9 @@
 project(imageproc CXX)
 
 add_definitions(-DEXIMAGEPROC_API)
-set(imageproc_srcs "filter/dehaze.cpp"
-       "filter/imagefilter.cpp")
+set(imageproc_srcs "algorithm/wallisfilter.cpp"
+  "filter/dehaze.cpp"
+  "filter/imagefilter.cpp")
 earthxpert_add_library(imageproc "api"
   SRCS ${imageproc_srcs}
   ITEMS ex3rdparty core  

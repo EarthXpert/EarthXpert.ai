@@ -2,7 +2,7 @@ project(pfpdal)
 
 add_definitions(-DEXPDAL_API)
 set(pfpdal_srcs "pdaljob.cpp"
-       "pdalmanager.cpp")
+  "pdalmanager.cpp")
 earthxpert_add_library(pfpdal "platform"
   SRCS ${pfpdal_srcs}
   ITEMS ex3rdparty core dataio pfutils

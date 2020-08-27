@@ -25,6 +25,8 @@ enum CombineType {
  */
 std::string EXCORE_EXPORTS PathPrefixFilename(
   const std::string& fileName, const std::string& prefix);
+std::string EXCORE_EXPORTS PathSuffixFilename(
+  const std::string& fileName, const std::string& suffix);
 std::string EXCORE_EXPORTS PathReplaceExt(
   const std::string& fileName, const std::string& ext);
 
