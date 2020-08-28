@@ -4,52 +4,42 @@
  */
 #pragma once
 
-#include "io/raster/irasterwriter.h"
-#include "io/raster/rasternullreader.h"
+#include "io/raster/irasterreader.h"
+
+#include <vector>
 
 namespace earthxpert {
+class CvRaster;
+class GdalRaster;
+
 /**
- *  The class RasterNullWriter provides mock functios doing nothing.
+ *  The class NullRasterReader provides mock behaviour that does nothing.
  *
  *  \todo deal with mock objects of RasterMetadata, SpatialReferenceSystem, 
  *  Geocoding, CvRaster, GdalRaster, etc.
  */
-class EXIO_EXPORTS RasterNullWriter final : public IRasterWriter, public IRasterReader {
+class EXIO_EXPORTS NullRasterReader final : public IRasterReader {
 public:
-  RasterNullWriter(const std::string&, const std::vector<int> & = {}) {}
-  RasterNullWriter(const std::string&, const std::string, int, int, GDALDataType, int) {}
-  RasterNullWriter(const RasterNullWriter&) = delete;
-  RasterNullWriter(RasterNullWriter&&) = delete;
-  ~RasterNullWriter() = default;
+  NullRasterReader(const std::string&, const std::vector<int>& = {}) {}
+  NullRasterReader(GDALDataset*, const std::vector<int>& = {}) {}
+  NullRasterReader(const NullRasterReader&) = delete;
+  NullRasterReader(NullRasterReader&&) = delete;
+  ~NullRasterReader() = default;
 
-  RasterNullWriter& operator=(const RasterNullWriter&) = delete;
-  RasterNullWriter& operator=(RasterNullWriter&&) = delete;
+  NullRasterReader& operator=(const NullRasterReader&) = delete;
+  NullRasterReader& operator=(NullRasterReader&&) = delete;
 
   GDALDataset* GetDataset() const noexcept { return nullptr; }
 
   std::string GetFileFormat() const { return ""; }
 
-  void SetMetadata(const RasterMetadata*) override {}
-
-  void SetNodataValues(double) {}
-  void SetNodataValues(const std::vector<double>&) {}
-
-  void SetCoordinateSystem(const SpatialReferenceSystem*) override {}
-
-  void SetGeocoding(const Geocoding*) override {}
-
-  void WriteRaster(IRaster* const) override {}
-
-  void WriteRaster(const CvRaster*) {}
-  void WriteRaster(const GdalRaster*) {}
-
-  void BuildPyramids() override {}
-
   std::unique_ptr<RasterMetadata> GetMetadata() const override { return nullptr; }
 
-  std::pair<int, int> GetSize() const noexcept override { return {0, 0}; }
+  std::pair<int, int> GetSize() const noexcept override { return { 0, 0 }; }
 
   GDALDataType GetDataType() const noexcept { return GDT_Unknown; }
+
+  auto GetReadBands() const noexcept { return std::vector<int>{}; }
 
   int GetNumBands() const noexcept override { return 0; }
 
@@ -64,14 +54,24 @@ public:
 
   MarginKind GetMarginKind() const noexcept override { return MarginKind::eCONSTANT; }
 
-  UPSpatialRefSys GetCoordinateSystem() const override { return nullptr; }
+  std::unique_ptr<SpatialReferenceSystem> GetCoordinateSystem() const override { return nullptr; }
 
   std::unique_ptr<Geocoding> GetGeocoding() const override { return nullptr; }
+
+  int64 GetRasterBufferNumBytes(int, int) const noexcept { return 0; }
 
   std::unique_ptr<IRaster> ReadRaster(RasterType) override { return nullptr; }
 
   std::unique_ptr<IRaster> ReadRaster(int, int, int, int, RasterType) override { return nullptr; }
 
-  void ReadRaster(IRaster* const raster) override {}
+  void ReadRaster(IRaster* const) override {}
+
+  void ReadRaster(CvRaster* const) {}
+  void ReadRaster(GdalRaster* const) {}
+
+  //std::unique_ptr<IPyramidReader> GetPyramidReader();
 };
+
+using UPNullRasterReader = std::unique_ptr<NullRasterReader>;
+using SPNullRasterReader = std::shared_ptr<NullRasterReader>;
 } // namespace earthxpert

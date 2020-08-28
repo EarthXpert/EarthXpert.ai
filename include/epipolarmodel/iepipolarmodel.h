@@ -23,6 +23,7 @@ class EXEPIPOLARMODEL_EXPORTS IEpipolarModel {
 public:
   // algorithm for epipolar model
   enum EpipolarAlgo {
+    eUNKNOWN,
     eCOPLANAR,  // frame coplanar
     ePLANERECT  // rectification upon ground plane
   };

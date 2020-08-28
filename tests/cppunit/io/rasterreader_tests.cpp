@@ -8,7 +8,7 @@
 #include "core/datasource/cvraster.h"
 #include "core/datasource/gdalraster.h"
 #include "core/datasource/rasterutils.h"
-#include "io/raster/rasternullreader.h"
+#include "io/raster/nullrasterreader.h"
 #include "io/raster/rasterreader.h"
 
 using namespace earthxpert;
@@ -19,7 +19,7 @@ using namespace earthxpert;
  */
 TEST(rasterreader, NullReader_T0) {
   const std::string imgFile(TestConfig::DataPath("Imagery/image_small.tif"));
-  RasterNullReader reader(imgFile);
+  NullRasterReader reader(imgFile);
 
   ASSERT_FALSE(reader.GetDataset());
   ASSERT_FALSE(reader.GetMetadata());

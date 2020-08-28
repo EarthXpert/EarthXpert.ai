@@ -8,6 +8,7 @@
 #include "core/math/mutils.h"
 #include "epipolarmodel/epipolarmodel.h"
 #include "epipolarmodel/epipolarstereofactory.h"
+#include "epipolarmodel/nullepipolarmodel.h"
 #include "marshaller/rationalmodelmarshaller.h"
 #include "sensormodel/utils/smutils.h"
 

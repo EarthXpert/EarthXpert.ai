@@ -34,6 +34,7 @@ set(ex3rdparty_srcs "boost/exboost.cpp"
   "qt/exqt.cpp"
   "sltbench/exsltbench.cpp"
   "thrust/exthrust.cpp"
+  "vxl/exvxl.cpp"
   "wxwidgets/exwxwidgets.cpp"
   "xml/exxml.cpp")
 earthxpert_add_library(ex3rdparty "api"

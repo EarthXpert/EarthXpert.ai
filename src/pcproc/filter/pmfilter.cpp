@@ -15,7 +15,3 @@ void PMFilter::SetParams() {
 bool PMFilter::ProcessExai(Pointcloud* const pc) {
   return true;
 }
-
-bool PMFilter::ProcessPdal(Pointcloud* const pc) {
-  return true;
-}

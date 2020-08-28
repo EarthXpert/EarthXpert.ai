@@ -9,7 +9,7 @@
 #include "core/datasource/gdalraster.h"
 #include "core/datasource/rasterutils.h"
 #include "core/utils/rasterlayout.h"
-#include "io/raster/rasternullwriter.h"
+#include "io/raster/nullrasterwriter.h"
 #include "io/raster/rasterwriter.h"
 #include <filesystem>
 #include <omp.h>
@@ -47,13 +47,13 @@ static bool IsImageEqual(const std::string& imgFile, const std::string& imgFileT
  */
 TEST(rasterwriter, NullWriter) {
   const std::string imgFile(TestConfig::DataPath("Imagery/image_small.tif"));
-  RasterNullReader reader(imgFile);
+  NullRasterReader reader(imgFile);
 
   RasterLayout rasterLayout(10, 10, 1, 1);
   auto& rasterWins = rasterLayout.GetRasterWindows();
 
   const std::string imgFileT(TestConfig::OutputPath("image_small_t_NullRaster.tif"));
-  RasterNullWriter writer(imgFileT, "", 10, 10, GDT_Unknown, 0);
+  NullRasterWriter writer(imgFileT, "", 10, 10, GDT_Unknown, 0);
 
   // pre-allocate buffer used by all windows
   std::unique_ptr<uchar[]> buffer{ new uchar[1] };

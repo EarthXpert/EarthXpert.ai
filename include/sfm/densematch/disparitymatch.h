@@ -56,6 +56,9 @@ public:
 
   MatchType GetMatchType() const noexcept override { return eDISPARITY; }
 
+  bool ProcessCv();
+  bool ProcessVxl();
+
 private:
   std::vector<DisparityTile> mTiles;
 
