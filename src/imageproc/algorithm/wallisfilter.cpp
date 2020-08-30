@@ -9,7 +9,9 @@
 using namespace earthxpert;
 
 namespace earthxpert {
-bool WallisFilter(const IRaster* src, IRaster* tgt) {
+bool WallisFilterCv(CvRaster* raster, const WallisParams* wp) {
+  auto& ras = raster->GetCvMat();
+  //ras.forEach([]() {});
   return true;
 }
 }

@@ -8,6 +8,8 @@
 #include "core/utils/rasterwindow.h"
 #include "opencv2/core.hpp"
 
+#include <array>
+
 namespace earthxpert {
 /**
  *  The class Raster stores a 2D pixel block that is pixel interleaved. For color image,
@@ -177,6 +179,16 @@ public:
    */
   int64_t GetRowNumBytes() const noexcept { return mRowNumBytes; }
 
+  /**
+   *  \brief brief Runs the given functor over all elements in parallel.
+   *
+   *  struct Functor {
+   *    void operator ()(Pixel &pixel, const int * position) { }
+   *  };
+   */
+  template<typename Ty, typename Functor> inline void 
+  ForEachPixel(const Functor& func) { mMat.forEach<Ty>(func); }
+
 private:
   //RasterWindow mRasWin;
   int mNumCols{};               // number of image columns
@@ -208,3 +220,5 @@ private:
 using UPCvRaster = std::unique_ptr<CvRaster>;
 using SPCvRaster = std::shared_ptr<CvRaster>;
 } // namespace earthxpert
+
+#include "detail/cvraster.hh"

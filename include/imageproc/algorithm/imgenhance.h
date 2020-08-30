@@ -10,5 +10,14 @@
 #include <memory>
 
 namespace earthxpert {
-bool EXIMAGEPROC_EXPORTS WallisFilter(const IRaster* src, IRaster* tgt);
+class CvRaster;
+
+struct WallisParams {
+  float ms;   // mean of source
+  float ds;   // std
+  float mt;   // mean of target
+  float dt;   // std
+};
+
+bool EXIMAGEPROC_EXPORTS WallisFilterCv(CvRaster* raster, const WallisParams* wp);
 }
