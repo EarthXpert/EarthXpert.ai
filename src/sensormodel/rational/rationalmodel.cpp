@@ -245,8 +245,6 @@ bool RationalModel::ImageToGround(const Point2d &image, Point3d &ground) const {
  *  \param [in] ground 3d ground position (Long, Lat, Height)
  *  \param [out] image 2d image position (col, row)
  *  \return Returns true if operation succeeds
- *
- *  \details More details
  */
 bool RationalModel::GroundToImage(const Point3d &ground, Point2d &image) const {
   auto nfc = mNormalFators.data();
@@ -439,22 +437,6 @@ Point2d RationalModel::ImageActualToApparant(const Point2d& image) const {
     }
   }
   return imageApp;
-}
-
-/**
- *  \brief Given a 2d rpc position in image coordinate system,
- *  output the actual 2d position.
- *
- *  \param [in] image 2d position (col, row) in image coordinate system
- *  \return Return 2d actual position (col, row) in imagery coordinate system
- */
-Point2d RationalModel::ImageApparantToActual(const Point2d& image) const {
-  Point2d imageAct{ image };
-  if (mCorrectionFlag) {  // apply correction
-    const auto imageCorr = CalcCorrection(image);
-    imageAct += imageCorr;
-  }
-  return imageAct;
 }
 
 /**

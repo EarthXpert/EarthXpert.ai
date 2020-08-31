@@ -40,43 +40,6 @@ EpipolarModel<GroundPolicy>::EpipolarModel(StereoPos pos,
 }
 
 /**
- *  Epipolar-to-raw transform.
- *
- *  \brief Given a 2d poistion on epipolar, output the corresponding position on
- * original image.
- *
- *  \param [in] epi 2d position (col, row) in epipolar raster coordinate system
- *  \param [in] raw 2d position (col, row) in image raster coordinate system
- *  \return Returns true if operation succeeds
- */
-template <class GroundPolicy>
-bool EpipolarModel<GroundPolicy>::EpiToRaw(const Point2d &epi, Point2d &raw) const {
-  const Point2d rect = mEpiRect->EpiToRect(epi);
-  const Point3d ground = mGroundPolicy->CartesianToGround(Point3d(rect.x, rect.y, mHeight));
-  return mSensorModel->GroundToImage(ground, raw);
-}
-
-/**
- *  Raw-to-epipolar transform.
- *
- *  \brief Given a 2d poistion on image, output the corresponding position on
- * epipolar.
- *
- *  \param [in] raw 2d position (col, row) in image raster coordinate system
- *  \param [in] epi 2d position (col, row) in epipolar raster coordinate system
- *  \return Returns true if operation succeeds
- */
-template <class GroundPolicy>
-bool EpipolarModel<GroundPolicy>::RawToEpi(const Point2d &raw, Point2d &epi) const {
-  Point2d rect{};
-  if (!RawToRect(raw, rect))
-    return false;
-
-  epi = mEpiRect->RectToEpi(rect);
-  return true;
-}
-
-/**
  *  Raw-to-rect transform.
  *
  *  \brief Given a 2d poistion on image, output the 2d position in

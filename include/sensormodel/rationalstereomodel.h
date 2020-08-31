@@ -71,7 +71,12 @@ public:
    * ground coordinate system \return Returns true if the operation succeeds
    *  \return Returns true if the operation succeeds
    */
-  bool ImageToGround(const std::array<Point2d, 3>& images, Point3d& ground) const override;
+  bool ImageToGround(const std::array<Point2d, 3>& images, Point3d& ground) const override {
+    assert(3 == mRatModels.size());
+    std::vector<Point2d> imgs(images.cbegin(), images.cend());
+
+    return ImageToGround(imgs, ground);
+  }
 
   /**
    *  \brief Given two or more sensor models and associated 2d positions

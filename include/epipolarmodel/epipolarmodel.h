@@ -59,7 +59,11 @@ public:
    *  \param [in] raw 2d position (col, row) in image raster coordinate system
    *  \return Returns true if operation succeeds
    */
-  bool EpiToRaw(const Point2d &epi, Point2d &raw) const override;
+  bool EpiToRaw(const Point2d &epi, Point2d &raw) const override {
+    const Point2d rect = mEpiRect->EpiToRect(epi);
+    const Point3d ground = mGroundPolicy->CartesianToGround(Point3d(rect.x, rect.y, mHeight));
+    return mSensorModel->GroundToImage(ground, raw);
+  }
 
   /**
    *  Raw-to-epipolar transform.
@@ -71,7 +75,14 @@ public:
    *  \param [in] epi 2d position (col, row) in epipolar raster coordinate system
    *  \return Returns true if operation succeeds
    */
-  bool RawToEpi(const Point2d &raw, Point2d &epi) const override;
+  bool RawToEpi(const Point2d &raw, Point2d &epi) const override {
+    Point2d rect{};
+    if (!RawToRect(raw, rect))
+      return false;
+
+    epi = mEpiRect->RectToEpi(rect);
+    return true;
+  }
 
   /**
    *  \return Returns algorithm of epipolar model
@@ -80,9 +91,7 @@ public:
     return ePLANERECT;
   }
 
-  const EpipolarRect *GetEpiRect() const noexcept {
-    return mEpiRect.get();
-  }
+  const EpipolarRect *GetEpiRect() const noexcept { return mEpiRect.get(); }
 
   Point3d GetOrigin() const noexcept { return mOrigin; }
 
