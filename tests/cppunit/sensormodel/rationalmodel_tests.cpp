@@ -5,6 +5,7 @@
 #include "3rdparty/gtest/gtest_main.h"
 #include "testconfig.h"
 
+#include "core/math/constants.h"
 #include "core/math/mutils.h"
 #include "marshaller/rationalmodelmarshaller.h"
 #include "sensormodel/rationalmodel.h"
@@ -13,7 +14,6 @@ using namespace earthxpert;
 using rfm = earthxpert::RationalModel;
 
 static constexpr int kNum{ 10 };
-static constexpr double kTol = 1.0e-8; // [mm]
 
 static std::unique_ptr<RationalModel> CreateRationalModelA();
 static std::unique_ptr<RationalModel> CreateRationalModelB();
@@ -59,8 +59,8 @@ TEST(rationalmodel, CornerI2G) {
     Point3d grdI2G{ 0, 0, ground.z };
     rationalModel->ImageToGround(image, grdI2G);
 
-    ASSERT_NEAR(ground.x, grdI2G.x, kTol) << "Longitude difference > 1 mm";
-    ASSERT_NEAR(ground.y, grdI2G.y, kTol) << "Latitude difference > 1 mm";
+    ASSERT_NEAR(ground.x, grdI2G.x, kTolDEG) << "Longitude difference > 1 mm";
+    ASSERT_NEAR(ground.y, grdI2G.y, kTolDEG) << "Latitude difference > 1 mm";
   }
 }
 
@@ -84,8 +84,8 @@ TEST(rationalmodel, CornerI2G_Functor) {
     Point3d grdI2G{ 0, 0, ground.z };
     (*rationalModel)(image, grdI2G);
 
-    ASSERT_NEAR(ground.x, grdI2G.x, kTol) << "Longitude difference > 1 mm";
-    ASSERT_NEAR(ground.y, grdI2G.y, kTol) << "Latitude difference > 1 mm";
+    ASSERT_NEAR(ground.x, grdI2G.x, kTolDEG) << "Longitude difference > 1 mm";
+    ASSERT_NEAR(ground.y, grdI2G.y, kTolDEG) << "Latitude difference > 1 mm";
   }
 }
 
@@ -276,8 +276,8 @@ void TestCubeI2G(const RationalModel* rationalModel) {
   }
 
   ASSERT_LT(0, n) << "Number of test points";
-  ASSERT_LE(maxDiff.x, kTol) << "Max. longitude difference > 1 mm";
-  ASSERT_LE(maxDiff.y, kTol) << "Max. latitude difference > 1 mm";
+  ASSERT_LE(maxDiff.x, kTolDEG) << "Max. longitude difference > 1 mm";
+  ASSERT_LE(maxDiff.y, kTolDEG) << "Max. latitude difference > 1 mm";
 }
 
 void TestCubeI2G_Functor(const RationalModel* rationalModel) {
@@ -314,6 +314,6 @@ void TestCubeI2G_Functor(const RationalModel* rationalModel) {
   }
 
   ASSERT_LT(0, n) << "Number of test points";
-  ASSERT_LE(maxDiff.x, kTol) << "Max. longitude difference > 1 mm";
-  ASSERT_LE(maxDiff.y, kTol) << "Max. latitude difference > 1 mm";
+  ASSERT_LE(maxDiff.x, kTolDEG) << "Max. longitude difference > 1 mm";
+  ASSERT_LE(maxDiff.y, kTolDEG) << "Max. latitude difference > 1 mm";
 }

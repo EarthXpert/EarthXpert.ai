@@ -5,6 +5,7 @@
 #include "3rdparty/gtest/gtest_main_gdal.h"
 #include "testconfig.h"
 
+#include "core/math/constants.h"
 #include "core/math/mutils.h"
 #include "epipolarmodel/epipolarmodel.h"
 #include "epipolarmodel/epipolarstereofactory.h"
@@ -16,16 +17,14 @@
 
 using namespace earthxpert;
 
-static constexpr double kTol = 1.0e-8; // [mm]
-static constexpr double kTolH = 1.0e-3; // [mm]
 static constexpr int kNum = 5;
 static constexpr double kFactor = 0.75;
 
 static void CreateRationalEpipolarModel(const std::string& leftMdlFile,
   const std::string& rightMdlFile, EpiModelPair& epiModels);
 static void TestImageToGround_Cube(const IEpipolarModel* leftEpiModel, 
-  const IEpipolarModel* rightEpiModel, const double tol = kTol, 
-  const double tolH = kTolH);
+  const IEpipolarModel* rightEpiModel, const double tol = kTolDEG, 
+  const double tolH = kTolMM);
 
 TEST(epipolarmodelfactory, 052522862010_01_P001_PAN) {
   std::string leftMdlFile = TestConfig::DataPath("Imagery/Satellite/052522862010_01_P001_PAN/09JAN15034657-P2AS-052522862010_01_P001.RPB");
@@ -78,7 +77,7 @@ TEST(epipolarmodelfactory, po_162796_pan) {
   ASSERT_EQ(12122, rRawNumCols);
   ASSERT_EQ(13148, rRawNumRows);
 
-  TestImageToGround_Cube(epiModels.first.get(), epiModels.second.get(), kTol, 3.0e-3);
+  TestImageToGround_Cube(epiModels.first.get(), epiModels.second.get(), kTolDEG, 3.0e-3);
 }
 
 TEST(epipolarmodelfactory, zy302a_006911_258169_20170827) {

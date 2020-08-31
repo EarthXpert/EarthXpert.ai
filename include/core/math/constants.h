@@ -51,4 +51,9 @@ constexpr double kWGS84_B = 6356752.3142; // polar radius
 constexpr double kWGS84_ECCSQ = 6.69437999014e-3; // first eccentricity squared
 
 constexpr int kTileDim = 256;   // tile size of raster image
+
+constexpr double kTolDEG = 1.0e-8; // [arc degree] ~= 1mm
+constexpr double kTolRAD = kTolDEG * kDEG2RAD; // [radian] ~= 1mm
+constexpr double kTolCM = 1.0e-2; // [meter] = 1cm
+constexpr double kTolMM = 1.0e-3; // [meter] = 1mm
 } // namespace earthxpert

@@ -10,19 +10,21 @@
 #include "epipolarmodel/epipolarstereofactory.h"
 #include "epipolarmodel/nullepipolarmodel.h"
 #include "marshaller/rationalmodelmarshaller.h"
+#include "sensormodel/rationalstereomodel.h"
+#include "sensormodel/utils/nullstereomodel.h"
 #include "sensormodel/utils/smutils.h"
+#include "sensormodel/utils/stereomodel.h"
 
 #include <iostream>
 
 using namespace earthxpert;
 
 static constexpr int kGridStride = 128;
-static constexpr double kTol = 1.0e-3; // [mm]
 
 static void CreateRationalEpipolarModel(const std::string& leftMdlFile,
   const std::string& rightMdlFile, EpiModelPair& epiModels);
-static void TestRaw2Epi_Epi2Raw_Grid(const IEpipolarModel* epiModel, double tol=kTol);
-static void TestStride(const IEpipolarModel* epiModel, int stride, double tol = kTol);
+static void TestRaw2Epi_Epi2Raw_Grid(const IEpipolarModel* epiModel, double tol=kTolMM);
+static void TestStride(const IEpipolarModel* epiModel, int stride, double tol = kTolMM);
 
 static void TestCubeI2G(const ISensorModel* epiSensorModel);
 static void TestImageToGround_Cube(const ISensorModel* leftEpiSensorModel,
