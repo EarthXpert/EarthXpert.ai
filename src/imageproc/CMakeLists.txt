@@ -1,7 +1,9 @@
 project(imageproc CXX)
 
 add_definitions(-DEXIMAGEPROC_API)
-set(imageproc_srcs "algorithm/wallisfilter.cpp"
+set(imageproc_srcs "algorithm/clouddetect.cpp"
+  "algorithm/wallisfilter.cpp"
+  "algorithm/waterbodydetect.cpp"
   "filter/dehaze.cpp"
   "filter/imagefilter.cpp")
 earthxpert_add_library(imageproc "api"

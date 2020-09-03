@@ -12,12 +12,21 @@
 namespace earthxpert {
 class CvRaster;
 
+struct CloudParams {
+};
+
+struct WaterBodyParams {
+};
+
 struct WallisParams {
   float ms;   // mean of source
   float ds;   // std
   float mt;   // mean of target
   float dt;   // std
 };
+
+bool EXIMAGEPROC_EXPORTS CloudDetectCv(CvRaster* raster, const CloudParams* cp);
+bool EXIMAGEPROC_EXPORTS WaterBodyDetectCv(CvRaster* raster, const WaterBodyParams* wp);
 
 bool EXIMAGEPROC_EXPORTS WallisFilterCv(CvRaster* raster, const WallisParams* wp);
 }
