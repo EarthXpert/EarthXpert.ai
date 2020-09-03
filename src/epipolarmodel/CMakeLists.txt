@@ -3,9 +3,9 @@ project(epipolarmodel)
 add_definitions(-DEXEPIPOLARMODEL_API)
 set(epipolarmodel_srcs "epipolarmodel.cpp"
   "epipolarrect.cpp"
-  "epipolarsensormodel.cpp"
   "epipolarstereofactory.cpp"
   "frameepipolarmodel.cpp"
+  "sensorepipolarmodel.cpp"
   "utils/epiutils.cpp"
   "utils/evalepipolarmodel.cpp")
 earthxpert_add_library(epipolarmodel "api"

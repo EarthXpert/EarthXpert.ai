@@ -2,7 +2,7 @@
  *  Copyright (c) 2018.  All rights reserved.
  * -----------------------------------------------------------------------------
  */
-#include "epipolarmodel/epipolarsensormodel.h"
+#include "epipolarmodel/sensorepipolarmodel.h"
 #include "core/exceptions/exexcept.h"
 
 #include <array>
@@ -14,23 +14,9 @@ using namespace earthxpert;
 /**
  *   \brief construct a frame epipolar model
  */
-EpipolarSensorModel::EpipolarSensorModel(StereoPos pos, 
-  std::shared_ptr<ISensorModel> sensorModel, const Polygon2d& epiBound) 
+SensorEpipolarModel::SensorEpipolarModel(StereoPos pos,
+  std::shared_ptr<ISensorModel> sensorModel, const Polygon2d& epiBound)
   : mPos(pos), mSensorModel(sensorModel), mBound(epiBound) {
-}
-
-/**
- *  Epipolar-to-raw point transform.
- *
- *  \brief Given a 2d poistion on epipolar, output the corresponding position on
- * original image.
- *
- *  \param [in] epi 2d position (u, v) in epipolar image pixel coordinate system
- *  \param [in] raw 2d position (x, y) in image raster coordinate system
- *  \return Returns true if operation succeeds
- */
-bool EpipolarSensorModel::EpiToRaw(const Point2d& epi, Point2d& raw) const {
-  return false;
 }
 
 /**
@@ -43,7 +29,7 @@ bool EpipolarSensorModel::EpiToRaw(const Point2d& epi, Point2d& raw) const {
  *  \param [in] raw List of 2d positions (x, y) in image raster coordinate system
  *  \return Returns true if operation succeeds
  */
-size_t EpipolarSensorModel::EpiToRaw(const std::vector<Point2d>& epi, std::vector<Point2d>& raw) const {
+size_t SensorEpipolarModel::EpiToRaw(const std::vector<Point2d>& epi, std::vector<Point2d>& raw) const {
   const long size = epi.size();
   assert(size == raw.size());
   size_t ret{};
@@ -58,20 +44,6 @@ size_t EpipolarSensorModel::EpiToRaw(const std::vector<Point2d>& epi, std::vecto
 }
 
 /**
- *  Raw-to-epipolar point transform.
- *
- *  \brief Given a 2d poistion on image, output the corresponding position on
- * epipolar.
- *
- *  \param [in] raw 2d position (u, v) in image raster coordinate system
- *  \param [in] epi 2d position (x, y) in epipolar image pixel coordinate system
- *  \return Returns true if operation succeeds
- */
-bool EpipolarSensorModel::RawToEpi(const Point2d& raw, Point2d& epi) const {
-  return false;
-}
-
-/**
  *   Raw-to-epipolar  image transformation
  *
  *  \brief Given a list of 2d poistions on image, output the corresponding
@@ -83,7 +55,7 @@ bool EpipolarSensorModel::RawToEpi(const Point2d& raw, Point2d& epi) const {
  * coordinate system
  *   \return Returns true if operation succeeds
  */
-size_t EpipolarSensorModel::RawToEpi(const std::vector<Point2d>& raw, std::vector<Point2d>& epi) const {
+size_t SensorEpipolarModel::RawToEpi(const std::vector<Point2d>& raw, std::vector<Point2d>& epi) const {
   const long size = raw.size();
   assert(size == epi.size());
   size_t ret{};
@@ -105,7 +77,7 @@ size_t EpipolarSensorModel::RawToEpi(const std::vector<Point2d>& raw, std::vecto
  *  \param [in/out] ground 3d ground positions (X, Y, Z) in ground coordinate
  * system
  */
-size_t EpipolarSensorModel::ImageToGround(const Point2d& image,
+size_t SensorEpipolarModel::ImageToGround(const Point2d& image,
   std::vector<Point3d>& ground) const {
   size_t ret{};
 
@@ -126,7 +98,7 @@ size_t EpipolarSensorModel::ImageToGround(const Point2d& image,
  *  \param [in] image List of 2d positions (x, y) on image
  *  \param [in/out] ground List of 3d ground positions (X, Y, Z)
  */
-size_t EpipolarSensorModel::ImageToGround(const std::vector<Point2d>& image,
+size_t SensorEpipolarModel::ImageToGround(const std::vector<Point2d>& image,
   std::vector<Point3d>& ground) const {
   const long size = static_cast<long>(image.size());
   assert(size == ground.size());
@@ -148,7 +120,7 @@ size_t EpipolarSensorModel::ImageToGround(const std::vector<Point2d>& image,
  *  \param [in] ground List of 3d ground positions (X, Y, Z)
  *  \param [in/out] image List of 2d positions (x, y) on image
  */
-size_t EpipolarSensorModel::GroundToImage(const std::vector<Point3d>& ground,
+size_t SensorEpipolarModel::GroundToImage(const std::vector<Point3d>& ground,
   std::vector<Point2d>& image) const {
   const long size = static_cast<long>(ground.size());
   assert(size == image.size());

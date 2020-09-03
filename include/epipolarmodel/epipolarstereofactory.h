@@ -29,9 +29,10 @@ public:
   // will be minimized; while with eCOMPACT option, the average X-parallax has
   // to be calculated for have the epipolar images aligned approximately.
   enum class EpiOutputOption {
-    eCOMPACT,  // the smallest width for each epipolar image
-    eFULL,     // the largest width for a union of epipolar images
-    eINTERSECT // the smallest width for intersection of epipolar images
+    eCOMPACT,   // the smallest width for each epipolar image
+    eFULL,      // the largest width for a union of epipolar images
+    eINTERSECT, // the smallest width for intersection of epipolar images
+    eSENSOR     // raw images as epipolar without rectification
   };
   using EpiOpt = EpiOutputOption;
 
@@ -52,7 +53,10 @@ public:
       std::shared_ptr<ISensorModel> rightModel, int sample, double height);
 
   EpiModelPair CreateRationalEpiStereo(std::shared_ptr<RationalModel> leftModel,
-      std::shared_ptr<RationalModel> rightModel, int sample=1);
+    std::shared_ptr<RationalModel> rightModel, int sample = 1);
+
+  EpiModelPair CreateSensorEpiStereo(std::shared_ptr<ISensorModel> leftModel,
+    std::shared_ptr<ISensorModel> rightModel, int sample = 1);
 
   /**
    *  \brief create epipolar models from a pair of stereo images.

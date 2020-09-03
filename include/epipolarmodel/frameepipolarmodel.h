@@ -16,7 +16,7 @@ namespace earthxpert {
  * the image raster coordinate system and the focal plane coordinate system
  */
 template <class ImageModelPolicy>
-class EXEPIPOLARMODEL_EXPORTS FrameEpipolarModel final : public EpipolarSensorModel {
+class EXEPIPOLARMODEL_EXPORTS FrameEpipolarModel final : public SensorEpipolarModel {
 public:
   /**
    *  \param [in] pos Component position of stereo model

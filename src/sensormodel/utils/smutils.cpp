@@ -4,6 +4,7 @@
  */
 #include "sensormodel/utils/smutils.h"
 #include "core/exceptions/exexcept.h"
+#include "core/utils/layoututils.h"
 #include "core/utils/unitutils.h"
 #include "core/spatialref/earthellipsoid.h"
 
@@ -14,6 +15,7 @@
 namespace earthxpert {
 namespace detail {
   static constexpr int kMaxIters = 5;
+  static constexpr size_t kNP = 9;
 
   // sensor names & types
   static std::map<std::string, SensorType> sSensorN2T = {
@@ -159,23 +161,20 @@ bool ImageToPlane(const Point2d& image, const ISensorModel* sensorModel,
 
 /**
  *  \return Returns the scene footprint on the rectification plane [meter].
- *
- *  \todo use stride along image boundary
  */
 Polygon2d CalcFootprint(const ISensorModel* sensorModel,
   const EarthEllipsoid* ee, const double height) {
   assert(eGEO == sensorModel->GetSrsType());
-  static constexpr size_t kNP = 9;
   auto [numCols, numRows] = sensorModel->GetImageSize();
-  std::array<Point2d, kNP> corners{ Point2d(0.0, 0.0), Point2d(numCols / 2, 0.0),
-    Point2d(numCols, 0.0), Point2d(numCols, numRows / 2),
-    Point2d(numCols, numRows), Point2d(numCols / 2, numRows),
-    Point2d(0.0, numRows), Point2d(0.0, numRows / 2), Point2d(0.0, 0.0) };
+  std::vector<Point2d> corners;
+  FillCorners(numCols, numRows, corners);
 
-  std::array<PointXYd, kNP> fpCorners;
-  for (int i = 0; i < kNP; ++i) {
+  std::vector<PointXYd> fpCorners(corners.size());
+  for (size_t i = 0; i < corners.size(); ++i) {
     ImageToPlane(corners[i], sensorModel, ee, height, fpCorners[i], 0.01);
   }
+  fpCorners.push_back(fpCorners[0]);  // close polygon
+  assert(kNP == fpCorners.size());
 
   Polygon2d poly;
   bg::assign_points(poly, fpCorners);
@@ -184,24 +183,21 @@ Polygon2d CalcFootprint(const ISensorModel* sensorModel,
 
 /**
  *  \return Returns the scene footprint on the model plane.
- *
- *  \todo use stride along image boundary
  */
 Polygon2d CalcFootprint(const ISensorModel* sensorModel, const double height) {
   auto [numCols, numRows] = sensorModel->GetImageSize();
-  std::array<Point2d, 8> corners{ Point2d(0.0, 0.0), Point2d(numCols / 2, 0.0),
-    Point2d(numCols, 0.0), Point2d(numCols, numRows / 2),
-    Point2d(numCols, numRows), Point2d(numCols / 2, numRows),
-    Point2d(0.0, numRows), Point2d(0.0, numRows / 2) };
+  std::vector<Point2d> corners;
+  FillCorners(numCols, numRows, corners);
 
-  std::array<PointXYd, 8> fpCorners;
+  std::vector<PointXYd> fpCorners;
 
   Point3d ground{ 0.0, 0.0, height };
-  for (int i = 0; i < 8; ++i) {
-    sensorModel->ImageToGround(corners[i], ground);
-    fpCorners[i].x(ground.x);
-    fpCorners[i].y(ground.y);
+  for (const auto corner : corners) {
+    sensorModel->ImageToGround(corner, ground);
+    fpCorners.emplace_back(ground.x, ground.y);
   }
+  fpCorners.push_back(fpCorners[0]);  // close polygon
+  assert(kNP == fpCorners.size());
 
   Polygon2d fp;
   bg::assign_points(fp, fpCorners);

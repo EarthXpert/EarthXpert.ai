@@ -29,7 +29,7 @@ template <class GroundPolicy>
 EpipolarModel<GroundPolicy>::EpipolarModel(StereoPos pos, 
   std::shared_ptr<ISensorModel> sensorModel, const Polygon2d& epiBound, 
   std::unique_ptr<EpipolarRect>&& epiRect, std::shared_ptr<GroundPolicy> groundPolicy)
-    : EpipolarSensorModel(pos, sensorModel, epiBound),
+    : SensorEpipolarModel(pos, sensorModel, epiBound),
       mEpiRect(std::move(epiRect)), mGroundPolicy(groundPolicy) {
   assert(GroundPolicy::kGroundType == sensorModel->GetSrsType());
   mOrigin = mEpiRect->mOrigin;

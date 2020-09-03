@@ -106,8 +106,31 @@ inline bool MaskAllOne(const uchar* mask, const int64_t i1,
 std::pair<int, int> EXCORE_EXPORTS EstimateTileSize(size_t memSize,
   int bpp, int numCols, int numRows, int kTile=256);
 
-void EXCORE_EXPORTS FillCorners(const RasterWindow& win, 
-  std::array<Point2d, kNCP>& corners);
+/**
+ *  \tparam PT point type: Point2d, PointXYd
+ *
+ *  \param [in] win window position
+ *  \param [out] corners corner and edge middle points
+ *
+ *  \todo use stride along image boundary
+ */
+template <typename PT>
+void FillCorners(const RasterWindow& win, std::vector<PT>& corners) {
+  corners.emplace_back(win.colOffset, win.rowOffset);
+  corners.emplace_back(win.colOffset + win.numCols / 2, win.rowOffset);
+  corners.emplace_back(win.colOffset + win.numCols, win.rowOffset);
+  corners.emplace_back(win.colOffset + win.numCols, win.rowOffset + win.numRows / 2);
+  corners.emplace_back(win.colOffset + win.numCols, win.rowOffset + win.numRows);
+  corners.emplace_back(win.colOffset + win.numCols / 2, win.rowOffset + win.numRows);
+  corners.emplace_back(win.colOffset, win.rowOffset + win.numRows);
+  corners.emplace_back(win.colOffset, win.rowOffset + win.numRows / 2);
+}
+
+template <typename PT>
+void FillCorners(const int numCols, const int numRows, std::vector<PT>& corners) {
+  RasterWindow win{ 0, 0, numCols, numRows };
+  FillCorners(win, corners);
+}
 
 /**
  *  \brief fill grid UL corner positions at a given stride

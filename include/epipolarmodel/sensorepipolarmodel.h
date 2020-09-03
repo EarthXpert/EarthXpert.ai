@@ -12,10 +12,13 @@
 
 namespace earthxpert {
 /**
- *  The class EpipolarSensorModel defines the template algorithms
+ *  The class SensorEpipolarModel defines the template algorithms
  *  for epipolar images generated from image products with sensor models.
+ *  For the ortho-ready product with a sensor model, the epipolar image itslef
+ *  is treated as euqivelant to the raw image, thus providing the identity
+ *  conversion when implementing the interface IEpipolarModel.
  */
-class EXEPIPOLARMODEL_EXPORTS EpipolarSensorModel 
+class EXEPIPOLARMODEL_EXPORTS SensorEpipolarModel 
   : public IEpipolarModel, public ISensorModel{
 public:
   /**
@@ -23,9 +26,9 @@ public:
    *  \param [in] sensorModel sensor model associated with the image
    *  \param [in] epiBound epipolar boundary of valid region
    */
-  EpipolarSensorModel(StereoPos pos, 
+  SensorEpipolarModel(StereoPos pos, 
     std::shared_ptr<ISensorModel> sensorModel, const Polygon2d& epiBound);
-  virtual ~EpipolarSensorModel() = default;
+  virtual ~SensorEpipolarModel() = default;
 
   /**
    *  Epipolar-to-raw transform.
@@ -33,11 +36,14 @@ public:
    *  \brief Given a 2d poistion on epipolar, output the corresponding position
    * on original image.
    *
-   *  \param [in] epi 2d position (x, y) in epipolar raster CS
-   *  \param [in/out] raw 2d position (x, y) in image raster CS
+   *  \param [in] epi 2d position (u, v) in epipolar image pixel coordinate system
+   *  \param [out] raw 2d position (x, y) in image raster coordinate system
    *  \return Returns true if operation succeeds
    */
-  virtual bool EpiToRaw(const Point2d& epi, Point2d& raw) const override;
+  virtual bool EpiToRaw(const Point2d& epi, Point2d& raw) const override {
+    raw = epi;
+    return true;
+  }
 
   /**
    *  \brief Given a list of 2d poistions on epipolar, output the corresponding
@@ -55,11 +61,14 @@ public:
    *  \brief Given a 2d poistion on image, output the corresponding position on
    * epipolar.
    *
-   *  \param [in] raw 2d position (x, y) in image raster CS
-   *  \param [in] epi 2d position (x, y) in epipolar raster CS
+   *  \param [in] raw 2d position (u, v) in image raster coordinate system
+   *  \param [out] epi 2d position (x, y) in epipolar image pixel coordinate system
    *  \return Returns true if operation succeeds
    */
-  virtual bool RawToEpi(const Point2d& raw, Point2d& epi) const override;
+  virtual bool RawToEpi(const Point2d& raw, Point2d& epi) const override {
+    epi = raw;
+    return true;
+  }
 
   /**
    *  \brief Given a list of 2d poistions on image, output the corresponding
@@ -72,9 +81,23 @@ public:
   size_t RawToEpi(const std::vector<Point2d>& raw, std::vector<Point2d>& epi) const override;
 
   /**
+   *  \return Returns algorithm of epipolar model
+   */
+  virtual EpipolarAlgo GetEpipolarAlgorithm() const noexcept override {
+    return eSENSOR;
+  }
+
+  /**
    *  \return Returns position in epipolar model
    */
   StereoPos GetStereoPos() const noexcept override { return mPos; }
+
+  /**
+   *  \return Returns raster columns & rows of epipolar image [unit: pixel]
+   */
+  virtual std::pair<int, int> GetImageSize() const noexcept override {
+    return mSensorModel->GetImageSize();
+  }
 
   /**
    *  \return Returns the internal sensor model
@@ -86,8 +109,13 @@ public:
   /**
    *  \return Returns the footprint in rectification CS
    */
-  const Polygon2d& GetBoundary() const noexcept override {
-    return mBound;
+  const Polygon2d& GetBoundary() const noexcept override { return mBound; }
+
+  /**
+   *  \return Returns raster columns & rows of raw image [unit: pixel]
+   */
+  std::pair<int, int> GetRawImageSize() const noexcept {
+    return mSensorModel->GetImageSize();
   }
 
   /**
@@ -201,13 +229,6 @@ public:
   std::shared_ptr<SpatialReferenceSystem>
     GetCoordinateSystem() const noexcept override {
     return mSensorModel->GetCoordinateSystem();
-  }
-
-  /**
-   *  \return Returns raster columns & rows of raw image [unit: pixel]
-   */
-  std::pair<int, int> GetRawImageSize() const noexcept {
-    return mSensorModel->GetImageSize();
   }
 
   /**

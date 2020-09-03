@@ -159,6 +159,40 @@ EpiModelPair EpipolarStereoFactory::CreateRationalEpiStereo(
 }
 
 /**
+ *  \brief Create an epipolar models for a stereo pair of images.
+ *
+ *  \param [in] leftModel sensor model associated with the left image
+ *  \param [in] rightModel sensor model associated with the right image
+ *  \return Returns pointers to epipolar model objects.
+ */
+EpiModelPair EpipolarStereoFactory::CreateSensorEpiStereo(
+  std::shared_ptr<ISensorModel> leftModel,
+  std::shared_ptr<ISensorModel> rightModel, const int) {
+  if (leftModel->GetModelType() != rightModel->GetModelType())
+    throw std::exception(_("The stereo pair should be of the same sensor type."));
+
+  auto [numCols, numRows] = leftModel->GetImageSize();
+  auto [rightNumCols, rightNumRows] = leftModel->GetImageSize();
+  if (numCols != rightNumCols || numRows != rightNumRows)
+    throw std::invalid_argument(_("CreateSensorEpiStereo: sensor models are not compatible"));
+
+  std::vector<PointXYd> fpCorners{ {0.0, 0.0}, {double(numCols), 0.0}, 
+    {double(numCols), double(numRows)}, {0.0, double(numRows)}, {0.0, 0.0} };
+
+  Polygon2d leftFp;
+  bg::assign_points(leftFp, fpCorners);
+  auto leftEpiModel = std::make_unique<SensorEpipolarModel>(
+    EpiStereoPos::eLEFT, leftModel, leftFp);
+
+  Polygon2d rightFp;
+  bg::assign_points(rightFp, fpCorners);
+  auto rightEpiModel = std::make_unique<SensorEpipolarModel>(
+    EpiStereoPos::eRIGHT, rightModel, rightFp);
+
+  return EpiModelPair{ std::move(leftEpiModel), std::move(rightEpiModel) };
+}
+
+/**
  *  \brief
  */
 std::vector<std::unique_ptr<IEpipolarModel>>

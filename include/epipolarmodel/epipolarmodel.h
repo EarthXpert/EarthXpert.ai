@@ -4,7 +4,7 @@
  */
 #pragma once
 
-#include "epipolarmodel/epipolarsensormodel.h"
+#include "epipolarmodel/sensorepipolarmodel.h"
 #include "core/math/interpgrid.h"
 #include "core/spatialref/groundpolicy.h"
 #include "epipolarmodel/epipolarrect.h"
@@ -24,7 +24,7 @@ namespace earthxpert {
  * the model coordinate system and the rectification coordinate system
  */
 template <class GroundPolicy>
-class EXEPIPOLARMODEL_EXPORTS EpipolarModel final : public EpipolarSensorModel {
+class EXEPIPOLARMODEL_EXPORTS EpipolarModel final : public SensorEpipolarModel {
 public:
   using PolicyType = GroundPolicy;
 

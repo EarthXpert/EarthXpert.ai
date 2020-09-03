@@ -25,7 +25,8 @@ public:
   enum EpipolarAlgo {
     eUNKNOWN,
     eCOPLANAR,  // frame coplanar
-    ePLANERECT  // rectification upon ground plane
+    ePLANERECT, // rectification upon ground plane
+    eSENSOR     // identical to raw senor
   };
 
   // position of component images in the stereo model

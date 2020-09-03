@@ -171,8 +171,8 @@ void TestImageToGround_Cube(const IEpipolarModel* leftEpiModel,
 
   Point3d maxDiffN(-1.0, -1.0, -1.0);
 
-  auto leftModel = dynamic_cast<const EpipolarSensorModel*>(leftEpiModel);
-  auto rightModel = dynamic_cast<const EpipolarSensorModel*>(rightEpiModel);
+  auto leftModel = dynamic_cast<const SensorEpipolarModel*>(leftEpiModel);
+  auto rightModel = dynamic_cast<const SensorEpipolarModel*>(rightEpiModel);
   StereoModel smN(leftModel, rightModel);    // NR 
   smN.SetForwardAlgorithm(IStereoModel::eSM_NR);
 
