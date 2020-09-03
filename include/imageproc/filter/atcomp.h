@@ -8,12 +8,12 @@
 
 namespace earthxpert {
 /**
- *  The calss Dehaze improve image statistically and virtually by 
- *  eliminating image hae, blur, shadow etc.
+ *  The calss AtComp improve image statistically and virtually by
+ *  compensating the atmospheric effects, such as haze, blur, shadow etc.
  */
-class EXIMAGEPROC_EXPORTS Dehaze final : public ImageFilter {
+class EXIMAGEPROC_EXPORTS AtComp final : public ImageFilter {
 public:
-  ~Dehaze() = default;
+  ~AtComp() = default;
 
   bool Process(const IRaster* src, IRaster* tgt) override;
 };

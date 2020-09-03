@@ -2,9 +2,11 @@ project(imageproc CXX)
 
 add_definitions(-DEXIMAGEPROC_API)
 set(imageproc_srcs "algorithm/clouddetect.cpp"
+  "algorithm/dehaze.cpp"
   "algorithm/wallisfilter.cpp"
   "algorithm/waterbodydetect.cpp"
-  "filter/dehaze.cpp"
+  "algorithm/superres.cpp"
+  "filter/atcomp.cpp"
   "filter/imagefilter.cpp")
 earthxpert_add_library(imageproc "api"
   SRCS ${imageproc_srcs}
