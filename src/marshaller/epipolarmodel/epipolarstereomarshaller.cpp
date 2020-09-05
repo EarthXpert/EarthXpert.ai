@@ -16,7 +16,7 @@ using CvFS = cv::FileStorage;
 using CvFN = cv::FileNode;
 
 // ingested persistence
-struct EpiModelRecord {
+struct EpiModelRecord { // EpipolarModel
   EpiStereoPos epiPos{ EpiStereoPos::eIGNORE };
   cv::Size2i rawSize;
   std::string mdlFile;
@@ -26,7 +26,7 @@ struct EpiModelRecord {
   std::string epiFile;
 
   void write(CvFS& fs) const {
-    fs << "{" << "epiPos" << epiPos << "rawSize" << rawSize
+    fs << "{" << "epiPos" << epiPos << "rawSize" << rawSize 
       << "mdlFile" << mdlFile << "bound" << bound << "offset" << offset
       << "epiSize" << epiSize << "epiFile" << epiFile << "}";
   }
@@ -53,6 +53,14 @@ static inline void read(const CvFN& node, EpiModelRecord& r,
   else
     r.read(node);
 }
+
+struct SensorEpiModelRecord { // SensorEpipolarModel
+  EpiStereoPos epiPos{ EpiStereoPos::eIGNORE };
+  std::string mdlFile;
+  std::string bound;
+  cv::Size2i size;   // epi/raw Size
+  std::string file;  // epi/raw File
+};
 
 /**
  *  \brief serialize an epipolar model into a json file

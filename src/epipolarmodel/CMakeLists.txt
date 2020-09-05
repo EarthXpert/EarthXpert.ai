@@ -6,6 +6,7 @@ set(epipolarmodel_srcs "epipolarmodel.cpp"
   "epipolarstereofactory.cpp"
   "frameepipolarmodel.cpp"
   "sensorepipolarmodel.cpp"
+  "stereomatemodel.cpp"
   "utils/epiutils.cpp"
   "utils/evalepipolarmodel.cpp")
 earthxpert_add_library(epipolarmodel "api"
