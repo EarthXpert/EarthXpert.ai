@@ -77,20 +77,6 @@ void PointcloudWriter::SetCoordinateSystem(const SpatialReferenceSystem* srs) {
  *
  *  \param [in] pointCloud the Pointcloud object holding an array of points.
  *              The fields to be written must be compatible with the dataset.
- *  \return Returns number of points written
- *
- *  \todo filter
- */
-size_t PointcloudWriter::WritePointcloud(Pointcloud const* const pointCloud) {
-  assert(mWriter);
-  return WritePointcloud(pointCloud, 0, pointCloud->GetPointCount());
-}
-
-/**
- *  \brief Write an array of points into the opened file.
- *
- *  \param [in] pointCloud the Pointcloud object holding an array of points.
- *              The fields to be written must be compatible with the dataset.
  *  \param [in] start the index of start point
  *  \param [in] numPoints number of points to write
  *  \return Returns number of points written

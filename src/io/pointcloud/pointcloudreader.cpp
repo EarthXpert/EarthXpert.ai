@@ -43,37 +43,10 @@ std::unique_ptr<VectorMetadata> PointcloudReader::GetMetadata() const {
 }
 
 /**
- *  \brief Set the buffer size.
- *
- *  \param [in] bufferX the horizontal buffer size
- *  \param [in] bufferY the vertical buffer size
- *
- *  \todo pending
- */
-void PointcloudReader::SetBuffers(const float bufferX, const float bufferY) {
-  mBufferX = bufferX;
-  mBufferY = bufferY;
-}
-
-/**
- *  \return Returns buffer size.
- */
-std::pair<float, float> PointcloudReader::GetBuffers() const noexcept {
-  return {mBufferX, mBufferY};
-}
-
-/**
  *  \return Returns pointer to the spatial coordinate system
  */
 UPSpatialRefSys PointcloudReader::GetCoordinateSystem() const {
   return nullptr;
-}
-
-/**
- *  \return Return all points in the las file
- */
-std::unique_ptr<Pointcloud> PointcloudReader::ReadPointcloud() {
-  return ReadPointcloud(0, mFilePointCount);
 }
 
 /**
@@ -111,22 +84,6 @@ size_t PointcloudReader::ReadPointcloud(const size_t start,
   std::lock_guard<std::mutex> lock(mMutex);
   mReader->seek(start);
   return ReadPointcloud(pointCloud);
-}
-
-/**
- *  \brief Reads point tile defined by tile.
- *
- *  \param [in] minX x location of the lower-left corner of the tile
- *  \param [in] minY y location of the lower-left corner of the tile
- *  \param [in] width the tile width [unit: meter]
- *  \param [in] height the tile height
- *
- *  \return Return Pointcloud container object.
- */
-std::unique_ptr<Pointcloud> PointcloudReader::ReadPointcloud(
-  const double minX, const double minY, 
-  const double width, const double height) {
-  return ReadPointcloud({ minX, minY,width, height });
 }
 
 /**
