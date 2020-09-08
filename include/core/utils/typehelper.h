@@ -57,4 +57,12 @@ template <typename Ty> struct Equal {
 };
 
 using EqualD = Equal<double>;
+
+/**
+ *  \tparam Ts callable types such as functor, lambda.
+ */
+template <typename ...Ts>
+struct Overloaded : Ts... {
+  using Ts::operator()...;
+};
 } // namespace earthxpert

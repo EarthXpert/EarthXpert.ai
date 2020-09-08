@@ -19,7 +19,7 @@ constexpr int kNCP = 8; // number of corner points
 enum MaskKind : uint8_t {
   eMK_BKGD = 0, // background
   eMK_NORM,     // normal, e.g. rigorous calculation
-  eMK_FAST      // fast, e.g. interpolated from rigorous 
+  eMK_FAST      // fast, e.g. interpolated from rigorous
 };
 
 /**
@@ -36,14 +36,14 @@ inline int64_t CRToIndex(const int col, const int row, const int step) {
   return (int64_t(step) * row + col);
 }
 
-inline Tuple4<int> GridCorners(const std::vector<int>& gridCols, 
+inline Tuple4<int> GridCorners(const std::vector<int>& gridCols,
   const std::vector<int>& gridRows, const int gridCol, const int gridRow) {
   assert(gridCol + 1 < gridCols.size() && gridRow + 1 < gridRows.size());
-  return { gridCols[gridCol], gridRows[gridRow], 
+  return { gridCols[gridCol], gridRows[gridRow],
            gridCols[gridCol + 1], gridRows[gridRow + 1] };
 }
 
-template <typename Ty> inline Tuple4<Ty&> MatCorners(cv::Mat& mat, 
+template <typename Ty> inline Tuple4<Ty&> MatCorners(cv::Mat& mat,
   const int colL, const int rowU, const int colR, const int rowL) {
   return { mat.at<Ty>(rowU, colL), mat.at<Ty>(rowU, colR),
            mat.at<Ty>(rowL, colL), mat.at<Ty>(rowL, colR) };
@@ -75,7 +75,7 @@ template <int order>
 inline Tuple4<size_t> CornersIndex(const int col, const int row,
   const int step, const int dim) {
   size_t i1{};
-  if constexpr (eCOLMAHOR == order) {
+  if constexpr(eCOLMAHOR == order) {
     i1 = (size_t(step) * col + row) * dim;
   }
   else {
@@ -136,7 +136,7 @@ void FillCorners(const int numCols, const int numRows, std::vector<PT>& corners)
  *  \brief fill grid UL corner positions at a given stride
  *  \return Returns number of corners
  */
-template <typename Ty> inline 
+template <typename Ty> inline
 int FillCornersByStride(const Ty dim, const Ty stride, std::vector<Ty>& corners) {
   for (Ty i = 0; i < dim; i += stride) {
     corners.push_back(i);
@@ -157,7 +157,7 @@ int FillNodesByStride(const Ty dim, const Ty stride, std::vector<Ty>& nodes) {
   return int(nodes.size());
 }
 
-template <> inline 
+template <> inline
 int FillNodesByStride(const int dim, const int stride, std::vector<int>& nodes) {
   for (int i = 0; i < dim - 1; i += stride) {
     nodes.push_back(i);

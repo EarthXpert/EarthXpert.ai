@@ -38,17 +38,17 @@ template <typename PointTy> struct LinearFitResidual final : FitResidual<PointTy
 
   /**
    *  \param [in] pb the two parameters m & c.
-   *  \param [out] residual discrepency between the measured dimension and 
+   *  \param [out] residual discrepency between the measured dimension and
    *  its estimated value calculated using the equation.
    */
   template <typename Ty = double> bool operator()(const Ty* const pb, Ty* residual) const {
     //static_assert(std::is_same_v<double, Ty>, "LinearFitResidual: operator()");
     static_assert(sizeof(Ty) >= sizeof(PointTy::value_type), "Parameter precision must be not lowert than observation's");
-    
-    if constexpr (2 == kDim) {
+
+    if constexpr(2 == kDim) {
       residual[0] = pt->y - pb[0] * pt->x - pb[1];
     }
-    else if constexpr (3 == kDim) {
+    else if constexpr(3 == kDim) {
       residual[0] = pt->z - pb[0] * pt->x - pb[1] * pt->y - pb[2];
     }
     else {
@@ -76,10 +76,10 @@ template <typename PointTy> struct ExponentialFitResidual final : FitResidual<Po
    *  its estimated value calculated using the equation.
    */
   template <typename Ty = double> bool operator()(const Ty* const pb, Ty* residual) const {
-    if constexpr (2 == kDim) {
+    if constexpr(2 == kDim) {
       residual[0] = pt->y - exp(pb[0] * pt->x + pb[1]);
     }
-    else if constexpr (3 == kDim) {
+    else if constexpr(3 == kDim) {
       residual[0] = pt->z - exp(pb[0] * pt->x + pb[1] * pt->y + pb[2]);
     }
     else {

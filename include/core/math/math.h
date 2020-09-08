@@ -65,7 +65,7 @@ inline Tuple4<Ty> LinearWeights(const Ty xf, const Ty yf) {
   const Ty w3 = yf - w4;  // (1 - xf) * yf
   const Ty w2 = xf - w4;  // xf * (1 - yf)
   const Ty w1 = Ty(1) - xf - yf + w4;  // (1 - xf) * (1 - yf)
-  if constexpr (eCOLMAHOR == order)
+  if constexpr(eCOLMAHOR == order)
     return { w1, w3, w2, w4 };
   else
     return { w1, w2, w3, w4 };

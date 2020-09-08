@@ -51,7 +51,7 @@ class  AnalyticLineIntersectCostFunc final : ceres::DynamicCostFunction {
  *  \param PointTy type of point: Point3f, Point3d, Vector3d, etc
  */
  // 3d line equation: p(x, y, z) = p0(x0, y0, z0) + t * v(a, b, c), where v = p1 - p0
-template <typename PointTy> 
+template <typename PointTy>
 struct AutoLineIntersectResidual final : IntersectResidual<PointTy> {
   enum { eDiffAlg = ct::kAutoDiff };
 
@@ -60,7 +60,7 @@ struct AutoLineIntersectResidual final : IntersectResidual<PointTy> {
    *  \param [in] segs the packed observation data, containing (numSegs * 2) points.
    *  \param [in] numSegs number of observations
    */
-  AutoLineIntersectResidual(const PointTy* segms, const int numSegms) 
+  AutoLineIntersectResidual(const PointTy* segms, const int numSegms)
     : IntersectResidual<PointTy>(segms, numSegms) {}
   ~AutoLineIntersectResidual() = default;
 
@@ -74,7 +74,7 @@ struct AutoLineIntersectResidual final : IntersectResidual<PointTy> {
    *  \param [in] pb the parameter block determined by the algorithms.
    *  \param [out] residual discrepency determined by the algorithms.
    */
-  template <typename Ty = double> 
+  template <typename Ty = double>
   bool operator()(const Ty* const pb, Ty* residual) const {
     static_assert(sizeof(Ty) >= sizeof(PointTy::value_type), "Parameter precision must be not lowert than observation's");
 
@@ -90,7 +90,7 @@ struct AutoLineIntersectResidual final : IntersectResidual<PointTy> {
   }
 
   // Dynamic functor
-  template <typename Ty = double> 
+  template <typename Ty = double>
   bool operator()(Ty const* const* pb, Ty* residual) const {
     if (2 == numSegs) {
       return TwoLines(pb, residual);
@@ -154,7 +154,7 @@ private:
 
     residual[0] = norm(p2 - p1);
     residual[1] = norm(p3 - p2);
-    residual[2] = norm(p1 - p3); 
+    residual[2] = norm(p1 - p3);
     return true;
   }
 
@@ -204,7 +204,7 @@ private:
  *  \param PointTy type of point: Point3f, Point3d, Vector3d, etc
  */
  // 3d line equation: p(x, y, z) = p0(x0, y0, z0) + t * v(a, b, c), where v = p1 - p0
-template <typename PointTy> 
+template <typename PointTy>
 struct NumericLineIntersectResidual final : IntersectResidual<PointTy> {
   enum { eDiffAlg = ct::kNumericDiff };
 
@@ -213,7 +213,7 @@ struct NumericLineIntersectResidual final : IntersectResidual<PointTy> {
    *  \param [in] segs the packed observation data, containing (numSegs * 2) points.
    *  \param [in] numSegs number of observations
    */
-  NumericLineIntersectResidual(const PointTy* segms, const int numSegms) 
+  NumericLineIntersectResidual(const PointTy* segms, const int numSegms)
     : IntersectResidual<PointTy>(segms, numSegms) {}
   ~NumericLineIntersectResidual() = default;
 
@@ -229,7 +229,7 @@ struct NumericLineIntersectResidual final : IntersectResidual<PointTy> {
    */
   bool operator()(const double* const pb, double* residual) const {
     static_assert(sizeof(double) >= sizeof(PointTy::value_type), "Parameter precision must be not lowert than observation's");
-    
+
     if (2 == numSegs) {
       return TwoLines(pb, residual);
     }
@@ -363,7 +363,7 @@ class  AnalyticSphereIntersectCostFunc final: ceres::DynamicCostFunction {
  *  \param SphereType type of sphere: Circle3f, Circle3d, etc
  */
  // 3d sphere equation: r = distance(p(x, y, z), p0(x0, y0, z0))
-template <typename SphereType> 
+template <typename SphereType>
 struct AutoSphereIntersectResidual final : IntersectResidual<SphereType> {
   AutoSphereIntersectResidual(const SphereType* sphs, const int numSphs) : IntersectResidual<SphereType>(sphs, numSphs) {}
   ~AutoSphereIntersectResidual() = default;
@@ -375,7 +375,7 @@ struct AutoSphereIntersectResidual final : IntersectResidual<SphereType> {
  *  \param SphereType type of sphere: Circle3f, Circle3d, etc
  */
  // 3d sphere equation: r = distance(p(x, y, z), p0(x0, y0, z0))
-template <typename SphereType> 
+template <typename SphereType>
 struct NumericSphereIntersectResidual final : IntersectResidual<SphereType> {
   NumericSphereIntersectResidual(const SphereType* sphs, const int numSphs) : IntersectResidual<SphereType>(sphs, numSphs) {}
   ~NumericSphereIntersectResidual() = default;
@@ -388,7 +388,7 @@ struct NumericSphereIntersectResidual final : IntersectResidual<SphereType> {
  *  CircleF, CircleD for sphere.
  *  \param ResidualPolicy defines the functor for residual calculation.
  *
- *  \param [in] geoms a sequence, at least two geometries. e.g., 
+ *  \param [in] geoms a sequence, at least two geometries. e.g.,
  *  each line segment is defined by two end points; each sphere by the center point and the radius.
  *  \param [in] numGeoms number of geometris to intersect.
  *  \param [in/out] pb the parameter block holding all unknown parameters
@@ -404,8 +404,8 @@ struct NumericSphereIntersectResidual final : IntersectResidual<SphereType> {
  */
 template <typename GeomTy,
   template <typename GTy = GeomTy> class ResidualPolicy, class LossPolicy = void>
-bool IntersectGeometries(const GeomTy* geoms, const int numGeoms, 
-  std::vector<double>& pb, const Solver::Options& options, 
+bool IntersectGeometries(const GeomTy* geoms, const int numGeoms,
+  std::vector<double>& pb, const Solver::Options& options,
   Solver::Summary& summary, LossPolicy* lossFunc = nullptr) {
   using CostFunctor = ResidualPolicy<GeomTy>;
   static_assert(std::is_base_of_v<IResidual, CostFunctor>, "IResidual");
@@ -436,7 +436,7 @@ bool IntersectGeometries(const GeomTy* geoms, const int numGeoms,
   //costFunc->AddParameterBlock(numGeoms);
 
   // Sized parameter blocks
-  if constexpr (ct::kAutoDiff == CostFunctor::eDiffAlg) {
+  if constexpr(ct::kAutoDiff == CostFunctor::eDiffAlg) {
     costFunc = new AutoDiffCostFunction<CostFunctor, 3, 2>(
       new CostFunctor(geoms, numGeoms));
   }
@@ -484,13 +484,13 @@ public:
   /**
    *  Intersect two 3D line segements (ceres).
    *
-   *  \param [in] segs the list of four end points interlaeved by line segments, 
+   *  \param [in] segs the list of four end points interlaeved by line segments,
    *  each is defined by two points.
    *  \param [out] p the intersection point.
    *  \param [out] summary the report of ceres solver.
    *  \return Return true if successful, false if parallel.
    */
-  bool IntersectCeres(const Point3d* segs, Point3d& p, 
+  bool IntersectCeres(const Point3d* segs, Point3d& p,
     Solver::Summary& summary, int = 2) const override;
 
   /**
@@ -502,7 +502,7 @@ public:
    *  \param [in] numSegs number of line segments given by segs, must be 2
    *  \return Return true if successful, false if parallel.
    */
-  inline bool IntersectEigen(const Point3d* segs, Point3d& p, 
+  inline bool IntersectEigen(const Point3d* segs, Point3d& p,
     const int = 2) const override {
     return IntersectEigen(segs, segs + 2, p);
   }
@@ -533,14 +533,14 @@ public:
   /**
    *  Intersect three 3D line segements (ceres).
    *
-   *  \param [in] segs the list of six end points interlaeved by line segments, 
+   *  \param [in] segs the list of six end points interlaeved by line segments,
    *  each is defined by two points.
    *  \param [out] p the intersection point.
    *  \param [out] summary the report of ceres solver.
    *  \param [in] numSegs number of line segments given by segs, must be 3
    *  \return Return true if successful, false if parallel.
    */
-  bool IntersectCeres(const Point3d* segs, Point3d& p, 
+  bool IntersectCeres(const Point3d* segs, Point3d& p,
     Solver::Summary& summary, int = 3) const override;
 
   /**
@@ -552,7 +552,7 @@ public:
    *  \param [in] numSegs number of line segments given by segs, must be 3
    *  \return Return true if successful, false if parallel.
    */
-  inline bool IntersectEigen(const Point3d * segs, Point3d& p, 
+  inline bool IntersectEigen(const Point3d * segs, Point3d& p,
     const int = 3) const override {
     return IntersectEigen(segs, segs + 2, segs + 4, p);
   }
@@ -602,7 +602,7 @@ public:
    *  \param [in] numSegs number of line segments given by segs, must be 2+
    *  \return Return true if successful, false if parallel.
    */
-  bool IntersectEigen(const Point3d* segs, Point3d& p, 
+  bool IntersectEigen(const Point3d* segs, Point3d& p,
     const int numSegs) const override;
 };
 
@@ -612,7 +612,7 @@ public:
  *
  *  \return Return true if successful, false if parallel.
  */
-inline EXCORE_EXPORTS bool IntersectTwoLines(const Point3d* segs, 
+inline EXCORE_EXPORTS bool IntersectTwoLines(const Point3d* segs,
   Point3d& p, Solver::Summary& summary) {
   XTwoLines xl;
   return xl.IntersectCeres(segs, p, summary);
@@ -623,7 +623,7 @@ inline EXCORE_EXPORTS bool IntersectTwoLines(const Point3d* segs,
  *
  *  \return Return true if successful, false if parallel.
  */
-inline EXCORE_EXPORTS bool IntersectTwoLines(const Point3d* s1, 
+inline EXCORE_EXPORTS bool IntersectTwoLines(const Point3d* s1,
   const Point3d* s2, Point3d& p) {
   XTwoLines xl;
   return xl.IntersectEigen(s1, s2, p);
@@ -634,7 +634,7 @@ inline EXCORE_EXPORTS bool IntersectTwoLines(const Point3d* s1,
  *
  *  \return Return true if successful, false if parallel.
  */
-inline EXCORE_EXPORTS bool IntersectThreeLines(const Point3d* s1, 
+inline EXCORE_EXPORTS bool IntersectThreeLines(const Point3d* s1,
   const Point3d* s2, const Point3d* s3, Point3d& p) {
   XThreeLines xl;
   return xl.IntersectEigen(s1, s2, s3, p);
@@ -645,7 +645,7 @@ inline EXCORE_EXPORTS bool IntersectThreeLines(const Point3d* s1,
  *
  *  \return Return true if successful, false if parallel.
  */
-inline EXCORE_EXPORTS bool IntersectMultipleLines(const Point3d* segs, 
+inline EXCORE_EXPORTS bool IntersectMultipleLines(const Point3d* segs,
   Point3d& p, const int numSegs) {
   XMultipleLines xl;
   return xl.IntersectEigen(segs, p, numSegs);
