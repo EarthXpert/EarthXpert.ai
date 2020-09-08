@@ -4,7 +4,7 @@
  */
 #pragma once
 
-#include "epipolarmodel/epipolarsensormodel.h"
+#include "epipolarmodel/sensorepipolarmodel.h"
 #include "sensormodel/framemodel.h"
 
 namespace earthxpert {
