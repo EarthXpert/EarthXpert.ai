@@ -6,5 +6,12 @@
 
 #include "3rdparty/ex3rdparty.h"
 
-namespace earthxpert::thirdparty {
-} // namespace earthxpert::thirdparty
+#include <QObject>
+
+namespace earthxpert {
+QString EX3RDPARTY_EXPORTS QtHash(const QString& key, const QString& salt);
+
+namespace thirdparty {
+
+}
+} // namespace earthxpert
