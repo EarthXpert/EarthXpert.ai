@@ -52,10 +52,10 @@
 #include "gui/qt/singleinstance.h"
 #include <QApplication>
 
-using earthxpert::SingleInstance;
+using earthxpert::SingleInstanceQt;
 
 int main(int argc, char *argv[]) {
-  SingleInstance instance("qt5_hw");
+  SingleInstanceQt instance("exai.qt5_hw");
   if (!instance.TryToRun())
     return 0;
 

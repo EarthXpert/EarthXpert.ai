@@ -11,15 +11,15 @@
 #include <QSystemSemaphore>
 
 namespace earthxpert {
-class EXGUI_EXPORTS SingleInstance {
+class EXGUI_EXPORTS SingleInstanceQt {
 public:
-  SingleInstance(const QString& key);
-  SingleInstance(const SingleInstance&) = delete;
-  SingleInstance(SingleInstance&&) = delete;
-  ~SingleInstance();
+  SingleInstanceQt(const QString& key);
+  SingleInstanceQt(const SingleInstanceQt&) = delete;
+  SingleInstanceQt(SingleInstanceQt&&) = delete;
+  ~SingleInstanceQt();
 
-  SingleInstance& operator=(const SingleInstance&) = delete;
-  SingleInstance& operator=(SingleInstance&&) = delete;
+  SingleInstanceQt& operator=(const SingleInstanceQt&) = delete;
+  SingleInstanceQt& operator=(SingleInstanceQt&&) = delete;
 
   bool TryToRun();
   bool IsRunning();
@@ -28,9 +28,6 @@ public:
 private:
   const QString mKey;
   const QString mSharedMemKey;
-  const QString mMemLockKey;
-
   QSharedMemory mSharedMem;
-  QSystemSemaphore mSemaphore;
 };
 }

@@ -7,30 +7,20 @@
 
 using namespace earthxpert;
 
-SingleInstance::SingleInstance(const QString& key)
-  : mKey(key), mSharedMemKey(QtHash(key, "_sharedMemKey")),
-    mMemLockKey(QtHash(key, "_memLockKey")), 
-    mSharedMem(mSharedMemKey), mSemaphore(mMemLockKey, 1) {
-  mSemaphore.acquire();
-  {
-    QSharedMemory fix(mSharedMemKey);  // Fix for *nix: http://habrahabr.ru/post/173281/
-    fix.attach();
-  }
-  mSemaphore.release();
+SingleInstanceQt::SingleInstanceQt(const QString& key)
+  : mKey(key + "_SingleInstanceQt"), mSharedMem(mKey) {
 }
 
-SingleInstance::~SingleInstance() {
+SingleInstanceQt::~SingleInstanceQt() {
   Release();
 }
 
-bool SingleInstance::TryToRun() {
+bool SingleInstanceQt::TryToRun() {
   if (IsRunning())   // Extra check
     return false;
 
-  mSemaphore.acquire();
-  const bool result = mSharedMem.create(sizeof(quint64));
-  mSemaphore.release();
-  if (!result) {
+  const bool res = mSharedMem.create(sizeof(quint64));
+  if (!res) {
       Release();
       return false;
   }
@@ -38,22 +28,18 @@ bool SingleInstance::TryToRun() {
   return true;
 }
 
-bool SingleInstance::IsRunning() {
+bool SingleInstanceQt::IsRunning() {
   if (mSharedMem.isAttached())
     return false;
 
-  mSemaphore.acquire();
   const bool isRunning = mSharedMem.attach();
   if (isRunning)
     mSharedMem.detach();
-  mSemaphore.release();
 
   return isRunning;
 }
 
-void SingleInstance::Release() {
-  mSemaphore.acquire();
+void SingleInstanceQt::Release() {
   if (mSharedMem.isAttached())
     mSharedMem.detach();
-  mSemaphore.release();
 }
