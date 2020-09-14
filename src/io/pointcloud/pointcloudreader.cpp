@@ -100,7 +100,7 @@ PointcloudReader::ReadPointcloud(const SpatialTileD& tile) {
     return ReadPointcloud();
   }
 
-  // slower: filtered reading
+  // slower: filtered reading   \todo add buffer
   auto filter = CreateLasFilter(tile);
 
   std::lock_guard<std::mutex> lock(mMutex);

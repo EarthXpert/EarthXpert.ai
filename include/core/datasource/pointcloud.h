@@ -31,7 +31,9 @@ public:
     ePHOTO    // matched and reconstructed from photos
   };
 
+  // \todo support tile range
   Pointcloud(size_t pointCapacity, FieldGroup fieldGroup);
+  //Pointcloud(const SpatialTile& tile, size_t pointCapacity, FieldGroup fieldGroup);
   Pointcloud(const Point3d& origin, std::vector<XYZF>&& xyz);
   Pointcloud(const Point3d& origin, std::vector<XYZF>&& xyz,
     std::vector<Classification>&& cla);
@@ -467,7 +469,7 @@ public:
   void Swap(Pointcloud& rhs) noexcept;
 
 private:
-  SpatialTileD mTile;   // 2D bounding box of focusing points
+  SpatialTileD mTile;   // 2D bounding box of focusing points within range of AOI
   size_t mPointCapacity{};  // max number of points to be able to hold
   FieldGroup mFieldGroup;   // available field groups
   Point3d mOrigin{};        // origin of 3D coordinate system where mPoints reside
