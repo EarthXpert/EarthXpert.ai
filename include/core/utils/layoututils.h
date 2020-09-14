@@ -6,8 +6,9 @@
 
 #include "core/excore.h"
 #include "3rdparty/opencv/exopencv.h"
-#include "core/utils/rasterwindow.h"
 #include "core/math/math.h"
+#include "core/utils/rasterwindow.h"
+#include "core/utils/spatialtile.h"
 
 #include <utility>
 #include <vector>
@@ -114,8 +115,8 @@ std::pair<int, int> EXCORE_EXPORTS EstimateTileSize(size_t memSize,
  *
  *  \todo use stride along image boundary
  */
-template <typename PT>
-void FillCorners(const RasterWindow& win, std::vector<PT>& corners) {
+template <typename PT> void 
+FillCorners(const RasterWindow& win, std::vector<PT>& corners) {
   corners.emplace_back(win.colOffset, win.rowOffset);
   corners.emplace_back(win.colOffset + win.numCols / 2, win.rowOffset);
   corners.emplace_back(win.colOffset + win.numCols, win.rowOffset);
@@ -126,8 +127,8 @@ void FillCorners(const RasterWindow& win, std::vector<PT>& corners) {
   corners.emplace_back(win.colOffset, win.rowOffset + win.numRows / 2);
 }
 
-template <typename PT>
-void FillCorners(const int numCols, const int numRows, std::vector<PT>& corners) {
+template <typename PT> void 
+FillCorners(const int numCols, const int numRows, std::vector<PT>& corners) {
   RasterWindow win{ 0, 0, numCols, numRows };
   FillCorners(win, corners);
 }
@@ -136,8 +137,8 @@ void FillCorners(const int numCols, const int numRows, std::vector<PT>& corners)
  *  \brief fill grid UL corner positions at a given stride
  *  \return Returns number of corners
  */
-template <typename Ty> inline
-int FillCornersByStride(const Ty dim, const Ty stride, std::vector<Ty>& corners) {
+template <typename Ty> inline int 
+FillCornersByStride(const Ty dim, const Ty stride, std::vector<Ty>& corners) {
   for (Ty i = 0; i < dim; i += stride) {
     corners.push_back(i);
   }
@@ -148,8 +149,8 @@ int FillCornersByStride(const Ty dim, const Ty stride, std::vector<Ty>& corners)
  *  \brief fill grid node positions at a given stride
  *  \return Returns number of nodes
  */
-template <typename Ty> inline
-int FillNodesByStride(const Ty dim, const Ty stride, std::vector<Ty>& nodes) {
+template <typename Ty> inline int 
+FillNodesByStride(const Ty dim, const Ty stride, std::vector<Ty>& nodes) {
   for (Ty i = 0; i < dim; i += stride) {
     nodes.push_back(i);
   }
@@ -157,12 +158,27 @@ int FillNodesByStride(const Ty dim, const Ty stride, std::vector<Ty>& nodes) {
   return int(nodes.size());
 }
 
-template <> inline
-int FillNodesByStride(const int dim, const int stride, std::vector<int>& nodes) {
+template <> inline int 
+FillNodesByStride(const int dim, const int stride, std::vector<int>& nodes) {
   for (int i = 0; i < dim - 1; i += stride) {
     nodes.push_back(i);
   }
   nodes.push_back(dim - 1);
   return int(nodes.size());
+}
+
+/**
+ *  \brief 
+ */
+inline SpatialTileD 
+OffsetSpatialTile(const Point2d& origin, const SpatialTileF& tile) {
+  return { origin.x + tile.minX, origin.y + tile.minY,
+    double(tile.width), double(tile.height) };
+}
+
+inline SpatialTileF 
+OffsetSpatialTile(const Point2d& origin, const SpatialTileD& tile) {
+  return { float(tile.minX - origin.x), float(tile.minY - origin.x),
+    float(tile.width), float(tile.height) };
 }
 }

@@ -6,8 +6,9 @@
 
 #include "core/excore.h"
 #include "core/datasource/rastertypes.h"
+#include "core/utils/rasterwindow.h"
 
-#include "opencv2/core/hal/interface.h"
+#include <opencv2/core/hal/interface.h>
 #include <cstdint>
 #include <memory>
 #include <utility>
@@ -74,6 +75,8 @@ public:
    */
   virtual std::pair<int, int> GetOffsets() const noexcept = 0;
 
+  virtual RasterWindow GetRasWin() const noexcept = 0;
+    
   /**
    *  \return Returns col, row margins
    */
@@ -113,6 +116,8 @@ public:
    *  \return Returns buffer size.
    */
   virtual std::pair<int, int> GetBufferSize() const noexcept = 0;
+
+  virtual RasterWindow GetBufWin() const noexcept = 0;
 
   /**
    *  \return Returns offset of the first pixel belonging to the image in the buffer.

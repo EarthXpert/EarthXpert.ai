@@ -10,6 +10,7 @@
 #include "core/utils/spatialtile.h"
 
 #include <cassert>
+#include <optional>
 #include <type_traits>
 #include <vector>
 
@@ -450,19 +451,23 @@ public:
   }
   auto operator[](const size_t i) { return PointProxy<Pointcloud>(this, i); }
 
+  SpatialTileD GetTile() const noexcept { return mTile; }
+
   /**
-   *  \brief it is tedious also in-efficient to track the modification of points and maintain their bounding box.
+   *  \brief it is tedious also in-efficient to track the modification 
+   *  of points and maintain their bounding box.
    *
    *  \return Returns 2D extent of region covered by points in XY
    *
-   *  \remark This convenient function will always traverse all points to obtain the region extent.
-   *  Use it at caution to avoid perforamnce penaty.
+   *  \remark This convenient function will traverse all points 
+   *  to obtain the region extent.
    */
-  SpatialTileD ObtainBoundingBox2D() const noexcept;
+  SpatialTileD GetBufTile() noexcept;
 
   void Swap(Pointcloud& rhs) noexcept;
 
 private:
+  SpatialTileD mTile;   // 2D bounding box of focusing points
   size_t mPointCapacity{};  // max number of points to be able to hold
   FieldGroup mFieldGroup;   // available field groups
   Point3d mOrigin{};        // origin of 3D coordinate system where mPoints reside
@@ -506,7 +511,8 @@ private:
 
   // cache
   size_t mPointCount{};     // actual number of points held, default to mPointCapacity
-  std::tuple<std::vector<XYZF>*, std::vector<Classification>*, std::vector<Intensity>*, 
+  std::optional<SpatialTileD> mBufTile;   // 2D bounding box of all points including focused & buffered
+  std::tuple<std::vector<XYZF>*, std::vector<Classification>*, std::vector<Intensity>*,
     std::vector<RGB16>*> mData{ &mXYZ, &mCla, &mIntensity, &mRGB }; // indexed by kPOS
 };
 

@@ -202,6 +202,18 @@ public:
   }
 
   /**
+   *  \brief Reads a pixel block defined by a window.
+   *
+   *  \param [in] win Raster window
+   *  \param [in] rasterType type of data structure
+   *  \return Returns pointer to raster object holding a pixel block
+   */
+  std::unique_ptr<IRaster> ReadRaster(const RasterWindow& win,
+    RasterType rasterType) override {
+    return mReader->ReadRaster(win, rasterType);
+  }
+
+  /**
    *  \brief Reads a pixel block defined by the passed raster object, populates
    *  the associated buffer.
    *

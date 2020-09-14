@@ -5,7 +5,6 @@
 #pragma once
 
 #include "core/datasource/iraster.h"
-#include "core/utils/rasterwindow.h"
 
 #include "gdal_priv.h"
 
@@ -144,6 +143,10 @@ public:
     return { mColOffset, mRowOffset };
   }
 
+  RasterWindow GetRasWin() const noexcept override {
+    return { mColOffset, mRowOffset, mNumCols, mNumRows };
+  }
+
   /**
    *  \return Returns margin size.
    */
@@ -190,6 +193,10 @@ public:
    */
   std::pair<int, int> GetBufferSize() const noexcept override {
     return { mBufNumCols, mBufNumRows };
+  }
+
+  RasterWindow GetBufWin() const noexcept override {
+    return { mBufColOff, mBufRowOff, mBufNumCols, mBufNumRows };
   }
 
   /**

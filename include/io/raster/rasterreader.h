@@ -6,7 +6,6 @@
 
 #include "io/raster/irasterreader.h"
 #include "core/utils/fsutils.h"
-#include "core/utils/rasterwindow.h"
 
 #include <mutex>
 #include <tuple>
@@ -156,6 +155,19 @@ public:
    */
   std::unique_ptr<IRaster> ReadRaster(int colOffset, int rowOffset,
     int numCols, int numRows, RasterType rasterType) override;
+
+  /**
+   *  \brief Reads a pixel block defined by a window.
+   *
+   *  \param [in] win Raster window
+   *  \param [in] rasterType type of data structure
+   *  \return Returns pointer to raster object holding a pixel block
+   */
+  std::unique_ptr<IRaster> ReadRaster(const RasterWindow& win,
+    RasterType rasterType) override {
+    return ReadRaster(win.colOffset, win.rowOffset, 
+      win.numCols, win.numRows, rasterType);
+  }
 
   /**
    *  \brief Reads a pixel block defined by the passed raster object, populates

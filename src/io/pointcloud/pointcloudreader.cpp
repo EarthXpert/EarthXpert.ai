@@ -3,6 +3,7 @@
  * -----------------------------------------------------------------------------
  */
 #include "io/pointcloud/pointcloudreader.h"
+#include "io/pointcloud/pcutils.h"
 #include "3rdparty/laslib/exlaslib.h"
 #include "core/datasource/pointcloudutils.h"
 #include "core/exceptions/exexcept.h"
@@ -12,7 +13,6 @@
 #include <optional>
 
 using namespace earthxpert;
-using thirdparty::CreateLasFilter;
 using pdt = thirdparty::PointDataTraits;
 
 /**
@@ -101,7 +101,7 @@ PointcloudReader::ReadPointcloud(const SpatialTileD& tile) {
   }
 
   // slower: filtered reading
-  auto filter = CreateLasFilter(tile.minX, tile.minY, tile.width, tile.height);
+  auto filter = CreateLasFilter(tile);
 
   std::lock_guard<std::mutex> lock(mMutex);
   mReader->set_filter(filter.get());

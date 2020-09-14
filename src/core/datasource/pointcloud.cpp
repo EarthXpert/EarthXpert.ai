@@ -60,6 +60,7 @@ Pointcloud::Pointcloud(const Point3d& origin, std::vector<XYZF>&& xyz)
   : mOrigin(origin), mXYZ(std::move(xyz)) {
   mFieldGroup.set(FieldGroup::kPOSXYZ);
   mPointCount = mPointCapacity = mXYZ.size();
+
 }
 
 /**
@@ -204,14 +205,18 @@ void Pointcloud::GetPoint_Unchecked(const size_t i,
 }
 
 /**
- *  \brief it is tedious also in-efficient to track the modification of points and maintain their bounding box.
+ *  \brief it is tedious also in-efficient to track the modification 
+ *  of points and maintain their bounding box.
  *
  *  \return Returns 2D extent of region covered by points in XY
  *  
- *  \remark This convenient function will always traverse all points to obtain the region extent.
- *  Use it at caution to avoid perforamnce penaty.
+ *  \remark This convenient function will traverse all points 
+ *  to obtain the region extent.
  */
-SpatialTileD Pointcloud::ObtainBoundingBox2D() const noexcept {
+SpatialTileD Pointcloud::GetBufTile() noexcept {
+  if (mBufTile) {
+    return mBufTile.value();
+  }
   assert(mFieldGroup.test(FieldGroup::kPOSXYZ));
   if (0 == mPointCount) return {};
 
@@ -257,8 +262,9 @@ SpatialTileD Pointcloud::ObtainBoundingBox2D() const noexcept {
     if (maxY < maxYs[i]) maxY = maxYs[i];
   }
 
-  return { mOrigin.x + double(minX), mOrigin.y + double(minY), 
+  mBufTile = SpatialTileD{ mOrigin.x + double(minX), mOrigin.y + double(minY),
     double(maxX) - double(minX), double(maxY) - double(minY) };
+  return mBufTile.value();
 }
 
 void Pointcloud::Swap(Pointcloud& rhs) noexcept {

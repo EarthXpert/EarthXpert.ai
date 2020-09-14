@@ -5,9 +5,8 @@
 #pragma once
 
 #include "core/datasource/iraster.h"
-#include "core/utils/rasterwindow.h"
-#include "opencv2/core.hpp"
 
+#include <opencv2/core.hpp>
 #include <array>
 
 namespace earthxpert {
@@ -114,6 +113,10 @@ public:
     return { mColOffset, mRowOffset };
   }
 
+  RasterWindow GetRasWin() const noexcept override {
+    return { mColOffset, mRowOffset, mNumCols, mNumRows };
+  }
+
   /**
    *  \return Returns margin size.
    */
@@ -167,6 +170,10 @@ public:
     return { mBufNumCols, mBufNumRows };
   }
 
+  RasterWindow GetBufWin() const noexcept override {
+    return { mBufColOff, mBufRowOff, mBufNumCols, mBufNumRows };
+  }
+
   /**
    *  \return Returns offset of the first pixel belonging to the image in the buffer.
    */
@@ -190,7 +197,7 @@ public:
   ForEachPixel(const Functor& func) { mMat.forEach<Ty>(func); }
 
 private:
-  //RasterWindow mRasWin;
+  //RasterWindow mRasWin;       // focusing pixel block 
   int mNumCols{};               // number of image columns
   int mNumRows{};               // number of image rows
   int mDataType{ CV_8UC1 };     // data type of each band
@@ -205,7 +212,7 @@ private:
   // cached temporaries for performance
   int mBpb{};             // bytes occupied by one band
   int mBpp{};             // bytes occupied by one pixel
-  //RasterWindow mBufWin;
+  //RasterWindow mBufWin; // buffered pixel block
   int mBufColOff{};       // col offset of buffer
   int mBufRowOff{};       // row offset of buffer
   int mBufNumCols{};      // buffer cols including image cols, both left and right margins

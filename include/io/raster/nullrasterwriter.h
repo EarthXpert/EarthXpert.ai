@@ -71,6 +71,7 @@ public:
   std::unique_ptr<IRaster> ReadRaster(RasterType) override { return nullptr; }
 
   std::unique_ptr<IRaster> ReadRaster(int, int, int, int, RasterType) override { return nullptr; }
+  std::unique_ptr<IRaster> ReadRaster(const RasterWindow&, RasterType) override { return nullptr; }
 
   void ReadRaster(IRaster* const raster) override {}
 };
