@@ -174,7 +174,7 @@ Polygon2d CalcFootprint(const ISensorModel* sensorModel,
     ImageToPlane(corners[i], sensorModel, ee, height, fpCorners[i], 0.01);
   }
   fpCorners.push_back(fpCorners[0]);  // close polygon
-  assert(kNP == fpCorners.size());
+  assert(detail::kNP == fpCorners.size());
 
   Polygon2d poly;
   bg::assign_points(poly, fpCorners);
@@ -197,7 +197,7 @@ Polygon2d CalcFootprint(const ISensorModel* sensorModel, const double height) {
     fpCorners.emplace_back(ground.x, ground.y);
   }
   fpCorners.push_back(fpCorners[0]);  // close polygon
-  assert(kNP == fpCorners.size());
+  assert(detail::kNP == fpCorners.size());
 
   Polygon2d fp;
   bg::assign_points(fp, fpCorners);
