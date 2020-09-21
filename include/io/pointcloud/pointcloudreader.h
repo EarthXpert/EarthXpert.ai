@@ -105,7 +105,7 @@ public:
    *                  The requested fields must be available from the dataset.
    *  \return Returns number of points actually read
    */
-  size_t ReadPointcloud(const size_t start, Pointcloud* const pointCloud) override;
+  size_t ReadPointcloud(size_t start, Pointcloud* const pointCloud) override;
 
   /**
    *  \brief Reads point tile defined by tile, internal buffer size.

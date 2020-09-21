@@ -213,10 +213,9 @@ void Pointcloud::GetPoint_Unchecked(const size_t i,
  *  \remark This convenient function will traverse all points 
  *  to obtain the region extent.
  */
-SpatialTileD Pointcloud::GetBufTile() noexcept {
-  if (mBufTile) {
+SpatialTileD Pointcloud::GetBufTile() {
+  if (mBufTile) 
     return mBufTile.value();
-  }
   assert(mFieldGroup.test(FieldGroup::kPOSXYZ));
   if (0 == mPointCount) return {};
 
@@ -262,9 +261,16 @@ SpatialTileD Pointcloud::GetBufTile() noexcept {
     if (maxY < maxYs[i]) maxY = maxYs[i];
   }
 
-  mBufTile = SpatialTileD{ mOrigin.x + double(minX), mOrigin.y + double(minY),
+   SpatialTileD tile{ mOrigin.x + double(minX), mOrigin.y + double(minY),
     double(maxX) - double(minX), double(maxY) - double(minY) };
-  return mBufTile.value();
+  if (!tile.IsValid())
+    throw DataError(_("Pointcloud: invalid data range."));
+  
+  mBufTile = tile;
+  if (!mTile.IsValid())   // all points are within AOI
+    mTile = tile;
+
+  return tile;
 }
 
 void Pointcloud::Swap(Pointcloud& rhs) noexcept {

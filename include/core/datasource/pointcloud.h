@@ -464,7 +464,7 @@ public:
    *  \remark This convenient function will traverse all points 
    *  to obtain the region extent.
    */
-  SpatialTileD GetBufTile() noexcept;
+  SpatialTileD GetBufTile();
 
   void Swap(Pointcloud& rhs) noexcept;
 
