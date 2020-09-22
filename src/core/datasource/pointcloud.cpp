@@ -5,8 +5,8 @@
 #include "core/datasource/pointcloud.h"
 #include "core/exceptions/exexcept.h"
 
-#include <laszip.hpp>
 #include <laspoint.hpp>
+#include <laszip.hpp>
 #include <cmath>
 #include <limits>
 #include <omp.h>
