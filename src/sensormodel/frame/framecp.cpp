@@ -23,6 +23,8 @@ FrameCP::FrameCP()
  */
 bool FrameCP::operator==(const FrameCP &rhs) const {
   if (this != &rhs) {
+    if (mAtRefract != rhs.mAtRefract) return false;
+    if (mEarthRadius != rhs.mEarthRadius) return false;
   }
   return true;
 }

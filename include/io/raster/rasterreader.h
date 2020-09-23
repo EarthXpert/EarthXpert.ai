@@ -6,7 +6,6 @@
 
 #include "io/raster/irasterreader.h"
 #include "core/utils/fsutils.h"
-#include "core/utils/rasterwindow.h"
 
 #include <mutex>
 #include <tuple>
@@ -115,7 +114,7 @@ public:
    *
    *  \return Returns pointer to a coordinate system
    */
-  std::unique_ptr<SpatialReferenceSystem> GetCoordinateSystem() const override;
+  UPSpatialRefSys GetCoordinateSystem() const override;
 
   /**
    *  \brief Fetch the geocoding information of the image file.
@@ -156,6 +155,19 @@ public:
    */
   std::unique_ptr<IRaster> ReadRaster(int colOffset, int rowOffset,
     int numCols, int numRows, RasterType rasterType) override;
+
+  /**
+   *  \brief Reads a pixel block defined by a window.
+   *
+   *  \param [in] win Raster window
+   *  \param [in] rasterType type of data structure
+   *  \return Returns pointer to raster object holding a pixel block
+   */
+  std::unique_ptr<IRaster> ReadRaster(const RasterWindow& win,
+    RasterType rasterType) override {
+    return ReadRaster(win.colOffset, win.rowOffset, 
+      win.numCols, win.numRows, rasterType);
+  }
 
   /**
    *  \brief Reads a pixel block defined by the passed raster object, populates
@@ -202,4 +214,7 @@ private:
   MarginFlag ObtainMarginFlag(IRaster* const raster) const;
   MarginFillDim ObtainMarginFillDim(IRaster* const raster) const;
 };
+
+using UPRasterReader = std::unique_ptr<RasterReader>;
+using SPRasterReader = std::shared_ptr<RasterReader>;
 } // namespace earthxpert

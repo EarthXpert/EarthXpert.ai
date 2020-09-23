@@ -4,6 +4,7 @@
  */
 #include "sensormodel/pushbroommodel.h"
 #include "3rdparty/gdal/exgdal.h"
+#include "core/exceptions/exexcept.h"
 
 using namespace earthxpert;
 

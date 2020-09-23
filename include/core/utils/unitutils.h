@@ -17,7 +17,7 @@ constexpr int kAU_RADIAN = 2;
 constexpr int kLU_FEET = 0;
 constexpr int kLU_METER = 1;
 constexpr int kLU_USFEET = 2;
-  
+
 // \todo units template
 inline Point3d Deg2Rad(const Point3d& deg) {
   return { deg.x * kDEG2RAD, deg.y * kDEG2RAD, deg.z };
@@ -38,10 +38,10 @@ inline Point3d Rad2Gon(const Point3d& rad) {
  */
 template<int unit> struct AngleUnit {
   static inline Point3d ToRadian(const Point3d& point) {
-    if constexpr (kAU_DEGREE == unit) {
+    if constexpr(kAU_DEGREE == unit) {
       return Deg2Rad(point);
     }
-    else if constexpr (kAU_GON == unit) {
+    else if constexpr(kAU_GON == unit) {
       return Gon2Rad(point);
     }
     else {
@@ -50,10 +50,10 @@ template<int unit> struct AngleUnit {
   }
 
   static inline Point3d FromRadian(const Point3d& point) {
-    if constexpr (kAU_DEGREE == unit) {
+    if constexpr(kAU_DEGREE == unit) {
       return Rad2Deg(point);
     }
-    else if constexpr (kAU_GON == unit) {
+    else if constexpr(kAU_GON == unit) {
       return Rad2Gon(point);
     }
     else {
@@ -81,10 +81,10 @@ inline Point3d Meter2USFeet(const Point3d& meter) {
  */
 template<int unit> struct LinearUnit {
   static inline Point3d ToMeter(const Point3d& point) {
-    if constexpr (kLU_FEET == unit) {
+    if constexpr(kLU_FEET == unit) {
       return Feet2Meter(point);
     }
-    else if constexpr (kLU_USFEET == unit) {
+    else if constexpr(kLU_USFEET == unit) {
       return USFeet2Meter(point);
     }
     else {
@@ -93,10 +93,10 @@ template<int unit> struct LinearUnit {
   }
 
   static inline Point3d FromMeter(const Point3d& point) {
-    if constexpr (kLU_FEET == unit) {
+    if constexpr(kLU_FEET == unit) {
       return Meter2Feet(point);
     }
-    else if constexpr (kLU_USFEET == unit) {
+    else if constexpr(kLU_USFEET == unit) {
       return Meter2USFeet(point);
     }
     else {

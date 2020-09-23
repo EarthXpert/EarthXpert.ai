@@ -3,6 +3,7 @@
  * ----------------------------------------------------------------------
  */
 #include "3rdparty/gdal/exgdal.h"
+#include "3rdparty/gettext/exgettext.h"
 
 #include <filesystem>
 //#include <iostream>
@@ -15,10 +16,10 @@ namespace earthxpert {
  *  \brief Initialize GDAL library
  */
 void GDALInitialize() {
-  auto data = fs::canonical(fs::current_path() / "../../etc/gdal");
+  //auto data = fs::canonical(fs::current_path() / "../../etc/gdal");
   //std::cout << "GDAL_DATA = " << data << std::endl;
   CPLSetConfigOption("GDAL_CACHEMAX", "256");
-  CPLSetConfigOption("GDAL_DATA", data.string().c_str());
+  //CPLSetConfigOption("GDAL_DATA", data.string().c_str());
   GDALAllRegister();
 }
 
@@ -38,14 +39,12 @@ GDALDataset *CreateRasterDataset(const std::string& imgFile,
   const std::string format, const int numCols, const int numRows,
   const GDALDataType dataType, const int numBands) {
   auto driver = GetGDALDriverManager()->GetDriverByName(format.c_str());
-  if (!driver) {
-    throw std::invalid_argument("GDAL does not support given image format");
-  }
+  if (!driver) 
+    throw std::invalid_argument(_("GDAL does not support given image format"));
 
   auto metaData = driver->GetMetadata();
-  if (FALSE == CSLFetchBoolean(metaData, GDAL_DCAP_CREATE, FALSE)) {
-    throw std::invalid_argument("GDAL does not support the creation of given image format");
-  }
+  if (FALSE == CSLFetchBoolean(metaData, GDAL_DCAP_CREATE, FALSE)) 
+    throw std::invalid_argument(_("GDAL does not support the creation of given image format"));
 
   return driver->Create(imgFile.c_str(), numCols, numRows, numBands, dataType, nullptr);
 }
@@ -61,19 +60,16 @@ GDALDataset *CreateRasterDataset(const std::string& imgFile,
 GDALDataset* CreateVectorDataset(const std::string& vecFile,
   const std::string format, const std::vector<LayerInfo>& layersInfo) {
   auto driver = GetGDALDriverManager()->GetDriverByName(format.c_str());
-  if (!driver) {
-    throw std::invalid_argument("OGR does not support given vector format");
-  }
+  if (!driver) 
+    throw std::invalid_argument(_("OGR does not support given vector format"));
 
   auto metaData = driver->GetMetadata();
-  if (FALSE == CSLFetchBoolean(metaData, GDAL_DCAP_CREATE, FALSE)) {
-    throw std::invalid_argument("OGR does not support the creation of given vector format");
-  }
+  if (FALSE == CSLFetchBoolean(metaData, GDAL_DCAP_CREATE, FALSE))
+    throw std::invalid_argument(_("OGR does not support the creation of given vector format"));
 
   auto dataset = driver->Create(vecFile.c_str(), 0, 0, 0, GDT_Unknown, nullptr);
-  if (!dataset) {
-    throw std::invalid_argument("OGR failed to create vector data source");
-  }
+  if (!dataset) 
+    throw std::invalid_argument(_("OGR failed to create vector data source"));
 
   for (auto layerInfo : layersInfo) {
     auto layer = dataset->CreateLayer("", nullptr, layerInfo.type, nullptr);

@@ -4,7 +4,6 @@
  */
 #pragma once
 
-#include "marshaller/isensormodelmarshaller.h"
 #include "marshaller/exmarshaller.h"
 #include "sensormodel/framemodel.h"
 #include <memory>

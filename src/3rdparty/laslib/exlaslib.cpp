@@ -3,6 +3,7 @@
  * ----------------------------------------------------------------------
  */
 #include "3rdparty/laslib/exlaslib.h"
+#include "core/exceptions/exexcept.h"
 
 #include <boost/format.hpp>
 #include <lasindex.hpp>
@@ -52,9 +53,8 @@ std::string CreateLAX(const std::string &lasFile) {
 
   LASreadOpener readOpener;
   std::unique_ptr<LASreader> reader(readOpener.open(lasFile.c_str()));
-  if (!reader) {
-    throw std::exception("CreateLAX: failed to open las file");
-  }
+  if (!reader) 
+    throw std::exception(_("CreateLAX: failed to open las file"));
 
   const auto& header{reader->header};
   LASquadtree *quadtree = new LASquadtree;
@@ -82,9 +82,8 @@ std::string CreateLAX(const std::string &lasFile) {
 std::unique_ptr<LASsummary> ObtainLasSummary(const std::string& lasFile) {
   LASreadOpener readOpener;
   std::unique_ptr<LASreader> reader(readOpener.open(lasFile.c_str()));
-  if (!reader) {
-    throw std::exception("ObtainLasSummary: failed to open las file");
-  }
+  if (!reader) 
+    throw std::exception(_("ObtainLasSummary: failed to open las file"));
 
   auto summary = std::make_unique<LASsummary>();
   while (reader->read_point()) {

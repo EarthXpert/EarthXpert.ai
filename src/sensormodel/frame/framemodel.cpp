@@ -4,6 +4,7 @@
  */
 #include "sensormodel/framemodel.h"
 #include "3rdparty/opencv/exopencv.h"
+#include "core/exceptions/exexcept.h"
 #include "core/math/constants.h"
 #include "core/math/rotation.h"
 
@@ -11,7 +12,6 @@
 #include <cassert>
 #include <cmath>
 #include <numeric>
-#include <stdexcept>
 
 using namespace earthxpert;
 using namespace earthxpert::math;
@@ -93,6 +93,12 @@ template <class ImageModelPolicy>
 bool FrameModel<ImageModelPolicy>::
 operator==(const FrameModel<ImageModelPolicy> &rhs) const {
   if (this != &rhs) {
+    if (mImageModel != rhs.mImageModel) return false;
+    if (*mFrameIP != *rhs.mFrameIP) return false;
+    if (*mFrameEP != *rhs.mFrameEP) return false;
+    if (*mFrameCP != *rhs.mFrameCP) return false;
+    //if (*mFrameIPCorr != *rhs.mFrameIPCorr) return false;
+    //if (*mFrameEPCorr != *rhs.mFrameEPCorr) return false;
   }
   return true;
 }
@@ -185,7 +191,7 @@ void FrameModel<ImageModelPolicy>::CheckModel() const {
 
   const auto f = mFrameIP->GetFocalLength();
   if (f < tol)
-    throw std::invalid_argument("Focal length is too small.");
+    throw std::invalid_argument(_("Focal length is too small."));
 }
 
 /**
@@ -228,7 +234,7 @@ bool FrameModel<ImageModelPolicy>::SensorToGround(const Point2d &sensor,
 
   const double denom = grd.at<double>(2);
   if (denom < std::numeric_limits<double>::epsilon())
-    throw std::underflow_error("Denominator is 0: SensorToGround");
+    throw std::underflow_error(_("Denominator is 0: SensorToGround"));
 
   const double scale = (ground.z - mSensorCenter.z) / denom;
 
@@ -257,7 +263,7 @@ bool FrameModel<ImageModelPolicy>::GroundToSensor(const Point3d &ground,
 
   const double denom = cam.at<double>(2);
   if (denom < std::numeric_limits<double>::epsilon())
-      throw std::underflow_error("Denominator is 0: GroundToSensor");
+      throw std::underflow_error(_("Denominator is 0: GroundToSensor"));
 
   const double scale = -f / denom;
   sensor.x = scale * cam.at<double>(0);
@@ -517,6 +523,9 @@ FrameModel<ImageModelPolicy>::CopyFrom(const FrameModel<ImageModelPolicy> &rhs) 
   mImageModel = rhs.mImageModel;
   mFrameIP = rhs.mFrameIP;
   mFrameEP = rhs.mFrameEP->Clone();
+  mFrameCP = rhs.mFrameCP;
+  mFrameIPCorr = rhs.mFrameIPCorr;
+  mFrameEPCorr = rhs.mFrameEPCorr;
 }
 
 /**
@@ -527,6 +536,9 @@ FrameModel<ImageModelPolicy>::MoveFrom(FrameModel<ImageModelPolicy> &&rhs) noexc
   mImageModel = std::move(rhs.mImageModel);
   mFrameIP = std::move(rhs.mFrameIP);
   mFrameEP = std::move(rhs.mFrameEP);
+  mFrameCP = std::move(rhs.mFrameCP);
+  mFrameIPCorr = std::move(rhs.mFrameIPCorr);
+  mFrameEPCorr = std::move(rhs.mFrameEPCorr);
   rhs.Clear();
 }
 

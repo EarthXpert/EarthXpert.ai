@@ -1,0 +1,17 @@
+/* -----------------------------------------------------------------------------
+ *  Copyright (c) 2018.  All rights reserved.
+ * -----------------------------------------------------------------------------
+ */
+#include "pcproc/filter/pmfilter.h"
+#include "core/datasource/pointcloud.h"
+#include "core/exceptions/exexcept.h"
+
+using namespace earthxpert;
+
+void PMFilter::SetParams() {
+
+}
+
+bool PMFilter::ProcessExai(Pointcloud* const pc) {
+  return true;
+}

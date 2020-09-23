@@ -4,6 +4,7 @@
  */
 #include "sensormodel/rationalstereomodel.h"
 #include "3rdparty/eigen/exeigen.h"
+#include "core/exceptions/exexcept.h"
 #include "sensormodel/rationalmodel.h"
 #include "sensormodel/rmutils.h"
 
@@ -103,25 +104,6 @@ bool RationalStereoModel::ImageToGround(const Point2d& leftImage,
 }
 
 /**
- *  \brief Given a triplet of sensor models and associated 2d positions
- *  in image coordinate system, do forward intersection of triple-rays, and
- *  output the ground position with respect to the ground coordinate system.
- *
- *  \param [in] image the corresponding 2d positions (x, y) in imagery raster
- * coordinate systems
- *  \param [in/out] ground 3d ground position (X, Y, Z) in
- * ground coordinate system \return Returns true if the operation succeeds
- *  \return Returns true if the operation succeeds
- */
-bool RationalStereoModel::ImageToGround(
-  const std::array<Point2d, 3>& images, Point3d& ground) const {
-  assert(3 == mRatModels.size());
-  std::vector<Point2d> imgs(images.cbegin(), images.cend());
-
-  return ImageToGround(imgs, ground);
-}
-
-/**
  *  \brief Given two or more sensor models and associated 2d positions
  *  in image coordinate system, do forward intersection of rays, and
  *  output the ground position with respect to the ground coordinate system.
@@ -185,9 +167,8 @@ bool RationalStereoModel::ImageToGround(
   }
 
   // return false if reaching max. iterations
-  if (kMaxIters == iter) {
+  if (kMaxIters == iter) 
     return false;
-  }
 
   return true;
 }

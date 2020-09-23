@@ -33,7 +33,7 @@ namespace earthxpert {
  *  \remark the terms depth and elevation are used interchangably here.
  */
 template <class CostFunc, class Neighborhood>
-class EXSFM_EXPORTS DepthMatch final : public DenseMatch{
+class EXSFM_EXPORTS DepthMatch final : public DenseMatch {
   static_assert(std::is_base_of_v<ICostFunc, CostFunc>, "ICostFunc");
   static_assert(std::is_base_of_v<INeighborhood, Neighborhood>, "INeighborhood");
 
@@ -41,7 +41,13 @@ public:
   using CostPolicyType = CostFunc;
   using NeighborPolicyType = Neighborhood;
 
+  DepthMatch();
+  DepthMatch(const DepthMatch&) = delete;
+  DepthMatch(DepthMatch&&) = delete;
   ~DepthMatch() = default;
+
+  DepthMatch& operator=(const DepthMatch&) = delete;
+  DepthMatch& operator=(DepthMatch&&) = delete;
 
   MatchType GetMatchType() const noexcept override { return eDEPTH; }
 

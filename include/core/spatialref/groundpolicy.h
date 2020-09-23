@@ -89,6 +89,10 @@ public:
     return gpt::eGEOGRAPHIC;
   }
 
+  const EarthEllipsoid* GetEarthEllipsoid() const noexcept {
+    return mEarthEllip.get();
+  }
+
 private:
   std::unique_ptr<EarthEllipsoid> mEarthEllip;
 

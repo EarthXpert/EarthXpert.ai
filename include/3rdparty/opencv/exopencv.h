@@ -14,6 +14,9 @@
 namespace x2d = cv::xfeatures2d;
 
 namespace earthxpert {      // \todo ::thirdparty
+// CV_8U CV_8S CV_16U CV_16S CV_32S CV_32F CV_64F CV_16F
+constexpr size_t kNumDepth = 8;
+
 template<typename Ty> inline
 cv::Point_<Ty> operator+(const cv::Point_<Ty>& p, const Ty v) {
   return {p.x + v, p.y + v};

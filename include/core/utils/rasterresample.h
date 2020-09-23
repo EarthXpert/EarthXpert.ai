@@ -5,9 +5,8 @@
 #pragma once
 
 #include "core/utils/irasterresample.h"
-#include "3rdparty/gettext/exgettext.h"
+#include "core/exceptions/exexcept.h"
 
-#include <stdexcept>
 #include <string>
 
 namespace earthxpert {
@@ -31,7 +30,7 @@ public:
   int GetWinDim() const noexcept override;
 
   void Resample(CvRaster& srcRaster, CvRaster& tgtRaster, CvRaster& tfmRaster) const override {
-    if constexpr (eAB_CV == algoBackend) {
+    if constexpr(eAB_CV == algoBackend) {
       ResampleCV(srcRaster, tgtRaster, tfmRaster);
     }
     else {
@@ -40,7 +39,7 @@ public:
   }
 
   void Resample(cv::Mat& srcMat, cv::Mat& tgtMat, cv::Mat& tfmMat) const override {
-    if constexpr (eAB_CV == algoBackend) {
+    if constexpr(eAB_CV == algoBackend) {
       ResampleCV(srcMat, tgtMat, tfmMat);
     }
     else {

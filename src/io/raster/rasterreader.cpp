@@ -3,7 +3,6 @@
  * -----------------------------------------------------------------------------
  */
 #include "io/raster/rasterreader.h"
-#include "3rdparty/gettext/exgettext.h"
 #include "core/datasource/cvraster.h"
 #include "core/datasource/gdalraster.h"
 #include "core/datasource/rasterutils.h"
@@ -24,9 +23,8 @@ using namespace earthxpert;
 RasterReader::RasterReader(const std::string& imageFile, 
   const std::vector<int>& bands) : mBands(bands) {
   auto dataset = GDALOpen(imageFile.c_str(), GA_ReadOnly);
-  if (!dataset) {
+  if (!dataset) 
     throw IOError(_("GDAL failed to open image file for read access."));
-  }
 
   Initialize(static_cast<GDALDataset*>(dataset));
 }
@@ -66,13 +64,11 @@ std::unique_ptr<RasterMetadata> RasterReader::GetMetadata() const {
 /**
  *  \return Returns pointer to the spatial coordinate system
  */
-std::unique_ptr<SpatialReferenceSystem> 
-RasterReader::GetCoordinateSystem() const {
+UPSpatialRefSys RasterReader::GetCoordinateSystem() const {
   auto spatialRef = 
     std::make_unique<SpatialReferenceSystem>(mDataset->GetProjectionRef());
-  if (!spatialRef) {
+  if (!spatialRef) 
     throw IOError(_("This image file has no infomation on coordinate system "));
-  }
   return spatialRef;
 }
 
@@ -201,9 +197,8 @@ void RasterReader::ReadRaster(CvRaster* const raster) {
     for (int r = 0; r < readNumRows; ++r) {
       const auto err = band->RasterIO(GF_Read, readColOff, readRowOff + r,
         readNumCols, 1, readRow, readNumCols, 1, mGdalDT, 0, 0, nullptr);
-      if (CE_None != err) {
+      if (CE_None != err) 
         throw IOError(_("Failaure when reading by RasterIO"));
-      }
 
       readRow += rowNumBytes;
     }
@@ -219,9 +214,8 @@ void RasterReader::ReadRaster(CvRaster* const raster) {
       const auto err = mDataset->RasterIO(GF_Read, readColOff, readRowOff + r,
         readNumCols, 1, gdalBuffer.get(), readNumCols, 1, mGdalDT,
         mReadNumBands, mBands.data(), 0, 0, 0, nullptr);
-      if (CE_None != err) {
+      if (CE_None != err) 
         throw IOError(_("Failaure when reading by RasterIO"));
-      }
 
       // convert RGB of GDAL into BGR of CVMAT
       uchar* pixel{ readRow };
@@ -269,9 +263,8 @@ void RasterReader::ReadRaster(GdalRaster* const raster) {
     for (int r = 0; r < readNumRows; ++r) {
       const auto err = band->RasterIO(GF_Read, readColOff, readRowOff + r,
         readNumCols, 1, readRow, readNumCols, 1, mGdalDT, 0, 0, nullptr);
-      if (CE_None != err) {
+      if (CE_None != err) 
         throw IOError(_("Failaure when reading by RasterIO"));
-      }
 
       readRow += rowNumBytes;
     }
@@ -311,21 +304,18 @@ void RasterReader::FillMargins(GdalRaster* const raster, MarginFillDim fillDim) 
  */
 void RasterReader::ObtainDatasetInfo() {
   mFileNumBands = mDataset->GetRasterCount();
-  if (1 > mFileNumBands) {
+  if (1 > mFileNumBands)
     throw IOError(_("The image file contains no image bands."));
-  }
-  if (mFileNumBands < mBands.size()) {
+  if (mFileNumBands < mBands.size()) 
     throw std::invalid_argument(_("Requested bands are larger than the available bands"));
-  }
   if (mBands.empty()) {
     mBands.resize(mFileNumBands);
     std::iota(mBands.begin(), mBands.end(), 1);
   }
   else {
     auto [itMin, itMax] = std::minmax_element(mBands.begin(), mBands.end());
-    if (1 > * itMin || mFileNumBands < *itMax) {
+    if (1 > * itMin || mFileNumBands < *itMax) 
       throw std::out_of_range(_("Requested bands are out of the range of available bands"));
-    }
   }
   mReadNumBands = static_cast<int>(mBands.size());
   mFileNumCols = mDataset->GetRasterXSize();
@@ -339,9 +329,8 @@ void RasterReader::ObtainDatasetInfo() {
   // check if the data type is same for all read bands
   for (int b = 1; b < mReadNumBands; ++b) {
     band = mDataset->GetRasterBand(mBands[b]);
-    if (mGdalDT != band->GetRasterDataType()) {
+    if (mGdalDT != band->GetRasterDataType()) 
       throw std::logic_error(_("Image bands should be of same data type"));
-    }
     mNodataValues[b] = band->GetNoDataValue();
   }
 

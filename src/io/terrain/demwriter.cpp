@@ -3,3 +3,4 @@
  * -----------------------------------------------------------------------------
  */
 #include "io/terrain/demwriter.h"
+#include "core/exceptions/exexcept.h"

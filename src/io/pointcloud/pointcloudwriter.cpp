@@ -3,7 +3,6 @@
  * -----------------------------------------------------------------------------
  */
 #include "io/pointcloud/pointcloudwriter.h"
-#include "3rdparty/gettext/exgettext.h"
 #include "3rdparty/laslib/exlaslib.h"
 #include "core/datasource/pointcloudutils.h"
 #include "core/exceptions/exexcept.h"
@@ -78,20 +77,6 @@ void PointcloudWriter::SetCoordinateSystem(const SpatialReferenceSystem* srs) {
  *
  *  \param [in] pointCloud the Pointcloud object holding an array of points.
  *              The fields to be written must be compatible with the dataset.
- *  \return Returns number of points written
- *
- *  \todo filter
- */
-size_t PointcloudWriter::WritePointcloud(Pointcloud const* const pointCloud) {
-  assert(mWriter);
-  return WritePointcloud(pointCloud, 0, pointCloud->GetPointCount());
-}
-
-/**
- *  \brief Write an array of points into the opened file.
- *
- *  \param [in] pointCloud the Pointcloud object holding an array of points.
- *              The fields to be written must be compatible with the dataset.
  *  \param [in] start the index of start point
  *  \param [in] numPoints number of points to write
  *  \return Returns number of points written
@@ -100,13 +85,11 @@ size_t PointcloudWriter::WritePointcloud(Pointcloud const* const pointCloud) {
  */
 size_t PointcloudWriter::WritePointcloud(Pointcloud const* const pointCloud,
   const size_t start, const size_t numPoints) {
-  if (pointCloud->GetFieldGroup() > mFieldGroup) {
+  if (pointCloud->GetFieldGroup() > mFieldGroup) 
     throw std::out_of_range(_("Fields to be written are out of the range of write fields"));
-  }
   const auto pointCount = pointCloud->GetPointCount();
-  if (!pointCloud || 0 == pointCount) {
+  if (!pointCloud || 0 == pointCount) 
     return 0;
-  }
 
   bool offset{true};  //
 

@@ -3,9 +3,10 @@
  * -----------------------------------------------------------------------------
  */
 #include "core/datasource/pointcloud.h"
+#include "core/exceptions/exexcept.h"
 
-#include "laszip.hpp"
-#include "laspoint.hpp"
+#include <laspoint.hpp>
+#include <laszip.hpp>
 #include <cmath>
 #include <limits>
 #include <omp.h>
@@ -21,12 +22,10 @@ using namespace earthxpert;
  */
 Pointcloud::Pointcloud(const size_t pointCapacity, const FieldGroup fieldGroup)
   : mPointCapacity(pointCapacity), mFieldGroup(fieldGroup) {
-  if (0 == mPointCapacity) {
-    throw std::invalid_argument("pointCapacity");
-  }
-  if (mFieldGroup.none()) {
-    throw std::invalid_argument("fieldGroup");
-  }
+  if (0 == mPointCapacity) 
+    throw std::invalid_argument(_("pointCapacity"));
+  if (mFieldGroup.none()) 
+    throw std::invalid_argument(_("fieldGroup"));
   mPointCount = mPointCapacity; // default to be capacity
 
   for (auto pos : FieldGroup::kPOS) {
@@ -61,6 +60,7 @@ Pointcloud::Pointcloud(const Point3d& origin, std::vector<XYZF>&& xyz)
   : mOrigin(origin), mXYZ(std::move(xyz)) {
   mFieldGroup.set(FieldGroup::kPOSXYZ);
   mPointCount = mPointCapacity = mXYZ.size();
+
 }
 
 /**
@@ -205,14 +205,17 @@ void Pointcloud::GetPoint_Unchecked(const size_t i,
 }
 
 /**
- *  \brief it is tedious also in-efficient to track the modification of points and maintain their bounding box.
+ *  \brief it is tedious also in-efficient to track the modification 
+ *  of points and maintain their bounding box.
  *
  *  \return Returns 2D extent of region covered by points in XY
  *  
- *  \remark This convenient function will always traverse all points to obtain the region extent.
- *  Use it at caution to avoid perforamnce penaty.
+ *  \remark This convenient function will traverse all points 
+ *  to obtain the region extent.
  */
-SpatialTileD Pointcloud::ObtainBoundingBox2D() const noexcept {
+SpatialTileD Pointcloud::GetBufTile() {
+  if (mBufTile) 
+    return mBufTile.value();
   assert(mFieldGroup.test(FieldGroup::kPOSXYZ));
   if (0 == mPointCount) return {};
 
@@ -258,6 +261,27 @@ SpatialTileD Pointcloud::ObtainBoundingBox2D() const noexcept {
     if (maxY < maxYs[i]) maxY = maxYs[i];
   }
 
-  return { mOrigin.x + double(minX), mOrigin.y + double(minY), 
+   SpatialTileD tile{ mOrigin.x + double(minX), mOrigin.y + double(minY),
     double(maxX) - double(minX), double(maxY) - double(minY) };
+  if (!tile.IsValid())
+    throw DataError(_("Pointcloud: invalid data range."));
+  
+  mBufTile = tile;
+  if (!mTile.IsValid())   // all points are within AOI
+    mTile = tile;
+
+  return tile;
+}
+
+void Pointcloud::Swap(Pointcloud& rhs) noexcept {
+  std::swap(mPointCapacity, rhs.mPointCapacity);
+  std::swap(mFieldGroup, rhs.mFieldGroup);
+  std::swap(mOrigin, rhs.mOrigin);
+  std::swap(mXYZ, rhs.mXYZ);
+  std::swap(mCla, rhs.mCla);
+  std::swap(mIntensity, rhs.mIntensity);
+  std::swap(mRGB, rhs.mRGB);
+  //std::swap(mTime, rhs.mTime);
+  std::swap(mPointCount, rhs.mPointCount);
+  //std::swap(mData, rhs.mData); ?
 }

@@ -3,6 +3,7 @@
  * -----------------------------------------------------------------------------
  */
 #include "marshaller/framemodelmarshaller.h"
+#include "core/exceptions/exexcept.h"
 #include "core/utils/stringutils.h"
 
 #include <cctype>
@@ -26,17 +27,19 @@ FrameModelMarshaller::Deserialize(const std::string &modelFileIP,
   if (CompareI(modelFileIP.substr(modelFileIP.length() - 9),
                           "geoin.dat")) {
     ReadGeoin(modelFileIP);
-  } else {
-    // add execption handling later
+  } 
+  else {
     throw;
   }
 
   if (CompareI(modelFileEP.substr(modelFileIP.length() - 9),
                           "itera.dat")) {
     ReadItera(modelFileEP);
-  } else if (CompareI(modelFileEP.substr(modelFileIP.length() - 11),
+  }
+  else if (CompareI(modelFileEP.substr(modelFileIP.length() - 11),
                                  "gps-imu.dat")) {
-  } else {
+  } 
+  else {
     throw;
   }
 

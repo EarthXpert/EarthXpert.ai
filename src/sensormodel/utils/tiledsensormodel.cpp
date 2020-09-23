@@ -3,7 +3,6 @@
  * -----------------------------------------------------------------------------
  */
 #include "sensormodel/utils/tiledsensormodel.h"
-#include "3rdparty/gettext/exgettext.h"
 #include "core/exceptions/exexcept.h"
 
 #include <algorithm>

@@ -42,4 +42,7 @@ private:
   GDALDataType mGdalDT{ GDT_Byte };     // GDAL data type of image file
   int mWriteNumBands{};   // number of bands to write
 };
+
+using UPTiledRasterWriter = std::unique_ptr<TiledRasterWriter>;
+using SPTiledRasterWriter = std::shared_ptr<TiledRasterWriter>;
 }

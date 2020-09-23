@@ -12,13 +12,16 @@
 #include <boost/geometry/geometries/segment.hpp>
 #include <boost/geometry/geometries/point_xy.hpp>
 #include <boost/geometry/geometries/polygon.hpp>
+#include <boost/locale.hpp>
+
 #include <string>
 #include <type_traits>
 
 namespace bfs = boost::filesystem;
 namespace bg = boost::geometry;
-namespace bgc = boost::geometry::concepts;
-namespace bgm = boost::geometry::model;
+namespace bgc = bg::concepts;
+namespace bgm = bg::model;
+namespace bl = boost::locale;
 
 namespace earthxpert {
 template <typename Ty, typename = std::enable_if_t<std::is_arithmetic_v<Ty>, void>>
@@ -44,5 +47,10 @@ namespace thirdparty{
  */
 std::string EX3RDPARTY_EXPORTS PathPrefixFilename(
   const std::string& fileName, const std::string& prefix);
+
+/**
+ *  \brief set the i18n/l10n environment
+ */
+void EX3RDPARTY_EXPORTS ConfigureI18N_BL();
 }
 } // namespace earthxpert

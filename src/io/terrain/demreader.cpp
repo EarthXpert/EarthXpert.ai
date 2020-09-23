@@ -3,3 +3,4 @@
  * -----------------------------------------------------------------------------
  */
 #include "io/terrain/demreader.h"
+#include "core/exceptions/exexcept.h"

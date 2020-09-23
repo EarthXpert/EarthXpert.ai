@@ -49,9 +49,16 @@
 ****************************************************************************/
 
 #include "mainwindow.h"
+#include "gui/qt/singleinstance.h"
 #include <QApplication>
 
+using earthxpert::SingleInstanceQt;
+
 int main(int argc, char *argv[]) {
+  SingleInstanceQt instance("exai.qt5_hw");
+  if (!instance.TryToRun())
+    return 0;
+
   QApplication app(argc, argv);
   MainWindow window;
   window.show();

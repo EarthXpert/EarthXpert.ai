@@ -4,7 +4,7 @@
  */
 #pragma once
 
-#include "epipolarmodel/epipolarsensormodel.h"
+#include "epipolarmodel/sensorepipolarmodel.h"
 #include "core/math/interpgrid.h"
 #include "core/spatialref/groundpolicy.h"
 #include "epipolarmodel/epipolarrect.h"
@@ -14,31 +14,40 @@
 namespace earthxpert {
 /**
  *  The class EpipolarModel defines a sensor-independent algorithm
- *  for generating epipolar images from image products with sensor models.
+ *  for generating epipolar images from imagery products with sensor models.
+ *  For raw images, their epipolar model represents the geometry needed when
+ *  generating OrthoReady products; for vendor-provided OR products with
+ *  rational models, their epipolar model may represent a better geometry
+ *  in terms of maximizing x-parallax while minimizng y-parallax.
  *
  *  \tparam GroundPolicy defines the behaviour of and relationshp between
  * the model coordinate system and the rectification coordinate system
  */
 template <class GroundPolicy>
-class EXEPIPOLARMODEL_EXPORTS EpipolarModel final : public EpipolarSensorModel {
+class EXEPIPOLARMODEL_EXPORTS EpipolarModel final : public SensorEpipolarModel {
 public:
   using PolicyType = GroundPolicy;
 
   /**
    *  Constructor.
    *
-   *  \param [in] sensorModel sensor model associated with the image
    *  \param [in] pos Component position of stereo model
+   *  \param [in] sensorModel sensor model associated with the image
    *  \param [in] epiBound epipolar boundary of valid region
    *  \param [in] epiRect epipolar rectification defining the transform
    *              between the epipolar model coordinate system and epipolar
    *              raster coordinate system for the image.
    *  \param [in] groundPolicy ground policy
    */
-  EpipolarModel(std::shared_ptr<ISensorModel> sensorModel, StereoPos pos,
+  EpipolarModel(StereoPos pos, std::shared_ptr<ISensorModel> sensorModel, 
     const Polygon2d& epiBound, std::unique_ptr<EpipolarRect> &&epiRect, 
     std::shared_ptr<GroundPolicy> groundPolicy);
+  EpipolarModel(const EpipolarModel& rhs) = delete;
+  EpipolarModel(EpipolarModel&& rhs) = delete;
   ~EpipolarModel() = default;
+
+  EpipolarModel& operator=(const EpipolarModel& rhs) = delete;
+  EpipolarModel& operator=(EpipolarModel&& rhs) noexcept = delete;
 
   /**
    *  Epipolar-to-raw transform.
@@ -50,7 +59,11 @@ public:
    *  \param [in] raw 2d position (col, row) in image raster coordinate system
    *  \return Returns true if operation succeeds
    */
-  bool EpiToRaw(const Point2d &epi, Point2d &raw) const override;
+  bool EpiToRaw(const Point2d &epi, Point2d &raw) const override {
+    const Point2d rect = mEpiRect->EpiToRect(epi);
+    const Point3d ground = mGroundPolicy->CartesianToGround(Point3d(rect.x, rect.y, mHeight));
+    return mSensorModel->GroundToImage(ground, raw);
+  }
 
   /**
    *  Raw-to-epipolar transform.
@@ -62,7 +75,14 @@ public:
    *  \param [in] epi 2d position (col, row) in epipolar raster coordinate system
    *  \return Returns true if operation succeeds
    */
-  bool RawToEpi(const Point2d &raw, Point2d &epi) const override;
+  bool RawToEpi(const Point2d &raw, Point2d &epi) const override {
+    Point2d rect{};
+    if (!RawToRect(raw, rect))
+      return false;
+
+    epi = mEpiRect->RectToEpi(rect);
+    return true;
+  }
 
   /**
    *  \return Returns algorithm of epipolar model
@@ -71,9 +91,7 @@ public:
     return ePLANERECT;
   }
 
-  const EpipolarRect *GetEpiRect() const noexcept {
-    return mEpiRect.get();
-  }
+  const EpipolarRect *GetEpiRect() const noexcept { return mEpiRect.get(); }
 
   Point3d GetOrigin() const noexcept { return mOrigin; }
 
@@ -90,6 +108,8 @@ public:
   double GetMeanHeight() const noexcept override { return mEpiRect->mHeight; }
 
 private:
+  friend class EpipolarStereoMarshaller;
+
   static constexpr int kMaxIters{ 5 };
   static constexpr double kHgtTol{ 1.0e-4 }; // Height tolerance [0.1mm]?
   static constexpr int kGridStride{ 256 };
@@ -120,4 +140,10 @@ private:
 using GeoEpipolarModel = EpipolarModel<GeographicGroundDeg>;
 using LocalEpipolarModel = EpipolarModel<LocalGroundMe>;
 using MapEpipolarModel = EpipolarModel<MapGroundMe>;
+
+// typically for satellite remote sensing
+template <class GroundPolicy>
+using OrthoReadyModel = EpipolarModel<GroundPolicy>;
+
+using GeoOrthoReadyModel = OrthoReadyModel<GeographicGroundDeg>;
 } // namespace earthxpert

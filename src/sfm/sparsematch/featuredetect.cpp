@@ -40,7 +40,7 @@ bool FeatureDetect::Process(IRasterReader* const img, cv::FileStorage* fs) {
     ProcessTiles();
   }
   catch (...) {
-    throw;
+    throw SfMError(_("Process failed"));
   }
 
   mPerf.tmTotal = mClock.TimeSinceStart() - start;
@@ -62,6 +62,12 @@ void FeatureDetect::SetImageParams(IRasterReader* const img) {
 void FeatureDetect::SetOutputParams(cv::FileStorage* fs) {
   assert(fs);
   mFS = fs;
+
+  *mFS << "signature" << "exai.featuredetect";
+  *mFS << "version" << std::vector<int>{1, 0, 0};
+  //*mFS << "imgSize";
+  //*mFS << "imgFile";
+  *mFS << "featureType" << mFeatureType;
 }
 
 /**
@@ -89,7 +95,7 @@ void FeatureDetect::ResetBuffers(const int tileId) {
   if (!TileId(tileId)) return;
 
   mKpBufWork.clear();
-  //mDctBufWork;
+  mDctBufWork.release(); 
 }
 
 /**
@@ -98,6 +104,7 @@ void FeatureDetect::ResetBuffers(const int tileId) {
 void FeatureDetect::SwapBuffers() {
   std::swap(mImgBufRead, mImgBufWork);
   std::swap(mKpBufWork, mKpBufWrite);
+  cv::swap(mDctBufWork, mDctBufWrite);
 }
 
 /**
@@ -106,10 +113,10 @@ void FeatureDetect::SwapBuffers() {
 void FeatureDetect::FreeBuffers() {
   mImgBufRead.reset();
   mImgBufWork.reset();
-  //mKpBufWork
-  //mKpBufWrite
-  //mDctBufWork
-  //mDctBufWrite
+  mKpBufWork.swap(std::vector<cv::KeyPoint>());
+  mKpBufWrite.swap(std::vector<cv::KeyPoint>());
+  mDctBufWork.release();
+  mDctBufWrite.release();
 }
 
 /**
@@ -160,6 +167,8 @@ void FeatureDetect::ReadTile(const int tileId) {
 void FeatureDetect::ProcessTile(const int tileId) {
   if (!TileId(tileId)) return;
   const auto start = mClock.TimeSinceStart();
+
+  // in-memory ProcessTile(imgMat, kpVec, dctMat)
 
   mPerf.tmProcess += mClock.TimeSinceStart() - start;
 }

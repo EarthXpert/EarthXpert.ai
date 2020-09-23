@@ -9,6 +9,7 @@
 #include "core/datasource/iraster.h"
 #include "core/datasource/metadata.h"
 #include "core/spatialref/geocoding.h"
+#include "core/utils/rasterwindow.h"
 
 namespace earthxpert {
 //class IPyramidReader;
@@ -94,6 +95,9 @@ public:
    */
   virtual std::unique_ptr<IRaster> ReadRaster(int colOffset, int rowOffset,
     int numCols, int numRows, RasterType rasterType = RasterType::eCVMAT) = 0;
+
+  virtual std::unique_ptr<IRaster> ReadRaster(const RasterWindow& win, 
+    RasterType rasterType = RasterType::eCVMAT) = 0;
 
   /**
    *  \brief Reads a pixel block defined by the passed raster object, populates

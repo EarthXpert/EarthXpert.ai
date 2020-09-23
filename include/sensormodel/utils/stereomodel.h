@@ -170,7 +170,7 @@ public:
     }
     case eSM_NR: {
       //return ImageToGroundNR(images, numRays, ground);
-      throw std::exception("StereoModel: not implemented");
+      throw std::exception(_("StereoModel: not implemented"));
     }
     default: {
         return false;

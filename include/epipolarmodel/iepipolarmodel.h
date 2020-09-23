@@ -9,6 +9,7 @@
 #include "3rdparty/opencv/exopencv.h"
 
 #include <vector>
+#include <utility>
 
 namespace earthxpert {
 class ISensorModel;
@@ -22,8 +23,10 @@ class EXEPIPOLARMODEL_EXPORTS IEpipolarModel {
 public:
   // algorithm for epipolar model
   enum EpipolarAlgo {
+    eUNKNOWN,
     eCOPLANAR,  // frame coplanar
-    ePLANERECT  // rectification upon ground plane
+    ePLANERECT, // rectification upon ground plane
+    eSENSOR     // identical to raw senor
   };
 
   // position of component images in the stereo model
@@ -120,4 +123,6 @@ using EpiStereoPos = IEpipolarModel::StereoPos;
 
 using UPIEpipolarModel = std::unique_ptr<IEpipolarModel>;
 using SPIEpipolarModel = std::shared_ptr<IEpipolarModel>;
+
+using EpiModelPair = std::pair<UPIEpipolarModel, UPIEpipolarModel>;
 } // namespace earthxpert

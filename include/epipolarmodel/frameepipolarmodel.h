@@ -4,7 +4,7 @@
  */
 #pragma once
 
-#include "epipolarmodel/epipolarsensormodel.h"
+#include "epipolarmodel/sensorepipolarmodel.h"
 #include "sensormodel/framemodel.h"
 
 namespace earthxpert {
@@ -16,15 +16,16 @@ namespace earthxpert {
  * the image raster coordinate system and the focal plane coordinate system
  */
 template <class ImageModelPolicy>
-class EXEPIPOLARMODEL_EXPORTS FrameEpipolarModel final : public EpipolarSensorModel {
+class EXEPIPOLARMODEL_EXPORTS FrameEpipolarModel final : public SensorEpipolarModel {
 public:
   /**
-   *  \param [in] sensorModel sensor model associated with the image
    *  \param [in] pos Component position of stereo model
+   *  \param [in] sensorModel sensor model associated with the image
    *  \param [in] epiBound epipolar boundary of valid region
    */
-  FrameEpipolarModel(std::shared_ptr<FrameModel<ImageModelPolicy>> sensorModel, 
-    StereoPos pos, const Polygon2d& epiBound);
+  FrameEpipolarModel(StereoPos pos,
+    std::shared_ptr<FrameModel<ImageModelPolicy>> sensorModel, 
+    const Polygon2d& epiBound);
   ~FrameEpipolarModel() = default;
 
   /**
@@ -61,9 +62,8 @@ public:
   /**
    *  \return Returns the internal sensor model
    */
-  const FrameModel<ImageModelPolicy>* GetSensorModel() const noexcept override {
-    return mFrameModel;
-  }
+  const FrameModel<ImageModelPolicy>* 
+    GetSensorModel() const noexcept override { return mFrameModel; }
 
   /**
    *  \return Returns raster columns & rows of epipolar image [unit: pixel]

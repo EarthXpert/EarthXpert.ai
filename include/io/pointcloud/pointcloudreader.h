@@ -57,17 +57,22 @@ public:
    *  \param [in] bufferX the horizontal buffer size
    *  \param [in] bufferY the vertical buffer size
    */
-  void SetBuffers(float bufferX, float bufferY) override;
+  void SetBuffers(float bufferX, float bufferY) override {
+    mBufferX = bufferX;
+    mBufferY = bufferY;
+  }
 
   /**
    *  \return Returns buffer size.
    */
-  std::pair<float, float> GetBuffers() const noexcept override;
+  std::pair<float, float> GetBuffers() const noexcept override {
+    return { mBufferX, mBufferY };
+  }
 
   /**
    *  \return Returns pointer to a coordinate system
    */
-  std::unique_ptr<SpatialReferenceSystem> GetCoordinateSystem() const override;
+  UPSpatialRefSys GetCoordinateSystem() const override;
 
   /**
    *  \return Returns total number of points of las file
@@ -77,7 +82,9 @@ public:
   /**
    *  \return Return all points in the las file
    */
-  std::unique_ptr<Pointcloud> ReadPointcloud() override;
+  std::unique_ptr<Pointcloud> ReadPointcloud() override {
+    return ReadPointcloud(0, mFilePointCount);
+  }
 
   /**
    *  \brief Reads point range defined by the start index, number of points.
@@ -98,7 +105,7 @@ public:
    *                  The requested fields must be available from the dataset.
    *  \return Returns number of points actually read
    */
-  size_t ReadPointcloud(const size_t start, Pointcloud* const pointCloud) override;
+  size_t ReadPointcloud(size_t start, Pointcloud* const pointCloud) override;
 
   /**
    *  \brief Reads point tile defined by tile, internal buffer size.
@@ -111,7 +118,9 @@ public:
    *  \return Return Pointcloud container object.
    */
   std::unique_ptr<Pointcloud> ReadPointcloud(double minX, double minY,
-    double width, double height) override;
+    double width, double height) override {
+    return ReadPointcloud({ minX, minY,width, height });
+  }
 
   /**
    *  \brief Reads point tile defined by tile, internal buffer size.

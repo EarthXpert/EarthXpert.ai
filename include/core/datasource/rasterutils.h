@@ -25,5 +25,6 @@ void EXCORE_EXPORTS FillMargins(CvRaster* const raster, MarginFillDim dim);
 std::unique_ptr<CvRaster> EXCORE_EXPORTS ConvertRaster(const GdalRaster* gdalRaster);
 std::unique_ptr<CvRaster> EXCORE_EXPORTS ConvertRaster(const GdalRaster* gdalRaster, int band);
 std::vector<std::unique_ptr<CvRaster>> EXCORE_EXPORTS ConvertRaster(const GdalRaster* gdalRaster, const std::vector<int>& bands);
-std::unique_ptr<GdalRaster> EXCORE_EXPORTS ConvertRaster(const CvRaster* gdalRaster);
+std::unique_ptr<GdalRaster> EXCORE_EXPORTS ConvertRaster(const CvRaster* cvRaster);
+std::unique_ptr<GdalRaster> EXCORE_EXPORTS ConvertRaster(const CvRaster* cvRaster, int band);
 }

@@ -120,4 +120,7 @@ private:
   // cached information
   int mNumTiles{};
 };
+
+using UPTiledSensorModel = std::unique_ptr<TiledSensorModel>;
+using SPTiledSensorModel = std::shared_ptr<TiledSensorModel>;
 } // namespace earthxpert

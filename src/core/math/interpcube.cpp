@@ -3,6 +3,7 @@
  * ----------------------------------------------------------------------
  */
 #include "core/math/interpcube.h"
+#include "core/exceptions/exexcept.h"
 
 #include <algorithm>
 #include <cmath>

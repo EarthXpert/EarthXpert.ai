@@ -46,4 +46,7 @@ private:
   GDALDataType mGdalDT{};
   int mCvDT{};
 };
+
+using UPTiledRasterReader = std::unique_ptr<TiledRasterReader>;
+using SPTiledRasterReader = std::shared_ptr<TiledRasterReader>;
 }

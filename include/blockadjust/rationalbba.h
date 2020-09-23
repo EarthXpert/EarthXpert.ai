@@ -16,4 +16,7 @@ class EXBBA_EXPORTS RationalBBA final : public BlockAdjust {
 public:
   ~RationalBBA() = default;
 };
+
+using UPRationalBBA = std::unique_ptr<RationalBBA>;
+using SPRationalBBA = std::shared_ptr<RationalBBA>;
 } // namespace earthxpert

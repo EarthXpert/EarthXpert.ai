@@ -93,4 +93,7 @@ private:
 
   // cached calculation for better performance
 };
+
+using UPAffineModel = std::unique_ptr<AffineModel>;
+using SPAffineModel = std::shared_ptr<AffineModel>;
 } // namespace earthxpert

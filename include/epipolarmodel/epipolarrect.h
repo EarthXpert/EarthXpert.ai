@@ -60,6 +60,7 @@ public:
 
 private:
   template<typename> friend class EpipolarModel;
+  friend class EpipolarStereoMarshaller;
 
   Point3d mOrigin{0, 0, 0};     // Origin of epi coordinate system
   double mHeight{0.0};   // Rectification height [meter]
@@ -74,4 +75,7 @@ private:
   double mCosRot{};
   double mSinRot{};
 };
+
+using UPEpipolarRect = std::unique_ptr<EpipolarRect>;
+using SPEpipolarRect = std::shared_ptr<EpipolarRect>;
 } // namespace earthxpert

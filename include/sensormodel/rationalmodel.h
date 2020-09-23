@@ -315,7 +315,22 @@ private:
   void Clear() noexcept;
 
   Point2d ImageActualToApparant(const Point2d& image) const;
-  Point2d ImageApparantToActual(const Point2d& image) const;
+
+  /**
+   *  \brief Given a 2d rpc position in image coordinate system,
+   *  output the actual 2d position.
+   *
+   *  \param [in] image 2d position (col, row) in image coordinate system
+   *  \return Return 2d actual position (col, row) in imagery coordinate system
+   */
+  Point2d ImageApparantToActual(const Point2d& image) const {
+    Point2d imageAct{ image };
+    if (mCorrectionFlag) {  // apply correction
+      const auto imageCorr = CalcCorrection(image);
+      imageAct += imageCorr;
+    }
+    return imageAct;
+  }
 
   /**
    *  \brief Given a 2d position in image coordinate system,
@@ -387,7 +402,7 @@ private:
   }
 
   void CalcTerms(const Point3d &uvw, double *const LPH) const {
-      CalcTerms(uvw.x, uvw.y, uvw.z, LPH);
+    CalcTerms(uvw.x, uvw.y, uvw.z, LPH);
   }
   void CalcTerms(double L, double P, double H, double *const LPH) const;
 
@@ -417,4 +432,6 @@ private:
 };
 
 using rnf = NormalizationFactor;
+using UPRationalModel = std::unique_ptr<RationalModel>;
+using SPRationalModel = std::shared_ptr<RationalModel>;
 } // namespace earthxpert

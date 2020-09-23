@@ -5,6 +5,10 @@
 
 namespace earthxpert {
 template <class CostFunc, class Neighborhood>
+DepthMatch<CostFunc, Neighborhood>::DepthMatch() {
+}
+
+template <class CostFunc, class Neighborhood>
 int DepthMatch<CostFunc, Neighborhood>::LayoutTiles() {
   return 0;
 }

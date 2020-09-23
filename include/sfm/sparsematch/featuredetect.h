@@ -20,7 +20,12 @@ class RasterReader;
 class EXSFM_EXPORTS FeatureDetect : public IFeatureDetect {
 public:
   FeatureDetect(FeatureType featType, size_t memSize);
+  FeatureDetect(const FeatureDetect&) = delete;
+  FeatureDetect(FeatureDetect&&) = delete;
   virtual ~FeatureDetect() = default;
+
+  FeatureDetect& operator=(const FeatureDetect&) = delete;
+  FeatureDetect& operator=(FeatureDetect&&) = delete;
 
   bool Process(IRasterReader* img, cv::FileStorage* fs);
 
@@ -57,7 +62,7 @@ private:
 
   std::vector<cv::KeyPoint> mKpBufWork;    // key points
   std::vector<cv::KeyPoint> mKpBufWrite; 
-  cv::Mat mDctBufWork;                      // descriptors
+  cv::Mat mDctBufWork;                     // descriptors
   cv::Mat mDctBufWrite;
 
   void AllocateBuffers();
@@ -92,4 +97,7 @@ private:
 
   cv::FileStorage* mFS{};
 };
+
+using UPFeatureDetect = std::unique_ptr<FeatureDetect>;
+using SPFeatureDetect = std::shared_ptr<FeatureDetect>;
 }

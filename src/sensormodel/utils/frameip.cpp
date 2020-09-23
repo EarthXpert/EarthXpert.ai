@@ -4,6 +4,7 @@
  */
 #include "sensormodel/utils/frameip.h"
 #include "3rdparty/opencv/exopencv.h"
+#include "core/exceptions/exexcept.h"
 
 #include <algorithm>
 #include <cmath>
@@ -268,9 +269,8 @@ Point2d FrameIP::CalcGridCorr(const Point2d& sensor) const
  * @throw if focalLength is non-positive.
  */
 void FrameIP::CheckCamParms() const {
-  if (0.0 >= mFocalLength) {
-    throw std::invalid_argument("Focal length must be a positive number");
-  }
+  if (0.0 >= mFocalLength) 
+    throw std::invalid_argument(_("Focal length must be a positive number"));
 }
 
 /**

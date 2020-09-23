@@ -2,7 +2,7 @@ project(pfutils)
 
 add_definitions(-DEXPFUTILS_API)
 set(pfutils_srcs "commandinfo.cpp"
-       "pfutils.cpp")
+  "pfutils.cpp")
 earthxpert_add_library(pfutils "platform"
   SRCS ${pfutils_srcs}
   ITEMS ex3rdparty exutils core dataio epipolar epipolarmodel sensormodel sfm

@@ -7,21 +7,28 @@
 
 #include "core/math/mutils.h"
 #include "epipolarmodel/epipolarmodel.h"
-#include "epipolarmodel/epipolarmodelfactory.h"
+#include "epipolarmodel/epipolarstereofactory.h"
+#include "epipolarmodel/nullepipolarmodel.h"
 #include "marshaller/rationalmodelmarshaller.h"
+#include "sensormodel/rationalstereomodel.h"
+#include "sensormodel/utils/nullstereomodel.h"
 #include "sensormodel/utils/smutils.h"
+#include "sensormodel/utils/stereomodel.h"
 
 #include <iostream>
 
 using namespace earthxpert;
 
 static constexpr int kGridStride = 128;
-static constexpr double kTol = 1.0e-3; // [mm]
 
 static void CreateRationalEpipolarModel(const std::string& leftMdlFile,
   const std::string& rightMdlFile, EpiModelPair& epiModels);
-static void TestRaw2Epi_Epi2Raw_Grid(const IEpipolarModel* epiModel, double tol=kTol);
-static void TestStride(const IEpipolarModel* epiModel, int stride, double tol = kTol);
+static void TestRaw2Epi_Epi2Raw_Grid(const IEpipolarModel* epiModel, double tol=kTolMM);
+static void TestStride(const IEpipolarModel* epiModel, int stride, double tol = kTolMM);
+
+static void TestCubeI2G(const ISensorModel* epiSensorModel);
+static void TestImageToGround_Cube(const ISensorModel* leftEpiSensorModel,
+  const ISensorModel* rightSensorModel);
 
 /**
  *  Test 1: WV01
@@ -58,8 +65,8 @@ void CreateRationalEpipolarModel(const std::string& leftMdlFile,
   std::shared_ptr<RationalModel> leftModel = rmMarshaller.Deserialize(leftMdlFile);
   std::shared_ptr<RationalModel> rightModel = rmMarshaller.Deserialize(rightMdlFile);
 
-  EpipolarModelFactory epiModelFac(FacEpiOpt::eFULL);
-  auto [leftEpiModel, rightEpiModel] = epiModelFac.CreateRationalEpiModel(leftModel, rightModel);
+  EpipolarStereoFactory epiModelFac(FacEpiOpt::eFULL);
+  auto [leftEpiModel, rightEpiModel] = epiModelFac.CreateRationalEpiStereo(leftModel, rightModel);
   ASSERT_TRUE(IEpipolarModel::ePLANERECT == leftEpiModel->GetEpipolarAlgorithm());
   ASSERT_TRUE(IEpipolarModel::ePLANERECT == rightEpiModel->GetEpipolarAlgorithm());
 
@@ -111,5 +118,21 @@ void TestRaw2Epi_Epi2Raw_Grid(const IEpipolarModel* epiModel, const double tol) 
  *         third, calculate the maximum differences between them.
  */
 void TestStride(const IEpipolarModel* epiModel, int stride, double tol) {
+
+}
+
+/**
+ *  \breif sensor model of epipolar image via the chain between
+ *  epipolar image space, rectification space, and raw image space.
+ */
+void TestCubeI2G(const ISensorModel* epiSensorModel) {
+
+}
+
+/**
+ *  \breif stereo model composed of epipolar images as OrthoReady product
+ */
+void TestImageToGround_Cube(const ISensorModel* leftEpiSensorModel,
+  const ISensorModel* rightSensorModel) {
 
 }

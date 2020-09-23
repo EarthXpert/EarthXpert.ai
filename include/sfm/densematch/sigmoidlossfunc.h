@@ -27,7 +27,7 @@ public:
   ~SigmoidLossFunc() = default;
 
   double operator()(const double cost) const {
-    if constexpr (eST_ARCTAN == sigmoidType) {
+    if constexpr(eST_ARCTAN == sigmoidType) {
       return atan(cost);
     }
     else {  //if constexpr (eST_LOGISTIC == sigmoidType)

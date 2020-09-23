@@ -2,10 +2,10 @@ project(blockadjust)
 
 add_definitions(-DEXBBA_API)
 set(blockadjust_srcs "blockadjust.cpp"
-       "ads/adsbba.cpp"
-       "frame/framebba.cpp"
-       "frame/adjustframe.cpp"
-       "rational/rationalbba.cpp")
+  "ads/adsbba.cpp"
+  "frame/framebba.cpp"
+  "frame/adjustframe.cpp"
+  "rational/rationalbba.cpp")
 earthxpert_add_library(blockadjust "api"
   SRCS ${blockadjust_srcs}
   ITEMS ex3rdparty core exproject sensormodel

@@ -4,10 +4,11 @@
  */
 #pragma once
 
-#include "marshaller/isensormodelmarshaller.h"
+#include "marshaller/exmarshaller.h"
 #include "sensormodel/rationalmodel.h"
 
 #include <istream>
+#include <memory>
 #include <ostream>
 #include <string>
 
@@ -26,7 +27,7 @@ namespace earthxpert {
 class EXMARSHALLER_EXPORTS RationalModelMarshaller {
 public:
   // foramt of coefficients in mdoel file
-  enum CoefFormat {
+  enum RMFormat {
     eRPB,   // RPC00B
     eRPC    // RPC00A
   };
@@ -60,7 +61,7 @@ private:
   int mNumCols{};
   int mNumRows{};
 
-  CoefFormat GetCoefFormat(const std::string& modelFile) const;
+  RMFormat GetFormat(const std::string& modelFile) const;
 
   /**
    *  \brief seralize a rational model into a .rpb file
@@ -97,4 +98,6 @@ private:
   void ExtractCoefs(std::istream& inStream,
     std::array<double, RationalModel::NumCoef>& coefs);
 };
+
+using RMFormat = RationalModelMarshaller::RMFormat;
 } // namespace earthxpert

@@ -26,7 +26,7 @@ void EpipolarGenerator::LayoutTiles() {
   mPerf.numImgTiles = DefineTiles(tileNumCols, tileNumRows);
   
   if (0 == mPerf.numImgTiles)
-    throw EpipolarError("LayoutTiles: empty tiles");
+    throw EpipolarError(_("LayoutTiles: empty tiles"));
 
   AllocateBuffers();
 }
@@ -70,15 +70,16 @@ int EpipolarGenerator::DefineTiles(const int tileNumCols, const int tileNumRows)
  *  \brief obtain image tile information given an epipolar tile. 
  */
 RasterWindow EpipolarGenerator::DefineImgTile(const RasterWindow& epiTile) {
-  std::array<Point2d, kNCP> epiCorners;
+  std::vector<Point2d> epiCorners;
+  epiCorners.reserve(kNCP);
   FillCorners(epiTile, epiCorners);
 
   Point2d minImgXY(mImgNumCols, mImgNumRows);
   Point2d maxImgXY(-1, -1);
 
   Point2d imgCorner;
-  for (int i = 0; i < kNCP; ++i) {
-    mEpiModel->EpiToRaw(epiCorners[i], imgCorner);
+  for (const auto corner : epiCorners) {
+    mEpiModel->EpiToRaw(corner, imgCorner);
     imgCorner = imgCorner - Point2d(0.5, 0.5);
 
     MinMax(minImgXY, maxImgXY, imgCorner);

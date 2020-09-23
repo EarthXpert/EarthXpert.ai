@@ -6,9 +6,10 @@
 #include "core/utils/fsutils.h"
 #include "core/utils/rasterresample.h"
 #include "epipolarmodel/epipolarmodel.h"
-#include "epipolarmodel/epipolarmodelfactory.h"
+#include "epipolarmodel/epipolarstereofactory.h"
 #include "io/raster/rasterreader.h"
 #include "io/raster/rasterwriter.h"
+#include "marshaller/epipolarstereomarshaller.h"
 #include "marshaller/rationalmodelmarshaller.h"
 #include "rectification/epipolar/epipolargenerator.h"
 
@@ -92,29 +93,49 @@ void GenerateRationalEpipolar(const EpipolarOptions& epiOpt) {
     rmMarshaller.Deserialize(epiOpt.rightMdlFile);
   assert(SensorType::eRATIONAL == rightModel->GetModelType());
 
-  EpipolarModelFactory epiModelFac(epiOpt.outOpt);
+  EpipolarStereoFactory epiModelFac(epiOpt.outOpt);
   auto [leftEpiModel, rightEpiModel] = 
-    epiModelFac.CreateRationalEpiModel(leftModel, rightModel, epiOpt.sample);
+    epiModelFac.CreateRationalEpiStereo(leftModel, rightModel, epiOpt.sample);
   assert(IEpipolarModel::ePLANERECT == leftEpiModel->GetEpipolarAlgorithm());
-
-  auto format = leftReader.GetFileFormat();
-  auto gdalDT = leftReader.GetDataType();
-  auto numBands = leftReader.GetNumBands();
-  const int epiNumBands = (epiOpt.grey && 3 == numBands) ? 1 : numBands;
 
   auto rasResample = std::make_unique<RasterResampleCV>(epiOpt.resample);
   EpipolarGenerator epiGen(rasResample.get(), epiOpt.memSize, epiOpt.stride);
 
   // generate left epipolar image
+  auto format = leftReader.GetFileFormat();
+  auto gdalDT = leftReader.GetDataType();
+  auto numBands = leftReader.GetNumBands();
+  int epiNumBands = (epiOpt.grey && 3 == numBands) ? 1 : numBands;
+
   auto leftEpiFile = detail::GenerateEpipolar(epiOpt.leftImgFile, 
     &epiGen, &leftReader, leftEpiModel.get(), epiOpt.stride,
     epiOpt.outBkgd, epiOpt.outPath, format, gdalDT, epiNumBands);
   std::cout << ToString(epiGen.GetPerfMettrics());
 
-  // generate right epipolar image
-  auto rightEpiFile = detail::GenerateEpipolar(epiOpt.rightImgFile, 
+  // generate right epipolar image, allowing for in-compatible image files
+  format = rightReader.GetFileFormat();   
+  gdalDT = rightReader.GetDataType();
+  numBands = rightReader.GetNumBands();
+  epiNumBands = (epiOpt.grey && 3 == numBands) ? 1 : numBands;
+
+  auto rightEpiFile = detail::GenerateEpipolar(epiOpt.rightImgFile,
     &epiGen, &rightReader, rightEpiModel.get(), epiOpt.stride, 
     epiOpt.outBkgd, epiOpt.outPath, format, gdalDT, epiNumBands);
   std::cout << ToString(epiGen.GetPerfMettrics());
+
+  // save epipolar model information
+  std::string leftImgFile = fs::path(epiOpt.leftImgFile).stem().string();
+  std::string rightImgFile = fs::path(epiOpt.rightImgFile).stem().string();
+  const auto epiModelFn = CombineFilenames(leftImgFile, rightImgFile);
+  fs::path epiModelPath(epiOpt.outPath + epiModelFn + ".json");
+  RemoveFile(epiModelPath);
+  std::cout << "epiModelPath: " << epiModelPath << std::endl << std::endl;
+
+  std::vector<EpiModelInfo> epiModels{ 
+    {epiOpt.leftMdlFile, leftEpiFile, leftEpiModel.get()},
+    {epiOpt.rightMdlFile, rightEpiFile, rightEpiModel.get()} };
+
+  EpipolarStereoMarshaller marshaller;
+  marshaller.Serialize(epiModelPath.string(), epiModels);
 }
 }

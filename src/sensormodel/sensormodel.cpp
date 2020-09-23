@@ -3,6 +3,7 @@
  * -----------------------------------------------------------------------------
  */
 #include "sensormodel/sensormodel.h"
+#include "core/exceptions/exexcept.h"
 
 #include <algorithm>
 #include <cassert>

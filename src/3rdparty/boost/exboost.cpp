@@ -3,7 +3,6 @@
  * ----------------------------------------------------------------------
  */
 #include "3rdparty/boost/exboost.h"
-#include <boost/filesystem.hpp>
 
 namespace bfs = boost::filesystem;
 
@@ -46,5 +45,12 @@ template <typename Ty> Ty distance(const PointXY<Ty>& p, const Polygon2<Ty>& pol
   }
 
   return dist;
+}
+
+/**
+ *  \brief set the i18n/l10n environment
+ */
+void ConfigureI18N_BL() {
+
 }
 }

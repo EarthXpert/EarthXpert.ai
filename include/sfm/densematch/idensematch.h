@@ -38,7 +38,7 @@ public:
    *
    *  \return Retruns true if successful, false otherwise.
    */
-  virtual bool Match(IRaster*) = 0;
+  virtual bool Process(IRaster*) = 0;
 
   virtual MatchType GetMatchType() const noexcept = 0;
 };

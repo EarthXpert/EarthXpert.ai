@@ -3,7 +3,6 @@
  * -----------------------------------------------------------------------------
  */
 #include "io/raster/tiledrasterreader.h"
-#include "3rdparty/gettext/exgettext.h"
 #include "core/exceptions/exexcept.h"
 
 using namespace earthxpert;

@@ -23,9 +23,11 @@ class RasterReader;
 class RasterWriter;
 
 /**
- *  The class EpipolarGenerator creates epipolar images from raw images.
- *  It is not thread-safe to process multiple images using the same 
- *  generator object. Thus for parallel processing, create a generator 
+ *  The class EpipolarGenerator creates epipolar images from raw images
+ *  given an epipolar model. In satellite remote sensing, these
+ *  epipolar images are also named as OrthoReady stereo product.
+ *  It is not thread-safe to process multiple images using the same
+ *  generator object. Thus for parallel processing, create a generator
  *  object for each thread in the team.
  */
 class EXEPIPOLAR_EXPORTS EpipolarGenerator {
@@ -33,14 +35,15 @@ public:
   /**
    *  \brief
    */
-  EpipolarGenerator(const IRasterResample* rasResample, 
+  EpipolarGenerator(const IRasterResample* rasResample,
     size_t memSize, int stride = 1);
 
   EpipolarGenerator(const EpipolarGenerator &) = delete;
   EpipolarGenerator(EpipolarGenerator &&) = delete;
+  ~EpipolarGenerator() = default;
+
   EpipolarGenerator &operator=(const EpipolarGenerator &) = delete;
   EpipolarGenerator &operator=(EpipolarGenerator &&) = delete;
-  ~EpipolarGenerator() = default;
 
   /**
    *  \brief
@@ -52,9 +55,9 @@ public:
   /**
    *  \return Returns performance info
    */
-  const EpiGenPerf* GetPerfMettrics() noexcept { 
+  const EpiGenPerf* GetPerfMettrics() noexcept {
     mPerf.tmResample = mPerf.tmProcess - mPerf.tmRigorous - mPerf.tmDensify;
-    return &mPerf; 
+    return &mPerf;
   }
 
 private:
@@ -62,8 +65,8 @@ private:
   static constexpr double kValidRatio = 0.85;  // by trials
 
   enum ExecPolicy {
-    ePL2,   // two tasks pipelined 
-    ePL3,   // three tasks pipelined 
+    ePL2,   // two tasks pipelined
+    ePL3,   // three tasks pipelined
     eSQ     // sequential
   };
 
@@ -91,11 +94,11 @@ private:
 
   std::vector<TileInfo> mTiles;
 
-  inline RasterWindow& ImgTile(const int tileId) { 
+  inline RasterWindow& ImgTile(const int tileId) {
     assert(0 <= tileId && tileId < mNumTiles);
-    return mTiles[tileId].imgTile; 
+    return mTiles[tileId].imgTile;
   }
-  inline RasterWindow& EpiTile(const int tileId) { 
+  inline RasterWindow& EpiTile(const int tileId) {
     assert(0 <= tileId && tileId < mNumTiles);
     return mTiles[tileId].epiTile;
   }
@@ -122,9 +125,9 @@ private:
 
   template <int execPolicy>
   void ProcessTiles() {
-    if constexpr (ePL2 == execPolicy)
+    if constexpr(ePL2 == execPolicy)
       ProcessTilesPL2();
-    else if constexpr (ePL3 == execPolicy)
+    else if constexpr(ePL3 == execPolicy)
       ProcessTilesPL3();
     else
       ProcessTilesSQ();
@@ -143,14 +146,14 @@ private:
   void WriteTile(int tileId);
 
   void GeotransformTile(int tileId, cv::Mat& tfmMat);
-  
+
   void RigorousGridNodes(const int tileId, cv::Mat& tfmMat,
     const std::vector<int>& gridCols, const std::vector<int>& gridRows);
   void DensifyPerCells(const int tileId, cv::Mat& tfmMat,
     const std::vector<int>& gridCols, const std::vector<int>& gridRows);
   void DensifyPerPixels(const int tileId, cv::Mat& tfmMat,
     const std::vector<int>& gridCols, const std::vector<int>& gridRows);
-  void EpiToImg(int tileId, cv::Mat& tfmMat, 
+  void EpiToImg(int tileId, cv::Mat& tfmMat,
     int tileCol, int tileRow, bool insideImg=true);
 
   // performance
@@ -181,4 +184,10 @@ private:
   int mTfmCvDT{ CV_32FC2 };
   int mTfmBpp{ CV_ELEM_SIZE(CV_32FC2) };
 };
+
+// typically for satellite remote sensing
+using OrthoReadyGenerator = EpipolarGenerator;
+
+using UPEpipolarGenerator = std::unique_ptr<EpipolarGenerator>;
+using SPEpipolarGenerator = std::shared_ptr<EpipolarGenerator>;
 } // namespace earthxpert

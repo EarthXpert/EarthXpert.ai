@@ -77,7 +77,7 @@ public:
    *                  The requested fields must be available from the dataset.
    *  \return Returns number of points actually read
    */
-  virtual size_t ReadPointcloud(const size_t start, Pointcloud* const pointCloud) = 0;
+  virtual size_t ReadPointcloud(size_t start, Pointcloud* const pointCloud) = 0;
 
   /**
    *  \brief Reads point tile defined by tile, internal buffer size.
