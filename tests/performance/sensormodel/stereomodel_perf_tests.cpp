@@ -18,6 +18,8 @@ using rfm = earthxpert::RationalModel;
 static constexpr int kNum = 15;
 static constexpr double kFactor = 0.75;
 
+static void G2I_Cube(const StereoModel& sm, const std::vector<Point3d>& cube);
+static void G2I_CubeOMP(const StereoModel& sm, const std::vector<Point3d>& cube);
 static void I2G_Cube(const StereoModel& sm, const std::vector<Point3d>& cube);
 static void I2G_CubeOMP(const StereoModel& sm, const std::vector<Point3d>& cube);
 static std::vector<Point3d> CreateCube(const RationalModel* leftModel, const RationalModel* rightModel);
@@ -31,6 +33,18 @@ void StereoModel_Cube() {
   const auto leftModel = CreateRationalModelLeft();
   const auto rightModel = CreateRationalModelRight();
   auto cube = CreateCube(leftModel.get(), rightModel.get());
+
+  StereoModel sm(leftModel.get(), rightModel.get());    // NR
+  G2I_Cube(sm, cube);
+}
+
+void StereoModel_CubeOMP() {
+  const auto leftModel = CreateRationalModelLeft();
+  const auto rightModel = CreateRationalModelRight();
+  auto cube = CreateCube(leftModel.get(), rightModel.get());
+
+  StereoModel sm(leftModel.get(), rightModel.get());    // NR
+  G2I_CubeOMP(sm, cube);
 }
 
 /**
@@ -148,6 +162,18 @@ void StereoModel_I2G_NROMP() {
 }
 
 // single thread
+void G2I_Cube(const StereoModel& sm, const std::vector<Point3d>& cube) {
+  Point2d imageL;
+  Point2d imageR;
+
+  auto& models = sm.GetSensorModels();
+
+  for (auto& ground : cube) {
+    models[0]->GroundToImage(ground, imageL);
+    models[1]->GroundToImage(ground, imageR);
+  }
+}
+
 void I2G_Cube(const StereoModel& sm, const std::vector<Point3d>& cube) {
   Point2d imageL;
   Point2d imageR;
@@ -164,23 +190,40 @@ void I2G_Cube(const StereoModel& sm, const std::vector<Point3d>& cube) {
 }
 
 // OMP
+void G2I_CubeOMP(const StereoModel& sm, const std::vector<Point3d>& cube) {
+  auto& models = sm.GetSensorModels();
+  const int64_t numPts = cube.size();
+
+#pragma omp parallel 
+  {
+    Point2d imageL;
+    Point2d imageR;
+
+#pragma omp for
+    for (int64_t i = 0; i < numPts; ++i) {
+      models[0]->GroundToImage(cube[i], imageL);
+      models[1]->GroundToImage(cube[i], imageR);
+    }
+  }
+}
+
 void I2G_CubeOMP(const StereoModel& sm, const std::vector<Point3d>& cube) {
   auto& models = sm.GetSensorModels();
   const int64_t numPts = cube.size();
 
 #pragma omp parallel 
   {
-  Point2d imageL;
-  Point2d imageR;
-  Point3d grd;
+    Point2d imageL;
+    Point2d imageR;
+    Point3d grd;
 
 #pragma omp for
-  for (int64_t i = 0; i < numPts; ++i) {
-    models[0]->GroundToImage(cube[i], imageL);
-    models[1]->GroundToImage(cube[i], imageR);
+    for (int64_t i = 0; i < numPts; ++i) {
+      models[0]->GroundToImage(cube[i], imageL);
+      models[1]->GroundToImage(cube[i], imageR);
 
-    sm.ImageToGround(imageL, imageR, grd);
-  }
+      sm.ImageToGround(imageL, imageR, grd);
+    }
   }
 }
 
@@ -299,6 +342,7 @@ std::unique_ptr<RationalModel> CreateRationalModelRight() {
 }
 
 SLTBENCH_FUNCTION(StereoModel_Cube);
+SLTBENCH_FUNCTION(StereoModel_CubeOMP);
 SLTBENCH_FUNCTION(StereoModel_I2G_Ceres);
 SLTBENCH_FUNCTION(StereoModel_I2G_Exai);
 SLTBENCH_FUNCTION(StereoModel_I2G_Intersect);

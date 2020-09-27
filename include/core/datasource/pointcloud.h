@@ -9,6 +9,7 @@
 #include "core/exceptions/exexcept.h"
 #include "core/utils/spatialtile.h"
 
+#include <laszip.hpp>
 #include <cassert>
 #include <optional>
 #include <type_traits>
