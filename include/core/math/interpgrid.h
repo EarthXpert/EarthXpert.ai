@@ -10,6 +10,7 @@
 #include "core/utils/spatialtile.h"
 
 #include <cassert>
+#include <climits>
 #include <memory>
 #include <vector>
 #include <utility>
@@ -56,7 +57,7 @@ public:
     assert(val);
     GetVal(point.x, point.y, val);
   }
-  void GetVal(Ty X, Ty Y, Ty *const val) const;
+  void GetVal(Ty X, Ty Y, Ty *const val, uint32_t len=UINT_MAX) const;
 
   // \return Return value of the 1st dimension
   Ty GetVal1(cv::Point_<Ty> point) const {
@@ -65,7 +66,7 @@ public:
   Ty GetVal1(Ty X, Ty Y) const {
     assert(1 <= mDim);
     Ty val;
-    GetVal(X, Y, &val);
+    GetVal(X, Y, &val, 1);
     return val;
   }
 
@@ -76,7 +77,7 @@ public:
   std::pair<Ty, Ty> GetVal2(Ty X, Ty Y) const {
     assert(2 <= mDim);
     Ty val[2];
-    GetVal(X, Y, val);
+    GetVal(X, Y, val, 2);
     return {val[0], val[1]};
   }
 
@@ -87,7 +88,7 @@ public:
   Tuple3<Ty> GetVal3(Ty X, Ty Y) const {
     assert(3 <= mDim);
     Ty val[3];
-    GetVal(X, Y, val);
+    GetVal(X, Y, val, 3);
     return { val[0], val[1], val[2] };
   }
 
