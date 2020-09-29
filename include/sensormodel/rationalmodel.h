@@ -276,6 +276,7 @@ private:
   static constexpr int kMaxIterS2G = 10; // max. number of iterations allowed for SensorToGround
   static constexpr int kMaxIterIAA = 5; // max. number of iterations allowed for ImageActualToApparant
   static constexpr double kRatio = 1.0e-4; // ratio of tolerance proportional to image range
+  static constexpr double kTol = std::numeric_limits<double>::epsilon();
   static constexpr double kTol_d = 0.1; // tolerance proportional to ground range
 
   // rational polynomial coefficients

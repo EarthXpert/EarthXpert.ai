@@ -13,8 +13,6 @@
 
 using namespace earthxpert;
 
-static constexpr double kTol = std::numeric_limits<double>::epsilon();
-
 /**
  *  \brief Construct a standard third-order rational function model.
  *
@@ -176,17 +174,17 @@ void RationalModel::CheckModel() const {
   const auto nfc = mNormalFators.data();
 
   if (nfc[eSLINE] < 0.0 || nfc[eSSAMP] < 0.0)
-    throw std::invalid_argument("Line or Sample scale must not be negative.");
+    throw std::invalid_argument(_("Line or Sample scale must not be negative."));
   if (nfc[eSLINE] < 1.0 || nfc[eSSAMP] < 1.0)
-    throw std::invalid_argument("Line or Sample scale is too small.");
+    throw std::invalid_argument(_("Line or Sample scale is too small."));
   if (nfc[eSLAT] < 0.0 || nfc[eSLONG] < 0.0)
-    throw std::invalid_argument("Latitude or Longitude scale must not be negative.");
+    throw std::invalid_argument(_("Latitude or Longitude scale must not be negative."));
   if (nfc[eSLAT] < kTol || nfc[eSLONG] < kTol)
-    throw std::invalid_argument("Latitude or Longitude scale is too small.");
+    throw std::invalid_argument(_("Latitude or Longitude scale is too small."));
   if (nfc[eSHEIGHT] < 0.0)
-    throw std::invalid_argument("Height scale must not be negative.");
+    throw std::invalid_argument(_("Height scale must not be negative."));
   if (nfc[eSHEIGHT] < 1.0)
-    throw std::invalid_argument("Height scale is too small.");
+    throw std::invalid_argument(_("Height scale is too small."));
 
   // numerical reliability, not singular, contineous
   // non-zero denominator
@@ -568,9 +566,8 @@ bool RationalModel::SensorToGround(const double x, const double y,
 
       // determinant of the partial derivative matrix
       const double det = dFc_du * dFr_dv - dFc_dv * dFr_du;
-      if (std::numeric_limits<double>::epsilon() >= fabs(det)) {
+      if (kTol >= fabs(det)) 
         return false;
-      }
 
       invDet = 1.0 / det;
     }
@@ -672,7 +669,7 @@ Tuple4d RationalModel::CalcPolynomials(const double L,
   }
 
   if (fabs(Ld) < kTol || fabs(Sd) < kTol) 
-    throw std::underflow_error("RationalModel: denominator is 0 in rational model");
+    throw std::underflow_error(_("RationalModel: denominator is 0 in rational model"));
 
   return { Ln, Ld, Sn, Sd };
 }
@@ -725,7 +722,7 @@ bool RationalModel::SensorToGroundLinear(const double x, const double y,
                   (ldc[eC] + ldc[eH] * w) * y - lnc[eC] - lnc[eH] * w };
 
   const double det = A[0][0] * A[1][1] - A[1][0] * A[0][1];
-  if (std::numeric_limits<double>::epsilon() >= fabs(det)) {
+  if (kTol >= fabs(det)) {
     u = 0.0;
     v = 0.0;
     return false;
