@@ -315,6 +315,7 @@ include_directories(${SLTBENCH_INCLUDE_DIRS})
 include_directories("include")
 
 # section source
+add_subdirectory(js)
 add_subdirectory(python)
 add_subdirectory(src)
 enable_testing()
