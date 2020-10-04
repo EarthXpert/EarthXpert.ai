@@ -15,3 +15,5 @@ test/samples/
 *.bin
 *.json
 *.pyc
+*.pyc
+*.pyc
