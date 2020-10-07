@@ -58,6 +58,7 @@ void StereoModel_I2G_Ceres() {
   StereoModel smC(leftModel.get(), rightModel.get());
   smC.SetForwardAlgorithm(StereoModel::eSM_CERES);
   I2G_Cube(smC, cube);
+  //std::cout << "Total #Iterations: " << smC.GetNumIters() << std::endl;
 }
 
 /**
@@ -70,6 +71,7 @@ void StereoModel_I2G_Exai() {
 
   RationalStereoModel smE(leftModel.get(), rightModel.get());
   I2G_Cube(smE, cube);
+  //std::cout << "Total #Iterations: " << smE.GetNumIters() << std::endl;
 }
 
 /**
@@ -89,6 +91,7 @@ void StereoModel_I2G_Intersect() {
   smI.SetEarthEllipsoid(std::move(ee));
   smI.SetForwardAlgorithm(StereoModel::eCA_INTERSECT);
   I2G_Cube(smI, cube);
+  //std::cout << "Total #Iterations: " << smI.GetNumIters() << std::endl;
 }
 
 /**
@@ -102,6 +105,7 @@ void StereoModel_I2G_NR() {
   StereoModel smN(leftModel.get(), rightModel.get());    // NR
   smN.SetForwardAlgorithm(StereoModel::eSM_NR);
   I2G_Cube(smN, cube);
+  //std::cout << "Total #Iterations: " << smN.GetNumIters() << std::endl;
 }
 
 /**

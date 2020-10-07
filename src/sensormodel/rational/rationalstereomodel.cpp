@@ -64,6 +64,8 @@ bool RationalStereoModel::ImageToGround(const Point2d& leftImage,
 
   int iter{};
   for (iter = 0; iter < kMaxIters; ++iter) {
+    std::atomic_fetch_add_explicit(&mNumIters, 1, std::memory_order_relaxed);
+
     Point2d imgp0;
     auto [dFc_dL0, dFc_dP0, dFc_dH0, dFr_dL0, dFr_dP0, dFr_dH0] =
       CalcJacobian(mRatModels[0], ground, imgp0);

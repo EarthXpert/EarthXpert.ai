@@ -12,6 +12,7 @@
 #include "core/spatialref/groundpolicy.h"
 
 #include <cassert>
+#include <atomic>
 
 namespace earthxpert {
 class ISensorModel;
@@ -115,7 +116,8 @@ public:
    * list of 3d ground positions (X, Y, Z) in ground coordinate system
    */
   virtual size_t ImageToGround(const std::vector<Point2d> &leftImages,
-    const std::vector<Point2d> &rightImages, std::vector<Point3d> &grounds) const override;
+    const std::vector<Point2d> &rightImages, 
+    std::vector<Point3d> &grounds) const override;
 
   /**
    *  \brief Given a triplet of sensor models and associated 2d positions
@@ -128,8 +130,8 @@ public:
    * ground coordinate system \return Returns true if the operation succeeds
    *  \return Returns true if the operation succeeds
    */
-  virtual bool
-  ImageToGround(const std::array<Point2d, 3> &images, Point3d &ground) const override {
+  virtual bool ImageToGround(const std::array<Point2d, 3> &images, 
+    Point3d &ground) const override {
     assert(3 == mModels.size());
     switch (mFwdAlgo) {
     case eSM_CERES: {
@@ -157,8 +159,8 @@ public:
    *  \param [in/out] ground 3d ground position (X, Y, Z) in ground coordinate system
    *  \return Returns true if the operation succeeds
    */
-  virtual bool
-  ImageToGround(const std::vector<Point2d> &images, Point3d &ground) const override {
+  virtual bool ImageToGround(const std::vector<Point2d> &images, 
+    Point3d &ground) const override {
     const int numRays = int(mModels.size());
     assert(numRays == images.size());
     switch (mFwdAlgo) {
@@ -258,12 +260,19 @@ public:
   auto GetForwardAlgorithm() const noexcept { return mFwdAlgo; }
   auto& GetOptions() noexcept { return mOptions; }
 
+  /**
+   *  \return Returns number of iterations by the forward intersection.
+   */
+  size_t GetNumIters() const noexcept { return size_t(mNumIters); }
+
 protected:
   static constexpr int kMaxIters{ 8 };
   static constexpr double kTolZ{ 1.0e-4 };  // [mm]
 
   ForwardAlgo mFwdAlgo{ eSM_NR };
   Solver::Options mOptions;   // the options to control ceres solver
+
+  mutable std::atomic_size_t mNumIters{};
 
 private:
   static constexpr double kH{ 10.0 };

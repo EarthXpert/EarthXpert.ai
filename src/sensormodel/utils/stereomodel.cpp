@@ -279,6 +279,7 @@ bool StereoModel::ImageToGroundCeres(const Point2d& leftImage,
   const auto ret = IntersectI2G<NumericG2IResidual>(images,
     mModels.data(), 2, ground, mOptions, summary);
   
+  //std::atomic_fetch_add_explicit(&mNumIters, 1, std::memory_order_relaxed);
   return ret;
 }
 
@@ -290,6 +291,7 @@ bool StereoModel::ImageToGroundNR(const Point2d& leftImage,
 
   int i;
   for (i = 0; i < kMaxIters; ++i) {
+    //std::atomic_fetch_add_explicit(&mNumIters, 1, std::memory_order_relaxed);
     Point3d grd{ 0.0, 0.0, ground.z + kH };
 
     Point3d leftGrd{ 0.0, 0.0, ground.z };
@@ -426,6 +428,7 @@ bool StereoModel::ImageToGroundX(const Point2d* images,
   Point3d lsr;
 
   for (int i = 0; i < 2; ++i) {
+    //std::atomic_fetch_add_explicit(&mNumIters, 1, std::memory_order_relaxed);
     const double hgtRange[2] = { ground.z + kH, ground.z - kH };
 
     for (int j = 0; j < 2; ++j) {
