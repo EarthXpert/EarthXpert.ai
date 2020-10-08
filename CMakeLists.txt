@@ -254,7 +254,7 @@ find_package(Qt5 5.11.2 COMPONENTS Core Gui LinguistTools OpenGL Widgets REQUIRE
 find_package(Sltbench REQUIRED)
 
 find_package(Java 1.8 REQUIRED Runtime Development)
-find_package (Python3 REQUIRED COMPONENTS Interpreter Development)
+find_package(Python3 REQUIRED COMPONENTS Interpreter Development)
 
 get_target_property(SLTBENCH_INCLUDE_DIRS sltbench INTERFACE_INCLUDE_DIRECTORIES)
 get_target_property(SLTBENCH_LIBRARY_DEBUG sltbench IMPORTED_LOCATION_DEBUG)
