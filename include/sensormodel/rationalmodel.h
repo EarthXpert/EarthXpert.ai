@@ -271,6 +271,7 @@ public:
   void EnableCubeS2G(bool enable=true);
 
 private:
+  friend class RationalModelMarshaller;
   friend class RationalStereoModel;
 
   static constexpr int kMaxIterS2G = 10; // max. number of iterations allowed for SensorToGround

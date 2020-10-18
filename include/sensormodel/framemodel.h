@@ -131,6 +131,7 @@ public:
   // block adjustment helpers
 
 private:
+  friend class FrameModelMarshaller;
   template<typename> friend class FrameEpipolarModel;
   friend class FrameStereoModel;
 

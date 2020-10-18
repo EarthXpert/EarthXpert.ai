@@ -83,6 +83,8 @@ public:
   bool HasGrid() const noexcept { return bool(mGrid); }
 
 private:
+  friend class DistGridMarshaller;
+
   std::string mCameraName;
   std::unique_ptr<InterpGrid<Ty>> mGrid;
 
