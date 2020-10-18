@@ -433,6 +433,7 @@ private:
 };
 
 using rnf = NormalizationFactor;
+using risf = RationalModel::InvScaleFactor;
 using UPRationalModel = std::unique_ptr<RationalModel>;
 using SPRationalModel = std::shared_ptr<RationalModel>;
 } // namespace earthxpert
