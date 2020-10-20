@@ -5,28 +5,20 @@
 #include "core/math/rotation.h"
 
 #include <cassert>
-#include <cmath>
 
 namespace earthxpert::math {
 /**
- * Convert Euler angles to a rotation matrix
+ *  Convert Euler angles to a rotation matrix usually in object-centered system
  *
- * \brief Convert three Euler angles to a 3x3 rotation matrix.
- *
- * \param [in] angles three Euler angles that represent a sequential 3D
- * rotation about firstly X-axis, then the rotated Y-axis, finally the
- * doubly-rotated Z axis. [radian] 
- * \param [out] mat3x3 a 9 elemants matrix representing the corresponding 3x3 rotation.
+ *  \param [in] angles three Euler angles (omega, phi, kappa) that represent 
+ *  a sequential 3D rotation about firstly X-axis, then the rotated Y-axis, 
+ *  finally the doubly-rotated Z axis. [radian] 
+ *  \param [out] mat3x3 a 9 elemants matrix representing the corresponding 3x3 rotation.
  */
 void EulerXYZToMatrix(const double *angles, cv::Mat1d &mat3x3) {
+  assert(angles);
   assert(CV_64FC1 == mat3x3.type());
-
-  const auto co = cos(angles[0]); // omega about X-axis
-  const auto so = sin(angles[0]);
-  const auto cp = cos(angles[1]); // phi about Y-axis
-  const auto sp = sin(angles[1]);
-  const auto ck = cos(angles[2]); // kappa about Z-axis
-  const auto sk = sin(angles[2]);
+  const auto [so, co, sp, cp, sk, ck] = sincos(angles); 
 
   mat3x3(0, 0) = cp * ck;
   mat3x3(0, 1) = so * sp * ck + co * sk;
@@ -39,4 +31,84 @@ void EulerXYZToMatrix(const double *angles, cv::Mat1d &mat3x3) {
   mat3x3(2, 2) = co * cp;
 }
 
+void EulerYXZToMatrix(const double* angles, cv::Mat1d& mat3x3) {
+  assert(angles);
+  assert(CV_64FC1 == mat3x3.type());
+  const auto [sr, cr, sp, cp, sy, cy] = sincos(angles);
+
+  mat3x3(0, 0) = cp * cy + sr * sp * sy;
+  mat3x3(0, 1) = cr * sy;
+  mat3x3(0, 2) = -sp * cy + sr * cp * sy;
+  mat3x3(1, 0) = -cp * sy + sr * sp * cy;
+  mat3x3(1, 1) = cr * cy;
+  mat3x3(1, 2) = sp * sy + sr * cp * cy;
+  mat3x3(2, 0) = cr * sp;
+  mat3x3(2, 1) = -sr;
+  mat3x3(2, 2) = cr * cp;
+}
+
+void EulerZXYToMatrix(const double* angles, cv::Mat1d& mat3x3)
+{
+  assert(angles);
+  assert(CV_64FC1 == mat3x3.type());
+  const auto [sr, cr, sp, cp, sy, cy] = sincos(angles);
+
+  mat3x3(0, 0) = cp * cy - sr * sp * sy;
+  mat3x3(0, 1) = cp * sy + sr * sp * cy;
+  mat3x3(0, 2) = -cr * sp;
+  mat3x3(1, 0) = -cr * sy;
+  mat3x3(1, 1) = cr * cy;
+  mat3x3(1, 2) = sr;
+  mat3x3(2, 0) = sp * cy + sr * cp * sy;
+  mat3x3(2, 1) = sp * sy - sr * cp * cy;
+  mat3x3(2, 2) = cr * cp;
+}
+
+/**
+ *  Convert Euler angles to a rotation matrix usually in camera-centered system
+ *
+ *  \param [in] angles three Euler angles (roll, pitch, yaw) that represent 
+ *  a sequential 3D rotation about firstly Z-axis, then the rotated Y-axis, 
+ *  finally the doubly-rotated X axis. [radian]
+ * \param [out] mat3x3 a 9 elemants matrix representing the corresponding 3x3 rotation.
+ */
+void EulerZYXToMatrix(const double* angles, cv::Mat1d& mat3x3) {
+  assert(angles);
+  assert(CV_64FC1 == mat3x3.type());
+  const auto [sr, cr, sp, cp, sy, cy] = sincos(angles); 
+
+  mat3x3(0, 0) = cp * cy;
+  mat3x3(0, 1) = cp * sy;
+  mat3x3(0, 2) = -sp;
+  mat3x3(1, 0) = -cr * sy + sr * sp * cy;
+  mat3x3(1, 1) = cr * cy + sr * sp * sy;
+  mat3x3(1, 2) = sr * cp;
+  mat3x3(2, 0) = sr * sy + cr * sp * cy;
+  mat3x3(2, 1) = -sr * cy + cr * sp * sy;
+  mat3x3(2, 2) = cr * cp;
+}
+
+/**
+ *  Convert a rotation matrix to Euler angles usually in object-centered system
+ *
+ *  \param [in] mat3x3 a 9 elemants matrix representing the 3x3 rotation.
+ *  \param [out] angles three Euler angles (omega, phi, kappa) that represent
+ *  a sequential 3D rotation about firstly X-axis, then the rotated Y-axis,
+ *  finally the doubly-rotated Z axis. [radian]
+ */
+void MatrixToEulerXYZ(const cv::Mat1d& mat3x3, double* const angles) {
+  assert(CV_64FC1 == mat3x3.type());
+  assert(angles);
+
+  angles[1] = asin(mat3x3(2, 0));
+
+  if (fabs(mat3x3(0, 0)) > 0 && fabs(mat3x3(2, 2)) > 0) {
+    angles[0] = atan2(-mat3x3(2, 1), mat3x3(2, 2));
+    angles[2] = atan2(-mat3x3(1, 0), mat3x3(0, 0));
+  }
+  else {
+    angles[0] = 0;
+    angles[2] = atan2(-mat3x3(0, 1), mat3x3(1, 1));
+  }
+}
 } // namespace earthxpert::math

@@ -27,6 +27,12 @@ class EXSENSORMODEL_EXPORTS FrameModel final : public SensorModel {
 public:
   using PolicyType = ImageModelPolicy;
 
+  // Optical axis direction
+  enum OpticalDir {
+    eOBLIQUE,   // oblique
+    eVERTICAL   // vertical
+  };
+
   /**
    *  Constructor.
    *
@@ -146,6 +152,7 @@ private:
       mFrameEP{}; // extrinsic parameters defining exterior orientation
   std::shared_ptr<FrameCP>
       mFrameCP{}; // correction parameters defining external effects
+  OpticalDir mOpticalDir{ eVERTICAL };
 
   std::shared_ptr<FrameIPCorr> mFrameIPCorr{}; // interior orienttion corrections
   std::shared_ptr<FrameEPCorr> mFrameEPCorr{}; // exterior orienttion corrections
