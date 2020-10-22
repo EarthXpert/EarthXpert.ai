@@ -6,6 +6,7 @@
 
 #include "sensormodel/utils/distortiongrid.h"
 #include "3rdparty/opencv/exopencv.h"
+#include "core/utils/typehelper.h"
 
 #include <array>
 #include <bitset>
@@ -116,8 +117,9 @@ public:
   /**
    *  \return Return distortion flags of radial, decentering, grid.
    */
-  std::tuple<bool, bool, bool> GetDistFlags() const noexcept {
-    return { mDistFlags[kRADDIST], mDistFlags[kDECDIST], mDistFlags[kGRDDIST] };
+  Tuple4<bool> GetDistFlags() const noexcept {
+    return { mDistFlags[kRADDIST], mDistFlags[kDECDIST],
+      mDistFlags[kLINDIST], mDistFlags[kGRDDIST] };
   }
 
 private:

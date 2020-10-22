@@ -307,7 +307,8 @@ Point2d FrameModel<ImageModelPolicy>::SensorActualToApparantPPS(
   const Point2d& sensor) const {
   const auto dRad = mFrameIP->CalcRadialCorr(sensor);
   const auto dDec = mFrameIP->CalcDecentCorr(sensor);
-  Point2d sensorApp = sensor + dRad + dDec;
+  const auto dLin = mFrameIP->CalcLinearCorr(sensor);
+  Point2d sensorApp = sensor + dRad + dDec + dLin;
 
   const auto dGrd = mFrameIP->CalcGridCorr(sensorApp);
   return (sensorApp + dGrd);
@@ -470,7 +471,7 @@ Point2d FrameModel<ImageModelPolicy>::SensorApparantToActualPPS(
   auto sensorAct = sensor;
 
   int i;
-  auto [hasRadialDist, hasDecentDist, hasGridDist] = mFrameIP->GetDistFlags();
+  auto [hasRadDist, hasDecDist, hasLinDist, hasGridDist] = mFrameIP->GetDistFlags();
 
   // distortion grid from added parameters
   if (hasGridDist) {
@@ -489,13 +490,14 @@ Point2d FrameModel<ImageModelPolicy>::SensorApparantToActualPPS(
       return { 0.0, 0.0 };
   }
 
-  if (hasRadialDist || hasDecentDist) {
+  if (hasRadDist || hasDecDist || hasLinDist) {
     const Point2d cEarth{ sensorAct };
 
     for (i = 0; i < kMaxIterG2I; ++i) {
       const auto dRad = mFrameIP->CalcRadialCorr(sensorAct);
       const auto dDec = mFrameIP->CalcDecentCorr(sensorAct);
-      const auto corr = cEarth - (sensorAct + dRad + dDec);
+      const auto dLin = mFrameIP->CalcLinearCorr(sensorAct);
+      const auto corr = cEarth - (sensorAct + dRad + dDec + dLin);
       sensorAct += corr;
 
       if (fabs(corr.x) < kTolMM && fabs(corr.y) < kTolMM)
