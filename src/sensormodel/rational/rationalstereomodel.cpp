@@ -68,12 +68,12 @@ bool RationalStereoModel::ImageToGround(const Point2d& leftImage,
 
     Point2d imgp0;
     auto [dFc_dL0, dFc_dP0, dFc_dH0, dFr_dL0, dFr_dP0, dFr_dH0] =
-      CalcJacobian(mRatModels[0], ground, imgp0);
+      CalcJacobianA(mRatModels[0], ground, imgp0);
     auto nfc0 = mRatModels[0]->GetNormalFators();
 
     Point2d imgp1;
     auto [dFc_dL1, dFc_dP1, dFc_dH1, dFr_dL1, dFr_dP1, dFr_dH1] =
-      CalcJacobian(mRatModels[1], ground, imgp1);
+      CalcJacobianA(mRatModels[1], ground, imgp1);
     auto nfc1 = mRatModels[1]->GetNormalFators();
 
     std::array<double, 12> dm = { 
@@ -142,7 +142,7 @@ bool RationalStereoModel::ImageToGround(
     for (int i = 0; i < numRays; ++i) {
       Point2d imgp;
       auto [dFc_dL, dFc_dP, dFc_dH, dFr_dL, dFr_dP, dFr_dH] =
-        CalcJacobian(mRatModels[i], ground, imgp);
+        CalcJacobianA(mRatModels[i], ground, imgp);
 
       auto nfc = mRatModels[i]->GetNormalFators();
       const int i2 = i * 2;
@@ -176,11 +176,12 @@ bool RationalStereoModel::ImageToGround(
 }
 
 /**
- *  \brief Calculate Jacobian of rational functions at given ground position.
+ *  \brief Calculate Jacobian of rational functions at given ground position (analytic).
  *
  *  \return Return {dFc_dL, dFc_dP, dFc_dH, dFr_dL, dFr_dP, dFr_dH}
+ *  \todo corrections in sensor space
  */
-Tuple6d RationalStereoModel::CalcJacobian(RationalModel const* ratModel,
+Tuple6d RationalStereoModel::CalcJacobianA(RationalModel const* ratModel,
   const Point3d& ground, Point2d& image) const {
   // use short name for convenience
   auto snc = ratModel->mSampNumCoef.data(); // Sample numerator coefficients
@@ -219,10 +220,10 @@ Tuple6d RationalStereoModel::CalcJacobian(RationalModel const* ratModel,
   const double dLn_dw = D_dw(lnc, duvw_dw);      // Partial derivative of Ln w.r.t w
   const double dLd_dw = D_dw(ldc, duvw_dw);      // Partial derivative of Ld w.r.t w
 
-  const double dFc_du = (dSn_du - image.x * dSd_du) * invSd;
+  const double dFc_du = (dSn_du - image.x * dSd_du) * invSd;    // x = Sn / Sd
   const double dFc_dv = (dSn_dv - image.x * dSd_dv) * invSd;
   const double dFc_dw = (dSn_dw - image.x * dSd_dw) * invSd;
-  const double dFr_du = (dLn_du - image.y * dLd_du) * invLd;
+  const double dFr_du = (dLn_du - image.y * dLd_du) * invLd;    // y = Ln / Ld
   const double dFr_dv = (dLn_dv - image.y * dLd_dv) * invLd;
   const double dFr_dw = (dLn_dw - image.y * dLd_dw) * invLd;
 
@@ -232,4 +233,35 @@ Tuple6d RationalStereoModel::CalcJacobian(RationalModel const* ratModel,
 
   return { dFc_du * du_dL, dFc_dv * dv_dP, dFc_dw * dw_dH, 
            dFr_du * du_dL, dFr_dv * dv_dP, dFr_dw * dw_dH };
+}
+
+/**
+ *  \brief Calculate Jacobian of rational functions at given ground position (finite difference).
+ *
+ *  \return Return {dFc_dL, dFc_dP, dFc_dH, dFr_dL, dFr_dP, dFr_dH}
+ */
+Tuple6d RationalStereoModel::CalcJacobianN(RationalModel const* ratModel,
+  const Point3d& ground, Point2d& image) const {
+
+  Point3d grds[6] = { 
+    {ground.x - kTolD, ground.y, ground.z}, {ground.x + kTolD, ground.y, ground.z},
+    {ground.x, ground.y - kTolD, ground.z}, {ground.x, ground.y + kTolD, ground.z},
+    {ground.x, ground.y, ground.z - kTolH}, {ground.x, ground.y, ground.z + kTolH} };
+  Point2d imgs[6];
+
+  for (int i = 0; i < 6; ++i) {
+    ratModel->GroundToImage(grds[i], imgs[i]);
+  }
+
+  constexpr double facLP = 0.5 / kTolD;
+  constexpr double facH = 0.5 / kTolH;
+
+  const double dFc_dL = (imgs[1].x - imgs[0].x) * facLP;
+  const double dFc_dP = (imgs[3].x - imgs[2].x) * facLP;
+  const double dFc_dH = (imgs[5].x - imgs[4].x) * facH;
+  const double dFr_dL = (imgs[1].y - imgs[0].y) * facLP;
+  const double dFr_dP = (imgs[3].y - imgs[2].y) * facLP;
+  const double dFr_dH = (imgs[5].y - imgs[4].y) * facH;
+
+  return { dFc_dL, dFc_dP, dFc_dH, dFr_dL, dFr_dP, dFr_dH };
 }

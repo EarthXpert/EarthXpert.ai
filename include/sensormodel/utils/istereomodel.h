@@ -36,8 +36,14 @@ public:
   enum ForwardAlgo {
     eCA_INTERSECT,    // intersect in 3d Cartisian space
     eSM_CERES,        // re-project residual via sensor model by ceres
-    eSM_EXAI,         // analytic solution via physical sensor model
+    eSM_EXAI,         // rigorous solution via physical sensor model
     eSM_NR            // re-project residual via sensor model by Newton-Raphson iteration
+  };
+
+  // type of partial derivative
+  enum PartialType {
+    ePT_ANALYTIC,     // analytic partial derivative
+    ePT_NUMDIFF       // numeric finite differenciation
   };
 
   virtual ~IStereoModel() = default;
