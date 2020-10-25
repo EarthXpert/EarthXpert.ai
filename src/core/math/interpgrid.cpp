@@ -217,7 +217,8 @@ void InterpGrid<Ty>::GetNodes(Ty *const nodes) const {
  * \param [in,out] val Array of interpolated (or extrapolated) values
  */
 template <typename Ty>
-void InterpGrid<Ty>::GetVal(const Ty X, const Ty Y, Ty *const val) const {
+void InterpGrid<Ty>::GetVal(const Ty X, const Ty Y, 
+  Ty *const val, const uint32_t len) const {
   assert(val);
   const Ty fIdxX = (X - mOffX) * mInvSpcX;
   const Ty fIdxY = (Y - mOffY) * mInvSpcY;
@@ -234,7 +235,7 @@ void InterpGrid<Ty>::GetVal(const Ty X, const Ty Y, Ty *const val) const {
   const auto [i1, i2, i3, i4] = CornersIndex<MatOrder::eCOLMAHOR>(idxX, idxY, mNumY, mDim);
 
   // Interpolate the values.
-  for (unsigned int i = 0; i < mDim; ++i) {
+  for (unsigned int i = 0; i < mDim && i < len; ++i) {
     val[i] = w1 * mGrid[i1 + i] + w2 * mGrid[i2 + i] +
              w3 * mGrid[i3 + i] + w4 * mGrid[i4 + i];
   }

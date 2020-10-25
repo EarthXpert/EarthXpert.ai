@@ -16,7 +16,7 @@ public:
   PointcloudRasterize();
   ~PointcloudRasterize() = default;
 
-  void Rasterize();
+  void Process();
 
 private:
 };

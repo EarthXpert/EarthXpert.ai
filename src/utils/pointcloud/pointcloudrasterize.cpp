@@ -15,5 +15,5 @@ PointcloudRasterize::PointcloudRasterize() {
 /**
  *  \brief
  */
-void PointcloudRasterize::Rasterize() {
+void PointcloudRasterize::Process() {
 }

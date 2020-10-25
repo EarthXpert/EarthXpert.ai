@@ -9,8 +9,8 @@
 #include <lasdefinitions.hpp>
 #include <lasfilter.hpp>
 #include <lasquantizer.hpp>
-#include <laszip.hpp>
 #include <lasutility.hpp>
+#include <laszip.hpp>
 #include <map>
 #include <memory>
 #include <string>

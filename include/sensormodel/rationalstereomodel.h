@@ -115,9 +115,27 @@ private:
 
   void Initialize();
 
-  Tuple6d CalcJacobian(RationalModel const* ratModel, 
+  Tuple6d CalcJacobianA(RationalModel const* ratModel,
     const Point3d& ground, Point2d& image) const;
-    
+  Tuple6d CalcJacobianNf(RationalModel const* ratModel,
+    const Point3d& ground, Point2d& image) const;
+  Tuple6d CalcJacobianNc(RationalModel const* ratModel,
+    const Point3d& ground, Point2d& image) const;
+
+  template<PartialType pT = ePT_ANALYTIC>
+    Tuple6d CalcJacobian(RationalModel const* ratModel,
+      const Point3d& ground, Point2d& image) const {
+      if constexpr (ePT_ANALYTIC == pT) {
+        return CalcJacobianA(ratModel, ground, image);
+      }
+      else if constexpr (ePT_NUMDIFF == pT) {
+        return CalcJacobianA(ratModel, ground, image);
+      }
+      else {
+        throw std::invalid_argument("PartialType");
+      }
+  }
+
   // cached for convenience/performance
   std::vector<const RationalModel*> mRatModels;   // one model per ray
 };

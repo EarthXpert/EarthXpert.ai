@@ -32,6 +32,7 @@ public:
   PrjType GetProjectType() const noexcept override { return ePT_FRAME; }
 
 private:
+  friend class P4dPrjMarshaller;
 };
 
 using UPFrameProject = std::unique_ptr<FrameProject>;

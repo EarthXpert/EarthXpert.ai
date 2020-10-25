@@ -179,6 +179,8 @@ if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
   set(Qt5_DIR "${EX_THIRD_PARTY}/qt_5.11.2/lib/cmake/Qt5")
   
   set(Sltbench_DIR "${EX_THIRD_PARTY}/sltbench_20.01.15/cmake")
+
+  #set(Python_ROOT_DIR "python37")
   
 elseif(CMAKE_SYSTEM_NAME STREQUAL "Linux")
   set(EARTHXPERT_BIN_ROOT "bin")
@@ -251,6 +253,9 @@ find_package(pybind11 REQUIRED)
 find_package(Qt5 5.11.2 COMPONENTS Core Gui LinguistTools OpenGL Widgets REQUIRED)
 find_package(Sltbench REQUIRED)
 
+find_package(Java 1.8 REQUIRED Runtime Development)
+find_package(Python3 REQUIRED COMPONENTS Interpreter Development)
+
 get_target_property(SLTBENCH_INCLUDE_DIRS sltbench INTERFACE_INCLUDE_DIRECTORIES)
 get_target_property(SLTBENCH_LIBRARY_DEBUG sltbench IMPORTED_LOCATION_DEBUG)
 get_target_property(SLTBENCH_LIBRARY_RELEASE sltbench IMPORTED_LOCATION_RELEASE)
@@ -315,6 +320,8 @@ include_directories(${SLTBENCH_INCLUDE_DIRS})
 include_directories("include")
 
 # section source
+add_subdirectory(java)
+add_subdirectory(js)
 add_subdirectory(python)
 add_subdirectory(src)
 enable_testing()

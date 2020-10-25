@@ -23,7 +23,7 @@ public:
   /**
    *  Entry point of a command
    */
-  int Execute();
+  int Execute() override;
 
 private:
   int mArgc{};

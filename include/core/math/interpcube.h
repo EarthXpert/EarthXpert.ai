@@ -9,6 +9,7 @@
 #include "core/utils/typehelper.h"
 
 #include <cassert>
+#include <climits>
 #include <memory>
 #include <vector>
 #include <utility>
@@ -52,7 +53,7 @@ public:
   void GetVal(cv::Point3_<Ty> point, Ty *const val) const {
     GetVal(point.x, point.y, point.z, val);
   }
-  void GetVal(Ty X, Ty Y, Ty Z, Ty *const val) const;
+  void GetVal(Ty X, Ty Y, Ty Z, Ty *const val, uint32_t len=UINT_MAX) const;
 
   // \return Return value of the 1st dimension
   Ty GetVal1(cv::Point3_<Ty> point) const {
@@ -61,7 +62,7 @@ public:
   Ty GetVal1(Ty X, Ty Y, Ty Z) const {
     assert(1 <= mDim);
     Ty val;
-    GetVal(X, Y, Z, &val);
+    GetVal(X, Y, Z, &val, 1);
     return val;
   }
 
@@ -72,7 +73,7 @@ public:
   std::pair<Ty, Ty> GetVal2(Ty X, Ty Y, Ty Z) const {
     assert(2 <= mDim);
     Ty val[2];
-    GetVal(X, Y, Z, val);
+    GetVal(X, Y, Z, val, 2);
     return { val[0], val[1] };
   }
 
@@ -83,7 +84,7 @@ public:
   Tuple3<Ty> GetVal3(Ty X, Ty Y, Ty Z) const {
     assert(3 <= mDim);
     Ty val[3];
-    GetVal(X, Y, Z, val);
+    GetVal(X, Y, Z, val, 3);
     return { val[0], val[1], val[2] };
   }
 

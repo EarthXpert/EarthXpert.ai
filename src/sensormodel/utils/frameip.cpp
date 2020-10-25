@@ -243,7 +243,7 @@ Point2d FrameIP::CalcLinearCorr(const Point2d& sensor) const
   if (!mDistFlags[kLINDIST])
     return { 0.0, 0.0 };
 
-  return { 0.0, 0.0 };
+  return { mLinearDist[0] * sensor.x + mLinearDist[1] * sensor.y, 0.0 };
 }
 
 /**

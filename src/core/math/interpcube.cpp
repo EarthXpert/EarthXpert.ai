@@ -118,7 +118,8 @@ void InterpCube<Ty>::GetNodes(Ty *const nodes) const {
  * \param [in,out] val Array of interpolated (or extrapolated) values
  */
 template <typename Ty>
-void InterpCube<Ty>::GetVal(const Ty X, const Ty Y, const Ty Z, Ty *const val) const {
+void InterpCube<Ty>::GetVal(const Ty X, const Ty Y, const Ty Z, 
+  Ty *const val, const uint32_t len) const {
 }
 
 /**
@@ -131,10 +132,13 @@ void InterpCube<Ty>::CopyFrom(const InterpCube<Ty> &rhs) {
   mDim = rhs.mDim;
   mNumX = rhs.mNumX;
   mNumY = rhs.mNumY;
+  mNumZ = rhs.mNumZ;
   mOffX = rhs.mOffX;
   mOffY = rhs.mOffY;
+  mOffZ = rhs.mOffZ;
   mSpcX = rhs.mSpcX;
   mSpcY = rhs.mSpcY;
+  mSpcZ = rhs.mSpcZ;
   mCube = rhs.mCube;
 }
 
