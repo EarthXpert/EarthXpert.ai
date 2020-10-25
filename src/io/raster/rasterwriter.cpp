@@ -52,6 +52,17 @@ RasterWriter::RasterWriter(const fs::path& imageFile, const std::string format,
 }
 
 /**
+ *  \brief Construct writer object for existing image file.
+ *
+ *  \param [in] dataset an opened dataset for writing
+ *  \param [in] bands an array of 1-based band indices
+ */
+RasterWriter::RasterWriter(GDALDataset* dataset, 
+  const std::vector<int>& bands) : mDataset(dataset) {
+  Initialize(mDataset, bands);
+}
+
+/**
  *  \brief Initialize both reader and writer components for existing image file.
  *
  *  \param [in] dataset an opened dataset for writing

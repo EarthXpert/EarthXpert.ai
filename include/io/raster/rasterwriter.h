@@ -27,6 +27,7 @@ public:
     int numCols, int numRows, GDALDataType dataType, int numBands);
   RasterWriter(const fs::path& imageFile, const std::string format,
     int numCols, int numRows, GDALDataType dataType, int numBands);
+  RasterWriter(GDALDataset* dataset, const std::vector<int>& bands = {});
   RasterWriter(const RasterWriter&) = delete;
   RasterWriter(RasterWriter&&) = delete;
   ~RasterWriter() = default;
