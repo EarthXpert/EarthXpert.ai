@@ -47,6 +47,9 @@ void RationalStereoModel::Initialize() {
  *  \param [in/out] ground 3d ground position (X, Y, Z) in ground coordinate
  * system
  *  \return Returns true if the operation succeeds
+ *
+ *  \remark array & Map<> is 12% faster than direct sized Matrix<>;
+ *          sized Matrix<> is 2x faster than dynamic Matrix<>
  */
 bool RationalStereoModel::ImageToGround(const Point2d& leftImage,
   const Point2d& rightImage, Point3d& ground) const {
@@ -60,6 +63,15 @@ bool RationalStereoModel::ImageToGround(const Point2d& leftImage,
   ground.z = (mRatModels[0]->GetMeanHeight() + mRatModels[1]->GetMeanHeight()) / 2.0;
   mRatModels[0]->ImageToGround(leftImage, ground);
 
+  std::array<double, 12> dm;
+  std::array<double, 4> cv;
+
+  Map<Eigen::Matrix<double, 4, 3, RowMajor>> A(dm.data());
+  Map<Eigen::Matrix<double, 4, 1>> b(cv.data());
+
+  const auto nfc0 = mRatModels[0]->GetNormalFators();
+  const auto nfc1 = mRatModels[1]->GetNormalFators();
+
   int iter{};
   for (iter = 0; iter < kMaxIters; ++iter) {
     //std::atomic_fetch_add_explicit(&mNumIters, 1, std::memory_order_relaxed);
@@ -70,21 +82,23 @@ bool RationalStereoModel::ImageToGround(const Point2d& leftImage,
     const auto [dFc_dL1, dFc_dP1, dFc_dH1, dFr_dL1, dFr_dP1, dFr_dH1] =
       CalcJacobianNc(mRatModels[1], ground, imgp1);
 
-    const auto nfc0 = mRatModels[0]->GetNormalFators();
-    const auto nfc1 = mRatModels[1]->GetNormalFators();
+    dm[0] = dFc_dL0 * nfc0[eSSAMP];
+    dm[1] = dFc_dP0 * nfc0[eSSAMP];
+    dm[2] = dFc_dH0 * nfc0[eSSAMP];
+    dm[3] = dFr_dL0 * nfc0[eSLINE];
+    dm[4] = dFr_dP0 * nfc0[eSLINE];
+    dm[5] = dFr_dH0 * nfc0[eSLINE];
+    dm[6] = dFc_dL1 * nfc1[eSSAMP];
+    dm[7] = dFc_dP1 * nfc1[eSSAMP];
+    dm[8] = dFc_dH1 * nfc1[eSSAMP];
+    dm[9] = dFr_dL1 * nfc1[eSLINE];
+    dm[10] = dFr_dP1 * nfc1[eSLINE];
+    dm[11] = dFr_dH1 * nfc1[eSLINE];
 
-    std::array<double, 12> dm = { 
-      dFc_dL0* nfc0[eSSAMP], dFc_dP0* nfc0[eSSAMP], dFc_dH0* nfc0[eSSAMP],
-      dFr_dL0* nfc0[eSLINE], dFr_dP0* nfc0[eSLINE], dFr_dH0* nfc0[eSLINE],
-      dFc_dL1* nfc1[eSSAMP], dFc_dP1* nfc1[eSSAMP], dFc_dH1* nfc1[eSSAMP],
-      dFr_dL1* nfc1[eSLINE], dFr_dP1* nfc1[eSLINE], dFr_dH1* nfc1[eSLINE] };
-    Map<Eigen::Matrix<double, 4, 3, RowMajor>> A(dm.data());
-
-    std::array<double, 4> cv = { (imgp0.x - leftImg.x) * nfc0[eSSAMP],
-                                 (imgp0.y - leftImg.y) * nfc0[eSLINE],
-                                 (imgp1.x - rightImg.x)* nfc1[eSSAMP],
-                                 (imgp1.y - rightImg.y)* nfc1[eSLINE] };        
-    Map<Eigen::Matrix<double, 4, 1>> b(cv.data());
+    cv[0] = (imgp0.x - leftImg.x) * nfc0[eSSAMP];
+    cv[1] = (imgp0.y - leftImg.y) * nfc0[eSLINE];
+    cv[2] = (imgp1.x - rightImg.x) * nfc1[eSSAMP];
+    cv[3] = (imgp1.y - rightImg.y) * nfc1[eSLINE];
 
     const auto& x = A.bdcSvd(ComputeFullU | ComputeFullV).solve(b);
     //if () return false;
