@@ -117,7 +117,9 @@ private:
 
   Tuple6d CalcJacobianA(RationalModel const* ratModel,
     const Point3d& ground, Point2d& image) const;
-  Tuple6d CalcJacobianN(RationalModel const* ratModel,
+  Tuple6d CalcJacobianNf(RationalModel const* ratModel,
+    const Point3d& ground, Point2d& image) const;
+  Tuple6d CalcJacobianNc(RationalModel const* ratModel,
     const Point3d& ground, Point2d& image) const;
 
   template<PartialType pT = ePT_ANALYTIC>

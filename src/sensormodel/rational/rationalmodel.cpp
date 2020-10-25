@@ -242,15 +242,11 @@ bool RationalModel::ImageToGround(const Point2d &image, Point3d &ground) const {
  *  \return Returns true if operation succeeds
  */
 bool RationalModel::GroundToImage(const Point3d &ground, Point2d &image) const {
-  auto nfc = mNormalFators.data();
-
-  // normalized ground coordinates
-  const Point3d uvw = GroundNormalize(ground);
-  Point2d sensor{ 0.0, 0.0 };
-  if (!GroundToSensor(uvw, sensor))
+  Point2d sensor{ 0.0, 0.0 };  // normalized ground coordinates
+  if (!GroundToSensor(ground, sensor))
     return false;
 
-  const auto imageApp = SensorToImage(sensor);
+  const auto imageApp = SensorToImageApparant(sensor);
   const auto imageAct = ImageApparantToActual(imageApp);
   image = imageAct + 0.5;
   return true;

@@ -339,13 +339,13 @@ private:
    *  output the 2d position in virtual sensor coordinate system.
    */
   inline Point2d ImageApparantToSensor(const Point2d& image) const {
-    auto nfc = mNormalFators.data();
+    const auto nfc = mNormalFators.data();
     return { (image.x - nfc[eOSAMP]) * mInvScale[eISSAMP],
              (image.y - nfc[eOLINE]) * mInvScale[eISLINE] };
   }
 
   inline Point2d ImageToSensor(const Point2d& image) const {
-    Point2d imageAct{ image.x - 0.5, image.y - 0.5 };
+    const Point2d imageAct{ image.x - 0.5, image.y - 0.5 };
     const auto imageApp = ImageActualToApparant(imageAct);
     return ImageApparantToSensor(imageApp);
   }
@@ -357,7 +357,7 @@ private:
    *  \param [in] sensor 2d position (x, y) in virtual sensor coordinate system
    *  \return Return 2d apparant rpc position (col, row) in imagery coordinate system
    */
-  inline Point2d SensorToImage(const Point2d& sensor) const {
+  inline Point2d SensorToImageApparant(const Point2d& sensor) const {
     auto nfc = mNormalFators.data();
     return { nfc[eOSAMP] + nfc[eSSAMP] * sensor.x,
              nfc[eOLINE] + nfc[eSLINE] * sensor.y };
@@ -383,7 +383,7 @@ private:
   }
 
   inline Point3d GroundNormalize(const Point3d& ground) const {
-    auto nfc = mNormalFators.data();
+    const auto nfc = mNormalFators.data();
     return { (ground.x - nfc[eOLONG]) * mInvScale[eISLONG],
              (ground.y - nfc[eOLAT]) * mInvScale[eISLAT],
              (ground.z - nfc[eOHEIGHT]) * mInvScale[eISHEIGHT] };
@@ -399,13 +399,18 @@ private:
    *  \param [out] sensor 2d sensor position (x, y)
    *  \return Returns true if operation succeeds
    */
-  inline bool GroundToSensor(const Point3d& uvw, Point2d& sensor) const {
+  inline bool GroundNormalizeToSensor(const Point3d& uvw, Point2d& sensor) const {
     const auto [Ln, Ld, Sn, Sd] = CalcPolynomials(uvw);
 
     // col/row computed from RFM
     sensor.x = Sn / Sd;
     sensor.y = Ln / Ld;
     return true;
+  }
+
+  inline bool GroundToSensor(const Point3d& ground, Point2d& sensor) const {
+    const Point3d uvw = GroundNormalize(ground);
+    return GroundNormalizeToSensor(uvw, sensor);
   }
 
   void CalcTerms(const Point3d &uvw, double *const LPH) const {

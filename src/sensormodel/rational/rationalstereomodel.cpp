@@ -62,13 +62,13 @@ bool RationalStereoModel::ImageToGround(const Point2d& leftImage,
 
   int iter{};
   for (iter = 0; iter < kMaxIters; ++iter) {
-    std::atomic_fetch_add_explicit(&mNumIters, 1, std::memory_order_relaxed);
+    //std::atomic_fetch_add_explicit(&mNumIters, 1, std::memory_order_relaxed);
 
     Point2d imgp0, imgp1;
     const auto [dFc_dL0, dFc_dP0, dFc_dH0, dFr_dL0, dFr_dP0, dFr_dH0] =
-      CalcJacobianA(mRatModels[0], ground, imgp0);
+      CalcJacobianNc(mRatModels[0], ground, imgp0);
     const auto [dFc_dL1, dFc_dP1, dFc_dH1, dFr_dL1, dFr_dP1, dFr_dH1] =
-      CalcJacobianA(mRatModels[1], ground, imgp1);
+      CalcJacobianNc(mRatModels[1], ground, imgp1);
 
     const auto nfc0 = mRatModels[0]->GetNormalFators();
     const auto nfc1 = mRatModels[1]->GetNormalFators();
@@ -128,15 +128,17 @@ bool RationalStereoModel::ImageToGround(
   ground.z /= double(numRays);
   mRatModels[numRays/2]->ImageToGround(images[numRays/2], ground);
 
+  Point2d imgp;
   MatrixXd A(numRays * 2, 3);
   VectorXd b(numRays * 2);
 
   int iter{};
   for (iter = 0; iter < kMaxIters; ++iter) {
+    //std::atomic_fetch_add_explicit(&mNumIters, 1, std::memory_order_relaxed);
+
     for (int i = 0; i < numRays; ++i) {
-      Point2d imgp;
-      auto [dFc_dL, dFc_dP, dFc_dH, dFr_dL, dFr_dP, dFr_dH] =
-        CalcJacobianA(mRatModels[i], ground, imgp);
+      const auto [dFc_dL, dFc_dP, dFc_dH, dFr_dL, dFr_dP, dFr_dH] =
+        CalcJacobianNc(mRatModels[i], ground, imgp);
 
       const auto nfc = mRatModels[i]->GetNormalFators();
       const int i2 = i * 2;
@@ -182,8 +184,6 @@ Tuple6d RationalStereoModel::CalcJacobianA(RationalModel const* ratModel,
 
   const auto invSd = 1.0 / Sd;
   const auto invLd = 1.0 / Ld;
-
-  // estimated normalized col/row
   image.x = Sn * invSd;
   image.y = Ln * invLd;
 
@@ -229,13 +229,52 @@ Tuple6d RationalStereoModel::CalcJacobianA(RationalModel const* ratModel,
 }
 
 /**
- *  \brief Calculate Jacobian of rational functions at given ground position (finite difference).
+ *  \brief Calculate Jacobian of rational functions at given ground position
+ *  (forward finite difference).
  *
  *  \param [out] image estimated normalized col/row
  *  \return Return {dFc_dL, dFc_dP, dFc_dH, dFr_dL, dFr_dP, dFr_dH}
+ *
+ *  \remark 2x slower than CalcJacobianA
  */
-Tuple6d RationalStereoModel::CalcJacobianN(RationalModel const* ratModel,
+Tuple6d RationalStereoModel::CalcJacobianNf(RationalModel const* ratModel,
   const Point3d& ground, Point2d& image) const {
+  ratModel->GroundToSensor(ground, image);
+
+  Point3d grds[3] = { {ground.x + kTolD, ground.y, ground.z},
+                      {ground.x, ground.y + kTolD, ground.z},
+                      {ground.x, ground.y, ground.z + kTolH} };
+  Point2d imgs[3];
+
+  for (int i = 0; i < 3; ++i) {
+    ratModel->GroundToSensor(grds[i], imgs[i]);
+  }
+
+  constexpr double facLP = 0.5 / kTolD;
+  constexpr double facH = 0.5 / kTolH;
+
+  const double dFc_dL = (imgs[0].x - image.x) * facLP;
+  const double dFc_dP = (imgs[1].x - image.x) * facLP;
+  const double dFc_dH = (imgs[2].x - image.x) * facH;
+  const double dFr_dL = (imgs[0].y - image.y) * facLP;
+  const double dFr_dP = (imgs[1].y - image.y) * facLP;
+  const double dFr_dH = (imgs[2].y - image.y) * facH;
+
+  return { dFc_dL, dFc_dP, dFc_dH, dFr_dL, dFr_dP, dFr_dH };
+}
+
+/**
+ *  \brief Calculate Jacobian of rational functions at given ground position 
+ *  (central finite difference).
+ *
+ *  \param [out] image estimated normalized col/row
+ *  \return Return {dFc_dL, dFc_dP, dFc_dH, dFr_dL, dFr_dP, dFr_dH}
+ *
+ *  \remark 25% faster than CalcJacobianA
+ */
+Tuple6d RationalStereoModel::CalcJacobianNc(RationalModel const* ratModel,
+  const Point3d& ground, Point2d& image) const {
+  ratModel->GroundToSensor(ground, image);
 
   Point3d grds[6] = { 
     {ground.x - kTolD, ground.y, ground.z}, {ground.x + kTolD, ground.y, ground.z},
@@ -244,7 +283,7 @@ Tuple6d RationalStereoModel::CalcJacobianN(RationalModel const* ratModel,
   Point2d imgs[6];
 
   for (int i = 0; i < 6; ++i) {
-    ratModel->GroundToImage(grds[i], imgs[i]);
+    ratModel->GroundToSensor(grds[i], imgs[i]);
   }
 
   constexpr double facLP = 0.5 / kTolD;
