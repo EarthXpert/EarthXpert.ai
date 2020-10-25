@@ -363,6 +363,11 @@ private:
              nfc[eOLINE] + nfc[eSLINE] * sensor.y };
   }
 
+  inline Point2d SensorToImageActual(const Point2d& sensor) const {
+    const auto imageApp = SensorToImageApparant(sensor);
+    return ImageApparantToActual(imageApp);
+  }
+
   bool mCorrectionFlag{ false };   // flag indicating the correction status
   Point2d CalcCorrection(const Point2d& image) const;
 
@@ -378,8 +383,8 @@ private:
    * in virtual ground coordinate system
    *  \return Returns true if the operation succeeds
    */
-  bool SensorToGround(const Point2d &sensor, Point3d &uvw) const {
-    return SensorToGround(sensor.x, sensor.y, uvw.z, uvw.x, uvw.y);
+  bool SensorToGroundNormalize(const Point2d &sensor, Point3d &uvw) const {
+    return SensorToGroundNormalize(sensor.x, sensor.y, uvw.z, uvw.x, uvw.y);
   }
 
   inline Point3d GroundNormalize(const Point3d& ground) const {
@@ -423,13 +428,13 @@ private:
   }
   Tuple4d CalcPolynomials(double L, double P, double H) const;
 
-  bool SensorToGround(const double x, const double y,
+  bool SensorToGroundNormalize(const double x, const double y,
     const double w, double& u, double& v) const;
 
-  bool SensorToGroundLinear(const Point2d &sensor, Point3d &uvw) const {
-    return SensorToGroundLinear(sensor.x, sensor.y, uvw.z, uvw.x, uvw.y);
+  bool SensorToGroundNormalizeLinear(const Point2d &sensor, Point3d &uvw) const {
+    return SensorToGroundNormalizeLinear(sensor.x, sensor.y, uvw.z, uvw.x, uvw.y);
   }
-  bool SensorToGroundLinear(double x, double y, double w, double &u,
+  bool SensorToGroundNormalizeLinear(double x, double y, double w, double &u,
                             double &v) const;
   
   // cached calculation for better performance

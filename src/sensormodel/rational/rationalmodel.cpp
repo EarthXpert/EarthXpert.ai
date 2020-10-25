@@ -223,7 +223,7 @@ bool RationalModel::ImageToGround(const Point2d &image, Point3d &ground) const {
   const auto sensor = ImageToSensor(image);
 
   Point3d uvw{0.0, 0.0, (ground.z - nfc[eOHEIGHT]) * mInvScale[eISHEIGHT]}; // lph
-  if (!SensorToGround(sensor, uvw))
+  if (!SensorToGroundNormalize(sensor, uvw))
     return false;
 
   ground.x = nfc[eOLONG] + uvw.x * nfc[eSLONG];
@@ -246,8 +246,7 @@ bool RationalModel::GroundToImage(const Point3d &ground, Point2d &image) const {
   if (!GroundToSensor(ground, sensor))
     return false;
 
-  const auto imageApp = SensorToImageApparant(sensor);
-  const auto imageAct = ImageApparantToActual(imageApp);
+  const auto imageAct = SensorToImageActual(sensor);
   image = imageAct + 0.5;
   return true;
 }
@@ -496,13 +495,13 @@ Point2d RationalModel::CalcCorrection(const Point2d& image) const {
  * [dc, dr]. This iternative procedure is repeated until [dc, dr] are
  * sufficiently small.
  */
-bool RationalModel::SensorToGround(const double x, const double y,
+bool RationalModel::SensorToGroundNormalize(const double x, const double y,
   const double w, double& u, double& v) const {
   if (mCubeS2G) {
     std::tie(u, v) = mCubeS2G->GetVal2(x, y, w);
   }
   else { // direct estimates for u, v
-    if (!SensorToGroundLinear(x, y, w, u, v))
+    if (!SensorToGroundNormalizeLinear(x, y, w, u, v))
       return false;
   }
   u = std::clamp(u, -1.2, 1.2);
@@ -694,7 +693,7 @@ Tuple4d RationalModel::CalcPolynomials(const double L,
  *    Fc(u, v) = Sn - Sd * c = 0
  *    Fr(u, v) = Ln - Ld * r = 0
  */
-bool RationalModel::SensorToGroundLinear(const double x, const double y,
+bool RationalModel::SensorToGroundNormalizeLinear(const double x, const double y,
   const double w, double &u, double &v) const {
   // use short name for convenience
   auto snc = mSampNumCoef.data();
@@ -727,7 +726,7 @@ bool RationalModel::SensorToGroundLinear(const double x, const double y,
 }
 
 /**
- *  Build a cube to provide fast X, Y coordinates used by SensorToGround.
+ *  Build a cube to provide fast X, Y coordinates used by SensorToGroundNormalize.
  */
 void RationalModel::BuildCubeS2G() {
   auto cubeS2G = std::make_unique<InterpCubeD>(2,
@@ -740,9 +739,9 @@ void RationalModel::BuildCubeS2G() {
   auto cube = cubeS2G->GetArray();
   for (size_t i = 0; i < numNodes; ++i)
   {
-    if (!SensorToGround(cubeNodes[i].x, cubeNodes[i].y, cubeNodes[i].z,
+    if (!SensorToGroundNormalize(cubeNodes[i].x, cubeNodes[i].y, cubeNodes[i].z,
                         cube[i*2], cube[i*2 + 1])) {
-      throw std::exception(_("RationalModel: SensorToGround failed to project."));
+      throw std::exception(_("RationalModel: SensorToGroundNormalize failed to project."));
     }
   }
 
