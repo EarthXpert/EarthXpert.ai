@@ -338,10 +338,16 @@ private:
    *  \brief Given a 2d position in image coordinate system,
    *  output the 2d position in virtual sensor coordinate system.
    */
-  inline Point2d ImageToSensor(const Point2d& image) const {
+  inline Point2d ImageApparantToSensor(const Point2d& image) const {
     auto nfc = mNormalFators.data();
     return { (image.x - nfc[eOSAMP]) * mInvScale[eISSAMP],
              (image.y - nfc[eOLINE]) * mInvScale[eISLINE] };
+  }
+
+  inline Point2d ImageToSensor(const Point2d& image) const {
+    Point2d imageAct{ image.x - 0.5, image.y - 0.5 };
+    const auto imageApp = ImageActualToApparant(imageAct);
+    return ImageApparantToSensor(imageApp);
   }
 
   /**
@@ -393,8 +399,7 @@ private:
    *  \param [out] sensor 2d sensor position (x, y)
    *  \return Returns true if operation succeeds
    */
-  inline bool GroundToSensor(const Point3d& uvw,
-    Point2d& sensor) const {
+  inline bool GroundToSensor(const Point3d& uvw, Point2d& sensor) const {
     const auto [Ln, Ld, Sn, Sd] = CalcPolynomials(uvw);
 
     // col/row computed from RFM

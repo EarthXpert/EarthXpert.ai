@@ -220,10 +220,7 @@ bool RationalModel::EqualTo(const ISensorModel &rhs) const {
  */
 bool RationalModel::ImageToGround(const Point2d &image, Point3d &ground) const {
   auto nfc = mNormalFators.data();
-  Point2d imageAct{ image.x - 0.5, image.y - 0.5 };
-
-  const auto imageApp = ImageActualToApparant(imageAct);
-  const auto sensor = ImageToSensor(imageApp);
+  const auto sensor = ImageToSensor(image);
 
   Point3d uvw{0.0, 0.0, (ground.z - nfc[eOHEIGHT]) * mInvScale[eISHEIGHT]}; // lph
   if (!SensorToGround(sensor, uvw))
@@ -532,14 +529,12 @@ bool RationalModel::SensorToGround(const double x, const double y,
 
   int iter{};
   for (iter = 0; iter < kMaxIterS2G; ++iter) {
-    const auto[Ln, Ld, Sn, Sd] = CalcPolynomials(u, v, w);
+    const auto [Ln, Ld, Sn, Sd] = CalcPolynomials(u, v, w);
 
-    const auto invSd = 1.0 / Sd;
-    const auto invLd = 1.0 / Ld;
-
-    // estimated normalized col/row
-    const auto xp = Sn * invSd;
-    const auto yp = Ln * invLd;
+    const double invSd = 1.0 / Sd;
+    const double invLd = 1.0 / Ld;
+    const double xp = Sn * invSd;    // estimated normalized col/row
+    const double yp = Ln * invLd;
 
     // recompute the partial derivatives of the sample & line w.r.t u, v
     if (recalcFlag) {
