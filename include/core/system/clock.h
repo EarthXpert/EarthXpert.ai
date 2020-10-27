@@ -7,7 +7,7 @@
 #include "core/excore.h"
 #include <chrono>
 
-namespace chrono = std::chrono;
+namespace schrono = std::chrono;
 
 namespace earthxpert {
 class EXCORE_EXPORTS WallClock {
@@ -17,17 +17,17 @@ public:
   /**
    *  \breif reset start time of the clock
    */
-  void Start() { mStart = chrono::steady_clock::now(); }
+  void Start() { mStart = schrono::steady_clock::now(); }
 
   /**
    *  \return Return ellapsed time since the start [seconds]
    */
   double TimeSinceStart() const {
-    const chrono::duration<double> elapsed = chrono::steady_clock::now() - mStart;
+    const schrono::duration<double> elapsed = schrono::steady_clock::now() - mStart;
     return elapsed.count();
   }
 
 private:
-  chrono::time_point<chrono::steady_clock> mStart;
+  schrono::time_point<schrono::steady_clock> mStart;
 };
 }

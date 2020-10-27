@@ -75,7 +75,7 @@ std::string SensorTypeToName(const SensorType type) {
  *  \brief estimate GSD at the given height
  *
  *  \param [in] sensorModel
- *  \param [in] height
+ *  \param [in] height the height in model CS
  *  \return Retruns GSD at image center
  */
 double CalcGsd(const ISensorModel* sensorModel, const double height) {
@@ -96,17 +96,23 @@ double CalcGsd(const ISensorModel* sensorModel, const double height) {
   return gsd;
 }
 
-double CalcGsd(const ISensorModel* sensorModel, 
+/**
+ *  \brief estimate GSD at the given height
+ *
+ *  \param [in] sensorModel
+ *  \param [in] ee the LSR
+ *  \param [in] height the height in LSR
+ *  \return Retruns GSD at image center
+ */
+double CalcGsd(const ISensorModel* sensorModel,
   const EarthEllipsoid* ee, const double height) {
-  auto [numCols, numRows] = sensorModel->GetImageSize();
+  const auto [numCols, numRows] = sensorModel->GetImageSize();
   const Point2d ic{ numCols * 0.5, numRows * 0.5 };
 
   // image center at height
-  PointXYd rc;
+  PointXYd rc, rc2;
   ImageToPlane(ic, sensorModel, ee, height, rc);
-
-  PointXYd rc2;
-  ImageToPlane(ic + Point2d(1.0, 1.0), sensorModel, ee, height, rc);
+  ImageToPlane(ic + Point2d(1.0, 1.0), sensorModel, ee, height, rc2);
 
   return cv::norm(Point2d(rc2.x() - rc.x(), rc2.y() - rc.y())) * M_SQRT1_2;
 }
@@ -148,10 +154,10 @@ bool ImageToPlane(const Point2d& image, const ISensorModel* sensorModel,
       return false;
 
     rect3 = ee->LPHToLSR(Deg2Rad(ground));
-    const double dz = height - rect3.z;
+    const double dz = height - rect3.z;  // dz >= 0
     ground.z += dz;
 
-    if (tolH > dz) break;
+    if (tolH > std::fabs(dz)) break;
   }
 
   rect.x(rect3.x);

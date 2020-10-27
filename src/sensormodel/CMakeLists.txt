@@ -35,8 +35,8 @@ set(sensormodel_srcs "ads/adsmodel.cpp"
   "utils/stereomodelfactory.cpp"
   "utils/tiledsensormodel.cpp"
   "utils/transsensormodel.cpp"
-  "sensormodel.cpp"
-  "sensormodelfactory.cpp")
+  "./sensormodel.cpp"
+  "./sensormodelfactory.cpp")
 earthxpert_add_library(sensormodel "api"
   SRCS ${sensormodel_srcs}
   ITEMS ex3rdparty core

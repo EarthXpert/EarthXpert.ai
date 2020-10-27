@@ -16,6 +16,10 @@
  *    --version        Show program version
  *
  *    Commands :
+ *      geoinfo
+ *      featuredetect
+ *      sparsematch
+ *      blockadjust
  *      epipolar
  *      densematch
  *

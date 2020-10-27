@@ -1,12 +1,12 @@
 project(epipolarmodel)
 
 add_definitions(-DEXEPIPOLARMODEL_API)
-set(epipolarmodel_srcs "epipolarmodel.cpp"
-  "epipolarrect.cpp"
-  "epipolarstereofactory.cpp"
-  "frameepipolarmodel.cpp"
-  "sensorepipolarmodel.cpp"
-  "stereomatemodel.cpp"
+set(epipolarmodel_srcs "./epipolarmodel.cpp"
+  "./epipolarrect.cpp"
+  "./epipolarstereofactory.cpp"
+  "./frameepipolarmodel.cpp"
+  "./sensorepipolarmodel.cpp"
+  "./stereomatemodel.cpp"
   "utils/epiutils.cpp"
   "utils/evalepipolarmodel.cpp")
 earthxpert_add_library(epipolarmodel "api"

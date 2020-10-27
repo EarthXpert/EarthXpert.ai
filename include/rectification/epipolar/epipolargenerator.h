@@ -123,6 +123,10 @@ private:
   void SwapBuffers();
   void FreeBuffers();
 
+  void ProcessTilesPL2();
+  void ProcessTilesPL3();
+  void ProcessTilesSQ();
+
   template <int execPolicy>
   void ProcessTiles() {
     if constexpr(ePL2 == execPolicy)
@@ -132,10 +136,6 @@ private:
     else
       ProcessTilesSQ();
   }
-
-  void ProcessTilesPL2();
-  void ProcessTilesPL3();
-  void ProcessTilesSQ();
 
   inline bool TileId(const int tileId) {
     return (0 <= tileId && tileId < mNumTiles);

@@ -505,8 +505,8 @@ void EpipolarGenerator::EpiToImg(const int tileId, cv::Mat& tfmMat,
   const float tfmCol = float(img.x - 0.5 - imgColOffset);
   const float tfmRow = float(img.y - 0.5 - imgRowOffset);
 
-  if (!insideImg || (0 <= tfmCol && tfmCol < imgNumCols - 1 &&
-                     0 <= tfmRow && tfmRow < imgNumRows - 1)) {
+  if (!insideImg || (0 <= tfmCol && tfmCol <= imgNumCols - 1 &&
+                     0 <= tfmRow && tfmRow <= imgNumRows - 1)) {
     auto& tfm = tfmMat.at<cv::Vec2f>(tileRow, tileCol);
     tfm[0] = tfmCol;
     tfm[1] = tfmRow;
