@@ -162,7 +162,7 @@ void StereoModel::SetForwardAlgorithm(const ForwardAlgo fwdAlgo) {
  * y) in right sensor raster coordinate system 
  *  \param [in/out] grounds a list of 3d ground positions (X, Y, Z) in ground coordinate system
  */
-size_t StereoModel::ImageToGround(const std::vector<Point2d> &leftImages,
+size_t StereoModel::ImagesToGround(const std::vector<Point2d> &leftImages,
   const std::vector<Point2d> &rightImages, std::vector<Point3d> &grounds) const {
   const auto size = static_cast<long>(leftImages.size());
   assert(size == rightImages.size());
@@ -172,7 +172,7 @@ size_t StereoModel::ImageToGround(const std::vector<Point2d> &leftImages,
 
   #pragma omp parallel for reduction(+ : ret)
   for (long i = 0; i < size; ++i) {
-    if (ImageToGround(leftImages[i], rightImages[i], grounds[i])) {
+    if (ImagesToGround(leftImages[i], rightImages[i], grounds[i])) {
       ++ret;
     }
   }
@@ -189,7 +189,7 @@ size_t StereoModel::ImageToGround(const std::vector<Point2d> &leftImages,
  *  \param [in/out] grounds List of 3d ground positions (X, Y, Z) in ground coordinate
  * system
  */
-size_t StereoModel::ImageToGround(const std::vector<Point2d> &images, 
+size_t StereoModel::ImagesToGround(const std::vector<Point2d> &images, 
   std::vector<Point3d> &grounds) const {
   const size_t numModels = mModels.size();
   const long size = images.size() / numModels;
@@ -203,7 +203,7 @@ size_t StereoModel::ImageToGround(const std::vector<Point2d> &images,
       auto iterJ = std::next(iter, j);
 
       std::vector<Point2d> image(iterJ, std::next(iterJ, numModels));
-      if (ImageToGround(image, grounds[i])) {
+      if (ImagesToGround(image, grounds[i])) {
           ++ret;
       }
   }
@@ -221,7 +221,7 @@ size_t StereoModel::ImageToGround(const std::vector<Point2d> &images,
  *  \param [out] image 2d position (x, y) in imagery raster coordinate system 
  *  \return Returns true if operation succeeds
  */
-bool StereoModel::GroundToImage(const Point3d &ground, 
+bool StereoModel::GroundToImages(const Point3d &ground, 
   std::vector<Point2d> &image) const {
   const long size = mModels.size();
   image.resize(size);
@@ -243,7 +243,7 @@ bool StereoModel::GroundToImage(const Point3d &ground,
  *  \param [in/out] images List of 2d positions (x, y) on image,
  * interleaved by sensor models
  */
-size_t StereoModel::GroundToImage(const std::vector<Point3d> &grounds, 
+size_t StereoModel::GroundToImages(const std::vector<Point3d> &grounds, 
   std::vector<Point2d> &images) const {
   const long size = grounds.size();
   const auto numModels{mModels.size()};
@@ -258,7 +258,7 @@ size_t StereoModel::GroundToImage(const std::vector<Point3d> &grounds,
 
 #pragma omp for
     for (long i = 0; i < size; ++i) {
-      if (GroundToImage(grounds[i], image)) {
+      if (GroundToImages(grounds[i], image)) {
         std::copy_n(std::begin(image), numModels, std::next(iter, numModels * i));
         ++ret;
       }
@@ -269,7 +269,7 @@ size_t StereoModel::GroundToImage(const std::vector<Point3d> &grounds,
 
 // Ceres
 // \todo intial position
-bool StereoModel::ImageToGroundCeres(const Point2d& leftImage,
+bool StereoModel::ImagesToGroundCeres(const Point2d& leftImage,
   const Point2d& rightImage, Point3d& ground) const {
   assert(2 == mModels.size());
   ground.z = (mModels[0]->GetMeanHeight() + mModels[1]->GetMeanHeight()) / 2.0;
@@ -285,7 +285,7 @@ bool StereoModel::ImageToGroundCeres(const Point2d& leftImage,
 }
 
 // Least Squares
-bool StereoModel::ImageToGroundLS(const Point2d& leftImage,
+bool StereoModel::ImagesToGroundLS(const Point2d& leftImage,
   const Point2d& rightImage, Point3d& ground) const {
   assert(2 == mModels.size());
   ground.z = (mModels[0]->GetMeanHeight() + mModels[1]->GetMeanHeight()) / 2.0;
@@ -329,7 +329,7 @@ bool StereoModel::ImageToGroundLS(const Point2d& leftImage,
 }
 
 // Newton-Raphson
-bool StereoModel::ImageToGroundNR(const Point2d& leftImage,
+bool StereoModel::ImagesToGroundNR(const Point2d& leftImage,
   const Point2d& rightImage, Point3d& ground) const {
   assert(2 == mModels.size());
   ground.z = (mModels[0]->GetMeanHeight() + mModels[1]->GetMeanHeight()) / 2.0;
@@ -372,7 +372,7 @@ bool StereoModel::ImageToGroundNR(const Point2d& leftImage,
 
 // Ceres
 // \todo intial position
-bool StereoModel::ImageToGroundCeres(
+bool StereoModel::ImagesToGroundCeres(
   const std::array<Point2d, 3>& images, Point3d& ground) const {
   assert(3 == mModels.size());
   ground.z = (mModels[0]->GetMeanHeight() + mModels[1]->GetMeanHeight() +
@@ -386,7 +386,7 @@ bool StereoModel::ImageToGroundCeres(
   return ret;
 }
 
-bool StereoModel::ImageToGroundLS(
+bool StereoModel::ImagesToGroundLS(
   const std::array<Point2d, 3>& images, Point3d& ground) const {
   assert(3 == mModels.size());
   ground.z = (mModels[0]->GetMeanHeight() + mModels[1]->GetMeanHeight() +
@@ -395,7 +395,7 @@ bool StereoModel::ImageToGroundLS(
   return false;
 }
 
-bool StereoModel::ImageToGroundNR(
+bool StereoModel::ImagesToGroundNR(
   const std::array<Point2d, 3>& images, Point3d& ground) const {
   assert(3 == mModels.size());
   ground.z = (mModels[0]->GetMeanHeight() + mModels[1]->GetMeanHeight() + 
@@ -441,7 +441,7 @@ bool StereoModel::ImageToGroundNR(
 
 // Ceres
 // \todo intial position
-bool StereoModel::ImageToGroundCeres(const Point2d* images, 
+bool StereoModel::ImagesToGroundCeres(const Point2d* images, 
   const int numRays, Point3d& ground) const {
   assert(2 <= mModels.size());
   ground.z = 0.0;
@@ -469,7 +469,7 @@ bool StereoModel::ImageToGroundCeres(const Point2d* images,
  *  \param [in/out] grounds List of 3d ground positions (X, Y, Z) in ground coordinate
  * system
  */
-bool StereoModel::ImageToGroundX(const Point2d* images, 
+bool StereoModel::ImagesToGroundX(const Point2d* images, 
   const int numRays, Point3d& ground) const {
   assert(numRays == mModels.size());
   ground.z = 0.0;

@@ -207,7 +207,7 @@ void TestImageToGround_Cube(const IEpipolarModel* leftEpiModel,
           continue;
 
         Point3d grdN{ ground };
-        const bool ret = smN.ImageToGround(imageL, imageR, grdN);
+        const bool ret = smN.ImagesToGround(imageL, imageR, grdN);
         if (ret) {
           Larger(maxDiffN, xabs(grdN - ground));
           ++nN;

@@ -69,11 +69,11 @@ TEST(stereomodel, ImageToGround) {
     rightModel->GroundToImage(grd[i], imageR);
 
     // forward intersection
-    smC.ImageToGround(imageL, imageR, grdC);
-    smI.ImageToGround(imageL, imageR, grdI);
-    smE.ImageToGround(imageL, imageR, grdE);
-    smL.ImageToGround(imageL, imageR, grdL);
-    smN.ImageToGround(imageL, imageR, grdN);
+    smC.ImagesToGround(imageL, imageR, grdC);
+    smI.ImagesToGround(imageL, imageR, grdI);
+    smE.ImagesToGround(imageL, imageR, grdE);
+    smL.ImagesToGround(imageL, imageR, grdL);
+    smN.ImagesToGround(imageL, imageR, grdN);
 
     ASSERT_LE(fabs(grdC.x - grd[i].x), kTolDEG) << "Max. longitude difference > 1 mm";
     ASSERT_LE(fabs(grdC.y - grd[i].y), kTolDEG) << "Max.  latitude difference > 1 mm";
@@ -92,11 +92,11 @@ TEST(stereomodel, ImageToGround) {
     ASSERT_LE(fabs(grdN.z - grd[i].z), kTolMM) << "Max.    height difference > 1 mm";
 
     // reprojection for consistency check
-    smC.GroundToImage(grdC, imgC);
-    smI.GroundToImage(grdI, imgI);
-    smE.GroundToImage(grdE, imgE);
-    smL.GroundToImage(grdL, imgL);
-    smN.GroundToImage(grdN, imgN);
+    smC.GroundToImages(grdC, imgC);
+    smI.GroundToImages(grdI, imgI);
+    smE.GroundToImages(grdE, imgE);
+    smL.GroundToImages(grdL, imgL);
+    smN.GroundToImages(grdN, imgN);
 
     ASSERT_NEAR(imageL.x, imgC[0].x, kTolP);
     ASSERT_NEAR(imageL.y, imgC[0].y, kTolP);
@@ -222,35 +222,35 @@ void TestImageToGround_Cube(const RationalModel* leftModel, const RationalModel*
           continue;
 
         Point3d grdC{ ground };
-        ret = smC.ImageToGround(imageL, imageR, grdC);
+        ret = smC.ImagesToGround(imageL, imageR, grdC);
         if (ret) {
           Larger(maxDiffC, xabs(grdC - ground));
           ++nC;
         }
 
         Point3d grdI{ ground };
-        ret = smI.ImageToGround(imageL, imageR, grdI);
+        ret = smI.ImagesToGround(imageL, imageR, grdI);
         if (ret) {
           Larger(maxDiffI, xabs(grdI - ground));
           ++nI;
         }
 
         Point3d grdE{ ground };
-        ret = smE.ImageToGround(imageL, imageR, grdE);
+        ret = smE.ImagesToGround(imageL, imageR, grdE);
         if (ret) {
           Larger(maxDiffE, xabs(grdE - ground));
           ++nE;
         }
 
         Point3d grdL{ ground };
-        ret = smL.ImageToGround(imageL, imageR, grdL);
+        ret = smL.ImagesToGround(imageL, imageR, grdL);
         if (ret) {
           Larger(maxDiffL, xabs(grdL - ground));
           ++nL;
         }
 
         Point3d grdN{ ground };
-        ret = smN.ImageToGround(imageL, imageR, grdN);
+        ret = smN.ImagesToGround(imageL, imageR, grdN);
         if (ret) {
           Larger(maxDiffN, xabs(grdN - ground));
           ++nN;

@@ -16,7 +16,7 @@ namespace earthxpert {
  */
 class EXSENSORMODEL_EXPORTS DigitalImageModel final : public IImageModelPolicy {
 public:
-  DigitalImageModel() {}
+  DigitalImageModel() = default;
 
   /**
    *  \brief Construct a imagery model.
@@ -28,7 +28,7 @@ public:
 
   DigitalImageModel(const DigitalImageModel &rhs);
   DigitalImageModel(DigitalImageModel &&rhs) noexcept;
-  ~DigitalImageModel() {}
+  ~DigitalImageModel() = default;
 
   DigitalImageModel &operator=(const DigitalImageModel &rhs);
   DigitalImageModel &operator=(DigitalImageModel &&rhs) noexcept;
@@ -82,7 +82,7 @@ private:
  */
 class EXSENSORMODEL_EXPORTS FilmImageModel final : public IImageModelPolicy {
 public:
-  FilmImageModel() {}
+  FilmImageModel() = default;
 
   /**
    *  \brief Construct a imagery model.
@@ -94,7 +94,7 @@ public:
 
   FilmImageModel(const FilmImageModel &rhs);
   FilmImageModel(FilmImageModel &&rhs) noexcept;
-  ~FilmImageModel() {}
+  ~FilmImageModel() = default;
 
   FilmImageModel &operator=(const FilmImageModel &rhs);
   FilmImageModel &operator=(FilmImageModel &&rhs) noexcept;

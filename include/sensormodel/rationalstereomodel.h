@@ -57,7 +57,7 @@ public:
    * system
    *  \return Returns true if the operation succeeds
    */
-  bool ImageToGround(const Point2d& leftImage,
+  bool ImagesToGround(const Point2d& leftImage,
     const Point2d& rightImage, Point3d& ground) const override;
 
   /**
@@ -71,11 +71,11 @@ public:
    * ground coordinate system \return Returns true if the operation succeeds
    *  \return Returns true if the operation succeeds
    */
-  bool ImageToGround(const std::array<Point2d, 3>& images, Point3d& ground) const override {
+  bool ImagesToGround(const std::array<Point2d, 3>& images, Point3d& ground) const override {
     assert(3 == mRatModels.size());
     std::vector<Point2d> imgs(images.cbegin(), images.cend());
 
-    return ImageToGround(imgs, ground);
+    return ImagesToGround(imgs, ground);
   }
 
   /**
@@ -88,7 +88,7 @@ public:
    *  \param [in/out] ground 3d ground position (X, Y, Z) in ground coordinate system
    *  \return Returns true if the operation succeeds
    */
-  bool RationalStereoModel::ImageToGround(
+  bool RationalStereoModel::ImagesToGround(
     const std::vector<Point2d>& images, Point3d& ground) const override;
 
   /**
@@ -104,7 +104,7 @@ public:
    * [in/out] ground 3d ground position (X, Y, Z) in ground coordinate system
    *  \return Returns true if the operation succeeds
    */
-  bool ImageToGround(const std::vector<const ISensorModel*>& sensorModels,
+  bool ImagesToGround(const std::vector<const ISensorModel*>& sensorModels,
     const std::vector<Point2d>& images, Point3d& ground) const override {
     return false;
   }

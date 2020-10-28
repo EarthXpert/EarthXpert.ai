@@ -51,7 +51,7 @@ void RationalStereoModel::Initialize() {
  *  \remark array & Map<> is 12% faster than direct sized Matrix<>;
  *          sized Matrix<> is 2x faster than dynamic Matrix<>
  */
-bool RationalStereoModel::ImageToGround(const Point2d& leftImage,
+bool RationalStereoModel::ImagesToGround(const Point2d& leftImage,
   const Point2d& rightImage, Point3d& ground) const {
   assert(2 == mRatModels.size());
   //std::vector<Point2d> imgs{ leftImage, rightImage };
@@ -128,7 +128,7 @@ bool RationalStereoModel::ImageToGround(const Point2d& leftImage,
  *  \todo regularization of normal matrix A.t() * A
  *  \todo revist the stability of solve() for Dynamic Ax=b
  */
-bool RationalStereoModel::ImageToGround(
+bool RationalStereoModel::ImagesToGround(
   const std::vector<Point2d>& images, Point3d& ground) const {
   const int numRays = int(mRatModels.size());
   assert(numRays == images.size());

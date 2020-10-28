@@ -216,7 +216,7 @@ void I2G_Cube(const StereoModel& sm, const std::vector<Point3d>& cube) {
     models[0]->GroundToImage(ground, imageL);
     models[1]->GroundToImage(ground, imageR);
 
-    sm.ImageToGround(imageL, imageR, grd);
+    sm.ImagesToGround(imageL, imageR, grd);
   }
 }
 
@@ -253,7 +253,7 @@ void I2G_CubeOMP(const StereoModel& sm, const std::vector<Point3d>& cube) {
       models[0]->GroundToImage(cube[i], imageL);
       models[1]->GroundToImage(cube[i], imageR);
 
-      sm.ImageToGround(imageL, imageR, grd);
+      sm.ImagesToGround(imageL, imageR, grd);
     }
   }
 }
@@ -374,11 +374,13 @@ std::unique_ptr<RationalModel> CreateRationalModelRight() {
 
 SLTBENCH_FUNCTION(StereoModel_Cube);
 SLTBENCH_FUNCTION(StereoModel_CubeOMP);
+
 SLTBENCH_FUNCTION(StereoModel_I2G_Ceres);
 SLTBENCH_FUNCTION(StereoModel_I2G_Intersect);
 SLTBENCH_FUNCTION(StereoModel_I2G_Exai);
 SLTBENCH_FUNCTION(StereoModel_I2G_LS);
 SLTBENCH_FUNCTION(StereoModel_I2G_NR);
+
 SLTBENCH_FUNCTION(StereoModel_I2G_CeresOMP);
 SLTBENCH_FUNCTION(StereoModel_I2G_IntersectOMP);
 SLTBENCH_FUNCTION(StereoModel_I2G_ExaiOMP);

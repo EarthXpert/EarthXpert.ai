@@ -43,7 +43,7 @@ public:
 
   // type of partial derivative
   enum PartialType {
-    ePT_ANALYTIC,     // analytic partial derivative
+    ePT_ANADIFF,      // analytic partial derivative
     ePT_NUMDIFF       // numeric finite differenciation
   };
 
@@ -63,7 +63,7 @@ public:
    *  \param [in/out] ground 3d ground position (X, Y, Z) in ground coordinate system
      \return Returns true if the operation succeeds
    */
-  virtual bool ImageToGround(const Point2d &leftImage,
+  virtual bool ImagesToGround(const Point2d &leftImage,
     const Point2d &rightImage, Point3d &ground) const = 0;
 
   /**
@@ -79,7 +79,7 @@ public:
    *  \param [in/out] grounds a list of 3d ground positions (X, Y, Z) in ground
    * coordinate system
    */
-  virtual size_t ImageToGround(const std::vector<Point2d> &leftImages,
+  virtual size_t ImagesToGround(const std::vector<Point2d> &leftImages,
     const std::vector<Point2d> &rightImages, std::vector<Point3d> &grounds) const = 0;
 
   /**
@@ -91,8 +91,8 @@ public:
    * coordinate systems \param [in/out] ground 3d ground position (X, Y, Z) in
    * ground coordinate system \return Returns true if the operation succeeds
    */
-  virtual bool
-  ImageToGround(const std::array<Point2d, 3> &images, Point3d &ground) const = 0;
+  virtual bool ImagesToGround(const std::array<Point2d, 3> &images, 
+    Point3d &ground) const = 0;
 
   /**
    *  \brief Given two or more sensor models and associated 2d positions
@@ -104,8 +104,8 @@ public:
    * [in/out] ground 3d ground position (X, Y, Z) in ground coordinate system
    *  \return Returns true if the operation succeeds
    */
-  virtual bool
-  ImageToGround(const std::vector<Point2d> &images, Point3d &ground) const = 0;
+  virtual bool ImagesToGround(const std::vector<Point2d> &images, 
+    Point3d &ground) const = 0;
 
   /**
    *  Image-to-ground forward projection (variable).
@@ -120,7 +120,7 @@ public:
    * [in/out] ground 3d ground position (X, Y, Z) in ground coordinate system
    *  \return Returns true if the operation succeeds
    */
-  virtual bool ImageToGround(const std::vector<const ISensorModel*>& sensorModels,
+  virtual bool ImagesToGround(const std::vector<const ISensorModel*>& sensorModels,
     const std::vector<Point2d>& images, Point3d& ground) const = 0;
 
   /**
@@ -133,8 +133,8 @@ public:
    *  \param [in/out] ground List of 3d ground positions (X, Y, Z) in ground
    *  coordinate system
    */
-  virtual size_t
-  ImageToGround(const std::vector<Point2d> &images, std::vector<Point3d> &grounds) const = 0;
+  virtual size_t ImagesToGround(const std::vector<Point2d> &images, 
+    std::vector<Point3d> &grounds) const = 0;
 
   /**
    *  Ground-to-image backward projection (fixed).
@@ -147,8 +147,8 @@ public:
    *  \param [out] images 2d position (x, y) in imagery raster
    *  coordinate system \return Returns true if operation succeeds
    */
-  virtual bool
-  GroundToImage(const Point3d& ground, std::vector<Point2d>& images) const = 0;
+  virtual bool GroundToImages(const Point3d& ground, 
+    std::vector<Point2d>& images) const = 0;
 
   /**
    *  Ground-to-image backward projection (variable).
@@ -162,8 +162,7 @@ public:
    *  \param [out] images 2d position (x, y) in imagery raster
    * coordinate system \return Returns true if operation succeeds
    */
-  virtual bool
-  GroundToImage(const std::vector<const ISensorModel*>& sensorModels, 
+  virtual bool GroundToImages(const std::vector<const ISensorModel*>& sensorModels, 
     const Point3d& ground, std::vector<Point2d>& images) const = 0;
 
   /**
@@ -175,8 +174,8 @@ public:
    *  \param [in/out] images List of 2d positions (x, y) on
    *  image, interleaved by sensor models
    */
-  virtual size_t
-  GroundToImage(const std::vector<Point3d> &grounds, std::vector<Point2d> &images) const = 0;
+  virtual size_t GroundToImages(const std::vector<Point3d> &grounds, 
+    std::vector<Point2d> &images) const = 0;
 };
 
 using StereoFwdAlgo = IStereoModel::ForwardAlgo;
