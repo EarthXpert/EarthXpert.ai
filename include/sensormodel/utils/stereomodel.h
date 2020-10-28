@@ -86,12 +86,15 @@ public:
     const Point2d &rightImage, Point3d &ground) const override {
     assert(2 == mModels.size());
     switch (mFwdAlgo) {
-    case eSM_CERES: {
-      return ImageToGroundCeres(leftImage, rightImage, ground);
-    }
     case eCA_INTERSECT: {
       Point2d images[2] = { leftImage, rightImage };
       return ImageToGroundX(images, 2, ground);
+    }
+    case eSM_CERES: {
+      return ImageToGroundCeres(leftImage, rightImage, ground);
+    }
+    case eSM_LS: {
+      return ImageToGroundLS(leftImage, rightImage, ground);
     }
     case eSM_NR: {
       return ImageToGroundNR(leftImage, rightImage, ground);
@@ -134,11 +137,14 @@ public:
     Point3d &ground) const override {
     assert(3 == mModels.size());
     switch (mFwdAlgo) {
+    case eCA_INTERSECT: {
+      return ImageToGroundX(images.data(), 3, ground);
+    }
     case eSM_CERES: {
       return ImageToGroundCeres(images, ground);
     }
-    case eCA_INTERSECT: {
-      return ImageToGroundX(images.data(), 3, ground);
+    case eSM_LS: {
+      return ImageToGroundLS(images, ground);
     }
     case eSM_NR: {
       return ImageToGroundNR(images, ground);
@@ -164,14 +170,18 @@ public:
     const int numRays = int(mModels.size());
     assert(numRays == images.size());
     switch (mFwdAlgo) {
-    case eSM_CERES: {
-      return ImageToGroundCeres(images.data(), numRays, ground);
-    }
     case eCA_INTERSECT: {
       return ImageToGroundX(images.data(), numRays, ground);
     }
+    case eSM_CERES: {
+      return ImageToGroundCeres(images.data(), numRays, ground);
+    }
+    case eSM_LS: {
+      //return ImageToGroundLS(images.data(), numRays, ground);
+      throw std::exception(_("StereoModel: not implemented"));
+    }
     case eSM_NR: {
-      //return ImageToGroundNR(images, numRays, ground);
+      //return ImageToGroundNR(images.data(), numRays, ground);
       throw std::exception(_("StereoModel: not implemented"));
     }
     default: {
@@ -267,7 +277,9 @@ public:
 
 protected:
   static constexpr int kMaxIters{ 8 };
-  static constexpr double kTolZ{ 1.0e-4 };  // [mm]
+  static constexpr double kTolXYD = 1.0e-9; // degree ~= [0.1mm]
+  static constexpr double kTolXYL = 0.0001; // linear [0.1mm]
+  static constexpr double kTolZ{ 1.0e-4 };  // [0.1mm]
 
   ForwardAlgo mFwdAlgo{ eSM_NR };
   Solver::Options mOptions;   // the options to control ceres solver
@@ -285,16 +297,22 @@ private:
   void Initialize();
 
   bool ImageToGroundCeres(const Point2d& leftImage, const Point2d& rightImage, Point3d& ground) const;
+  bool ImageToGroundLS(const Point2d& leftImage, const Point2d& rightImage, Point3d& ground) const;
   bool ImageToGroundNR(const Point2d& leftImage, const Point2d& rightImage, Point3d& ground) const;
 
   bool ImageToGroundCeres(const std::array<Point2d, 3>& images, Point3d& ground) const;
+  bool ImageToGroundLS(const std::array<Point2d, 3>& images, Point3d& ground) const;
   bool ImageToGroundNR(const std::array<Point2d, 3>& images, Point3d& ground) const;
 
   bool ImageToGroundCeres(const Point2d* images, int numRays, Point3d& ground) const;
   bool ImageToGroundX(const Point2d* images, int numRays, Point3d& ground) const;
 
+  Tuple6d CalcJacobianNc(ISensorModel const* model,
+    const Point3d& ground, Point2d& image) const;
+
   // cache
   SensorType mSensorType{ SensorType::eUNDEFINED };
   SrsType mSrsType{ eUNKNOWN };
+  double mTolXY{ kTolXYL };
 };
 } // namespace earthxpert

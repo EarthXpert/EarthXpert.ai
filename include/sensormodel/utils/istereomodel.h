@@ -37,6 +37,7 @@ public:
     eCA_INTERSECT,    // intersect in 3d Cartisian space
     eSM_CERES,        // re-project residual via sensor model by ceres
     eSM_EXAI,         // rigorous solution via physical sensor model
+    eSM_LS,           // re-project residual via sensor model by LS iteration
     eSM_NR            // re-project residual via sensor model by Newton-Raphson iteration
   };
 

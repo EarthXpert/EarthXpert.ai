@@ -62,20 +62,7 @@ void StereoModel_I2G_Ceres() {
 }
 
 /**
- *  TestCase 2: stereo via EXAI
- */
-void StereoModel_I2G_Exai() {
-  const auto leftModel = CreateRationalModelLeft();
-  const auto rightModel = CreateRationalModelRight();
-  auto cube = CreateCube(leftModel.get(), rightModel.get());
-
-  RationalStereoModel smE(leftModel.get(), rightModel.get());
-  I2G_Cube(smE, cube);
-  //std::cout << "Total #Iterations: " << smE.GetNumIters() << std::endl;
-}
-
-/**
- *  TestCase 3: stereo via intersection
+ *  TestCase 2: stereo via intersection
  */
 void StereoModel_I2G_Intersect() {
   const auto leftModel = CreateRationalModelLeft();
@@ -92,6 +79,33 @@ void StereoModel_I2G_Intersect() {
   smI.SetForwardAlgorithm(StereoModel::eCA_INTERSECT);
   I2G_Cube(smI, cube);
   //std::cout << "Total #Iterations: " << smI.GetNumIters() << std::endl;
+}
+
+/**
+ *  TestCase 3: stereo via EXAI
+ */
+void StereoModel_I2G_Exai() {
+  const auto leftModel = CreateRationalModelLeft();
+  const auto rightModel = CreateRationalModelRight();
+  auto cube = CreateCube(leftModel.get(), rightModel.get());
+
+  RationalStereoModel smE(leftModel.get(), rightModel.get());
+  I2G_Cube(smE, cube);
+  //std::cout << "Total #Iterations: " << smE.GetNumIters() << std::endl;
+}
+
+/**
+ *  TestCase 4: stereo via LS
+ */
+void StereoModel_I2G_LS() {
+  const auto leftModel = CreateRationalModelLeft();
+  const auto rightModel = CreateRationalModelRight();
+  auto cube = CreateCube(leftModel.get(), rightModel.get());
+
+  StereoModel smL(leftModel.get(), rightModel.get());    // LS
+  smL.SetForwardAlgorithm(StereoModel::eSM_LS);
+  I2G_Cube(smL, cube);
+  //std::cout << "Total #Iterations: " << smL.GetNumIters() << std::endl;
 }
 
 /**
@@ -122,19 +136,7 @@ void StereoModel_I2G_CeresOMP() {
 }
 
 /**
- *  TestCase 6: OMP stereo via Exai
- */
-void StereoModel_I2G_ExaiOMP() {
-  const auto leftModel = CreateRationalModelLeft();
-  const auto rightModel = CreateRationalModelRight();
-  auto cube = CreateCube(leftModel.get(), rightModel.get());
-
-  RationalStereoModel smE(leftModel.get(), rightModel.get());    // Exai
-  I2G_CubeOMP(smE, cube);
-}
-
-/**
- *  TestCase 7: OMP stereo via intersection
+ *  TestCase 6: OMP stereo via intersection
  */
 void StereoModel_I2G_IntersectOMP() {
   const auto leftModel = CreateRationalModelLeft();
@@ -150,6 +152,31 @@ void StereoModel_I2G_IntersectOMP() {
   smI.SetEarthEllipsoid(std::move(ee));
   smI.SetForwardAlgorithm(StereoModel::eCA_INTERSECT);
   I2G_CubeOMP(smI, cube);
+}
+
+/**
+ *  TestCase 7: OMP stereo via Exai
+ */
+void StereoModel_I2G_ExaiOMP() {
+  const auto leftModel = CreateRationalModelLeft();
+  const auto rightModel = CreateRationalModelRight();
+  auto cube = CreateCube(leftModel.get(), rightModel.get());
+
+  RationalStereoModel smE(leftModel.get(), rightModel.get());    // Exai
+  I2G_CubeOMP(smE, cube);
+}
+
+/**
+ *  TestCase 8: OMP stereo via LS
+ */
+void StereoModel_I2G_LSOMP() {
+  const auto leftModel = CreateRationalModelLeft();
+  const auto rightModel = CreateRationalModelRight();
+  auto cube = CreateCube(leftModel.get(), rightModel.get());
+
+  StereoModel smL(leftModel.get(), rightModel.get());    // LS
+  smL.SetForwardAlgorithm(StereoModel::eSM_LS);
+  I2G_CubeOMP(smL, cube);
 }
 
 /**
@@ -348,10 +375,12 @@ std::unique_ptr<RationalModel> CreateRationalModelRight() {
 SLTBENCH_FUNCTION(StereoModel_Cube);
 SLTBENCH_FUNCTION(StereoModel_CubeOMP);
 SLTBENCH_FUNCTION(StereoModel_I2G_Ceres);
-SLTBENCH_FUNCTION(StereoModel_I2G_Exai);
 SLTBENCH_FUNCTION(StereoModel_I2G_Intersect);
+SLTBENCH_FUNCTION(StereoModel_I2G_Exai);
+SLTBENCH_FUNCTION(StereoModel_I2G_LS);
 SLTBENCH_FUNCTION(StereoModel_I2G_NR);
 SLTBENCH_FUNCTION(StereoModel_I2G_CeresOMP);
-SLTBENCH_FUNCTION(StereoModel_I2G_ExaiOMP);
 SLTBENCH_FUNCTION(StereoModel_I2G_IntersectOMP);
+SLTBENCH_FUNCTION(StereoModel_I2G_ExaiOMP);
+SLTBENCH_FUNCTION(StereoModel_I2G_LSOMP);
 SLTBENCH_FUNCTION(StereoModel_I2G_NROMP);

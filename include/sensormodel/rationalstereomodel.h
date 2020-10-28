@@ -110,9 +110,6 @@ public:
   }
 
 private:
-  static constexpr double kTolD = 1.0e-9; // degree ~= [0.1mm]
-  static constexpr double kTolH = 0.0001; // [0.1mm]
-
   void Initialize();
 
   Tuple6d CalcJacobianA(RationalModel const* ratModel,

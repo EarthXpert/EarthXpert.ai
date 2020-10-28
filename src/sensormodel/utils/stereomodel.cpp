@@ -18,6 +18,7 @@ using namespace earthxpert;
 using namespace earthxpert::math;
 using namespace earthxpert::thirdparty;
 using namespace ceres;
+using namespace ::Eigen;
 
 /**
  *  Constructor.
@@ -283,6 +284,50 @@ bool StereoModel::ImageToGroundCeres(const Point2d& leftImage,
   return ret;
 }
 
+// Least Squares
+bool StereoModel::ImageToGroundLS(const Point2d& leftImage,
+  const Point2d& rightImage, Point3d& ground) const {
+  assert(2 == mModels.size());
+  ground.z = (mModels[0]->GetMeanHeight() + mModels[1]->GetMeanHeight()) / 2.0;
+  mModels[0]->ImageToGround(leftImage, ground);
+
+  std::array<double, 12> dm;
+  std::array<double, 4> cv;
+
+  Map<Eigen::Matrix<double, 4, 3, RowMajor>> A(dm.data());
+  Map<Eigen::Matrix<double, 4, 1>> b(cv.data());
+
+  int iter{};
+  for (iter = 0; iter < kMaxIters; ++iter) {
+    //std::atomic_fetch_add_explicit(&mNumIters, 1, std::memory_order_relaxed);
+
+    Point2d imgp0, imgp1;
+    std::tie(dm[0], dm[1], dm[2], dm[3], dm[4], dm[5]) =
+      CalcJacobianNc(mModels[0], ground, imgp0);
+    std::tie(dm[6], dm[7], dm[8], dm[9], dm[10], dm[11]) =
+      CalcJacobianNc(mModels[1], ground, imgp1);
+
+    cv[0] = imgp0.x - leftImage.x;
+    cv[1] = imgp0.y - leftImage.y;
+    cv[2] = imgp1.x - rightImage.x;
+    cv[3] = imgp1.y - rightImage.y;
+
+    const auto& x = A.bdcSvd(ComputeFullU | ComputeFullV).solve(b);
+    //if () return false;
+
+    ground -= Point3d(x[0], x[1], x[2]);
+
+    if (fabs(x[0]) < kTolXYD && fabs(x[1]) < kTolXYD && fabs(x[2]) < kTolZ)
+      break;
+  }
+
+  // return false if reaching max. iterations
+  if (kMaxIters == iter)
+    return false;
+
+  return true;
+}
+
 // Newton-Raphson
 bool StereoModel::ImageToGroundNR(const Point2d& leftImage,
   const Point2d& rightImage, Point3d& ground) const {
@@ -339,6 +384,15 @@ bool StereoModel::ImageToGroundCeres(
     mModels.data(), 3, ground, mOptions, summary);
 
   return ret;
+}
+
+bool StereoModel::ImageToGroundLS(
+  const std::array<Point2d, 3>& images, Point3d& ground) const {
+  assert(3 == mModels.size());
+  ground.z = (mModels[0]->GetMeanHeight() + mModels[1]->GetMeanHeight() +
+    mModels[2]->GetMeanHeight()) / 3.0;
+
+  return false;
 }
 
 bool StereoModel::ImageToGroundNR(
@@ -456,4 +510,38 @@ bool StereoModel::ImageToGroundX(const Point2d* images,
   }
 
   return true;
+}
+
+/**
+ *  \brief Calculate Jacobian at given ground position
+ *  (central finite difference).
+ *
+ *  \param [out] image estimated col/row
+ *  \return Return {dFc_dL, dFc_dP, dFc_dH, dFr_dL, dFr_dP, dFr_dH}
+ */
+Tuple6d StereoModel::CalcJacobianNc(ISensorModel const* model,
+  const Point3d& ground, Point2d& image) const {
+  model->GroundToImage(ground, image);
+
+  Point3d grds[6] = {
+    {ground.x - mTolXY, ground.y, ground.z}, {ground.x + mTolXY, ground.y, ground.z},
+    {ground.x, ground.y - mTolXY, ground.z}, {ground.x, ground.y + mTolXY, ground.z},
+    {ground.x, ground.y, ground.z - kTolZ}, {ground.x, ground.y, ground.z + kTolZ} };
+  Point2d imgs[6];
+
+  for (int i = 0; i < 6; ++i) {
+    model->GroundToImage(grds[i], imgs[i]);
+  }
+
+  const double facLP = 0.5 / mTolXY;
+  constexpr double facH = 0.5 / kTolZ;
+
+  const double dFc_dL = (imgs[1].x - imgs[0].x) * facLP;
+  const double dFc_dP = (imgs[3].x - imgs[2].x) * facLP;
+  const double dFc_dH = (imgs[5].x - imgs[4].x) * facH;
+  const double dFr_dL = (imgs[1].y - imgs[0].y) * facLP;
+  const double dFr_dP = (imgs[3].y - imgs[2].y) * facLP;
+  const double dFr_dH = (imgs[5].y - imgs[4].y) * facH;
+
+  return { dFc_dL, dFc_dP, dFc_dH, dFr_dL, dFr_dP, dFr_dH };
 }

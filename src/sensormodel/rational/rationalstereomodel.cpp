@@ -9,7 +9,7 @@
 #include "sensormodel/rmutils.h"
 
 using namespace earthxpert;
-using namespace::Eigen;
+using namespace ::Eigen;
 
 /**
  *  Constructor.
@@ -105,7 +105,7 @@ bool RationalStereoModel::ImageToGround(const Point2d& leftImage,
 
     ground -= Point3d(x[0], x[1], x[2]);
 
-    if (fabs(x[0]) < kTolD && fabs(x[1]) < kTolD && fabs(x[2]) < kTolH)
+    if (fabs(x[0]) < kTolXYD && fabs(x[1]) < kTolXYD && fabs(x[2]) < kTolZ)
       break;
   }
 
@@ -174,7 +174,7 @@ bool RationalStereoModel::ImageToGround(
 
     ground -= Point3d(x[0], x[1], x[2]);
 
-    if (fabs(x[0]) < kTolD && fabs(x[1]) < kTolD && fabs(x[2]) < kTolH)
+    if (fabs(x[0]) < kTolXYD && fabs(x[1]) < kTolXYD && fabs(x[2]) < kTolZ)
       break;
   }
 
@@ -255,17 +255,17 @@ Tuple6d RationalStereoModel::CalcJacobianNf(RationalModel const* ratModel,
   const Point3d& ground, Point2d& image) const {
   ratModel->GroundToSensor(ground, image);
 
-  Point3d grds[3] = { {ground.x + kTolD, ground.y, ground.z},
-                      {ground.x, ground.y + kTolD, ground.z},
-                      {ground.x, ground.y, ground.z + kTolH} };
+  Point3d grds[3] = { {ground.x + kTolXYD, ground.y, ground.z},
+                      {ground.x, ground.y + kTolXYD, ground.z},
+                      {ground.x, ground.y, ground.z + kTolZ} };
   Point2d imgs[3];
 
   for (int i = 0; i < 3; ++i) {
     ratModel->GroundToSensor(grds[i], imgs[i]);
   }
 
-  constexpr double facLP = 0.5 / kTolD;
-  constexpr double facH = 0.5 / kTolH;
+  constexpr double facLP = 0.5 / kTolXYD;
+  constexpr double facH = 0.5 / kTolZ;
 
   const double dFc_dL = (imgs[0].x - image.x) * facLP;
   const double dFc_dP = (imgs[1].x - image.x) * facLP;
@@ -291,17 +291,17 @@ Tuple6d RationalStereoModel::CalcJacobianNc(RationalModel const* ratModel,
   ratModel->GroundToSensor(ground, image);
 
   Point3d grds[6] = { 
-    {ground.x - kTolD, ground.y, ground.z}, {ground.x + kTolD, ground.y, ground.z},
-    {ground.x, ground.y - kTolD, ground.z}, {ground.x, ground.y + kTolD, ground.z},
-    {ground.x, ground.y, ground.z - kTolH}, {ground.x, ground.y, ground.z + kTolH} };
+    {ground.x - kTolXYD, ground.y, ground.z}, {ground.x + kTolXYD, ground.y, ground.z},
+    {ground.x, ground.y - kTolXYD, ground.z}, {ground.x, ground.y + kTolXYD, ground.z},
+    {ground.x, ground.y, ground.z - kTolZ}, {ground.x, ground.y, ground.z + kTolZ} };
   Point2d imgs[6];
 
   for (int i = 0; i < 6; ++i) {
     ratModel->GroundToSensor(grds[i], imgs[i]);
   }
 
-  constexpr double facLP = 0.5 / kTolD;
-  constexpr double facH = 0.5 / kTolH;
+  constexpr double facLP = 0.5 / kTolXYD;
+  constexpr double facH = 0.5 / kTolZ;
 
   const double dFc_dL = (imgs[1].x - imgs[0].x) * facLP;
   const double dFc_dP = (imgs[3].x - imgs[2].x) * facLP;
