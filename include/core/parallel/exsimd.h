@@ -4,6 +4,8 @@
  */
 #pragma once
 
+#include "core/excore.h"
+
 #include <mmintrin.h>  // __m64
 #include <xmmintrin.h>  // __m128
 #include <emmintrin.h>  // SSE 128: __m128i, __m128d
