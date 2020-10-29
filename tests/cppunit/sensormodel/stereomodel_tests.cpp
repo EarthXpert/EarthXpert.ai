@@ -142,7 +142,7 @@ TEST(stereomodel, ImageToGround_Cube) {
 }
 
 void TestImageToGround_Cube(const RationalModel* leftModel, const RationalModel* rightModel) {
-  auto nfcL = leftModel->GetNormalFators();
+  auto nfcL = leftModel->GetNormalFactors();
   const auto minLonL = nfcL[rnf::eOLONG] - nfcL[rnf::eSLONG] * kFactor;
   const auto maxLonL = nfcL[rnf::eOLONG] + nfcL[rnf::eSLONG] * kFactor;
   const auto minLatL = nfcL[rnf::eOLAT] - nfcL[rnf::eSLAT] * kFactor;
@@ -150,7 +150,7 @@ void TestImageToGround_Cube(const RationalModel* leftModel, const RationalModel*
   const auto minHgtL = nfcL[rnf::eOHEIGHT] - nfcL[rnf::eSHEIGHT] * kFactor;
   const auto maxHgtL = nfcL[rnf::eOHEIGHT] + nfcL[rnf::eSHEIGHT] * kFactor;
 
-  auto nfcR = rightModel->GetNormalFators();
+  auto nfcR = rightModel->GetNormalFactors();
   const auto minLonR = nfcR[rnf::eOLONG] - nfcR[rnf::eSLONG] * kFactor;
   const auto maxLonR = nfcR[rnf::eOLONG] + nfcR[rnf::eSLONG] * kFactor;
   const auto minLatR = nfcR[rnf::eOLAT] - nfcR[rnf::eSLAT] * kFactor;

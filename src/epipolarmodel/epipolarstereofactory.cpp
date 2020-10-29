@@ -62,8 +62,8 @@ EpiModelPair EpipolarStereoFactory::CreateRationalEpiStereo(
   std::shared_ptr<RationalModel> rightModel, const int sample) {
   if (leftModel->GetModelType() != rightModel->GetModelType())
     throw std::exception(_("The stereo pair should be of the same sensor type."));
-  auto lnfc = leftModel->GetNormalFators();
-  auto rnfc = rightModel->GetNormalFators();
+  auto lnfc = leftModel->GetNormalFactors();
+  auto rnfc = rightModel->GetNormalFactors();
 
   // \todo across anti-meridian; unit literal
   const double LonOrig = Deg2Rad((lnfc[rnf::eOLONG] + rnfc[rnf::eOLONG]) / 2);

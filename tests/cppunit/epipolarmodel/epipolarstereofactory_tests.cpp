@@ -142,7 +142,7 @@ void TestImageToGround_Cube(const IEpipolarModel* leftEpiModel,
   auto leftRM = dynamic_cast<const RationalModel*>(leftEpiModel->GetSensorModel());
   auto rightRM = dynamic_cast<const RationalModel*>(rightEpiModel->GetSensorModel());
 
-  auto nfcL = leftRM->GetNormalFators();
+  auto nfcL = leftRM->GetNormalFactors();
   const auto minLonL = nfcL[rnf::eOLONG] - nfcL[rnf::eSLONG] * kFactor;
   const auto maxLonL = nfcL[rnf::eOLONG] + nfcL[rnf::eSLONG] * kFactor;
   const auto minLatL = nfcL[rnf::eOLAT] - nfcL[rnf::eSLAT] * kFactor;
@@ -150,7 +150,7 @@ void TestImageToGround_Cube(const IEpipolarModel* leftEpiModel,
   const auto minHgtL = nfcL[rnf::eOHEIGHT] - nfcL[rnf::eSHEIGHT] * kFactor;
   const auto maxHgtL = nfcL[rnf::eOHEIGHT] + nfcL[rnf::eSHEIGHT] * kFactor;
 
-  auto nfcR = rightRM->GetNormalFators();
+  auto nfcR = rightRM->GetNormalFactors();
   const auto minLonR = nfcR[rnf::eOLONG] - nfcR[rnf::eSLONG] * kFactor;
   const auto maxLonR = nfcR[rnf::eOLONG] + nfcR[rnf::eSLONG] * kFactor;
   const auto minLatR = nfcR[rnf::eOLAT] - nfcR[rnf::eSLAT] * kFactor;

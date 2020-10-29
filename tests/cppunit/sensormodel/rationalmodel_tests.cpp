@@ -243,7 +243,7 @@ std::unique_ptr<RationalModel> CreateRationalModelD() {
 }
 
 void TestCubeI2G(const RationalModel* rationalModel) {
-  auto nfc = rationalModel->GetNormalFators();
+  auto nfc = rationalModel->GetNormalFactors();
   const auto minLon = nfc[rnf::eOLONG] - nfc[rnf::eSLONG];
   const auto maxLon = nfc[rnf::eOLONG] + nfc[rnf::eSLONG];
   const auto minLat = nfc[rnf::eOLAT] - nfc[rnf::eSLAT];
@@ -281,7 +281,7 @@ void TestCubeI2G(const RationalModel* rationalModel) {
 }
 
 void TestCubeI2G_Functor(const RationalModel* rationalModel) {
-  auto nfc = rationalModel->GetNormalFators();
+  auto nfc = rationalModel->GetNormalFactors();
   const auto minLon = nfc[rnf::eOLONG] - nfc[rnf::eSLONG];
   const auto maxLon = nfc[rnf::eOLONG] + nfc[rnf::eSLONG];
   const auto minLat = nfc[rnf::eOLAT] - nfc[rnf::eSLAT];

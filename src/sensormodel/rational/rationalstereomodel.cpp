@@ -69,8 +69,8 @@ bool RationalStereoModel::ImagesToGround(const Point2d& leftImage,
   Map<Eigen::Matrix<double, 4, 3, RowMajor>> A(dm.data());
   Map<Eigen::Matrix<double, 4, 1>> b(cv.data());
 
-  const auto nfc0 = mRatModels[0]->GetNormalFators();
-  const auto nfc1 = mRatModels[1]->GetNormalFators();
+  const auto nfc0 = mRatModels[0]->GetNormalFactors();
+  const auto nfc1 = mRatModels[1]->GetNormalFactors();
 
   int iter{};
   for (iter = 0; iter < kMaxIters; ++iter) {
@@ -154,7 +154,7 @@ bool RationalStereoModel::ImagesToGround(
       const auto [dFc_dL, dFc_dP, dFc_dH, dFr_dL, dFr_dP, dFr_dH] =
         CalcJacobianNc(mRatModels[i], ground, imgp);
 
-      const auto nfc = mRatModels[i]->GetNormalFators();
+      const auto nfc = mRatModels[i]->GetNormalFactors();
       const int i2 = i * 2;
       A(i2, 0) = dFc_dL * nfc[eSSAMP];
       A(i2, 1) = dFc_dP * nfc[eSSAMP];

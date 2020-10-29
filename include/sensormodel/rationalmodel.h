@@ -223,7 +223,7 @@ public:
   /**
    *  \brief Get normalization factors including offsets & scales.
    */
-  auto GetNormalFators() const noexcept { return mNormalFactors.data(); }
+  auto GetNormalFactors() const noexcept { return mNormalFactors.data(); }
 
   /**
    *  \brief Set bias and random errors in sensor space.
