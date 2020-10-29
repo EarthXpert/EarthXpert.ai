@@ -228,8 +228,8 @@ bool StereoModel::GroundToImages(const Point3d &ground,
 
   bool ret{true};
   for (long i = 0; i < size; ++i) {
-      auto g2s = mModels[i]->GroundToImage(ground, image[i]);
-      ret = ret && g2s;
+    auto g2s = mModels[i]->GroundToImage(ground, image[i]);
+    ret = ret && g2s;
   }
   return ret;
 }
@@ -351,9 +351,8 @@ bool StereoModel::ImagesToGroundNR(const Point2d& leftImage,
 
     const Point2d A = (dRight_dz - dLeft_dz) * kInvH;
     const double den = cv::normL2Sqr<double>(A);
-    if (std::numeric_limits<double>::epsilon() > den) {
+    if (std::numeric_limits<double>::epsilon() > den) 
       return false;
-    }
 
     ground.x = (leftGrd.x + rightGrd.x) * 0.5;
     ground.y = (leftGrd.y + rightGrd.y) * 0.5;
@@ -419,9 +418,8 @@ bool StereoModel::ImagesToGroundNR(
     }
 
     const double dd_dz = (dist[0] - dist[1]) * kInvH;
-    if (std::numeric_limits<double>::epsilon() > dd_dz) {
+    if (std::numeric_limits<double>::epsilon() > dd_dz) 
       return false;
-    }
 
     ground.x = (grds[0].x + grds[1].x + grds[2].x) / 3.0;
     ground.y = (grds[0].y + grds[1].y + grds[2].y) / 3.0;
@@ -432,9 +430,8 @@ bool StereoModel::ImagesToGroundNR(
     if (kTolZ > fabs(dz)) break;
   }
 
-  if (kMaxIters == i) {
+  if (kMaxIters == i) 
     return false;
-  }
 
   return true;
 }

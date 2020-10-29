@@ -218,12 +218,12 @@ public:
   /**
    *  \return Returns the middle height
    */
-  double GetMeanHeight() const noexcept { return mNormalFators[eOHEIGHT]; }
+  double GetMeanHeight() const noexcept { return mNormalFactors[eOHEIGHT]; }
 
   /**
    *  \brief Get normalization factors including offsets & scales.
    */
-  auto GetNormalFators() const noexcept { return mNormalFators.data(); }
+  auto GetNormalFators() const noexcept { return mNormalFactors.data(); }
 
   /**
    *  \brief Set bias and random errors in sensor space.
@@ -282,7 +282,7 @@ private:
 
   // rational polynomial coefficients
   std::array<double, NumFact>
-      mNormalFators{}; // normalization factors including offsets & scales
+      mNormalFactors{}; // normalization factors including offsets & scales
   std::array<double, NumCoef>
       mLineNumCoef{}; // numerator polynomial of line formulae
   std::array<double, NumCoef>
@@ -339,7 +339,7 @@ private:
    *  output the 2d position in virtual sensor coordinate system.
    */
   inline Point2d ImageApparantToSensor(const Point2d& image) const {
-    const auto nfc = mNormalFators.data();
+    const auto nfc = mNormalFactors.data();
     return { (image.x - nfc[eOSAMP]) * mInvScale[eISSAMP],
              (image.y - nfc[eOLINE]) * mInvScale[eISLINE] };
   }
@@ -358,7 +358,7 @@ private:
    *  \return Return 2d apparant rpc position (col, row) in imagery coordinate system
    */
   inline Point2d SensorToImageApparant(const Point2d& sensor) const {
-    auto nfc = mNormalFators.data();
+    auto nfc = mNormalFactors.data();
     return { nfc[eOSAMP] + nfc[eSSAMP] * sensor.x,
              nfc[eOLINE] + nfc[eSLINE] * sensor.y };
   }
@@ -388,7 +388,7 @@ private:
   }
 
   inline Point3d GroundNormalize(const Point3d& ground) const {
-    const auto nfc = mNormalFators.data();
+    const auto nfc = mNormalFactors.data();
     return { (ground.x - nfc[eOLONG]) * mInvScale[eISLONG],
              (ground.y - nfc[eOLAT]) * mInvScale[eISLAT],
              (ground.z - nfc[eOHEIGHT]) * mInvScale[eISHEIGHT] };

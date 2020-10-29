@@ -85,11 +85,6 @@ void RasterWriter::SetMetadata(const RasterMetadata* metaData) {
 /**
  *  \brief Set metadata NODATA_VALUES.
  */
-void RasterWriter::SetNodataValues(const double nodataValue) {
-  std::vector<double> nodataValues(mWriteNumBands, nodataValue);
-  SetNodataValues(nodataValues);
-}
-
 void RasterWriter::SetNodataValues(const std::vector<double>& nodataValues) {
   assert(mWriteNumBands == nodataValues.size());
   std::unique_lock<std::shared_mutex> lock(mMutex);

@@ -35,10 +35,10 @@ RationalModel::RationalModel(const int numCols, const int numRows,
                              const std::array<double, NumCoef> &sampDenCoef,
                              std::shared_ptr<SpatialReferenceSystem> groundSRS)
   : mNumCols(numCols), mNumRows(numRows),
-    mNormalFators(normalFators), mLineNumCoef(lineNumCoef),
+    mNormalFactors(normalFators), mLineNumCoef(lineNumCoef),
     mLineDenCoef(lineDenCoef), mSampNumCoef(sampNumCoef),
     mSampDenCoef(sampDenCoef), mGroundSRS(groundSRS) {
-  const auto nfc = mNormalFators.data();
+  const auto nfc = mNormalFactors.data();
 
   // get approximate image dimensions from normalization factors
   if (0 == mNumCols)
@@ -122,8 +122,8 @@ bool RationalModel::operator==(const RationalModel &rhs) const {
   if (this != &rhs) {
     const EqualD equalD;
 
-    if (!std::equal(std::cbegin(mNormalFators), std::cend(mNormalFators),
-      std::cbegin(rhs.mNormalFators), equalD))
+    if (!std::equal(std::cbegin(mNormalFactors), std::cend(mNormalFactors),
+      std::cbegin(rhs.mNormalFactors), equalD))
       return false;
     if (!std::equal(std::cbegin(mLineNumCoef), std::cend(mLineNumCoef),
       std::cbegin(rhs.mLineNumCoef), equalD))
@@ -171,7 +171,7 @@ bool RationalModel::operator!=(const RationalModel &rhs) const {
  *  \except Throw invalid_arguments if it is a bad model.
  */
 void RationalModel::CheckModel() const {
-  const auto nfc = mNormalFators.data();
+  const auto nfc = mNormalFactors.data();
 
   if (nfc[eSLINE] < 0.0 || nfc[eSSAMP] < 0.0)
     throw std::invalid_argument(_("Line or Sample scale must not be negative."));
@@ -219,7 +219,7 @@ bool RationalModel::EqualTo(const ISensorModel &rhs) const {
  *  \return Returns true if the operation succeeds
  */
 bool RationalModel::ImageToGround(const Point2d &image, Point3d &ground) const {
-  auto nfc = mNormalFators.data();
+  auto nfc = mNormalFactors.data();
   const auto sensor = ImageToSensor(image);
 
   Point3d uvw{0.0, 0.0, (ground.z - nfc[eOHEIGHT]) * mInvScale[eISHEIGHT]}; // lph
@@ -308,7 +308,7 @@ void RationalModel::EnableCubeS2G(const bool enable) {
  *  \param [in] rhs Object to copy from
  */
 void RationalModel::CopyFrom(const RationalModel &rhs) {
-  mNormalFators = rhs.mNormalFators;
+  mNormalFactors = rhs.mNormalFactors;
   mLineNumCoef = rhs.mLineNumCoef;
   mLineDenCoef = rhs.mLineDenCoef;
   mSampNumCoef = rhs.mSampNumCoef;
@@ -339,7 +339,7 @@ void RationalModel::CopyFrom(const RationalModel &rhs) {
  *  \param [in] rhs Object to move from
  */
 void RationalModel::MoveFrom(RationalModel &&rhs) noexcept {
-  mNormalFators = rhs.mNormalFators;
+  mNormalFactors = rhs.mNormalFactors;
   mLineNumCoef = rhs.mLineNumCoef;
   mLineDenCoef = rhs.mLineDenCoef;
   mSampNumCoef = rhs.mSampNumCoef;
@@ -367,7 +367,7 @@ void RationalModel::MoveFrom(RationalModel &&rhs) noexcept {
 }
 
 void RationalModel::Clear() noexcept {
-  mNormalFators.fill(0.0);
+  mNormalFactors.fill(0.0);
   mLineNumCoef.fill(0.0);
   mLineDenCoef.fill(0.0);
   mSampNumCoef.fill(0.0);

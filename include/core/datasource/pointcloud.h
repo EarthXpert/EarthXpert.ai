@@ -60,7 +60,7 @@ public:
    */
   void SetPointCount(const size_t pointCount) {
     if (pointCount > mPointCapacity) 
-      throw std::invalid_argument("SetPointCount: pointCount");
+      throw std::invalid_argument(_("SetPointCount: pointCount"));
     mPointCount = pointCount;
   }
 
@@ -179,7 +179,7 @@ public:
   template <typename FieldTy> const FieldTy& GetField(const size_t i) const {
     VerifyFieldType<FieldTy>();
     if (mPointCapacity <= i) 
-      throw std::out_of_range("Pointcloud::GetField()");
+      throw std::out_of_range(_("Pointcloud::GetField()"));
 
     return GetField_Unchecked<FieldTy>(i);
   }
@@ -187,7 +187,7 @@ public:
   template <typename FieldTy> FieldTy& GetField(const size_t i) {
     VerifyFieldType<FieldTy>();
     if (mPointCapacity <= i) 
-      throw std::out_of_range("Pointcloud::GetField()");
+      throw std::out_of_range(_("Pointcloud::GetField()"));
 
     return GetField_Unchecked<FieldTy>(i);
   }
@@ -202,7 +202,7 @@ public:
   template <typename PointTy>
   void SetPoint(const size_t i, const PointTy& point) {
     if (mPointCapacity <= i) 
-      throw std::out_of_range("Pointcloud::SetPoint()");
+      throw std::out_of_range(_("Pointcloud::SetPoint()"));
     VerifyPointFieldBits(PointTy::kPointFieldBits);
 
     SetPoint_Unchecked<PointTy>(i, point);
@@ -216,7 +216,7 @@ public:
    */
   void SetPoint(const size_t i, const LASpoint& point, const LASquantizer* quantizer) {
     if (mPointCapacity <= i) 
-      throw std::out_of_range("Pointcloud::SetPoint()");
+      throw std::out_of_range(_("Pointcloud::SetPoint()"));
 
     SetPoint_Unchecked(i, point, quantizer);
   }
@@ -228,7 +228,7 @@ public:
    */
   template <typename PointTy> PointTy GetPoint(const size_t i) const {
     if (mPointCapacity <= i) 
-      throw std::out_of_range("Pointcloud::GetPoint()");
+      throw std::out_of_range(_("Pointcloud::GetPoint()"));
     VerifyPointFieldBits(PointTy::kPointFieldBits);
 
     return GetPoint_Unchecked<PointTy>(i);
@@ -498,7 +498,7 @@ private:
     }
 
     if (!good) 
-      throw std::invalid_argument("VerifyPointFieldBits: pointFieldBits");
+      throw std::invalid_argument(_("VerifyPointFieldBits: pointFieldBits"));
   }
 
   /**
@@ -509,7 +509,7 @@ private:
     static_assert(std::is_same_v<XYZF, FieldTy> || std::is_same_v<Classification, FieldTy> ||
       std::is_same_v<Intensity, FieldTy> || std::is_same_v<RGB16, FieldTy>, "VerifyFieldType: FieldTy");
     if (!mFieldGroup.test(FieldTy::kFieldPos)) 
-      throw std::invalid_argument("VerifyFieldType: FieldTy");
+      throw std::invalid_argument(_("VerifyFieldType: FieldTy"));
   }
 
   // cache
