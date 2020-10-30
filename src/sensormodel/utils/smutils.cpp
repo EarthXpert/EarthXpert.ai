@@ -149,7 +149,7 @@ bool ImageToPlane(const Point2d& image, const ISensorModel* sensorModel,
   Point3d ground{ 0, 0, height };
 
   Point3d rect3{ 0, 0, 0 };
-  for (int i = 0; i < detail::kMaxIters; ++i) {
+  for (int iter = 0; iter < detail::kMaxIters; ++iter) {
     if (!sensorModel->ImageToGround(image, ground))
       return false;
 

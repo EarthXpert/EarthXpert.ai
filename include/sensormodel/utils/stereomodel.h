@@ -286,6 +286,16 @@ protected:
   ForwardAlgo mFwdAlgo{ eSM_NR };
   Solver::Options mOptions;   // the options to control ceres solver
 
+  inline double GetMeanHeight(
+    const std::vector<const ISensorModel*>& models) const noexcept {
+    double z{};
+    for (auto model : models) {
+      z += model->GetMeanHeight();
+    }
+
+    return (z / double(models.size()));
+  }
+
   mutable std::atomic_size_t mNumIters{};
 
 private:
@@ -308,6 +318,8 @@ private:
 
   bool ImagesToGroundCeres(const Point2d* images, int numRays, Point3d& ground) const;
   bool ImagesToGroundX(const Point2d* images, int numRays, Point3d& ground) const;
+  bool ImagesToGroundLS(const Point2d* images, int numRays, Point3d& ground) const;
+  bool ImagesToGroundNR(const Point2d* images, int numRays, Point3d& ground) const;
 
   Tuple6d CalcJacobianNc(ISensorModel const* model,
     const Point3d& ground, Point2d& image) const;

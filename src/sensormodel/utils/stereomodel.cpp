@@ -140,17 +140,14 @@ void StereoModel::SetEarthEllipsoid(std::shared_ptr<EarthEllipsoid> earthEllip) 
 void StereoModel::SetForwardAlgorithm(const ForwardAlgo fwdAlgo) {
   // verify consistency
   switch (fwdAlgo) {
-  case eSM_CERES: {
-    break;
-  }
   case eCA_INTERSECT: {
     if (eGEO == mSrsType && !(mEarthEllip && mIntersect)) 
       throw std::exception("StereoModel: SetForwardAlgorithm");
     break;
   }
-  case eSM_NR: {
-    break;
-  }
+  case eSM_CERES: 
+  case eSM_LS:
+  case eSM_NR:
   default: {
     break;
   }
@@ -281,7 +278,7 @@ size_t StereoModel::GroundToImages(const std::vector<Point3d> &grounds,
 bool StereoModel::ImagesToGroundCeres(const Point2d& leftImage,
   const Point2d& rightImage, Point3d& ground) const {
   assert(2 == mModels.size());
-  ground.z = (mModels[0]->GetMeanHeight() + mModels[1]->GetMeanHeight()) / 2.0;
+  ground.z = GetMeanHeight(mModels);
   mModels[0]->ImageToGround(leftImage, ground);
 
   const Point2d images[2] = { leftImage , rightImage };
@@ -297,7 +294,7 @@ bool StereoModel::ImagesToGroundCeres(const Point2d& leftImage,
 bool StereoModel::ImagesToGroundLS(const Point2d& leftImage,
   const Point2d& rightImage, Point3d& ground) const {
   assert(2 == mModels.size());
-  ground.z = (mModels[0]->GetMeanHeight() + mModels[1]->GetMeanHeight()) / 2.0;
+  ground.z = GetMeanHeight(mModels);
   mModels[0]->ImageToGround(leftImage, ground);
 
   std::array<double, 12> dm;
@@ -337,19 +334,20 @@ bool StereoModel::ImagesToGroundLS(const Point2d& leftImage,
 bool StereoModel::ImagesToGroundNR(const Point2d& leftImage,
   const Point2d& rightImage, Point3d& ground) const {
   assert(2 == mModels.size());
-  ground.z = (mModels[0]->GetMeanHeight() + mModels[1]->GetMeanHeight()) / 2.0;
+  ground.z = GetMeanHeight(mModels);
 
-  int i;
-  for (i = 0; i < kMaxIters; ++i) {
+  Point3d leftGrd, rightGrd;
+
+  int iter;
+  for (iter = 0; iter < kMaxIters; ++iter) {
     //std::atomic_fetch_add_explicit(&mNumIters, 1, std::memory_order_relaxed);
     Point3d grd{ 0.0, 0.0, ground.z + kH };
+    rightGrd.z = leftGrd.z = ground.z;
 
-    Point3d leftGrd{ 0.0, 0.0, ground.z };
     mModels[0]->ImageToGround(leftImage, grd);
     mModels[0]->ImageToGround(leftImage, leftGrd);
     const Point2d dLeft_dz{ (grd.x - leftGrd.x), (grd.y - leftGrd.y) };
 
-    Point3d rightGrd{ 0.0, 0.0, ground.z };
     mModels[1]->ImageToGround(rightImage, grd);
     mModels[1]->ImageToGround(rightImage, rightGrd);
     const Point2d dRight_dz{ (grd.x - rightGrd.x), (grd.y - rightGrd.y) };
@@ -359,16 +357,16 @@ bool StereoModel::ImagesToGroundNR(const Point2d& leftImage,
     if (std::numeric_limits<double>::epsilon() > den) 
       return false;
 
-    ground.x = (leftGrd.x + rightGrd.x) * 0.5;
-    ground.y = (leftGrd.y + rightGrd.y) * 0.5;
-
     const double dz = A.ddot(Point2d(leftGrd.x - rightGrd.x, leftGrd.y - rightGrd.y)) / den;
     ground.z += dz;
 
     if (kTolZ > fabs(dz)) break;
   }
 
-  return (kMaxIters > i);
+  ground.x = (leftGrd.x + rightGrd.x) * 0.5;
+  ground.y = (leftGrd.y + rightGrd.y) * 0.5;
+
+  return (kMaxIters > iter);
 }
 
 // Ceres
@@ -376,8 +374,7 @@ bool StereoModel::ImagesToGroundNR(const Point2d& leftImage,
 bool StereoModel::ImagesToGroundCeres(
   const std::array<Point2d, 3>& images, Point3d& ground) const {
   assert(3 == mModels.size());
-  ground.z = (mModels[0]->GetMeanHeight() + mModels[1]->GetMeanHeight() +
-    mModels[2]->GetMeanHeight()) / 3.0;
+  ground.z = GetMeanHeight(mModels);
   mModels[1]->ImageToGround(images[1], ground);
 
   Solver::Summary summary;
@@ -387,28 +384,28 @@ bool StereoModel::ImagesToGroundCeres(
   return ret;
 }
 
+// Least Squares
 bool StereoModel::ImagesToGroundLS(
   const std::array<Point2d, 3>& images, Point3d& ground) const {
   assert(3 == mModels.size());
-  ground.z = (mModels[0]->GetMeanHeight() + mModels[1]->GetMeanHeight() +
-    mModels[2]->GetMeanHeight()) / 3.0;
+  ground.z = GetMeanHeight(mModels);
 
   return false;
 }
 
+// Newton-Raphson
 bool StereoModel::ImagesToGroundNR(
   const std::array<Point2d, 3>& images, Point3d& ground) const {
   assert(3 == mModels.size());
-  ground.z = (mModels[0]->GetMeanHeight() + mModels[1]->GetMeanHeight() + 
-    mModels[2]->GetMeanHeight()) / 3.0;
+  ground.z = GetMeanHeight(mModels);
 
-  int i;
-  for (i = 0; i < kMaxIters; ++i) {
+  Point3d grds[3];
+
+  int iter;
+  for (iter = 0; iter < kMaxIters; ++iter) {
     const double hgtRange[2] = { ground.z + kH , ground.z };
 
     double dist[2];   // misclosure
-    Point3d grds[3];
-
     for (int j = 0; j < 2; ++j) {
       grds[0].z = grds[0].z = grds[0].z = hgtRange[j];
 
@@ -423,35 +420,16 @@ bool StereoModel::ImagesToGroundNR(
     if (std::numeric_limits<double>::epsilon() > dd_dz) 
       return false;
 
-    ground.x = (grds[0].x + grds[1].x + grds[2].x) / 3.0;
-    ground.y = (grds[0].y + grds[1].y + grds[2].y) / 3.0;
-
     const double dz = - dist[1] / dd_dz;
     ground.z += dz;
 
     if (kTolZ > fabs(dz)) break;
   }
 
-  return (kMaxIters > i);
-}
+  ground.x = (grds[0].x + grds[1].x + grds[2].x) / 3.0;
+  ground.y = (grds[0].y + grds[1].y + grds[2].y) / 3.0;
 
-// Ceres
-// \todo intial position
-bool StereoModel::ImagesToGroundCeres(const Point2d* images, 
-  const int numRays, Point3d& ground) const {
-  assert(2 <= mModels.size());
-  ground.z = 0.0;
-  for (int k = 0; k < numRays; ++k) {
-    ground.z += mModels[k]->GetMeanHeight();
-  }
-  ground.z /= double(numRays);
-  mModels[numRays/2]->ImageToGround(images[numRays/2], ground);
-
-  Solver::Summary summary;
-  const auto ret = IntersectI2G<NumericG2IResidual>(images,
-    mModels.data(), numRays, ground, mOptions, summary);
-
-  return ret;
+  return (kMaxIters > iter);
 }
 
 /**
@@ -465,14 +443,26 @@ bool StereoModel::ImagesToGroundCeres(const Point2d* images,
  *  \param [in/out] grounds List of 3d ground positions (X, Y, Z) in ground coordinate
  * system
  */
+// Ceres
+// \todo intial position
+bool StereoModel::ImagesToGroundCeres(const Point2d* images, 
+  const int numRays, Point3d& ground) const {
+  assert(2 <= mModels.size());
+  ground.z = GetMeanHeight(mModels);
+  mModels[numRays/2]->ImageToGround(images[numRays/2], ground);
+
+  Solver::Summary summary;
+  const auto ret = IntersectI2G<NumericG2IResidual>(images,
+    mModels.data(), numRays, ground, mOptions, summary);
+
+  return ret;
+}
+
+// straight lines intersection
 bool StereoModel::ImagesToGroundX(const Point2d* images, 
   const int numRays, Point3d& ground) const {
   assert(numRays == mModels.size());
-  ground.z = 0.0;
-  for (int k = 0; k < numRays; ++k) {
-    ground.z += mModels[k]->GetMeanHeight();
-  }
-  ground.z /= double(numRays);
+  ground.z = GetMeanHeight(mModels);
 
   std::vector<Point3d> segs(numRays * 2);
   Point3d lsr;
@@ -506,6 +496,24 @@ bool StereoModel::ImagesToGroundX(const Point2d* images,
   }
 
   return true;
+}
+
+// Least Squares
+bool StereoModel::ImagesToGroundLS(const Point2d* images,
+  const int numRays, Point3d& ground) const {
+  assert(numRays == mModels.size());
+  ground.z = GetMeanHeight(mModels);
+
+  return false;
+}
+
+// Newton-Raphson
+bool StereoModel::ImagesToGroundNR(const Point2d* images,
+  const int numRays, Point3d& ground) const {
+  assert(numRays == mModels.size());
+  ground.z = GetMeanHeight(mModels);
+
+  return false;
 }
 
 /**

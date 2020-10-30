@@ -143,8 +143,8 @@ bool RationalStereoModel::ImagesToGround(
       const auto [dFc_dL, dFc_dP, dFc_dH, dFr_dL, dFr_dP, dFr_dH] =
         CalcJacobianNc(mRatModels[i], ground, imgp);
 
-      const auto nfc = mRatModels[i]->GetNormalFactors();
       const int i2 = i * 2;
+      const auto nfc = mRatModels[i]->GetNormalFactors();
       A(i2, 0) = dFc_dL * nfc[eSSAMP];
       A(i2, 1) = dFc_dP * nfc[eSSAMP];
       A(i2, 2) = dFc_dH * nfc[eSSAMP];
