@@ -330,12 +330,8 @@ bool StereoModel::ImagesToGroundLS(const Point2d& leftImage,
       break;
   }
 
-  // return false if reaching max. iterations
-  if (kMaxIters == iter)
-    return false;
-
-  return true;
-}
+  return (kMaxIters > iter);  // return false if reaching max. iterations
+}  
 
 // Newton-Raphson
 bool StereoModel::ImagesToGroundNR(const Point2d& leftImage,
@@ -372,10 +368,7 @@ bool StereoModel::ImagesToGroundNR(const Point2d& leftImage,
     if (kTolZ > fabs(dz)) break;
   }
 
-  if (kMaxIters == i) 
-    return false;
-
-  return true;
+  return (kMaxIters > i);
 }
 
 // Ceres
@@ -439,10 +432,7 @@ bool StereoModel::ImagesToGroundNR(
     if (kTolZ > fabs(dz)) break;
   }
 
-  if (kMaxIters == i) 
-    return false;
-
-  return true;
+  return (kMaxIters > i);
 }
 
 // Ceres

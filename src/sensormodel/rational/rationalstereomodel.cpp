@@ -85,7 +85,7 @@ bool RationalStereoModel::ImagesToGround(const Point2d& leftImage,
     dm[0] *= nfc0[eSSAMP]; dm[1] *= nfc0[eSSAMP]; dm[2] *= nfc0[eSSAMP];
     dm[3] *= nfc0[eSLINE]; dm[4] *= nfc0[eSLINE]; dm[5] *= nfc0[eSLINE];
     dm[6] *= nfc1[eSSAMP]; dm[7] *= nfc1[eSSAMP]; dm[8] *= nfc1[eSSAMP];
-    dm[9] *=  nfc1[eSLINE]; dm[10] *= nfc1[eSLINE]; dm[11] *= nfc1[eSLINE];
+    dm[9] *= nfc1[eSLINE]; dm[10] *= nfc1[eSLINE]; dm[11] *= nfc1[eSLINE];
 
     cv[0] = (imgp0.x - leftImg.x) * nfc0[eSSAMP];
     cv[1] = (imgp0.y - leftImg.y) * nfc0[eSLINE];
@@ -102,10 +102,7 @@ bool RationalStereoModel::ImagesToGround(const Point2d& leftImage,
   }
 
   // return false if reaching max. iterations
-  if (kMaxIters == iter) 
-    return false;
-
-  return true;
+  return (kMaxIters > iter);
 }
 
 /**
@@ -171,10 +168,7 @@ bool RationalStereoModel::ImagesToGround(
   }
 
   // return false if reaching max. iterations
-  if (kMaxIters == iter) 
-    return false;
-
-  return true;
+  return (kMaxIters > iter);
 }
 
 /**
