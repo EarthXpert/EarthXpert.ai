@@ -70,7 +70,12 @@ inline double D_dw(const double* c, const double* duvw_dw) {
     c[17] * duvw_dw[17] + c[18] * duvw_dw[18] + c[19] * duvw_dw[19];
 }
 
-inline Tuple3d D_duvw(const double* c, const double* duvw_du, 
+inline std::pair<double, double> D_duv(const double* c, 
+  const double* duvw_du, const double* duvw_dv) {
+  return { D_du(c, duvw_du), D_dv(c, duvw_dv) };
+}
+
+inline Tuple3d D_duvw(const double* c, const double* duvw_du,
   const double* duvw_dv, const double* duvw_dw) {
   return { D_du(c, duvw_du), D_dv(c, duvw_dv), D_dw(c, duvw_dw) };
 }

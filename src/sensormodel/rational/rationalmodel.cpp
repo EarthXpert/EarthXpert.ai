@@ -541,15 +541,10 @@ bool RationalModel::SensorToGroundNormalize(const double x, const double y,
       Duvw_du(u, v, w, duvw_du);
       Duvw_dv(u, v, w, duvw_dv);
 
-      const double dSn_du = D_du(snc, duvw_du);      // Partial derivative of Sn w.r.t u
-      const double dSd_du = D_du(sdc, duvw_du);      // Partial derivative of Sd w.r.t u
-      const double dSn_dv = D_dv(snc, duvw_dv);      // Partial derivative of Sn w.r.t v
-      const double dSd_dv = D_dv(sdc, duvw_dv);      // Partial derivative of Sd w.r.t v
-
-      const double dLn_du = D_du(lnc, duvw_du);      // Partial derivative of Ln w.r.t u
-      const double dLd_du = D_du(ldc, duvw_du);      // Partial derivative of Ld w.r.t u
-      const double dLn_dv = D_dv(lnc, duvw_dv);      // Partial derivative of Ln w.r.t v
-      const double dLd_dv = D_dv(ldc, duvw_dv);      // Partial derivative of Ld w.r.t v
+      const auto [dSn_du, dSn_dv] = D_duv(snc, duvw_du, duvw_dv); // Partial derivative of Sn w.r.t u, v
+      const auto [dSd_du, dSd_dv] = D_duv(sdc, duvw_du, duvw_dv); // Partial derivative of Sd w.r.t u, v
+      const auto [dLn_du, dLn_dv] = D_duv(lnc, duvw_du, duvw_dv); // Partial derivative of Ln w.r.t u, v
+      const auto [dLd_du, dLd_dv] = D_duv(ldc, duvw_du, duvw_dv); // Partial derivative of Ld w.r.t u, v
 
       // Partial derivatives of (Sn/Sd) and (Ln/Ld) w.r.t u, v
       dFc_du = (dSn_du - xp * dSd_du) * invSd; // (Sd * dSn_du - Sn * dSd_du) / (Sd * Sd)
