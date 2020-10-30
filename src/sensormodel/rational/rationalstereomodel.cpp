@@ -77,23 +77,15 @@ bool RationalStereoModel::ImagesToGround(const Point2d& leftImage,
     //std::atomic_fetch_add_explicit(&mNumIters, 1, std::memory_order_relaxed);
 
     Point2d imgp0, imgp1;
-    const auto [dFc_dL0, dFc_dP0, dFc_dH0, dFr_dL0, dFr_dP0, dFr_dH0] =
+    std::tie(dm[0], dm[1], dm[2], dm[3], dm[4], dm[5]) =
       CalcJacobianNc(mRatModels[0], ground, imgp0);
-    const auto [dFc_dL1, dFc_dP1, dFc_dH1, dFr_dL1, dFr_dP1, dFr_dH1] =
+    std::tie(dm[6], dm[7], dm[8], dm[9], dm[10], dm[11]) =
       CalcJacobianNc(mRatModels[1], ground, imgp1);
 
-    dm[0] = dFc_dL0 * nfc0[eSSAMP];
-    dm[1] = dFc_dP0 * nfc0[eSSAMP];
-    dm[2] = dFc_dH0 * nfc0[eSSAMP];
-    dm[3] = dFr_dL0 * nfc0[eSLINE];
-    dm[4] = dFr_dP0 * nfc0[eSLINE];
-    dm[5] = dFr_dH0 * nfc0[eSLINE];
-    dm[6] = dFc_dL1 * nfc1[eSSAMP];
-    dm[7] = dFc_dP1 * nfc1[eSSAMP];
-    dm[8] = dFc_dH1 * nfc1[eSSAMP];
-    dm[9] = dFr_dL1 * nfc1[eSLINE];
-    dm[10] = dFr_dP1 * nfc1[eSLINE];
-    dm[11] = dFr_dH1 * nfc1[eSLINE];
+    dm[0] *= nfc0[eSSAMP]; dm[1] *= nfc0[eSSAMP]; dm[2] *= nfc0[eSSAMP];
+    dm[3] *= nfc0[eSLINE]; dm[4] *= nfc0[eSLINE]; dm[5] *= nfc0[eSLINE];
+    dm[6] *= nfc1[eSSAMP]; dm[7] *= nfc1[eSSAMP]; dm[8] *= nfc1[eSSAMP];
+    dm[9] *=  nfc1[eSLINE]; dm[10] *= nfc1[eSLINE]; dm[11] *= nfc1[eSLINE];
 
     cv[0] = (imgp0.x - leftImg.x) * nfc0[eSSAMP];
     cv[1] = (imgp0.y - leftImg.y) * nfc0[eSLINE];
