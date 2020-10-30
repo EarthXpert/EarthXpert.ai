@@ -494,6 +494,9 @@ Point2d RationalModel::CalcCorrection(const Point2d& image) const {
  *    [du dv] are obtained by inverting the design matrix and multiplying by
  * [dc, dr]. This iternative procedure is repeated until [dc, dr] are
  * sufficiently small.
+ *
+ *  \remark the scale factors eSSAMP, eSLINE are reduced for a single image.
+ *  \ref RationalStereoModel::ImagesToGround()
  */
 bool RationalModel::SensorToGroundNormalize(const double x, const double y,
   const double w, double& u, double& v) const {
@@ -589,9 +592,8 @@ bool RationalModel::SensorToGroundNormalize(const double x, const double y,
   }
 
   // return false if reaching max. iterations
-  if (kMaxIterS2G == iter) {
+  if (kMaxIterS2G == iter) 
     return false;
-  }
 
   return true;
 }
@@ -713,8 +715,7 @@ bool RationalModel::SensorToGroundNormalizeLinear(const double x, const double y
 
   const double det = A[0][0] * A[1][1] - A[1][0] * A[0][1];
   if (kTol >= fabs(det)) {
-    u = 0.0;
-    v = 0.0;
+    u = v = 0.0;
     return false;
   }
 
@@ -737,10 +738,9 @@ void RationalModel::BuildCubeS2G() {
   cubeS2G->GetNodes(cubeNodes.data());
 
   auto cube = cubeS2G->GetArray();
-  for (size_t i = 0; i < numNodes; ++i)
-  {
-    if (!SensorToGroundNormalize(cubeNodes[i].x, cubeNodes[i].y, cubeNodes[i].z,
-                        cube[i*2], cube[i*2 + 1])) {
+  for (size_t i = 0; i < numNodes; ++i) {
+    if (!SensorToGroundNormalize(cubeNodes[i].x, cubeNodes[i].y,
+      cubeNodes[i].z, cube[i*2], cube[i*2 + 1])) {
       throw std::exception(_("RationalModel: SensorToGroundNormalize failed to project."));
     }
   }

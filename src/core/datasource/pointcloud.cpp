@@ -4,6 +4,7 @@
  */
 #include "core/datasource/pointcloud.h"
 #include "core/exceptions/exexcept.h"
+#include "core/math/math.h"
 
 #include <laspoint.hpp>
 #include <laszip.hpp>
@@ -235,10 +236,8 @@ SpatialTileD Pointcloud::GetBufTile() {
 
 #pragma omp for
     for (int64_t i = 0; i < mPointCount; ++i) {
-      if (minX > mXYZ[i].x) minX = mXYZ[i].x;
-      if (maxX < mXYZ[i].x) maxX = mXYZ[i].x;
-      if (minY > mXYZ[i].y) minY = mXYZ[i].y;
-      if (maxY < mXYZ[i].y) maxY = mXYZ[i].y;
+      MinMax(minX, maxX, mXYZ[i].x);
+      MinMax(minY, maxY, mXYZ[i].y);
     }
 
     const int tId = omp_get_thread_num();
@@ -249,19 +248,12 @@ SpatialTileD Pointcloud::GetBufTile() {
   }
 
   // calculate extent of all points
-  float minX = minXs[0];
-  float maxX = maxXs[0];
-  float minY = minYs[0];
-  float maxY = maxYs[0];
+  const float minX = *std::min_element(minXs.begin(), minXs.end());
+  const float maxX = *std::max_element(maxXs.begin(), maxXs.end());
+  const float minY = *std::min_element(minYs.begin(), minYs.end());
+  const float maxY = *std::max_element(maxYs.begin(), maxYs.end());
 
-  for (int i = 1; i < numThreads; ++i) {
-    if (minX > minXs[i]) minX = minXs[i];
-    if (maxX < maxXs[i]) maxX = maxXs[i];
-    if (minY > minYs[i]) minY = minYs[i];
-    if (maxY < maxYs[i]) maxY = maxYs[i];
-  }
-
-   SpatialTileD tile{ mOrigin.x + double(minX), mOrigin.y + double(minY),
+  SpatialTileD tile{ mOrigin.x + double(minX), mOrigin.y + double(minY),
     double(maxX) - double(minX), double(maxY) - double(minY) };
   if (!tile.IsValid())
     throw DataError(_("Pointcloud: invalid data range."));

@@ -69,8 +69,6 @@ void StereoModel::Initialize() {
 
   // default forward intersection algorithm
   mSensorType = mModels[0]->GetModelType();
-  mSrsType = mModels[0]->GetSrsType();
-
   switch (mSensorType) {
   case SensorType::eFRAME:
     break;
@@ -81,6 +79,17 @@ void StereoModel::Initialize() {
     mFwdAlgo = eSM_NR;
     break;
   }
+
+  mSrsType = mModels[0]->GetSrsType();
+  switch (mSrsType) {
+  case eGEO:
+    mTolXY = kTolXYD;
+    break;
+  default:
+    mTolXY = kTolXYL;
+    break;
+  }
+  mFacLP = 0.5 / mTolXY;
 
   // verify the datum be compatible
   if (mEarthEllip) {
@@ -514,7 +523,7 @@ bool StereoModel::ImagesToGroundX(const Point2d* images,
  *  (central finite difference).
  *
  *  \param [out] image estimated col/row
- *  \return Return {dFc_dL, dFc_dP, dFc_dH, dFr_dL, dFr_dP, dFr_dH}
+ *  \return Return {dFc_dX, dFc_dY, dFc_dZ, dFr_dX, dFr_dY, dFr_dZ}
  */
 Tuple6d StereoModel::CalcJacobianNc(ISensorModel const* model,
   const Point3d& ground, Point2d& image) const {
@@ -530,15 +539,9 @@ Tuple6d StereoModel::CalcJacobianNc(ISensorModel const* model,
     model->GroundToImage(grds[i], imgs[i]);
   }
 
-  const double facLP = 0.5 / mTolXY;
-  constexpr double facH = 0.5 / kTolZ;
+  const auto dF_dX = (imgs[1] - imgs[0]) * mFacLP;  // dFc_dX, dFr_dX
+  const auto dF_dY = (imgs[3] - imgs[2]) * mFacLP;  // dFc_dY, dFr_dY
+  const auto dF_dZ = (imgs[5] - imgs[4]) * kFacH;   // dFc_dZ, dFr_dZ
 
-  const double dFc_dL = (imgs[1].x - imgs[0].x) * facLP;
-  const double dFc_dP = (imgs[3].x - imgs[2].x) * facLP;
-  const double dFc_dH = (imgs[5].x - imgs[4].x) * facH;
-  const double dFr_dL = (imgs[1].y - imgs[0].y) * facLP;
-  const double dFr_dP = (imgs[3].y - imgs[2].y) * facLP;
-  const double dFr_dH = (imgs[5].y - imgs[4].y) * facH;
-
-  return { dFc_dL, dFc_dP, dFc_dH, dFr_dL, dFr_dP, dFr_dH };
+  return { dF_dX.x, dF_dY.x, dF_dZ.x, dF_dX.y, dF_dY.y, dF_dZ.y };
 }

@@ -280,6 +280,8 @@ protected:
   static constexpr double kTolXYD = 1.0e-9; // degree ~= [0.1mm]
   static constexpr double kTolXYL = 0.0001; // linear [0.1mm]
   static constexpr double kTolZ{ 1.0e-4 };  // [0.1mm]
+  static constexpr double kFacLP = 0.5 / kTolXYD;
+  static constexpr double kFacH = 0.5 / kTolZ;
 
   ForwardAlgo mFwdAlgo{ eSM_NR };
   Solver::Options mOptions;   // the options to control ceres solver
@@ -313,6 +315,8 @@ private:
   // cache
   SensorType mSensorType{ SensorType::eUNDEFINED };
   SrsType mSrsType{ eUNKNOWN };
-  double mTolXY{ kTolXYL };
+
+  double mTolXY{ kTolXYD };
+  double mFacLP{ 0.5 / kTolXYD };
 };
 } // namespace earthxpert

@@ -119,10 +119,10 @@ private:
   Tuple6d CalcJacobianNc(RationalModel const* ratModel,
     const Point3d& ground, Point2d& image) const;
 
-  template<PartialType pT = ePT_ANALYTIC>
+  template<PartialType pT = ePT_ANADIFF>
     Tuple6d CalcJacobian(RationalModel const* ratModel,
       const Point3d& ground, Point2d& image) const {
-      if constexpr (ePT_ANALYTIC == pT) {
+      if constexpr (ePT_ANADIFF == pT) {
         return CalcJacobianA(ratModel, ground, image);
       }
       else if constexpr (ePT_NUMDIFF == pT) {

@@ -204,42 +204,30 @@ Tuple6d RationalStereoModel::CalcJacobianA(RationalModel const* ratModel,
   double duvw_du[RationalModel::NumCoef];
   double duvw_dv[RationalModel::NumCoef];
   double duvw_dw[RationalModel::NumCoef];
-  Duvw_du(u, v, w, duvw_du);
-  Duvw_dv(u, v, w, duvw_dv);
-  Duvw_dv(u, v, w, duvw_dw);
+  Duvw_duvw(u, v, w, duvw_du, duvw_dv, duvw_dw);
 
   // use short name for convenience
   const auto snc = ratModel->mSampNumCoef.data(); // Sample numerator coefficients
   const auto sdc = ratModel->mSampDenCoef.data(); // Sample denominator coefficients
-  const double dSn_du = D_du(snc, duvw_du);      // Partial derivative of Sn w.r.t u
-  const double dSd_du = D_du(sdc, duvw_du);      // Partial derivative of Sd w.r.t u
-  const double dSn_dv = D_dv(snc, duvw_dv);      // Partial derivative of Sn w.r.t v
-  const double dSd_dv = D_dv(sdc, duvw_dv);      // Partial derivative of Sd w.r.t v
-  const double dSn_dw = D_dw(snc, duvw_dw);      // Partial derivative of Sn w.r.t w
-  const double dSd_dw = D_dw(sdc, duvw_dw);      // Partial derivative of Sd w.r.t w
+  const auto [dSn_du, dSn_dv, dSn_dw] = D_duvw(snc, duvw_du, duvw_dv, duvw_dw); // Partial derivative of Sn w.r.t u, v,w
+  const auto [dSd_du, dSd_dv, dSd_dw] = D_duvw(sdc, duvw_du, duvw_dv, duvw_dw); // Partial derivative of Sd w.r.t u, v, w
 
   const auto lnc = ratModel->mLineNumCoef.data(); // Line numerator coefficients
   const auto ldc = ratModel->mLineDenCoef.data(); // Line denominator coefficients
-  const double dLn_du = D_du(lnc, duvw_du);      // Partial derivative of Ln w.r.t u
-  const double dLd_du = D_du(ldc, duvw_du);      // Partial derivative of Ld w.r.t u
-  const double dLn_dv = D_dv(lnc, duvw_dv);      // Partial derivative of Ln w.r.t v
-  const double dLd_dv = D_dv(ldc, duvw_dv);      // Partial derivative of Ld w.r.t v
-  const double dLn_dw = D_dw(lnc, duvw_dw);      // Partial derivative of Ln w.r.t w
-  const double dLd_dw = D_dw(ldc, duvw_dw);      // Partial derivative of Ld w.r.t w
+  const auto [dLn_du, dLn_dv, dLn_dw] = D_duvw(lnc, duvw_du, duvw_dv, duvw_dw); // Partial derivative of Ln w.r.t u, v,w
+  const auto [dLd_du, dLd_dv, dLd_dw] = D_duvw(ldc, duvw_du, duvw_dv, duvw_dw); // Partial derivative of Ld w.r.t u, v, w
 
-  const double dFc_du = (dSn_du - image.x * dSd_du) * invSd;    // x = Sn / Sd
-  const double dFc_dv = (dSn_dv - image.x * dSd_dv) * invSd;
-  const double dFc_dw = (dSn_dw - image.x * dSd_dw) * invSd;
-  const double dFr_du = (dLn_du - image.y * dLd_du) * invLd;    // y = Ln / Ld
-  const double dFr_dv = (dLn_dv - image.y * dLd_dv) * invLd;
-  const double dFr_dw = (dLn_dw - image.y * dLd_dw) * invLd;
+  const auto dFc_duvw = (Point3d(dSn_du, dSn_dv, dSn_dw) - \
+    image.x * Point3d(dSd_du, dSd_dv, dSd_dw)) * invSd;  // dFc_du, dFc_dv, dFc_dw
+  const auto dFr_duvw = (Point3d(dLn_du, dLn_dv, dLn_dw) - \
+    image.y * Point3d(dLn_du, dLn_dv, dLn_dw)) * invLd;  // dFr_du, dFr_dv, dFr_dw
 
   const double du_dL = ratModel->mInvScale[risf::eISLONG];    // 1.0 / nfc[rnf::eSLONG]; u = (Lon - nfc[rnf::eOLONG]) / nfc[rnf::eSLONG]
   const double dv_dP = ratModel->mInvScale[risf::eISLAT];     // 1.0 / nfc[rnf::eSLAT]; v = (Lat - nfc[rnf::eOLAT])/ nfc[rnf::eSLAT]
   const double dw_dH = ratModel->mInvScale[risf::eISHEIGHT];  // 1.0 / nfc[rnf::eSHEIGHT]; w = (Hgt - nfc[rnf::eOHEIGHT]) / nfc[rnf::eSHEIGHT]
 
-  return { dFc_du * du_dL, dFc_dv * dv_dP, dFc_dw * dw_dH, 
-           dFr_du * du_dL, dFr_dv * dv_dP, dFr_dw * dw_dH };
+  return { dFc_duvw.x * du_dL, dFc_duvw.y * dv_dP, dFc_duvw.z * dw_dH, 
+           dFr_duvw.x * du_dL, dFr_duvw.y * dv_dP, dFr_duvw.z * dw_dH };
 }
 
 /**
@@ -264,17 +252,11 @@ Tuple6d RationalStereoModel::CalcJacobianNf(RationalModel const* ratModel,
     ratModel->GroundToSensor(grds[i], imgs[i]);
   }
 
-  constexpr double facLP = 0.5 / kTolXYD;
-  constexpr double facH = 0.5 / kTolZ;
+  const auto dF_dL = (imgs[0] - image) * kFacLP;  // dFc_dL, dFr_dL
+  const auto dF_dP = (imgs[1] - image) * kFacLP;  // dFc_dP, dFr_dP
+  const auto dF_dH = (imgs[2] - image) * kFacH;   // dFc_dH, dFr_dH
 
-  const double dFc_dL = (imgs[0].x - image.x) * facLP;
-  const double dFc_dP = (imgs[1].x - image.x) * facLP;
-  const double dFc_dH = (imgs[2].x - image.x) * facH;
-  const double dFr_dL = (imgs[0].y - image.y) * facLP;
-  const double dFr_dP = (imgs[1].y - image.y) * facLP;
-  const double dFr_dH = (imgs[2].y - image.y) * facH;
-
-  return { dFc_dL, dFc_dP, dFc_dH, dFr_dL, dFr_dP, dFr_dH };
+  return { dF_dL.x, dF_dP.x, dF_dH.x, dF_dL.y, dF_dP.y, dF_dH.y };
 }
 
 /**
@@ -300,15 +282,9 @@ Tuple6d RationalStereoModel::CalcJacobianNc(RationalModel const* ratModel,
     ratModel->GroundToSensor(grds[i], imgs[i]);
   }
 
-  constexpr double facLP = 0.5 / kTolXYD;
-  constexpr double facH = 0.5 / kTolZ;
+  const auto dF_dL = (imgs[1] - imgs[0]) * kFacLP;  // dFc_dL, dFr_dL
+  const auto dF_dP = (imgs[3] - imgs[2]) * kFacLP;  // dFc_dP, dFr_dP
+  const auto dF_dH = (imgs[5] - imgs[4]) * kFacH;   // dFc_dH, dFr_dH
 
-  const double dFc_dL = (imgs[1].x - imgs[0].x) * facLP;
-  const double dFc_dP = (imgs[3].x - imgs[2].x) * facLP;
-  const double dFc_dH = (imgs[5].x - imgs[4].x) * facH;
-  const double dFr_dL = (imgs[1].y - imgs[0].y) * facLP;
-  const double dFr_dP = (imgs[3].y - imgs[2].y) * facLP;
-  const double dFr_dH = (imgs[5].y - imgs[4].y) * facH;
-
-  return { dFc_dL, dFc_dP, dFc_dH, dFr_dL, dFr_dP, dFr_dH };
+  return { dF_dL.x, dF_dP.x, dF_dH.x, dF_dL.y, dF_dP.y, dF_dH.y };
 }

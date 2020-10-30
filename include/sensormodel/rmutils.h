@@ -5,6 +5,7 @@
 #pragma once
 
 #include "sensormodel/exsensormodel.h"
+#include "core/utils/typehelper.h"
 
 namespace earthxpert {
 // Partial derivatives of the polynomial terms w.r.t u, v, w.
@@ -42,23 +43,35 @@ inline void Duvw_dw(const double u, const double v, const double w, double* duvw
   duvw_dw[16] = 2.0 * v * w; duvw_dw[17] = u * u; duvw_dw[18] = v * v; duvw_dw[19] = 3.0 * w * w;
 }
 
+inline void Duvw_duvw(const double u, const double v, const double w, 
+  double* duvw_du, double* duvw_dv, double* duvw_dw) {
+  Duvw_du(u, v, w, duvw_du);
+  Duvw_dv(u, v, w, duvw_dv);
+  Duvw_dw(u, v, w, duvw_dw);
+}
+
 // Partial derivatives of the numerators and denominators w.r.t u, v, w.
 // unrolling the loop for performance with 10 out of the 20 terms
 inline double D_du(const double* c, const double* duvw_du) {
   return c[1] + c[4] * duvw_du[4] + c[5] * duvw_du[5] + c[7] * duvw_du[7] +
     c[10] * duvw_du[10] + c[11] * duvw_du[11] + c[12] * duvw_du[12] +
     c[13] * duvw_du[13] + c[14] * duvw_du[14] + c[17] * duvw_du[17];
-};
+}
 
 inline double D_dv(const double* c, const double* duvw_dv) {
   return c[2] + c[4] * duvw_dv[4] + c[6] * duvw_dv[6] + c[8] * duvw_dv[8] +
     c[10] * duvw_dv[10] + c[12] * duvw_dv[12] + c[14] * duvw_dv[14] +
     c[15] * duvw_dv[15] + c[16] * duvw_dv[16] + c[18] * duvw_dv[18];
-};
+}
 
 inline double D_dw(const double* c, const double* duvw_dw) {
   return c[3] + c[5] * duvw_dw[5] + c[6] * duvw_dw[6] + c[9] * duvw_dw[9] +
     c[10] * duvw_dw[10] + c[13] * duvw_dw[13] + c[16] * duvw_dw[16] +
     c[17] * duvw_dw[17] + c[18] * duvw_dw[18] + c[19] * duvw_dw[19];
-};
+}
+
+inline Tuple3d D_duvw(const double* c, const double* duvw_du, 
+  const double* duvw_dv, const double* duvw_dw) {
+  return { D_du(c, duvw_du), D_dv(c, duvw_dv), D_dw(c, duvw_dw) };
+}
 }
