@@ -1,11 +1,11 @@
 project(epipolar CXX)
 
 add_definitions(-DEXEPIPOLAR_API)
-set(epipolar_srcs "epiperf.cpp"
-  "epipolar.cpp"
-  "epipolargenerator.cpp"
-  "epipolargenerator_layout.cpp"
-  "stereomategenerator.cpp")
+set(epipolar_srcs "./epiperf.cpp"
+  "./epipolar.cpp"
+  "./epipolargenerator.cpp"
+  "./epipolargenerator_layout.cpp"
+  "./stereomategenerator.cpp")
 earthxpert_add_library(epipolar "api"
   SRCS ${epipolar_srcs}
   ITEMS ex3rdparty dataio sensormodel epipolarmodel marshaller 

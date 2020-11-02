@@ -43,11 +43,66 @@ inline void Duvw_dw(const double u, const double v, const double w, double* duvw
   duvw_dw[16] = 2.0 * v * w; duvw_dw[17] = u * u; duvw_dw[18] = v * v; duvw_dw[19] = 3.0 * w * w;
 }
 
-inline void Duvw_duvw(const double u, const double v, const double w, 
+inline Tuple6d UVW(const double u, const double v, const double w) noexcept {
+  return {u*u, v*v, w*w, u*v, u*w, v*w};
+}
+
+inline void Duvw_du(const double u, const double v, const double w,
+  const double u2, const double v2, const double w2, 
+  const double uv, const double uw, const double vw, double* duvw_du) {
+  duvw_du[0] = 0.0; duvw_du[1] = 1.0; duvw_du[2] = 0.0; duvw_du[3] = 0.0;
+  duvw_du[4] = v; duvw_du[5] = w; duvw_du[6] = 0.0; duvw_du[7] = 2.0 * u;
+  duvw_du[8] = 0.0; duvw_du[9] = 0.0; duvw_du[10] = vw; duvw_du[11] = 3.0 * u2;
+  duvw_du[12] = v2; duvw_du[13] = w2; duvw_du[14] = 2.0 * uv; duvw_du[15] = 0.0;
+  duvw_du[16] = 0.0; duvw_du[17] = 2.0 * uw; duvw_du[18] = 0.0; duvw_du[19] = 0.0;
+}
+
+inline void Duvw_dv(const double u, const double v, const double w,
+  const double u2, const double v2, const double w2,
+  const double uv, const double uw, const double vw, double* duvw_dv) {
+  duvw_dv[0] = 0.0; duvw_dv[1] = 0.0; duvw_dv[2] = 1.0; duvw_dv[3] = 0.0;
+  duvw_dv[4] = u; duvw_dv[5] = 0.0; duvw_dv[6] = w; duvw_dv[7] = 0.0;
+  duvw_dv[8] = 2.0 * v; duvw_dv[9] = 0.0; duvw_dv[10] = uw; duvw_dv[11] = 0.0;
+  duvw_dv[12] = 2.0 * uv; duvw_dv[13] = 0.0; duvw_dv[14] = u2; duvw_dv[15] = 3.0 * v2;
+  duvw_dv[16] = w2; duvw_dv[17] = 0.0; duvw_dv[18] = 2.0 * vw; duvw_dv[19] = 0.0;
+}
+
+inline void Duvw_dw(const double u, const double v, const double w,
+  const double u2, const double v2, const double w2,
+  const double uv, const double uw, const double vw, double* duvw_dw) {
+  duvw_dw[0] = 0.0; duvw_dw[1] = 0.0; duvw_dw[2] = 0.0; duvw_dw[3] = 1.0;
+  duvw_dw[4] = 0.0; duvw_dw[5] = u; duvw_dw[6] = v; duvw_dw[7] = 0.0;
+  duvw_dw[8] = 0.0; duvw_dw[9] = 2.0 * w; duvw_dw[10] = uv; duvw_dw[11] = 0.0;
+  duvw_dw[12] = 0.0; duvw_dw[13] = 2.0 * uw; duvw_dw[14] = 0.0; duvw_dw[15] = 0.0;
+  duvw_dw[16] = 2.0 * vw; duvw_dw[17] = u2; duvw_dw[18] = v2; duvw_dw[19] = 3.0 * w2;
+}
+
+/**
+ *  \code
+    Duvw_du(u, v, w, duvw_du);
+    Duvw_dv(u, v, w, duvw_dv);
+ */
+inline void Duvw_duv(const double u, const double v, const double w,
+  double* duvw_du, double* duvw_dv) {
+  const auto [u2, v2, w2, uv, uw, vw] = UVW(u, v, w);
+
+  Duvw_du(u, v, w, u2, v2, w2, uv, uw, vw, duvw_du);
+  Duvw_dv(u, v, w, u2, v2, w2, uv, uw, vw, duvw_dv);
+}
+
+/**
+ *  \code
+    Duvw_du(u, v, w, duvw_du);
+    Duvw_dv(u, v, w, duvw_dv);
+    Duvw_dw(u, v, w, duvw_dw);
+ */
+inline void Duvw_duvw(const double u, const double v, const double w,
   double* duvw_du, double* duvw_dv, double* duvw_dw) {
-  Duvw_du(u, v, w, duvw_du);
-  Duvw_dv(u, v, w, duvw_dv);
-  Duvw_dw(u, v, w, duvw_dw);
+  const auto [u2, v2, w2, uv, uw, vw] = UVW(u, v, w);
+
+  Duvw_du(u, v, w, u2, v2, w2, uv, uw, vw, duvw_du);
+  Duvw_dv(u, v, w, u2, v2, w2, uv, uw, vw, duvw_dv);
+  Duvw_dw(u, v, w, u2, v2, w2, uv, uw, vw, duvw_dw);
 }
 
 // Partial derivatives of the numerators and denominators w.r.t u, v, w.

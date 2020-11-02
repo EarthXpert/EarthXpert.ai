@@ -538,8 +538,7 @@ bool RationalModel::SensorToGroundNormalize(const double x, const double y,
     if (recalcFlag) {
       // pre-compute partials TODO
       double duvw_du[NumCoef], duvw_dv[NumCoef];
-      Duvw_du(u, v, w, duvw_du);
-      Duvw_dv(u, v, w, duvw_dv);
+      Duvw_duv(u, v, w, duvw_du, duvw_dv);
 
       const auto [dSn_du, dSn_dv] = D_duv(snc, duvw_du, duvw_dv); // Partial derivative of Sn w.r.t u, v
       const auto [dSd_du, dSd_dv] = D_duv(sdc, duvw_du, duvw_dv); // Partial derivative of Sd w.r.t u, v
