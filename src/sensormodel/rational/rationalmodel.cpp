@@ -38,8 +38,6 @@ RationalModel::RationalModel(const int numCols, const int numRows,
     mNormalFactors(normalFators), mLineNumCoef(lineNumCoef),
     mLineDenCoef(lineDenCoef), mSampNumCoef(sampNumCoef),
     mSampDenCoef(sampDenCoef), mGroundSRS(groundSRS) {
-  const auto nfc = mNormalFactors.data();
-
   // get approximate image dimensions from normalization factors
   if (0 == mNumCols)
     mNumCols = static_cast<int>(nfc[eOSAMP] * 2);
@@ -51,8 +49,8 @@ RationalModel::RationalModel(const int numCols, const int numRows,
   mInvScale[eISLINE] = 1.0 / nfc[eSLINE];
   mInvScale[eISSAMP] = 1.0 / nfc[eSSAMP];
   mInvScale[eISLAT] = 1.0 / nfc[eSLAT];
-  mInvScale[eISLONG] = 1.0 / nfc[eSLONG];
-  mInvScale[eISHEIGHT] = 1.0 / nfc[eSHEIGHT];
+  mInvScale[eISLON] = 1.0 / nfc[eSLON];
+  mInvScale[eISHGT] = 1.0 / nfc[eSHGT];
 
   mTol_c = mInvScale[eISSAMP] * kRatio;
   mTol_r = mInvScale[eISLINE] * kRatio;
@@ -171,19 +169,17 @@ bool RationalModel::operator!=(const RationalModel &rhs) const {
  *  \except Throw invalid_arguments if it is a bad model.
  */
 void RationalModel::CheckModel() const {
-  const auto nfc = mNormalFactors.data();
-
   if (nfc[eSLINE] < 0.0 || nfc[eSSAMP] < 0.0)
     throw std::invalid_argument(_("Line or Sample scale must not be negative."));
   if (nfc[eSLINE] < 1.0 || nfc[eSSAMP] < 1.0)
     throw std::invalid_argument(_("Line or Sample scale is too small."));
-  if (nfc[eSLAT] < 0.0 || nfc[eSLONG] < 0.0)
+  if (nfc[eSLAT] < 0.0 || nfc[eSLON] < 0.0)
     throw std::invalid_argument(_("Latitude or Longitude scale must not be negative."));
-  if (nfc[eSLAT] < kTol || nfc[eSLONG] < kTol)
+  if (nfc[eSLAT] < kTol || nfc[eSLON] < kTol)
     throw std::invalid_argument(_("Latitude or Longitude scale is too small."));
-  if (nfc[eSHEIGHT] < 0.0)
+  if (nfc[eSHGT] < 0.0)
     throw std::invalid_argument(_("Height scale must not be negative."));
-  if (nfc[eSHEIGHT] < 1.0)
+  if (nfc[eSHGT] < 1.0)
     throw std::invalid_argument(_("Height scale is too small."));
 
   // numerical reliability, not singular, contineous
@@ -219,14 +215,13 @@ bool RationalModel::EqualTo(const ISensorModel &rhs) const {
  *  \return Returns true if the operation succeeds
  */
 bool RationalModel::ImageToGround(const Point2d &image, Point3d &ground) const {
-  auto nfc = mNormalFactors.data();
   const auto sensor = ImageToSensor(image);
 
-  Point3d uvw{0.0, 0.0, (ground.z - nfc[eOHEIGHT]) * mInvScale[eISHEIGHT]}; // lph
+  Point3d uvw{0.0, 0.0, (ground.z - nfc[eOHGT]) * mInvScale[eISHGT]}; // lph
   if (!SensorToGroundNormalize(sensor, uvw))
     return false;
 
-  ground.x = nfc[eOLONG] + uvw.x * nfc[eSLONG];
+  ground.x = nfc[eOLON] + uvw.x * nfc[eSLON];
   ground.y = nfc[eOLAT] + uvw.y * nfc[eSLAT];
   return true;
 }
@@ -510,12 +505,6 @@ bool RationalModel::SensorToGroundNormalize(const double x, const double y,
   u = std::clamp(u, -1.2, 1.2);
   v = std::clamp(v, -1.2, 1.2);
 
-  // use short name for convenience
-  auto snc = mSampNumCoef.data(); // Sample numerator coefficients
-  auto sdc = mSampDenCoef.data(); // Sample denominator coefficients
-  auto lnc = mLineNumCoef.data(); // Line numerator coefficients
-  auto ldc = mLineDenCoef.data(); // Line denominator coefficients
-
   // refine the estimated ground horizontal position iteratively
   bool recalcFlag{ true }; // Flag indicating whether partial derivatives should be recomputed
 
@@ -593,66 +582,60 @@ bool RationalModel::SensorToGroundNormalize(const double x, const double y,
  *  \brief Compute the combinations of normalized longitude, latitude,
  *  and height that go along with the rational function.
  *
- *  \param [in] L normalized longitude
- *  \param [in] P normalized latitude
- *  \param [in] H normalized height
- *  \param [out] uvw/LPH array of combined terms.
- *  \remark may use uvw instead of LPH in case of the lowercase l that looks like the number 1.
+ *  \param [in] u normalized longitude
+ *  \param [in] v normalized latitude
+ *  \param [in] w normalized height
+ *  \param [out] uvw array of combined terms.
  */
-void RationalModel::CalcTerms(const double L, const double P,
-                              const double H, double *LPH) const {
-  LPH[eC] = 1.0;
-  LPH[eL] = L;
-  LPH[eP] = P;
-  LPH[eH] = H;
-  LPH[eLP] = L * P;
-  LPH[eLH] = L * H;
-  LPH[ePH] = P * H;
-  LPH[eLL] = L * L;
-  LPH[ePP] = P * P;
-  LPH[eHH] = H * H;
-  LPH[ePLH] = LPH[eLP] * H; // L * P * H
-  LPH[eLLL] = LPH[eLL] * L; // L * L * L
-  LPH[eLPP] = L * LPH[ePP]; // L * P * P
-  LPH[eLHH] = L * LPH[eHH]; // L * H * H
-  LPH[eLLP] = LPH[eLL] * P; // L * L * P
-  LPH[ePPP] = LPH[ePP] * P; // P * P * P
-  LPH[ePHH] = P * LPH[eHH]; // P * H * H
-  LPH[eLLH] = LPH[eLL] * H; // L * L * H
-  LPH[ePPH] = LPH[ePP] * H; // P * P * H
-  LPH[eHHH] = LPH[eHH] * H; // H * H * H
+void RationalModel::CalcTerms(const double u, const double v,
+                              const double w, double *uvw) const {
+  uvw[eC] = 1.0;
+  uvw[eL] = u;
+  uvw[eP] = v;
+  uvw[eH] = w;
+  uvw[eLP] = u * v;
+  uvw[eLH] = u * w;
+  uvw[ePH] = v * w;
+  uvw[eLL] = u * u;
+  uvw[ePP] = v * v;
+  uvw[eHH] = w * w;
+  uvw[ePLH] = uvw[eLP] * w; // L * P * H
+  uvw[eLLL] = uvw[eLL] * u; // L * L * L
+  uvw[eLPP] = u * uvw[ePP]; // L * P * P
+  uvw[eLHH] = u * uvw[eHH]; // L * H * H
+  uvw[eLLP] = uvw[eLL] * v; // L * L * P
+  uvw[ePPP] = uvw[ePP] * v; // P * P * P
+  uvw[ePHH] = v * uvw[eHH]; // P * H * H
+  uvw[eLLH] = uvw[eLL] * w; // L * L * H
+  uvw[ePPH] = uvw[ePP] * w; // P * P * H
+  uvw[eHHH] = uvw[eHH] * w; // H * H * H
 }
 
 /**
  *  \brief Compute the polynomials using RPCs form the normalized longitude, latitude, height.
  *
- *  \param [in] L normalized longitude
- *  \param [in] P normalized latitude
- *  \param [in] H normalized height
+ *  \param [in] u normalized longitude
+ *  \param [in] v normalized latitude
+ *  \param [in] w normalized height
  *  \return Returns line numerator, line denominator, sample numerator, sample denominator.
  */
-Tuple4d RationalModel::CalcPolynomials(const double L, 
-  const double P, const double H) const {
-  auto lnc = mLineNumCoef.data();
-  auto ldc = mLineDenCoef.data();
-  auto snc = mSampNumCoef.data();
-  auto sdc = mSampDenCoef.data();
-
-  double LPH[NumCoef];  // combinations of L, P, H for polynomial terms
-  CalcTerms(L, P, H, LPH);
+Tuple4d RationalModel::CalcPolynomials(const double u, 
+  const double v, const double w) const {
+  double uvw[NumCoef];  // combinations of u, v, w for polynomial terms
+  CalcTerms(u, v, w, uvw);
 
   double Ln{}, Ld{}; // Line numerator/denominator
   double Sn{}, Sd{}; // Sample numerator/denominator
 
   for (int i = 0; i < NumCoef; ++i) {
-    Ln += lnc[i] * LPH[i];
-    Ld += ldc[i] * LPH[i];
-    Sn += snc[i] * LPH[i];
-    Sd += sdc[i] * LPH[i];
+    Ln += lnc[i] * uvw[i];
+    Ld += ldc[i] * uvw[i];
+    Sn += snc[i] * uvw[i];
+    Sd += sdc[i] * uvw[i];
   }
 
   if (fabs(Ld) < kTol || fabs(Sd) < kTol) 
-    throw std::underflow_error(_("RationalModel: denominator is 0 in rational model"));
+    throw std::underflow_error(_("RationalModel: denominator is 0"));
 
   return { Ln, Ld, Sn, Sd };
 }
@@ -688,12 +671,6 @@ Tuple4d RationalModel::CalcPolynomials(const double L,
  */
 bool RationalModel::SensorToGroundNormalizeLinear(const double x, const double y,
   const double w, double &u, double &v) const {
-  // use short name for convenience
-  auto snc = mSampNumCoef.data();
-  auto sdc = mSampDenCoef.data();
-  auto lnc = mLineNumCoef.data();
-  auto ldc = mLineDenCoef.data();
-
   double A[2][2];  // Partial derivatives w.r.t. u and v
   A[0][0] = snc[eL] - sdc[eL] * x;
   A[0][1] = snc[eP] - sdc[eP] * x;

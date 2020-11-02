@@ -66,7 +66,7 @@ EpiModelPair EpipolarStereoFactory::CreateRationalEpiStereo(
   auto rnfc = rightModel->GetNormalFactors();
 
   // \todo across anti-meridian; unit literal
-  const double LonOrig = Deg2Rad((lnfc[rnf::eOLONG] + rnfc[rnf::eOLONG]) / 2);
+  const double LonOrig = Deg2Rad((lnfc[rnf::eOLON] + rnfc[rnf::eOLON]) / 2);
   const double LatOrig = Deg2Rad((lnfc[rnf::eOLAT] + rnfc[rnf::eOLAT]) / 2);
   const Point3d origin(LonOrig, LatOrig, 0);
 
@@ -82,7 +82,7 @@ EpiModelPair EpipolarStereoFactory::CreateRationalEpiStereo(
 
   // \todo determine the rectification height so that the average
   // resolution of epipolar is 1:1 before considering the sample
-  double height{ (lnfc[rnf::eOHEIGHT] + rnfc[rnf::eOHEIGHT]) / 2 };
+  double height{ (lnfc[rnf::eOHGT] + rnfc[rnf::eOHGT]) / 2 };
 
   const double invScale = EpiGsd(leftModel.get(), rightModel.get(), height) * sample;
   const double scale{ 1.0 / invScale };

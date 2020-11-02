@@ -55,8 +55,8 @@ public:
     eISLINE = 0,   // line inversed scale
     eISSAMP = 1,   // sample inversed scale
     eISLAT = 2,    // latitude inversed scale
-    eISLONG = 3,   // longitude inversed scale
-    eISHEIGHT = 4, // height inversed scale
+    eISLON = 3,    // longitude inversed scale
+    eISHGT = 4,    // height inversed scale
     NumInvScl = 5  // number of inversed scales
   };
   using isf = InvScaleFactor;
@@ -218,7 +218,7 @@ public:
   /**
    *  \return Returns the middle height
    */
-  double GetMeanHeight() const noexcept { return mNormalFactors[eOHEIGHT]; }
+  double GetMeanHeight() const noexcept { return mNormalFactors[eOHGT]; }
 
   /**
    *  \brief Get normalization factors including offsets & scales.
@@ -389,9 +389,9 @@ private:
 
   inline Point3d GroundNormalize(const Point3d& ground) const {
     const auto nfc = mNormalFactors.data();
-    return { (ground.x - nfc[eOLONG]) * mInvScale[eISLONG],
+    return { (ground.x - nfc[eOLON]) * mInvScale[eISLON],
              (ground.y - nfc[eOLAT]) * mInvScale[eISLAT],
-             (ground.z - nfc[eOHEIGHT]) * mInvScale[eISHEIGHT] };
+             (ground.z - nfc[eOHGT]) * mInvScale[eISHGT] };
   }
 
   /**
@@ -400,7 +400,7 @@ private:
    *  \brief Given a 3d ground position in the virtual ground coordinate
    * system, output the 2d position in the virtual sensor coordinate system.
    *
-   *  \param [in] uvw 3d ground position (L, P, H)
+   *  \param [in] uvw 3d normalized ground position (L, P, H)
    *  \param [out] sensor 2d sensor position (x, y)
    *  \return Returns true if operation succeeds
    */
@@ -421,12 +421,12 @@ private:
   void CalcTerms(const Point3d &uvw, double *const LPH) const {
     CalcTerms(uvw.x, uvw.y, uvw.z, LPH);
   }
-  void CalcTerms(double L, double P, double H, double *const LPH) const;
+  void CalcTerms(double u, double v, double w, double *const uvw) const;
 
   Tuple4d CalcPolynomials(const Point3d &uvw) const {
     return CalcPolynomials(uvw.x, uvw.y, uvw.z);
   }
-  Tuple4d CalcPolynomials(double L, double P, double H) const;
+  Tuple4d CalcPolynomials(double u, double v, double w) const;
 
   bool SensorToGroundNormalize(const double x, const double y,
     const double w, double& u, double& v) const;
@@ -434,13 +434,20 @@ private:
   bool SensorToGroundNormalizeLinear(const Point2d &sensor, Point3d &uvw) const {
     return SensorToGroundNormalizeLinear(sensor.x, sensor.y, uvw.z, uvw.x, uvw.y);
   }
-  bool SensorToGroundNormalizeLinear(double x, double y, double w, double &u,
-                            double &v) const;
+  bool SensorToGroundNormalizeLinear(double x, double y, 
+    double w, double &u, double &v) const;
   
   // cached calculation for better performance
   double mTol_c{ 1.0e-7 }; // tolerance proportional to image range
   double mTol_r{ 1.0e-7 };
-    
+  
+  // use short name for convenience
+  const double* const nfc{ mNormalFactors.data() };
+  const double* const snc{ mSampNumCoef.data() };
+  const double* const sdc{ mSampDenCoef.data() };
+  const double* const lnc{ mLineNumCoef.data() };
+  const double* const ldc{ mLineDenCoef.data() };
+
   std::array<double, NumInvScl> mInvScale{1.0}; // reciprocal of scale factors
   
   // interpolation cube to provide approximate X, Y coordinates for ImageToGround()

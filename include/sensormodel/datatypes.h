@@ -12,13 +12,13 @@ enum NormalizationFactor {
   eOLINE = 0,   // line offset
   eOSAMP = 1,   // sample offset
   eOLAT = 2,    // latitude offset
-  eOLONG = 3,   // longitude offset
-  eOHEIGHT = 4, // height offset
+  eOLON = 3,    // longitude offset
+  eOHGT = 4,    // height offset
   eSLINE = 5,   // line scale
   eSSAMP = 6,   // sample scale
   eSLAT = 7,    // latitude scale
-  eSLONG = 8,   // longitude scale
-  eSHEIGHT = 9, // height scale
+  eSLON = 8,    // longitude scale
+  eSHGT = 9,    // height scale
   NumFact = 10  // number of factors
 };
 }

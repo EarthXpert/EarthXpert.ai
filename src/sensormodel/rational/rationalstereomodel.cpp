@@ -192,25 +192,19 @@ Tuple6d RationalStereoModel::CalcJacobianA(RationalModel const* ratModel,
   double duvw_dw[RationalModel::NumCoef];
   Duvw_duvw(u, v, w, duvw_du, duvw_dv, duvw_dw);
 
-  // use short name for convenience
-  const auto snc = ratModel->mSampNumCoef.data(); // Sample numerator coefficients
-  const auto sdc = ratModel->mSampDenCoef.data(); // Sample denominator coefficients
-  const auto [dSn_du, dSn_dv, dSn_dw] = D_duvw(snc, duvw_du, duvw_dv, duvw_dw); // Partial derivative of Sn w.r.t u, v,w
-  const auto [dSd_du, dSd_dv, dSd_dw] = D_duvw(sdc, duvw_du, duvw_dv, duvw_dw); // Partial derivative of Sd w.r.t u, v, w
-
-  const auto lnc = ratModel->mLineNumCoef.data(); // Line numerator coefficients
-  const auto ldc = ratModel->mLineDenCoef.data(); // Line denominator coefficients
-  const auto [dLn_du, dLn_dv, dLn_dw] = D_duvw(lnc, duvw_du, duvw_dv, duvw_dw); // Partial derivative of Ln w.r.t u, v,w
-  const auto [dLd_du, dLd_dv, dLd_dw] = D_duvw(ldc, duvw_du, duvw_dv, duvw_dw); // Partial derivative of Ld w.r.t u, v, w
+  const auto [dSn_du, dSn_dv, dSn_dw] = D_duvw(ratModel->snc, duvw_du, duvw_dv, duvw_dw); // Partial derivative of Sn w.r.t u, v,w
+  const auto [dSd_du, dSd_dv, dSd_dw] = D_duvw(ratModel->sdc, duvw_du, duvw_dv, duvw_dw); // Partial derivative of Sd w.r.t u, v, w
+  const auto [dLn_du, dLn_dv, dLn_dw] = D_duvw(ratModel->lnc, duvw_du, duvw_dv, duvw_dw); // Partial derivative of Ln w.r.t u, v,w
+  const auto [dLd_du, dLd_dv, dLd_dw] = D_duvw(ratModel->ldc, duvw_du, duvw_dv, duvw_dw); // Partial derivative of Ld w.r.t u, v, w
 
   const auto dFc_duvw = (Point3d(dSn_du, dSn_dv, dSn_dw) - \
     image.x * Point3d(dSd_du, dSd_dv, dSd_dw)) * invSd;  // dFc_du, dFc_dv, dFc_dw
   const auto dFr_duvw = (Point3d(dLn_du, dLn_dv, dLn_dw) - \
     image.y * Point3d(dLn_du, dLn_dv, dLn_dw)) * invLd;  // dFr_du, dFr_dv, dFr_dw
 
-  const double du_dL = ratModel->mInvScale[risf::eISLONG];    // 1.0 / nfc[rnf::eSLONG]; u = (Lon - nfc[rnf::eOLONG]) / nfc[rnf::eSLONG]
+  const double du_dL = ratModel->mInvScale[risf::eISLON];    // 1.0 / nfc[rnf::eSLON]; u = (Lon - nfc[rnf::eOLON]) / nfc[rnf::eSLON]
   const double dv_dP = ratModel->mInvScale[risf::eISLAT];     // 1.0 / nfc[rnf::eSLAT]; v = (Lat - nfc[rnf::eOLAT])/ nfc[rnf::eSLAT]
-  const double dw_dH = ratModel->mInvScale[risf::eISHEIGHT];  // 1.0 / nfc[rnf::eSHEIGHT]; w = (Hgt - nfc[rnf::eOHEIGHT]) / nfc[rnf::eSHEIGHT]
+  const double dw_dH = ratModel->mInvScale[risf::eISHGT];   // 1.0 / nfc[rnf::eSHGT]; w = (Hgt - nfc[rnf::eOHGT]) / nfc[rnf::eSHGT]
 
   return { dFc_duvw.x * du_dL, dFc_duvw.y * dv_dP, dFc_duvw.z * dw_dH, 
            dFr_duvw.x * du_dL, dFr_duvw.y * dv_dP, dFr_duvw.z * dw_dH };
