@@ -61,7 +61,6 @@ Pointcloud::Pointcloud(const Point3d& origin, std::vector<XYZF>&& xyz)
   : mOrigin(origin), mXYZ(std::move(xyz)) {
   mFieldGroup.set(FieldGroup::kPOSXYZ);
   mPointCount = mPointCapacity = mXYZ.size();
-
 }
 
 /**

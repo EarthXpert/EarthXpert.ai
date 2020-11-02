@@ -417,7 +417,7 @@ Point2d RationalModel::ImageActualToApparant(const Point2d& image) const {
     const EqualD equalD(0.001);  // [unit: pixel]
     Point2d imageP{ imageApp };
 
-    for (int i = 0; i < kMaxIterIAA; ++i) {
+    for (int iter = 0; iter < kMaxIterIAA; ++iter) {
       const auto imageCorr = CalcCorrection(imageApp);
       imageApp = image - imageCorr;
       if (equalD(imageApp.x, imageP.x) && equalD(imageApp.y, imageP.y))
@@ -587,10 +587,7 @@ bool RationalModel::SensorToGroundNormalize(const double x, const double y,
   }
 
   // return false if reaching max. iterations
-  if (kMaxIterS2G == iter) 
-    return false;
-
-  return true;
+  return (kMaxIterS2G > iter);
 }
 
 /**
@@ -687,8 +684,8 @@ Tuple4d RationalModel::CalcPolynomials(const double L,
  *
  *    The two equations are:
  *
- *    Fc(u, v) = Sn - Sd * c = 0
- *    Fr(u, v) = Ln - Ld * r = 0
+ *    Fc(u, v) = Sn - Sd * x = 0
+ *    Fr(u, v) = Ln - Ld * y = 0
  */
 bool RationalModel::SensorToGroundNormalizeLinear(const double x, const double y,
   const double w, double &u, double &v) const {
