@@ -26,18 +26,21 @@ set(ex3rdparty_srcs "boost/exboost.cpp"
   "glog/exglog.cpp"
   "gtest/exgtest.cpp"
   "laslib/exlaslib.cpp"
+  "nsimd/exnsimd.cpp"
   "opencl/exopencl.cpp"
   "opencv/exopencv.cpp"
   "pdal/expdal.cpp"
   "protobuf/exprotobuf.cpp"
   "pybind11/expybind11.cpp"
   "qt/exqt.cpp"
+  "simd/exsimd.cpp"
   "sltbench/exsltbench.cpp"
   "thrust/exthrust.cpp"
   "stl/exstl.cpp"
   "vxl/exvxl.cpp"
   "wxwidgets/exwxwidgets.cpp"
-  "xml/exxml.cpp")
+  "xml/exxml.cpp"
+  "xsimd/exxsimd.cpp")
 earthxpert_add_library(ex3rdparty "api"
   SRCS ${ex3rdparty_srcs}
   ITEMS Boost::boost Boost::filesystem Boost::locale ${CERES_LIBRARY} ${CGAL_LIBRARIES} 
