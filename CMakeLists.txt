@@ -116,9 +116,9 @@ if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
 
   set(LIBXML2_ROOT "${EX_THIRD_PARTY}/xml2_2.9.9")
   set(LIBXML2_DIR "${LIBXML2_ROOT}/share/libxml2/CMake")
-  set(OpenCV_LIBRARY_DIR "${LIBXML2_ROOT}/lib")
-  set(LIBXML2_LIBRARIES debug "${OpenCV_LIBRARY_DIR}/debug/libxml2.lib"
-                        optimized "${OpenCV_LIBRARY_DIR}/release/libxml2.lib")
+  set(LIBXML2_INCLUDE_DIR "${LIBXML2_ROOT}/include")
+  set(LIBXML2_LIBRARY_DIR "${LIBXML2_ROOT}/lib")
+  set(LIBXML2_LIBRARIES "${LIBXML2_LIBRARY_DIR}/${CDEGREL}/libxml2.lib")
 
   set(nlohmann_json_ROOT "${EX_THIRD_PARTY}/nlohmann-json_3.7.3")
   set(nlohmann_json_DIR "${nlohmann_json_ROOT}/share/nlohmann_json")
@@ -177,7 +177,14 @@ if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
   set(pybind11_DIR "${EX_THIRD_PARTY}/pybind11_2.5.0/share/cmake/pybind11")
 
   set(Qt5_DIR "${EX_THIRD_PARTY}/qt_5.11.2/lib/cmake/Qt5")
-  
+
+  set(Simd_ROOT "${EX_THIRD_PARTY}/Simd_4.6.94")
+  #set(Simd_DIR "${Simd_ROOT}/lib/cmake")
+  set(Simd_BIN_DIR "${Simd_ROOT}/bin/${CDEGREL}")
+  set(Simd_INCLUDE_DIR "${Simd_ROOT}/include")
+  set(Simd_LIBRARY_DIR "${Simd_ROOT}/lib")
+  set(Simd_LIBRARIES "${Simd_LIBRARY_DIR}/${CDEGREL}/Simd.lib")
+
   set(Sltbench_DIR "${EX_THIRD_PARTY}/sltbench_20.01.15/cmake")
 
   #set(Python_ROOT_DIR "python37")
@@ -251,6 +258,7 @@ find_package(Protobuf REQUIRED)
 #find_package(proj4 REQUIRED)
 find_package(pybind11 REQUIRED)
 find_package(Qt5 5.11.2 COMPONENTS Core Gui LinguistTools OpenGL Widgets REQUIRED)
+#find_package(Simd REQUIRED)
 find_package(Sltbench REQUIRED)
 
 find_package(Java 1.8 REQUIRED Runtime Development)
@@ -292,6 +300,7 @@ message(STATUS "OpenEXR_INCLUDE_DIR: ${OpenEXR_INCLUDE_DIR}")
 message(STATUS "OpenImageIO_INCLUDE_DIR: ${OpenImageIO_INCLUDE_DIR}")
 message(STATUS "PDAL_INCLUDE_DIRS: ${PDAL_INCLUDE_DIRS}")
 message(STATUS "Protobuf_INCLUDE_DIRS: ${Protobuf_INCLUDE_DIRS}/google")
+message(STATUS "Simd_INCLUDE_DIR: ${Simd_INCLUDE_DIR}")
 message(STATUS "SLTBENCH_INCLUDE_DIRS: ${SLTBENCH_INCLUDE_DIRS}")
 
 include_directories(${Boost_INCLUDE_DIR}) 
@@ -315,6 +324,7 @@ include_directories(${OpenEXR_INCLUDE_DIR})
 include_directories(${OpenImageIO_INCLUDE_DIR})
 include_directories(${PDAL_INCLUDE_DIRS})
 include_directories(${Protobuf_INCLUDE_DIRS}/google)
+include_directories(${Simd_INCLUDE_DIR})
 include_directories(${SLTBENCH_INCLUDE_DIRS})
 
 include_directories("include")

@@ -50,7 +50,7 @@ earthxpert_add_library(core "api"
   ITEMS ex3rdparty
         Boost::boost Boost::filesystem Boost::iostreams
         ${CERES_LIBRARY} ${CGAL_LIBRARIES} ${CUDA_LIBRARIES} ${GDAL_LIBRARY} ${GETTEXT_LIBRARY} glog::glog 
-        ${LASLIB_LIBRARY} ${OpenCL_LIBRARIES} ${OpenCV_LIBS})
+        ${LASLIB_LIBRARY} ${OpenCL_LIBRARIES} ${OpenCV_LIBS} ${Simd_LIBRARIES})
 
 earthxpert_source_group(${core_srcs})
 earthxpert_install_target(core)
