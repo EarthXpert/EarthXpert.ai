@@ -50,12 +50,10 @@ public:
    *  in image coordinate system, do forward intersection of pair-rays, and
    *  output the ground position with respect to the ground coordinate system.
    *
-   *  \param [in] leftImage 2d position (x, y) in left image raster coordinate
-   * system
+   *  \param [in] leftImage 2d position (x, y) in left image raster CS
    *  \param [in] rightImage the corresponding 2d position (x, y) in right image
    * raster coordinate system
-   *  \param [in/out] ground 3d ground position (X, Y, Z) in ground coordinate
-   * system
+   *  \param [in/out] ground 3d position (X, Y, Z) in ground coordinate system
    *  \return Returns true if the operation succeeds
    */
   bool ImagesToGround(const Point2d& leftImage,

@@ -62,10 +62,10 @@ EpipolarModel<GroundPolicy>::RawToRect(const Point2d &raw, Point2d &rect) const 
       return std::nullopt;
     
     rect3 = mGroundPolicy->GroundToCartesian(ground);
-    const double dz = mHeight - rect3.z;
+    const double dz = mHeight - rect3.z;    // >= 0?
     ground.z += dz;
 
-    if (kHgtTol > dz) break;
+    if (kHgtTol > std::fabs(dz)) break;
   }
 
   rect = { rect3.x, rect3.y };
