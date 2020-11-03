@@ -5,7 +5,9 @@
 #pragma once
 
 #include "core/excore.h"
+#include "3rdparty/nsimd/exnsimd.h"
 #include "3rdparty/simd/exsimd.h"
+#include "3rdparty/xsimd/exxsimd.h"
 
 #include <mmintrin.h>  // __m64
 #include <xmmintrin.h>  // __m128

@@ -6,7 +6,7 @@
 
 #include "3rdparty/ex3rdparty.h"
 
-//#include <xsimd/xsimd.hpp>
+#include <xsimd/xsimd.hpp>
 
 namespace earthxpert::thirdparty {
 } // namespace earthxpert::thirdparty
