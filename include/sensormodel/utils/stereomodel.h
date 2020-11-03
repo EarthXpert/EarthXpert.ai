@@ -88,7 +88,7 @@ public:
     switch (mFwdAlgo) {
     case eCA_INTERSECT: {
       Point2d images[2] = { leftImage, rightImage };
-      return ImagesToGroundX(images, 2, ground);
+      return ImagesToGroundX(mModels, images, 2, ground);
     }
     case eSM_CERES: {
       return ImagesToGroundCeres(leftImage, rightImage, ground);
@@ -138,7 +138,7 @@ public:
     assert(3 == mModels.size());
     switch (mFwdAlgo) {
     case eCA_INTERSECT: {
-      return ImagesToGroundX(images.data(), 3, ground);
+      return ImagesToGroundX(mModels, images.data(), 3, ground);
     }
     case eSM_CERES: {
       return ImagesToGroundCeres(images, ground);
@@ -167,27 +167,7 @@ public:
    */
   virtual bool ImagesToGround(const std::vector<Point2d> &images, 
     Point3d &ground) const override {
-    const int numRays = int(mModels.size());
-    assert(numRays == images.size());
-    switch (mFwdAlgo) {
-    case eCA_INTERSECT: {
-      return ImagesToGroundX(images.data(), numRays, ground);
-    }
-    case eSM_CERES: {
-      return ImagesToGroundCeres(images.data(), numRays, ground);
-    }
-    case eSM_LS: {
-      //return ImagesToGroundLS(images.data(), numRays, ground);
-      throw std::exception(_("StereoModel: not implemented"));
-    }
-    case eSM_NR: {
-      //return ImagesToGroundNR(images.data(), numRays, ground);
-      throw std::exception(_("StereoModel: not implemented"));
-    }
-    default: {
-        return false;
-    }
-    }
+    return ImagesToGround(mModels, images, ground);
   }
 
   /**
@@ -205,7 +185,28 @@ public:
    */
   virtual bool ImagesToGround(const std::vector<const ISensorModel*>& sensorModels,
     const std::vector<Point2d>& images, Point3d& ground) const override {
-    return false;
+    const int numRays = int(sensorModels.size());
+    assert(numRays == images.size());
+
+    switch (mFwdAlgo) {
+    case eCA_INTERSECT: {
+      return ImagesToGroundX(sensorModels, images.data(), numRays, ground);
+    }
+    case eSM_CERES: {
+      return ImagesToGroundCeres(sensorModels, images.data(), numRays, ground);
+    }
+    case eSM_LS: {
+      //return ImagesToGroundLS(sensorModels, images.data(), numRays, ground);
+      throw std::exception(_("StereoModel: not implemented"));
+    }
+    case eSM_NR: {
+      //return ImagesToGroundNR(sensorModels, images.data(), numRays, ground);
+      throw std::exception(_("StereoModel: not implemented"));
+    }
+    default: {
+      return false;
+    }
+    }
   }
 
   /**
@@ -316,10 +317,14 @@ private:
   bool ImagesToGroundLS(const std::array<Point2d, 3>& images, Point3d& ground) const;
   bool ImagesToGroundNR(const std::array<Point2d, 3>& images, Point3d& ground) const;
 
-  bool ImagesToGroundCeres(const Point2d* images, int numRays, Point3d& ground) const;
-  bool ImagesToGroundX(const Point2d* images, int numRays, Point3d& ground) const;
-  bool ImagesToGroundLS(const Point2d* images, int numRays, Point3d& ground) const;
-  bool ImagesToGroundNR(const Point2d* images, int numRays, Point3d& ground) const;
+  bool ImagesToGroundX(const std::vector<const ISensorModel*>& sensorModels, 
+    const Point2d* images, int numRays, Point3d& ground) const;
+  bool ImagesToGroundCeres(const std::vector<const ISensorModel*>& sensorModels, 
+    const Point2d* images, int numRays, Point3d& ground) const;
+  bool ImagesToGroundLS(const std::vector<const ISensorModel*>& sensorModels, 
+    const Point2d* images, int numRays, Point3d& ground) const;
+  bool ImagesToGroundNR(const std::vector<const ISensorModel*>& sensorModels, 
+    const Point2d* images, int numRays, Point3d& ground) const;
 
   Tuple6d CalcJacobianNc(ISensorModel const* model,
     const Point3d& ground, Point2d& image) const;

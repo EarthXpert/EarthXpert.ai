@@ -5,7 +5,6 @@
 #include "sensormodel/rationalstereomodel.h"
 #include "3rdparty/eigen/exeigen.h"
 #include "core/exceptions/exexcept.h"
-#include "sensormodel/rationalmodel.h"
 #include "sensormodel/rmutils.h"
 
 using namespace earthxpert;
@@ -40,12 +39,9 @@ void RationalStereoModel::Initialize() {
  *  in image coordinate system, do forward intersection of pair-rays, and
  *  output the ground position with respect to the ground coordinate system.
  *
- *  \param [in] leftImage 2d position (x, y) in left image raster coordinate
- * system
- *  \param [in] rightImage the corresponding 2d position (x, y) in right image
- * raster coordinate system
- *  \param [in/out] ground 3d ground position (X, Y, Z) in ground coordinate
- * system
+ *  \param [in] leftImage 2d position (x, y) in left image raster CS
+ *  \param [in] rightImage the corresponding 2d position in right image raster CS
+ *  \param [in/out] ground 3d position (X, Y, Z) in ground coordinate system
  *  \return Returns true if the operation succeeds
  *
  *  \remark array & Map<> is 12% faster than direct sized Matrix<>;
@@ -106,30 +102,32 @@ bool RationalStereoModel::ImagesToGround(const Point2d& leftImage,
 }
 
 /**
- *  \brief Given two or more sensor models and associated 2d positions
+ *  Image-to-ground forward projection (variable).
+ *
+ *  \brief Given a variable number of sensor models and associated 2d positions
  *  in image coordinate system, do forward intersection of rays, and
  *  output the ground position with respect to the ground coordinate system.
  *
+ *  \param [in] sensorModels an array of sensor models.
  *  \param [in] images the corresponding 2d positions (x, y) in
- *  imagery raster coordinate systems, interleaved by sensor models.
- *  \param [in/out] ground 3d ground position (Lon, Lat, Height) in ground coordinate system
+ * imagery raster coordinate systems, interleaved by sensor models. \param
+ * [in/out] ground 3d ground position (X, Y, Z) in ground coordinate system
  *  \return Returns true if the operation succeeds
- *  \todo regularization of normal matrix A.t() * A
- *  \todo revist the stability of solve() for Dynamic Ax=b
  */
 bool RationalStereoModel::ImagesToGround(
+  const std::vector<const RationalModel*>& ratModels,
   const std::vector<Point2d>& images, Point3d& ground) const {
-  const int numRays = int(mRatModels.size());
+  const int numRays = int(ratModels.size());
   assert(numRays == images.size());
   ground.z = 0.0;
 
   std::vector<Point2d> imgs(numRays);
   for (int i = 0; i < numRays; ++i) {
-    imgs[i] = mRatModels[i]->ImageToSensor(images[i]);
-    ground.z += mRatModels[i]->GetMeanHeight();
+    imgs[i] = ratModels[i]->ImageToSensor(images[i]);
+    ground.z += ratModels[i]->GetMeanHeight();
   }
   ground.z /= double(numRays);
-  mRatModels[numRays/2]->ImageToGround(images[numRays/2], ground);
+  ratModels[numRays / 2]->ImageToGround(images[numRays / 2], ground);
 
   Point2d imgp;
   MatrixXd A(numRays * 2, 3);
@@ -141,10 +139,10 @@ bool RationalStereoModel::ImagesToGround(
 
     for (int i = 0; i < numRays; ++i) {
       const auto [dFc_dL, dFc_dP, dFc_dH, dFr_dL, dFr_dP, dFr_dH] =
-        CalcJacobianNc(mRatModels[i], ground, imgp);
+        CalcJacobianNc(ratModels[i], ground, imgp);
 
       const int i2 = i * 2;
-      const auto nfc = mRatModels[i]->GetNormalFactors();
+      const auto nfc = ratModels[i]->GetNormalFactors();
       A(i2, 0) = dFc_dL * nfc[eSSAMP];
       A(i2, 1) = dFc_dP * nfc[eSSAMP];
       A(i2, 2) = dFc_dH * nfc[eSSAMP];
@@ -152,7 +150,7 @@ bool RationalStereoModel::ImagesToGround(
       A(i2 + 1, 1) = dFr_dP * nfc[eSLINE];
       A(i2 + 1, 2) = dFr_dH * nfc[eSLINE];
 
-      b[i2]     = (imgp.x - imgs[i].x) * nfc[eSSAMP];
+      b[i2] = (imgp.x - imgs[i].x) * nfc[eSSAMP];
       b[i2 + 1] = (imgp.y - imgs[i].y) * nfc[eSLINE];
     }
 

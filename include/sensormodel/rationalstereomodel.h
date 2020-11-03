@@ -6,6 +6,7 @@
 
 #include "sensormodel/utils/stereomodel.h"
 #include "core/utils//typehelper.h"
+#include "sensormodel/rationalmodel.h"
 
 namespace earthxpert {
 class ISensorModel;
@@ -89,7 +90,9 @@ public:
    *  \return Returns true if the operation succeeds
    */
   bool RationalStereoModel::ImagesToGround(
-    const std::vector<Point2d>& images, Point3d& ground) const override;
+    const std::vector<Point2d>& images, Point3d& ground) const override {
+    return ImagesToGround(mRatModels, images, ground);
+  }
 
   /**
    *  Image-to-ground forward projection (variable).
@@ -100,14 +103,22 @@ public:
    *
    *  \param [in] sensorModels an array of sensor models.
    *  \param [in] images the corresponding 2d positions (x, y) in
-   * imagery raster coordinate systems, interleaved by sensor models. \param
-   * [in/out] ground 3d ground position (X, Y, Z) in ground coordinate system
+   * imagery raster coordinate systems, interleaved by sensor models. 
+   *  \param [in/out] ground 3d position (X, Y, Z) in ground coordinate system
    *  \return Returns true if the operation succeeds
    */
   bool ImagesToGround(const std::vector<const ISensorModel*>& sensorModels,
     const std::vector<Point2d>& images, Point3d& ground) const override {
-    return false;
+    std::vector<const RationalModel*> ratModels;
+    for (auto sm : sensorModels) {
+      ratModels.push_back(dynamic_cast<const RationalModel*>(sm));
+    }
+
+    return ImagesToGround(ratModels, images, ground);
   }
+
+  bool ImagesToGround(const std::vector<const RationalModel*>& ratModels,
+    const std::vector<Point2d>& images, Point3d& ground) const;
 
 private:
   void Initialize();

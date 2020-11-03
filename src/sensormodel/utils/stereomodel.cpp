@@ -443,26 +443,12 @@ bool StereoModel::ImagesToGroundNR(
  *  \param [in/out] grounds List of 3d ground positions (X, Y, Z) in ground coordinate
  * system
  */
-// Ceres
-// \todo intial position
-bool StereoModel::ImagesToGroundCeres(const Point2d* images, 
-  const int numRays, Point3d& ground) const {
-  assert(2 <= mModels.size());
-  ground.z = GetMeanHeight(mModels);
-  mModels[numRays/2]->ImageToGround(images[numRays/2], ground);
-
-  Solver::Summary summary;
-  const auto ret = IntersectI2G<NumericG2IResidual>(images,
-    mModels.data(), numRays, ground, mOptions, summary);
-
-  return ret;
-}
-
 // straight lines intersection
-bool StereoModel::ImagesToGroundX(const Point2d* images, 
-  const int numRays, Point3d& ground) const {
-  assert(numRays == mModels.size());
-  ground.z = GetMeanHeight(mModels);
+bool StereoModel::ImagesToGroundX(
+  const std::vector<const ISensorModel*>& sensorModels, 
+  const Point2d* images, const int numRays, Point3d& ground) const {
+  assert(numRays == sensorModels.size());
+  ground.z = GetMeanHeight(sensorModels);
 
   std::vector<Point3d> segs(numRays * 2);
   Point3d lsr;
@@ -476,7 +462,7 @@ bool StereoModel::ImagesToGroundX(const Point2d* images,
         const int pi = j + k * 2;   // point index
         segs[pi].z = hgtRange[j];
 
-        mModels[k]->ImageToGround(images[k], segs[pi]);
+        sensorModels[k]->ImageToGround(images[k], segs[pi]);
         if (eGEO == mSrsType)
           segs[pi] = mEarthEllip->LPHToLSR(Deg2Rad(segs[pi]));
       }
@@ -498,19 +484,37 @@ bool StereoModel::ImagesToGroundX(const Point2d* images,
   return true;
 }
 
+// Ceres
+// \todo intial position
+bool StereoModel::ImagesToGroundCeres(
+  const std::vector<const ISensorModel*>& sensorModels, 
+  const Point2d* images, const int numRays, Point3d& ground) const {
+  assert(2 <= sensorModels.size());
+  ground.z = GetMeanHeight(sensorModels);
+  sensorModels[numRays/2]->ImageToGround(images[numRays/2], ground);
+
+  Solver::Summary summary;
+  const auto ret = IntersectI2G<NumericG2IResidual>(images,
+    sensorModels.data(), numRays, ground, mOptions, summary);
+
+  return ret;
+}
+
 // Least Squares
-bool StereoModel::ImagesToGroundLS(const Point2d* images,
-  const int numRays, Point3d& ground) const {
-  assert(numRays == mModels.size());
+bool StereoModel::ImagesToGroundLS(
+  const std::vector<const ISensorModel*>& sensorModels, 
+  const Point2d* images, const int numRays, Point3d& ground) const {
+  assert(numRays == sensorModels.size());
   ground.z = GetMeanHeight(mModels);
 
   return false;
 }
 
 // Newton-Raphson
-bool StereoModel::ImagesToGroundNR(const Point2d* images,
-  const int numRays, Point3d& ground) const {
-  assert(numRays == mModels.size());
+bool StereoModel::ImagesToGroundNR(
+  const std::vector<const ISensorModel*>& sensorModels, 
+  const Point2d* images, const int numRays, Point3d& ground) const {
+  assert(numRays == sensorModels.size());
   ground.z = GetMeanHeight(mModels);
 
   return false;
