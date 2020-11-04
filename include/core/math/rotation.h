@@ -5,22 +5,15 @@
 #pragma once
 
 #include "core/excore.h"
+#include "core/math/math.h"
 #include "core/utils/typehelper.h"
 #include "opencv2/core/mat.hpp"
 
 #include <algorithm>
-#include <cmath>
 #include <tuple>
 #include <utility>
 
 namespace earthxpert::math {
-/**
- *  \param [in] angle the rotation angle [radian]
- */
-inline std::pair<double, double> sincos(const double angle) {
-  return { sin(angle), cos(angle) };
-}
-
 /**
  *  \param [in] angles three rotation angles [radian]
  */

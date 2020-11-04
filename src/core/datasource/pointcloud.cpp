@@ -102,15 +102,12 @@ Pointcloud::Pointcloud(const Point3d& origin, std::vector<XYZF>&& xyz,
  */
 bool Pointcloud::operator==(const Pointcloud& rhs) const {
   if (this != &rhs) {
-    return false;
+    if (mPointCount != rhs.GetPointCount() || mFieldGroup != rhs.GetFieldGroup()) {
+      return false;
+    }
+
+    // \todo
   }
-
-  if (mPointCount != rhs.GetPointCount() || mFieldGroup != rhs.GetFieldGroup()) {
-    return false;
-  }
-
-  // \todo
-
   return true;
 }
 

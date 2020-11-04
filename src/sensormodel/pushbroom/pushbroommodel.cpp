@@ -54,13 +54,13 @@ PushbroomModel<CraftPolicy>::operator=(PushbroomModel<CraftPolicy>&&rhs) noexcep
   return *this;
 }
 
-template <typename CraftPolicy> 
-bool PushbroomModel<CraftPolicy>::operator==(const PushbroomModel<CraftPolicy>&rhs) const {
+template <typename CraftPolicy> bool 
+PushbroomModel<CraftPolicy>::operator==(const PushbroomModel<CraftPolicy>&rhs) const {
   return true;
 }
 
-template <typename CraftPolicy> 
-bool PushbroomModel<CraftPolicy>::operator!=(const PushbroomModel<CraftPolicy>&rhs) const {
+template <typename CraftPolicy> bool 
+PushbroomModel<CraftPolicy>::operator!=(const PushbroomModel<CraftPolicy>&rhs) const {
   return !(operator==(rhs));
 }
 
@@ -77,8 +77,8 @@ bool PushbroomModel<CraftPolicy>::operator!=(const PushbroomModel<CraftPolicy>&r
  *
  *  \details More details
  */
-template <typename CraftPolicy>
-bool PushbroomModel<CraftPolicy>::ImageToGround(const Point2d &image,
+template <typename CraftPolicy> bool 
+PushbroomModel<CraftPolicy>::ImageToGround(const Point2d &image,
                                    Point3d &ground) const {
   return true;
 }
@@ -93,9 +93,9 @@ bool PushbroomModel<CraftPolicy>::ImageToGround(const Point2d &image,
  *
  *  \details More details
  */
-template <typename CraftPolicy>
-size_t PushbroomModel<CraftPolicy>::ImageToGround(const Point2d &image,
-                                     std::vector<Point3d> &ground) const {
+template <typename CraftPolicy> size_t
+PushbroomModel<CraftPolicy>::ImageToGround(const Point2d &image,
+  std::vector<Point3d> &ground) const {
   return 0;
 }
 
@@ -111,8 +111,8 @@ size_t PushbroomModel<CraftPolicy>::ImageToGround(const Point2d &image,
  *
  *  \details More details
  */
-template <typename CraftPolicy>
-bool PushbroomModel<CraftPolicy>::GroundToImage(const Point3d &ground,
+template <typename CraftPolicy> bool 
+PushbroomModel<CraftPolicy>::GroundToImage(const Point3d &ground,
                                    Point2d &image) const {
   return true;
 }

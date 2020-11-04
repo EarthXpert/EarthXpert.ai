@@ -35,7 +35,6 @@ private:
 
   // cached information
   int mNumTiles{};
-  GDALDataset* mDatasets;  // non-owning pointer to GDALDataset object of current tile
   int mFileNumCols{};   // width of image file [unit: pixel]
   int mFileNumRows{};   // height of image file
   std::vector<int> mBands;    // list of bands to write into

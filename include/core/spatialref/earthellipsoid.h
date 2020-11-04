@@ -6,6 +6,7 @@
 
 #include "core/excore.h"
 #include "core/math/constants.h"
+#include "core/math/math.h"
 #include "core/utils/typehelper.h"
 #include "3rdparty/opencv/exopencv.h"
 #include "opencv2/core/mat.hpp"
@@ -45,12 +46,31 @@ public:
   }
   Point3d XYZToLPH(double X, double Y, double Z) const;
 
-  Point3d LSRToXYZ(const Point3d& lsr) const;
+  /**
+   * Convert coordinates from LSR to XYZ in EXEF
+   *
+   * \param [in] lsr LSR XYZ coordinates [m]
+   * \return Returns ECEF XYZ coordinates [m]
+   */
+  inline Point3d LSRToXYZ(const Point3d& lsr) const {
+    const cv::Mat E = mL2E * cv::Mat(lsr);
+    const Point3d lsrE(E.at<double>(0), E.at<double>(1), E.at<double>(2));
+    return (mLsrOriginXYZ + lsrE);
+  }
   inline Point3d LSRToXYZ(double X, double Y, double Z) const {
     return LSRToXYZ(Point3d(X, Y, Z));
   }
 
-  Point3d XYZToLSR(const Point3d& xyz) const;
+  /**
+   * Convert coordinates from ECEF XYZ to LSR
+   *
+   * \param [in] ecf ECEF XYZ coordinates [m]
+   * \return Returns LSR coordinates [m]
+   */
+  inline Point3d XYZToLSR(const Point3d& xyz) const {
+    const cv::Mat L = mL2E.t() * cv::Mat(xyz - mLsrOriginXYZ);
+    return { L.at<double>(0), L.at<double>(1), L.at<double>(2) };
+  }
   inline Point3d XYZToLSR(double X, double Y, double Z) const {
     return XYZToLSR(Point3d(X, Y, Z));
   }
@@ -95,8 +115,15 @@ private:
 
   void Initialize(const Point3d& origin);
 
-  double RadiusInPrimeMeridian(double) const;
-  double RadiusInPrimeVertical(double) const;
+  /**
+   * \param [in] lat Geodetic latitude [rad]
+
+   * \return Returns radius [m] of curvature in the Prime Meridian
+   */
+  inline double RadiusInPrimeMeridian(const double lat) const {
+    const double sp = sin(lat);
+    return (mA * mBsq_Asq) / pow(1.0 - mEccSq * sp * sp, 1.5);
+  }
 
   /**
    * \param [in] cp cosine(geodetic latitude)
@@ -104,8 +131,18 @@ private:
    *
    * \return Returns radius [m] of curvature in the Prime Vertical terminated by minor axis
    */
-  double RadiusInPrimeVertical(const double cp, const double sp) const {
+  inline double RadiusInPrimeVertical(const double cp, const double sp) const {
     return mAsq / sqrt(mAsq * cp * cp + mBsq * sp * sp);
+  }
+
+  /**
+   * \param [in] lat Geodetic latitude [rad]
+   *
+   * \return Returns radius [m] of curvature in the Prime Vertical terminated by minor axis
+   */
+  inline double RadiusInPrimeVertical(const double lat) const {
+    const auto [sp, cp] = sincos(lat);
+    return mAsq / sqrt(mAsq * cp * cp + mBsq * sp * sp);  // RadiusInPrimeVertical(cp, sp)
   }
 
   // cahced qunatities for perforamnce

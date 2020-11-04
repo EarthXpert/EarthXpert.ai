@@ -27,6 +27,13 @@ constexpr inline size_t exp2(const size_t n) {
 }
 
 /**
+ *  \param [in] angle the rotation angle [radian]
+ */
+inline std::pair<double, double> sincos(const double angle) {
+  return { sin(angle), cos(angle) };
+}
+
+/**
  *  \brief compare two values, the first value is assgined to be the second
  *  iff the latter is smaller.
  */
