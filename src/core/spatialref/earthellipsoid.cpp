@@ -86,7 +86,7 @@ EarthEllipsoid::operator==(const EarthEllipsoid& rhs) const {
 Point3d EarthEllipsoid::LPHToXYZ(const double lon, const double lat, 
   const double height) const {
   const auto [sp, cp] = sincos(lat);
-  const double N = RadiusInPrimeVertical(cp, sp);
+  const double N = RadiusInPrimeVertical(cp);
   const double NH = (N + height) * cp;
 
   const auto [sl, cl] = sincos(lon);
@@ -115,8 +115,8 @@ Point3d EarthEllipsoid::XYZToLPH(const double X, const double Y,
   double dh{ 1.0 };
 
   while (kTolH < fabs(dh)) {
-    const auto [sp, cp] = sincos(lat);
-    const double N = RadiusInPrimeVertical(cp, sp);
+    const double cp = cos(lat);
+    const double N = RadiusInPrimeVertical(cp);
     
     height = p / cp - N;
     lat = atan(Z / (p * (1.0 - (N * mEccSq / (N + height)))));

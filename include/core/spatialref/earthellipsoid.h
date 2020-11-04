@@ -127,12 +127,12 @@ private:
 
   /**
    * \param [in] cp cosine(geodetic latitude)
-   * \param [in] sp sine(geodetic latitude)
    *
    * \return Returns radius [m] of curvature in the Prime Vertical terminated by minor axis
    */
-  inline double RadiusInPrimeVertical(const double cp, const double sp) const {
-    return mAsq / sqrt(mAsq * cp * cp + mBsq * sp * sp);
+  inline double RadiusInPrimeVertical(const double cp) const {
+    const double cp2 = cp * cp;
+    return mAsq / sqrt(mAsq * cp2 + mBsq * (1.0 - cp2));
   }
 
   /**
@@ -140,10 +140,10 @@ private:
    *
    * \return Returns radius [m] of curvature in the Prime Vertical terminated by minor axis
    */
-  inline double RadiusInPrimeVertical(const double lat) const {
-    const auto [sp, cp] = sincos(lat);
-    return mAsq / sqrt(mAsq * cp * cp + mBsq * sp * sp);  // RadiusInPrimeVertical(cp, sp)
-  }
+  //inline double RadiusInPrimeVertical(const double lat) const {
+  //  const double cp = cos(lat);
+  //  return RadiusInPrimeVertical(cp);
+  //}
 
   // cahced qunatities for perforamnce
   double mAsq{};  // Semi-major axis length squared [m^2]
