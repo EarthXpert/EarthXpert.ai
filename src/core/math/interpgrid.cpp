@@ -27,8 +27,7 @@ using namespace earthxpert;
  */
 template <typename Ty>
 InterpGrid<Ty>::InterpGrid(const unsigned int dim, const Ty minX, const Ty minY, 
-  const Ty maxX, const Ty maxY, const Ty spcX, const Ty spcY) 
-    : mDim(dim) {
+  const Ty maxX, const Ty maxY, const Ty spcX, const Ty spcY) : mDim(dim) {
   LayoutNodes(minX, minY, maxX-minX, maxY-minY, spcX, spcY);
 }
 
@@ -40,9 +39,14 @@ InterpGrid<Ty>::InterpGrid(unsigned int dim, const cv::Point_<Ty>& min,
 
 template <typename Ty>
 InterpGrid<Ty>::InterpGrid(const unsigned int dim,
-  const SpatialTile<Ty>& range, const Ty spcX, const Ty spcY) 
-  : mDim(dim) {
+  const SpatialTile<Ty>& range, const Ty spcX, const Ty spcY) : mDim(dim) {
   LayoutNodes(range, spcX, spcY);
+}
+
+template <typename Ty>
+InterpGrid<Ty>::InterpGrid(const unsigned int dim,
+  const SpatialTile<Ty>& range, const cv::Point_<Ty>& spc) : mDim(dim) {
+  LayoutNodes(range, spc.x, spc.y);
 }
 
 /**

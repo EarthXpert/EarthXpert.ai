@@ -7,6 +7,7 @@
 #include "core/excore.h"
 #include "3rdparty/opencv/exopencv.h"
 #include "core/utils/typehelper.h"
+#include "core/utils/spatialcube.h"
 
 #include <cassert>
 #include <climits>
@@ -33,6 +34,10 @@ public:
     Ty maxX, Ty maxY, Ty maxZ, Ty spcX, Ty spcY, Ty spcZ);
   InterpCube(unsigned int dim, const cv::Point3_<Ty>& min,
     const cv::Point3_<Ty>& max, const cv::Point3_<Ty>& spc);
+  InterpCube(unsigned int dim, const SpatialCube<Ty>& range, 
+    Ty spcX, Ty spcY, Ty spcZ);
+  InterpCube(unsigned int dim, const SpatialCube<Ty>& range, 
+    const cv::Point3_<Ty>& spc);
   InterpCube(const InterpCube &rhs);
   InterpCube(InterpCube &&rhs) noexcept;
   ~InterpCube() = default;
@@ -176,10 +181,15 @@ private:
    * \param [in] max Maximum XYZ-coordinate to cover
    * \param [in] spc XYZ spacing of cube points
    */
-  void LayoutNodes(const cv::Point3_<Ty>& min,
+  inline void LayoutNodes(const cv::Point3_<Ty>& min,
     const cv::Point3_<Ty>& max, const cv::Point3_<Ty>& spc) {
     LayoutNodes(min.x, min.y, min.z, max.x - min.x, max.y - min.y,
       max.z - min.z, spc.x, spc.y, spc.z);
+  }
+  inline void LayoutNodes(const SpatialCube<Ty>& range, 
+    const Ty spcX, const Ty spcY, const Ty spcZ) {
+    LayoutNodes(range.minX, range.minY, range.minZ, 
+      range.length, range.width, range.height, spcX, spcY, spcZ);
   }
 
   void CopyFrom(const InterpCube &rhs);

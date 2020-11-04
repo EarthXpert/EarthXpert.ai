@@ -48,6 +48,18 @@ InterpCube<Ty>::InterpCube(const unsigned int dim, const cv::Point3_<Ty>& min,
   LayoutNodes(min, max, spc);
 }
 
+template <typename Ty>
+InterpCube<Ty>::InterpCube(const unsigned int dim, const SpatialCube<Ty>& range,
+  const Ty spcX, const Ty spcY, const Ty spcZ) : mDim(dim) {
+  LayoutNodes(range, spcX, spcY, spcZ);
+}
+
+template <typename Ty>
+InterpCube<Ty>::InterpCube(const unsigned int dim, const SpatialCube<Ty>& range,
+  const cv::Point3_<Ty>& spc) : mDim(dim) {
+  LayoutNodes(range, spc.x, spc.y, spc.z);
+}
+
 template <typename Ty> InterpCube<Ty>::InterpCube(const InterpCube &rhs) {}
 
 template <typename Ty>

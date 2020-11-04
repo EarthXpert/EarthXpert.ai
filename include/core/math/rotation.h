@@ -17,9 +17,13 @@ namespace earthxpert::math {
 /**
  *  \param [in] angles three rotation angles [radian]
  */
-inline Tuple6d sincos(const double* angles) {
+inline Tuple6d sincos6(const double* angles) {
   return { sin(angles[0]), cos(angles[0]), 
     sin(angles[1]), cos(angles[1]), sin(angles[2]), cos(angles[2]) };
+}
+
+inline Tuple3<std::pair<double, double>> sincos3(const double* angles) {
+  return { sincos(angles[0]), sincos(angles[1]), sincos(angles[2]) };
 }
 
 /**
