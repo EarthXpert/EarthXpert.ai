@@ -25,7 +25,6 @@ DistortionGrid<Ty>::DistortionGrid(std::string cameraName,
   const std::vector<Ty> &vX, const std::vector<Ty> &vY,
   const std::vector<Ty> &vdX, const std::vector<Ty> &vdY)
     : mCameraName(std::move(cameraName)) {
-  static_assert(std::is_floating_point<Ty>::value);
   EstablishGrid(vX, vY, vdX, vdY);
 }
 

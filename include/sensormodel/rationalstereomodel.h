@@ -135,7 +135,7 @@ private:
         return CalcJacobianA(ratModel, ground, image);
       }
       else if constexpr (ePT_NUMDIFF == pT) {
-        return CalcJacobianA(ratModel, ground, image);
+        return CalcJacobianNc(ratModel, ground, image);
       }
       else {
         throw std::invalid_argument("PartialType");

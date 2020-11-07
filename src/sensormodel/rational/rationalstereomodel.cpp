@@ -143,7 +143,7 @@ bool RationalStereoModel::ImagesToGround(
 
       const int i2 = i * 2;
       const auto nfc = ratModels[i]->GetNormalFactors();
-      A(i2, 0) = dFc_dL * nfc[eSSAMP];
+      A(i2, 0) = dFc_dL * nfc[eSSAMP];  // sensor-to-pixel scaling
       A(i2, 1) = dFc_dP * nfc[eSSAMP];
       A(i2, 2) = dFc_dH * nfc[eSSAMP];
       A(i2 + 1, 0) = dFr_dL * nfc[eSLINE];
