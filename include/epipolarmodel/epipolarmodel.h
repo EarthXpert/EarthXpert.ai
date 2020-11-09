@@ -141,9 +141,7 @@ using GeoEpipolarModel = EpipolarModel<GeographicGroundDeg>;
 using LocalEpipolarModel = EpipolarModel<LocalGroundMe>;
 using MapEpipolarModel = EpipolarModel<MapGroundMe>;
 
-// typically for satellite remote sensing
-template <class GroundPolicy>
-using OrthoReadyModel = EpipolarModel<GroundPolicy>;
-
-using GeoOrthoReadyModel = OrthoReadyModel<GeographicGroundDeg>;
+//template <class GroundPolicy>
+//using OrthoReadyModel = EpipolarModel<GroundPolicy>;
+//using GeoOrthoReadyModel = OrthoReadyModel<GeographicGroundDeg>;
 } // namespace earthxpert

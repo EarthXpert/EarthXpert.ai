@@ -336,4 +336,7 @@ private:
   double mTolXY{ kTolXYD };
   double mFacLP{ 0.5 / kTolXYD };
 };
+
+using UPStereoModel = std::unique_ptr<StereoModel>;
+using SPStereoModel = std::shared_ptr<StereoModel>;
 } // namespace earthxpert

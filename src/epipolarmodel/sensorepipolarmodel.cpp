@@ -17,6 +17,7 @@ using namespace earthxpert;
 SensorEpipolarModel::SensorEpipolarModel(StereoPos pos,
   std::shared_ptr<ISensorModel> sensorModel, const Polygon2d& epiBound)
   : mPos(pos), mSensorModel(sensorModel), mBound(epiBound) {
+  Initialize();
 }
 
 /**
@@ -133,4 +134,11 @@ size_t SensorEpipolarModel::GroundToImage(const std::vector<Point3d>& ground,
     }
   }
   return ret;
+}
+
+/**
+ *  \todo use the full image extent if mBound is empty.
+ */
+void SensorEpipolarModel::Initialize() {
+  
 }

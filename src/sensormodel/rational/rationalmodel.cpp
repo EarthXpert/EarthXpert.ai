@@ -465,29 +465,29 @@ Point2d RationalModel::CalcCorrection(const Point2d& image) const {
  *
  *    The iterations are performed in normalized coordinates.
  *
- *    c  normalized column
- *    r  normalized row
- *    c' estimated normalized column
- *    r' estimated normalized row
+ *    x/c  normalized column
+ *    y/r  normalized row
+ *    x'/c' estimated normalized column
+ *    y'/r' estimated normalized row
  *    u' estimated normalized longitude
  *    v' estimated normalized latitude
  *    w  normalized height
  *
- *    c' = Sn(u', v', w) / Sd(u', v', w)   // approx. col/row
- *    r' = Ln(u', v', w) / Ld(u', v', w)
- *    dc = c' - c                          // misclosure
- *    dr = r' - r
+ *    x' = Sn(u', v', w) / Sd(u', v', w)   // approx. col/row
+ *    y' = Ln(u', v', w) / Ld(u', v', w)
+ *    dx = x' - x                          // misclosure
+ *    dy = y' - y
  *    u = u' - du                          // update
  *    v = v' - dv
  *
  *    Formula comes from consideration of a Taylor series expansion
  *    about the initial approx. position (u', v')
  *
- *    | dc |  = | d(Sn/Sd)_du  d(Sn/Sd)_dv |  | du |
- *    | dr |  = | d(Ln/Ld)_du  d(Ln/Ld)_dv |  | dv |
+ *    | dx |  = | d(Sn/Sd)_du  d(Sn/Sd)_dv |  | du |
+ *    | dy |  = | d(Ln/Ld)_du  d(Ln/Ld)_dv |  | dv |
  *
  *    [du dv] are obtained by inverting the design matrix and multiplying by
- * [dc, dr]. This iternative procedure is repeated until [dc, dr] are
+ * [dx, dy]. This iternative procedure is repeated until [dx, dy] are
  * sufficiently small.
  *
  *  \remark the scale factors eSSAMP, eSLINE are reduced for a single image.
@@ -549,18 +549,18 @@ bool RationalModel::SensorToGroundNormalize(const double x, const double y,
     }
 
     // normalized col & row misclosures
-    // b[2] = | dc  dr |
-    const double dc = xp - x; // Normalized column misclosure
-    const double dr = yp - y; // Normalized row misclosure
+    // b[2] = | dx  dy |
+    const double dx = xp - x; // Normalized column misclosure
+    const double dy = yp - y; // Normalized row misclosure
 
     // do not re-compute the partial derivatives within 1 pixel
-    if (fabs(dc) < mInvScale[eISSAMP] && fabs(dr) < mInvScale[eISLINE]) {
+    if (fabs(dx) < mInvScale[eISSAMP] && fabs(dy) < mInvScale[eISLINE]) {
       recalcFlag = false;
     }
 
     // delta of u and v by solving Ax = b
-    const double du = (dFr_dv * dc - dFc_dv * dr) * invDet; // Normalized longitude error
-    const double dv = (-dFr_du * dc + dFc_du * dr) * invDet; // Normalized latitude error
+    const double du = (dFr_dv * dx - dFc_dv * dy) * invDet; // Normalized longitude error
+    const double dv = (-dFr_du * dx + dFc_du * dy) * invDet; // Normalized latitude error
 
     u -= du;
     v -= dv;
@@ -570,7 +570,7 @@ bool RationalModel::SensorToGroundNormalize(const double x, const double y,
       return false;
 
     // terminate if converged
-    if (fabs(dc) < mTol_c && fabs(dr) < mTol_r)
+    if (fabs(dx) < mTol_c && fabs(dy) < mTol_r)
       break;
   }
 
