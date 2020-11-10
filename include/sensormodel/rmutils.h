@@ -105,7 +105,7 @@ inline void Duvw_duvw(const double u, const double v, const double w,
   Duvw_dw(u, v, w, u2, v2, w2, uv, uw, vw, duvw_dw);
 }
 
-// Partial derivatives of the numerators and denominators w.r.t u, v, w.
+// Partial derivatives of the numerator and denominator polynomials w.r.t u, v, w.
 // unrolling the loop for performance with 10 out of the 20 terms
 inline double D_du(const double* c, const double* duvw_du) {
   return c[1] + c[4] * duvw_du[4] + c[5] * duvw_du[5] + c[7] * duvw_du[7] +

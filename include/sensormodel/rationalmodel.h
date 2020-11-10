@@ -17,17 +17,17 @@ namespace earthxpert {
  *
  *  \detail The rational function model is defined by formulae
  *
- *       Ln(L, P, H)
- *  r = ------------
- *       Ld(L, P, H)
+ *       Ln(L, P, H)    p1(u, v, w)
+ *  r = ------------ = -------------
+ *       Ld(L, P, H)    p2(u, v, w)
  *
  *      lnc0 + lnc1 * L + lnc2 * P + lnc3 * H + ... + lnc19 * H * H * H
  *    = ---------------------------------------------------------------
  *      ldc0 + ldc1 * L + ldc2 * P + ldc3 * H + ... + ldc19 * H * H * H
  *
- *       Sn(L, P, H)
- *  c = ------------
- *       Sd(L, P, H)
+ *       Sn(L, P, H)    p3(u, v, w)
+ *  c = ------------ = -------------
+ *       Sd(L, P, H)    p4(u, v, w)
  *
  *      snc0 + snc1 * L + snc2 * P + snc3 * H + ... + snc19 * H * H * H
  *    = ---------------------------------------------------------------
@@ -35,11 +35,11 @@ namespace earthxpert {
  *
  *  where
  *
- *      r the normalized line position
- *      c the normalized sample position
- *      L the normalized longitude position
- *      P the normalized latitude position
- *      H the normalized height
+ *      r/y the normalized line position
+ *      c/x the normalized sample position
+ *      L/u the normalized longitude position
+ *      P/v the normalized latitude position
+ *      H/w the normalized height
  *      lnc 20 line numerator coefficients given in lineNumCoef
  *      ldc 20 line denominator coefficients given in lineDenCoef
  *      snc 20 sample numerator coefficients given in sampNumCoef
@@ -158,8 +158,6 @@ public:
    *  \param [in] image 2d position (col, row) in image coordinate system
    *  \param [in/out] ground 3d ground position (Long, Lat, Height) in ground
    * coordinate system \return Returns true if the operation succeeds
-   *
-   *  \details More details
    */
   bool ImageToGround(const Point2d &image, Point3d &ground) const override;
 
@@ -172,8 +170,6 @@ public:
    *  \param [in] ground 3d ground position (Long, Lat, Height)
    *  \param [out] image 2d image position (col, row)
    *  \return Returns true if operation succeeds
-   *
-   *  \details More details
    */
   bool GroundToImage(const Point3d &ground, Point2d &image) const override;
 
@@ -339,7 +335,6 @@ private:
    *  output the 2d position in virtual sensor coordinate system.
    */
   inline Point2d ImageApparantToSensor(const Point2d& image) const {
-    const auto nfc = mNormalFactors.data();
     return { (image.x - nfc[eOSAMP]) * mInvScale[eISSAMP],
              (image.y - nfc[eOLINE]) * mInvScale[eISLINE] };
   }
@@ -358,7 +353,6 @@ private:
    *  \return Return 2d apparant rpc position (col, row) in imagery coordinate system
    */
   inline Point2d SensorToImageApparant(const Point2d& sensor) const {
-    auto nfc = mNormalFactors.data();
     return { nfc[eOSAMP] + nfc[eSSAMP] * sensor.x,
              nfc[eOLINE] + nfc[eSLINE] * sensor.y };
   }
@@ -388,7 +382,6 @@ private:
   }
 
   inline Point3d GroundNormalize(const Point3d& ground) const {
-    const auto nfc = mNormalFactors.data();
     return { (ground.x - nfc[eOLON]) * mInvScale[eISLON],
              (ground.y - nfc[eOLAT]) * mInvScale[eISLAT],
              (ground.z - nfc[eOHGT]) * mInvScale[eISHGT] };
