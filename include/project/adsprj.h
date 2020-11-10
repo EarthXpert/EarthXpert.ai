@@ -20,6 +20,9 @@ public:
   ~AdsProject() = default;
 
   PrjType GetProjectType() const noexcept override { return ePT_ADS; }
+
+private:
+  friend class AdsPrjMarshaller;
 };
 
 using UPAdsProject = std::unique_ptr<AdsProject>;

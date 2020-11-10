@@ -7,7 +7,7 @@
 
 #include "core/math/constants.h"
 #include "core/math/mutils.h"
-#include "marshaller/rationalmodelmarshaller.h"
+#include "marshaller/sensormodel/rationalmodelmarshaller.h"
 #include "sensormodel/rationalmodel.h"
 
 using namespace earthxpert;

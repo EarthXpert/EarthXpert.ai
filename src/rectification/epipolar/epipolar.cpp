@@ -10,7 +10,7 @@
 #include "io/raster/rasterreader.h"
 #include "io/raster/rasterwriter.h"
 #include "marshaller/epipolarstereomarshaller.h"
-#include "marshaller/rationalmodelmarshaller.h"
+#include "marshaller/sensormodel/rationalmodelmarshaller.h"
 #include "rectification/epipolar/epipolargenerator.h"
 
 #include <boost/format.hpp>

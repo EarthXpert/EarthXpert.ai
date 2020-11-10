@@ -1,7 +1,7 @@
 project(exproject)
 
 add_definitions(-DEXPROJECT_API)
-set(exproject_srcs "project.cpp"
+set(exproject_srcs "./project.cpp"
   "ads/adsprj.cpp"
   "frame/frameprj.cpp"
   "rational/rationalprj.cpp")

@@ -7,7 +7,7 @@
 #include "3rdparty/opencv/exopencv.h"
 #include "core/exceptions/exexcept.h"
 #include "epipolarmodel/epipolarmodel.h"
-#include "marshaller/rationalmodelmarshaller.h"
+#include "marshaller/sensormodel/rationalmodelmarshaller.h"
 
 #include <sstream>
 

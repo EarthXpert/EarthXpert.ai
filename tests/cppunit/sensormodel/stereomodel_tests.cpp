@@ -8,7 +8,7 @@
 #include "core/math/constants.h"
 #include "core/math/mutils.h"
 #include "core/utils/unitutils.h"
-#include "marshaller/rationalmodelmarshaller.h"
+#include "marshaller/sensormodel/rationalmodelmarshaller.h"
 #include "sensormodel/rationalmodel.h"
 #include "sensormodel/rationalstereomodel.h"
 #include "sensormodel/utils/nullstereomodel.h"

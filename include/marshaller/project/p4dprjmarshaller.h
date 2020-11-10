@@ -4,7 +4,7 @@
  */
 #pragma once
 
-#include "marshaller/projectmarshaller.h"
+#include "marshaller/project/projectmarshaller.h"
 #include "project/frameprj.h"
 
 namespace earthxpert {
@@ -14,5 +14,9 @@ public:
 
   static void Serialize(const std::string& p4dFile, FrameProject const* p4dPrj);
   static std::unique_ptr<FrameProject> Deserialize(const std::string& p4dFile);
+
+private:
+  friend class FrameProject;
+
 };
 }

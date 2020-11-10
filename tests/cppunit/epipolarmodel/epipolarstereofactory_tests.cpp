@@ -9,7 +9,7 @@
 #include "core/math/mutils.h"
 #include "epipolarmodel/epipolarmodel.h"
 #include "epipolarmodel/epipolarstereofactory.h"
-#include "marshaller/rationalmodelmarshaller.h"
+#include "marshaller/sensormodel/rationalmodelmarshaller.h"
 #include "sensormodel/utils/stereomodel.h"
 
 #include <algorithm>
