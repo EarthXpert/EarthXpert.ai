@@ -9,7 +9,7 @@
 #include "epipolarmodel/epipolarmodel.h"
 #include "epipolarmodel/epipolarstereofactory.h"
 #include "epipolarmodel/nullepipolarmodel.h"
-#include "marshaller/rationalmodelmarshaller.h"
+#include "marshaller/sensormodel/rationalmodelmarshaller.h"
 #include "sensormodel/rationalstereomodel.h"
 #include "sensormodel/utils/nullstereomodel.h"
 #include "sensormodel/utils/smutils.h"
@@ -132,7 +132,7 @@ void TestCubeI2G(const ISensorModel* epiSensorModel) {
 /**
  *  \breif stereo model composed of epipolar images as OrthoReady product
  */
-void TestImageToGround_Cube(const ISensorModel* leftEpiSensorModel,
-  const ISensorModel* rightSensorModel) {
+void TestImageToGround_Cube(const ISensorModel* leftSensorEpiModel,
+  const ISensorModel* rightSensorEpiModel) {
 
 }

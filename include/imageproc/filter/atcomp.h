@@ -8,7 +8,7 @@
 
 namespace earthxpert {
 /**
- *  The calss AtComp improve image statistically and virtually by
+ *  The class AtComp improve image statistically and virtually by
  *  compensating the atmospheric effects, such as haze, blur, shadow etc.
  */
 class EXIMAGEPROC_EXPORTS AtComp final : public ImageFilter {

@@ -14,4 +14,14 @@ enum SrsType {
   eLOCAL,
   eMAP      // projected
 };
+
+//
+struct SRSInfo {
+
+};
+
+//
+struct CTInfo {
+
+};
 }

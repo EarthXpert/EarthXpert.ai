@@ -18,5 +18,10 @@ class EXCORE_EXPORTS CcsSRS final : public ISRS
 {
 public:
   ~CcsSRS() = default;
+
+  void GetDatum() override {}
 };
+
+using UPCcsSRS = std::unique_ptr<CcsSRS>;
+using SPCcsSRS = std::shared_ptr<CcsSRS>;
 }

@@ -2,7 +2,7 @@
  *  Copyright (c) 2018.  All rights reserved.
  * -----------------------------------------------------------------------------
  */
-#include "marshaller/framemodelmarshaller.h"
+#include "marshaller/sensormodel/framemodelmarshaller.h"
 #include "core/exceptions/exexcept.h"
 #include "core/utils/stringutils.h"
 

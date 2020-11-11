@@ -5,6 +5,7 @@
 #pragma once
 
 #include "core/utils/typehelper.h"
+#include "3rdparty/opencv/exopencv.h"
 
 #include <cmath>
 
@@ -27,10 +28,18 @@ constexpr inline size_t exp2(const size_t n) {
 }
 
 /**
+ *  \param [in] angle the rotation angle [radian]
+ */
+inline std::pair<double, double> sincos(const double angle) {
+  return { sin(angle), cos(angle) };
+}
+
+/**
  *  \brief compare two values, the first value is assgined to be the second
  *  iff the latter is smaller.
  */
-template <typename Ty> inline void Smaller(Ty& sval, const Ty& val) {
+template <typename Ty> inline void 
+Smaller(Ty& sval, const Ty& val) {
   if (sval > val) sval = val;
 }
 
@@ -38,7 +47,8 @@ template <typename Ty> inline void Smaller(Ty& sval, const Ty& val) {
  *  \brief compare two values, the first value is assgined to be the second
  *  iff the latter is larger.
  */
-template <typename Ty> inline void Larger(Ty& lval, const Ty& val) {
+template <typename Ty> inline void 
+Larger(Ty& lval, const Ty& val) {
   if (lval < val) lval = val;
 }
 
@@ -51,7 +61,8 @@ template <typename Ty> inline void Larger(Ty& lval, const Ty& val) {
  *  \param [in/out] lval to be assgined to be the third iff the latter is larger
  *  \param [in] val the value used to update sval & lval.
  */
-template <typename Ty> inline void MinMax(Ty& sval, Ty& lval, const Ty& val) {
+template <typename Ty> inline void 
+MinMax(Ty& sval, Ty& lval, const Ty& val) {
   Smaller(sval, val);
   Larger(lval, val);
 }
@@ -69,13 +80,23 @@ inline Tuple4<Ty> LinearWeights(const Ty xf, const Ty yf) {
     return { w1, w3, w2, w4 };
   else
     return { w1, w2, w3, w4 };
-};
+}
 
-inline double LinearInterp(const double v1, const double v2, const double v3,
-  const double v4, const double xf, const double yf) {
-  return (1.0 - yf) * ((1.0 - xf) * v1 + xf * v2) +
-    yf * ((1.0 - xf) * v3 + xf * v4);
-};
+/**
+ *  \brief bi-linear interpolation
+ */
+template<typename Ty=double>
+inline Ty LinearInterp(const Ty v1, const Ty v2,
+  const Ty v3, const Ty v4, const Ty xf, const Ty yf) {
+  return Ty((1.0 - yf) * ((1.0 - xf) * v1 + xf * v2) +
+    yf * ((1.0 - xf) * v3 + xf * v4));
+}
+
+inline cv::Vec2f LinearInterp(const cv::Vec2f v1, const cv::Vec2f v2,
+  const cv::Vec2f v3, const cv::Vec2f v4, const double xf, const double yf) {
+  return cv::Vec2f(float(LinearInterp<double>(v1[0], v2[0], v3[0], v4[0], xf, yf)),
+                   float(LinearInterp<double>(v1[1], v2[1], v3[1], v4[1], xf, yf)));
+}
 
 /**
  *  \brief  make a number being a multiple of a stride, and extend away from 0

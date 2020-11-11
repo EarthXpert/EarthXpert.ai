@@ -8,7 +8,7 @@
 #include "core/math/constants.h"
 #include "core/math/mutils.h"
 #include "core/utils/unitutils.h"
-#include "marshaller/rationalmodelmarshaller.h"
+#include "marshaller/sensormodel/rationalmodelmarshaller.h"
 #include "sensormodel/rationalmodel.h"
 #include "sensormodel/rationalstereomodel.h"
 #include "sensormodel/utils/nullstereomodel.h"
@@ -41,8 +41,6 @@ TEST(stereomodel, ImageToGround) {
   StereoModel smC(leftModel.get(), rightModel.get());    // Ceres
   smC.SetForwardAlgorithm(IStereoModel::eSM_CERES);
 
-  RationalStereoModel smE(leftModel.get(), rightModel.get()); // EXAI
-
   StereoModel smI(leftModel.get(), rightModel.get());    // intersect
   Point3d origin(109.2114, 34.6557, 396);
   auto ee = std::make_shared<EarthEllipsoid>();
@@ -50,12 +48,17 @@ TEST(stereomodel, ImageToGround) {
   smI.SetEarthEllipsoid(ee);
   smI.SetForwardAlgorithm(IStereoModel::eCA_INTERSECT);
 
+  RationalStereoModel smE(leftModel.get(), rightModel.get()); // EXAI
+
+  StereoModel smL(leftModel.get(), rightModel.get());    // LS 
+  smL.SetForwardAlgorithm(IStereoModel::eSM_LS);
+
   StereoModel smN(leftModel.get(), rightModel.get());    // NR 
   smN.SetForwardAlgorithm(IStereoModel::eSM_NR);
 
   Point2d imageL, imageR;
-  Point3d grdC, grdE, grdI, grdN;
-  std::vector<Point2d> imgC, imgE, imgI, imgN;
+  Point3d grdC, grdI, grdE, grdL, grdN;
+  std::vector<Point2d> imgC, imgI, imgE, imgL, imgN;
 
   // low and high positions
   std::array<Point3d, 2> grd{Point3d(109.2114, 34.6557, 396.0 - 375.0), 
@@ -66,42 +69,51 @@ TEST(stereomodel, ImageToGround) {
     rightModel->GroundToImage(grd[i], imageR);
 
     // forward intersection
-    smC.ImageToGround(imageL, imageR, grdC);
-    smE.ImageToGround(imageL, imageR, grdE);
-    smI.ImageToGround(imageL, imageR, grdI);
-    smN.ImageToGround(imageL, imageR, grdN);
+    smC.ImagesToGround(imageL, imageR, grdC);
+    smI.ImagesToGround(imageL, imageR, grdI);
+    smE.ImagesToGround(imageL, imageR, grdE);
+    smL.ImagesToGround(imageL, imageR, grdL);
+    smN.ImagesToGround(imageL, imageR, grdN);
 
     ASSERT_LE(fabs(grdC.x - grd[i].x), kTolDEG) << "Max. longitude difference > 1 mm";
     ASSERT_LE(fabs(grdC.y - grd[i].y), kTolDEG) << "Max.  latitude difference > 1 mm";
     ASSERT_LE(fabs(grdC.z - grd[i].z), kTolMM) << "Max.    height difference > 1 mm";
-    ASSERT_LE(fabs(grdE.x - grd[i].x), kTolDEG) << "Max. longitude difference > 1 mm";
-    ASSERT_LE(fabs(grdE.y - grd[i].y), kTolDEG) << "Max.  latitude difference > 1 mm";
-    ASSERT_LE(fabs(grdE.z - grd[i].z), kTolMM) << "Max.    height difference > 1 mm";
     ASSERT_LE(fabs(grdI.x - grd[i].x), kTolDEG) << "Max. longitude difference > 1 mm";
     ASSERT_LE(fabs(grdI.y - grd[i].y), kTolDEG) << "Max.  latitude difference > 1 mm";
     ASSERT_LE(fabs(grdI.z - grd[i].z), kTolMM) << "Max.    height difference > 1 mm";
+    ASSERT_LE(fabs(grdE.x - grd[i].x), kTolDEG) << "Max. longitude difference > 1 mm";
+    ASSERT_LE(fabs(grdE.y - grd[i].y), kTolDEG) << "Max.  latitude difference > 1 mm";
+    ASSERT_LE(fabs(grdE.z - grd[i].z), kTolMM) << "Max.    height difference > 1 mm";
+    ASSERT_LE(fabs(grdL.x - grd[i].x), kTolDEG) << "Max. longitude difference > 1 mm";
+    ASSERT_LE(fabs(grdL.y - grd[i].y), kTolDEG) << "Max.  latitude difference > 1 mm";
+    ASSERT_LE(fabs(grdL.z - grd[i].z), kTolMM) << "Max.    height difference > 1 mm";
     ASSERT_LE(fabs(grdN.x - grd[i].x), kTolDEG) << "Max. longitude difference > 1 mm";
     ASSERT_LE(fabs(grdN.y - grd[i].y), kTolDEG) << "Max.  latitude difference > 1 mm";
     ASSERT_LE(fabs(grdN.z - grd[i].z), kTolMM) << "Max.    height difference > 1 mm";
 
     // reprojection for consistency check
-    smC.GroundToImage(grdC, imgC);
-    smE.GroundToImage(grdE, imgE);
-    smI.GroundToImage(grdI, imgI);
-    smN.GroundToImage(grdN, imgN);
+    smC.GroundToImages(grdC, imgC);
+    smI.GroundToImages(grdI, imgI);
+    smE.GroundToImages(grdE, imgE);
+    smL.GroundToImages(grdL, imgL);
+    smN.GroundToImages(grdN, imgN);
 
     ASSERT_NEAR(imageL.x, imgC[0].x, kTolP);
     ASSERT_NEAR(imageL.y, imgC[0].y, kTolP);
     ASSERT_NEAR(imageR.x, imgC[1].x, kTolP);
     ASSERT_NEAR(imageR.y, imgC[1].y, kTolP);
-    ASSERT_NEAR(imageL.x, imgE[0].x, kTolP);
-    ASSERT_NEAR(imageL.y, imgE[0].y, kTolP);
-    ASSERT_NEAR(imageR.x, imgE[1].x, kTolP);
-    ASSERT_NEAR(imageR.y, imgE[1].y, kTolP);
     ASSERT_NEAR(imageL.x, imgI[0].x, kTolP);
     ASSERT_NEAR(imageL.y, imgI[0].y, kTolP);
     ASSERT_NEAR(imageR.x, imgI[1].x, kTolP);
     ASSERT_NEAR(imageR.y, imgI[1].y, kTolP);
+    ASSERT_NEAR(imageL.x, imgE[0].x, kTolP);
+    ASSERT_NEAR(imageL.y, imgE[0].y, kTolP);
+    ASSERT_NEAR(imageR.x, imgE[1].x, kTolP);
+    ASSERT_NEAR(imageR.y, imgE[1].y, kTolP);
+    ASSERT_NEAR(imageL.x, imgL[0].x, kTolP);
+    ASSERT_NEAR(imageL.y, imgL[0].y, kTolP);
+    ASSERT_NEAR(imageR.x, imgL[1].x, kTolP);
+    ASSERT_NEAR(imageR.y, imgL[1].y, kTolP);
     ASSERT_NEAR(imageL.x, imgN[0].x, kTolP);
     ASSERT_NEAR(imageL.y, imgN[0].y, kTolP);
     ASSERT_NEAR(imageR.x, imgN[1].x, kTolP);
@@ -130,21 +142,21 @@ TEST(stereomodel, ImageToGround_Cube) {
 }
 
 void TestImageToGround_Cube(const RationalModel* leftModel, const RationalModel* rightModel) {
-  auto nfcL = leftModel->GetNormalFators();
-  const auto minLonL = nfcL[rnf::eOLONG] - nfcL[rnf::eSLONG] * kFactor;
-  const auto maxLonL = nfcL[rnf::eOLONG] + nfcL[rnf::eSLONG] * kFactor;
+  auto nfcL = leftModel->GetNormalFactors();
+  const auto minLonL = nfcL[rnf::eOLON] - nfcL[rnf::eSLON] * kFactor;
+  const auto maxLonL = nfcL[rnf::eOLON] + nfcL[rnf::eSLON] * kFactor;
   const auto minLatL = nfcL[rnf::eOLAT] - nfcL[rnf::eSLAT] * kFactor;
   const auto maxLatL = nfcL[rnf::eOLAT] + nfcL[rnf::eSLAT] * kFactor;
-  const auto minHgtL = nfcL[rnf::eOHEIGHT] - nfcL[rnf::eSHEIGHT] * kFactor;
-  const auto maxHgtL = nfcL[rnf::eOHEIGHT] + nfcL[rnf::eSHEIGHT] * kFactor;
+  const auto minHgtL = nfcL[rnf::eOHGT] - nfcL[rnf::eSHGT] * kFactor;
+  const auto maxHgtL = nfcL[rnf::eOHGT] + nfcL[rnf::eSHGT] * kFactor;
 
-  auto nfcR = rightModel->GetNormalFators();
-  const auto minLonR = nfcR[rnf::eOLONG] - nfcR[rnf::eSLONG] * kFactor;
-  const auto maxLonR = nfcR[rnf::eOLONG] + nfcR[rnf::eSLONG] * kFactor;
+  auto nfcR = rightModel->GetNormalFactors();
+  const auto minLonR = nfcR[rnf::eOLON] - nfcR[rnf::eSLON] * kFactor;
+  const auto maxLonR = nfcR[rnf::eOLON] + nfcR[rnf::eSLON] * kFactor;
   const auto minLatR = nfcR[rnf::eOLAT] - nfcR[rnf::eSLAT] * kFactor;
   const auto maxLatR = nfcR[rnf::eOLAT] + nfcR[rnf::eSLAT] * kFactor;
-  const auto minHgtR = nfcR[rnf::eOHEIGHT] - nfcR[rnf::eSHEIGHT] * kFactor;
-  const auto maxHgtR = nfcR[rnf::eOHEIGHT] + nfcR[rnf::eSHEIGHT] * kFactor;
+  const auto minHgtR = nfcR[rnf::eOHGT] - nfcR[rnf::eSHGT] * kFactor;
+  const auto maxHgtR = nfcR[rnf::eOHGT] + nfcR[rnf::eSHGT] * kFactor;
 
   const auto minLon = std::max(minLonL, minLonR);
   const auto maxLon = std::min(maxLonL, maxLonR);
@@ -158,14 +170,13 @@ void TestImageToGround_Cube(const RationalModel* leftModel, const RationalModel*
   const auto stepHgt = (maxHgt - minHgt) / kNum;
 
   Point3d maxDiffC(-1.0, -1.0, -1.0);
-  Point3d maxDiffE(-1.0, -1.0, -1.0);
   Point3d maxDiffI(-1.0, -1.0, -1.0);
+  Point3d maxDiffE(-1.0, -1.0, -1.0);
+  Point3d maxDiffL(-1.0, -1.0, -1.0);
   Point3d maxDiffN(-1.0, -1.0, -1.0);
 
   StereoModel smC(leftModel, rightModel);    // Ceres 
   smC.SetForwardAlgorithm(IStereoModel::eSM_CERES);
-
-  StereoModel smE(leftModel, rightModel);    // EXAI 
 
   Point3d origin((minLon + maxLon) / 2, (minLat + maxLat) / 2, (minHgt + maxHgt) / 2);
   auto ee = std::make_shared<EarthEllipsoid>();
@@ -173,6 +184,11 @@ void TestImageToGround_Cube(const RationalModel* leftModel, const RationalModel*
   StereoModel smI(leftModel, rightModel);    // intersect
   smI.SetEarthEllipsoid(ee);
   smI.SetForwardAlgorithm(IStereoModel::eCA_INTERSECT);
+
+  StereoModel smE(leftModel, rightModel);    // EXAI 
+
+  StereoModel smL(leftModel, rightModel);    // LS 
+  smL.SetForwardAlgorithm(IStereoModel::eSM_LS);
 
   StereoModel smN(leftModel, rightModel);    // NR 
   smN.SetForwardAlgorithm(IStereoModel::eSM_NR);
@@ -182,8 +198,9 @@ void TestImageToGround_Cube(const RationalModel* leftModel, const RationalModel*
 
   int n{};  // # of test points
   int nC{}; // # of successful Ceres
-  int nE{}; // # of successful EXAI
   int nI{}; // # of successful interactions
+  int nE{}; // # of successful EXAI
+  int nL{}; // # of LS.
   int nN{}; // # of NR.
 
   bool ret;
@@ -205,28 +222,35 @@ void TestImageToGround_Cube(const RationalModel* leftModel, const RationalModel*
           continue;
 
         Point3d grdC{ ground };
-        ret = smC.ImageToGround(imageL, imageR, grdC);
+        ret = smC.ImagesToGround(imageL, imageR, grdC);
         if (ret) {
           Larger(maxDiffC, xabs(grdC - ground));
           ++nC;
         }
 
-        Point3d grdE{ ground };
-        ret = smE.ImageToGround(imageL, imageR, grdE);
-        if (ret) {
-          Larger(maxDiffE, xabs(grdE - ground));
-          ++nE;
-        }
-
         Point3d grdI{ ground };
-        ret = smI.ImageToGround(imageL, imageR, grdI);
+        ret = smI.ImagesToGround(imageL, imageR, grdI);
         if (ret) {
           Larger(maxDiffI, xabs(grdI - ground));
           ++nI;
         }
 
+        Point3d grdE{ ground };
+        ret = smE.ImagesToGround(imageL, imageR, grdE);
+        if (ret) {
+          Larger(maxDiffE, xabs(grdE - ground));
+          ++nE;
+        }
+
+        Point3d grdL{ ground };
+        ret = smL.ImagesToGround(imageL, imageR, grdL);
+        if (ret) {
+          Larger(maxDiffL, xabs(grdL - ground));
+          ++nL;
+        }
+
         Point3d grdN{ ground };
-        ret = smN.ImageToGround(imageL, imageR, grdN);
+        ret = smN.ImagesToGround(imageL, imageR, grdN);
         if (ret) {
           Larger(maxDiffN, xabs(grdN - ground));
           ++nN;
@@ -238,22 +262,26 @@ void TestImageToGround_Cube(const RationalModel* leftModel, const RationalModel*
 
   ASSERT_LT(0, n)  << "Number of test points: " << n;
   ASSERT_EQ(nC, n) << "Number of Ceres points: " << nC;
-  ASSERT_EQ(nE, n) << "Number of Ceres points: " << nE;
   ASSERT_EQ(nI, n) << "Number of interaction points: " << nI;
+  ASSERT_EQ(nE, n) << "Number of Ceres points: " << nE;
+  ASSERT_EQ(nL, n) << "Number of NR points: " << nL;
   ASSERT_EQ(nN, n) << "Number of NR points: " << nN;
 
   ASSERT_LE(maxDiffC.x, kTolDEG) << "Max. longitude difference > 1 mm: " << maxDiffC.x;
   ASSERT_LE(maxDiffC.y, kTolDEG) << "Max.  latitude difference > 1 mm: " << maxDiffC.y;
   ASSERT_LE(maxDiffC.z, kTolMM) << "Max.    height difference > 1 mm: " << maxDiffC.z;
-  ASSERT_LE(maxDiffE.x, kTolDEG) << "Max. longitude difference > 1 mm: " << maxDiffE.x;
-  ASSERT_LE(maxDiffE.y, kTolDEG) << "Max.  latitude difference > 1 mm: " << maxDiffE.y;
-  ASSERT_LE(maxDiffE.z, kTolMM) << "Max.    height difference > 1 mm: " << maxDiffE.z;
   ASSERT_LE(maxDiffI.x, kTolDEG) << "Max. longitude difference > 1 mm: " << maxDiffI.x;
   ASSERT_LE(maxDiffI.y, kTolDEG) << "Max.  latitude difference > 1 mm: " << maxDiffI.y;
   ASSERT_LE(maxDiffI.z, kTolMM) << "Max.    height difference > 1 mm: " << maxDiffI.z;
+  ASSERT_LE(maxDiffE.x, kTolDEG) << "Max. longitude difference > 1 mm: " << maxDiffE.x;
+  ASSERT_LE(maxDiffE.y, kTolDEG) << "Max.  latitude difference > 1 mm: " << maxDiffE.y;
+  ASSERT_LE(maxDiffE.z, kTolMM) << "Max.    height difference > 1 mm: " << maxDiffE.z;
+  ASSERT_LE(maxDiffL.x, kTolDEG) << "Max. longitude difference > 1 mm: " << maxDiffL.x;
+  ASSERT_LE(maxDiffL.y, kTolDEG) << "Max.  latitude difference > 1 mm: " << maxDiffL.y;
+  ASSERT_LE(maxDiffL.z, kTolMM) << "Max.    height difference > 1 mm: " << maxDiffL.z;
   ASSERT_LE(maxDiffN.x, kTolDEG) << "Max. longitude difference > 1 mm: " << maxDiffN.x;
   ASSERT_LE(maxDiffN.y, kTolDEG) << "Max.  latitude difference > 1 mm: " << maxDiffN.y;
-  ASSERT_LE(maxDiffN.z, kTolMM)  << "Max.    height difference > 1 mm: " << maxDiffN.z;
+  ASSERT_LE(maxDiffN.z, kTolMM) << "Max.    height difference > 1 mm: " << maxDiffN.z;
 }
 
 /**

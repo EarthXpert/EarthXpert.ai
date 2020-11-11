@@ -7,7 +7,7 @@
 
 #include "core/math/constants.h"
 #include "core/math/mutils.h"
-#include "marshaller/rationalmodelmarshaller.h"
+#include "marshaller/sensormodel/rationalmodelmarshaller.h"
 #include "sensormodel/rationalmodel.h"
 
 using namespace earthxpert;
@@ -243,13 +243,13 @@ std::unique_ptr<RationalModel> CreateRationalModelD() {
 }
 
 void TestCubeI2G(const RationalModel* rationalModel) {
-  auto nfc = rationalModel->GetNormalFators();
-  const auto minLon = nfc[rnf::eOLONG] - nfc[rnf::eSLONG];
-  const auto maxLon = nfc[rnf::eOLONG] + nfc[rnf::eSLONG];
+  auto nfc = rationalModel->GetNormalFactors();
+  const auto minLon = nfc[rnf::eOLON] - nfc[rnf::eSLON];
+  const auto maxLon = nfc[rnf::eOLON] + nfc[rnf::eSLON];
   const auto minLat = nfc[rnf::eOLAT] - nfc[rnf::eSLAT];
   const auto maxLat = nfc[rnf::eOLAT] + nfc[rnf::eSLAT];
-  const auto minHgt = nfc[rnf::eOHEIGHT] - nfc[rnf::eSHEIGHT];
-  const auto maxHgt = nfc[rnf::eOHEIGHT] + nfc[rnf::eSHEIGHT];
+  const auto minHgt = nfc[rnf::eOHGT] - nfc[rnf::eSHGT];
+  const auto maxHgt = nfc[rnf::eOHGT] + nfc[rnf::eSHGT];
 
   const auto stepLon = (maxLon - minLon) / kNum;
   const auto stepLat = (maxLat - minLat) / kNum;
@@ -281,13 +281,13 @@ void TestCubeI2G(const RationalModel* rationalModel) {
 }
 
 void TestCubeI2G_Functor(const RationalModel* rationalModel) {
-  auto nfc = rationalModel->GetNormalFators();
-  const auto minLon = nfc[rnf::eOLONG] - nfc[rnf::eSLONG];
-  const auto maxLon = nfc[rnf::eOLONG] + nfc[rnf::eSLONG];
+  auto nfc = rationalModel->GetNormalFactors();
+  const auto minLon = nfc[rnf::eOLON] - nfc[rnf::eSLON];
+  const auto maxLon = nfc[rnf::eOLON] + nfc[rnf::eSLON];
   const auto minLat = nfc[rnf::eOLAT] - nfc[rnf::eSLAT];
   const auto maxLat = nfc[rnf::eOLAT] + nfc[rnf::eSLAT];
-  const auto minHgt = nfc[rnf::eOHEIGHT] - nfc[rnf::eSHEIGHT];
-  const auto maxHgt = nfc[rnf::eOHEIGHT] + nfc[rnf::eSHEIGHT];
+  const auto minHgt = nfc[rnf::eOHGT] - nfc[rnf::eSHGT];
+  const auto maxHgt = nfc[rnf::eOHGT] + nfc[rnf::eSHGT];
 
   const auto stepLon = (maxLon - minLon) / kNum;
   const auto stepLat = (maxLat - minLat) / kNum;

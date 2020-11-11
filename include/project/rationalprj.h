@@ -20,6 +20,9 @@ public:
   ~RationalProject() = default;
 
   PrjType GetProjectType() const noexcept override { return ePT_RATIONAL; }
+
+private: 
+  friend class RatPrjMarshaller;
 };
 
 using UPRationalProject = std::unique_ptr<RationalProject>;

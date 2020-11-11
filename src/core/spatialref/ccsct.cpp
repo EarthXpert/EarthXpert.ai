@@ -10,27 +10,12 @@ using namespace earthxpert::thirdparty;
 /**
  * constructor.
  *
- * \param [in] srcWkt the source WKT
- * \param [in] tgtWkt the target WKT
+ * \param [in] srcSrs the source SRS
+ * \param [in] tgtSrs the target SRS
  */
-CcsCT::CcsCT() {
+CcsCT::CcsCT(const CcsSRS* srcSrs, const CcsSRS* tgtSrs) {
   Initialize();
 }
 
 void CcsCT::Initialize() {
-}
-
-/**
- *  \brief Transform an array of points in-place.
- *
- *  \param [in] points an array of 3D points
- *  \return Returns if the transformation was successful, otherwise false.
- */
-bool CcsCT::Transform(std::vector<Point3d>& points) {
-  bool ret{ true };
-  for (auto& point : points) {
-    ret = ret && Transform(point);
-  }
-
-  return ret;
 }

@@ -33,9 +33,11 @@ public:
 
   InterpGrid(unsigned int dim, Ty minX, Ty minY, Ty maxX, Ty maxY, Ty spcX,
     Ty spcY);
-  InterpGrid(unsigned int dim, const cv::Point_<Ty>& min, 
+  InterpGrid(unsigned int dim, const cv::Point_<Ty>& min,
     const cv::Point_<Ty>& max, const cv::Point_<Ty>& spc);
   InterpGrid(unsigned int dim, const SpatialTile<Ty>& range, Ty spcX, Ty spcY);
+  InterpGrid(unsigned int dim, const SpatialTile<Ty>& range,
+    const cv::Point_<Ty>& spc);
   InterpGrid(const InterpGrid &rhs);
   InterpGrid(InterpGrid &&rhs) noexcept;
   ~InterpGrid() = default;

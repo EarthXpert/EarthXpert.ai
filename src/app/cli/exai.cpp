@@ -2,7 +2,7 @@
  *  Copyright (c) 2019.  All rights reserved.
  * -----------------------------------------------------------------------------
  */
-#include "platform/exai/exaijob.h"
+#include "packages/exai/exaijob.h"
 #include <boost/program_options.hpp>
 
 /**
@@ -16,6 +16,10 @@
  *    --version        Show program version
  *
  *    Commands :
+ *      geoinfo
+ *      featuredetect
+ *      sparsematch
+ *      blockadjust
  *      epipolar
  *      densematch
  *

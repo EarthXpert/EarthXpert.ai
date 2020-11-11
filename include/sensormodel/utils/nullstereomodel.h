@@ -14,36 +14,36 @@ class EXSENSORMODEL_EXPORTS NullStereoModel final : public IStereoModel {
 public:
   ~NullStereoModel() = default;
 
-  bool ImageToGround(const Point2d &leftImage,
+  bool ImagesToGround(const Point2d &leftImage,
     const Point2d &rightImage, Point3d &ground) const override { return false; }
 
-  size_t ImageToGround(const std::vector<Point2d> &leftImages,
+  size_t ImagesToGround(const std::vector<Point2d> &leftImages,
     const std::vector<Point2d> &rightImages, 
     std::vector<Point3d> &grounds) const override { return 0; }
 
-  bool ImageToGround(const std::array<Point2d, 3> &images, 
+  bool ImagesToGround(const std::array<Point2d, 3> &images, 
     Point3d &ground) const override { return false; }
 
-  bool ImageToGround(const std::vector<Point2d> &images, 
+  bool ImagesToGround(const std::vector<Point2d> &images, 
     Point3d &ground) const override { return false; }
 
-  bool ImageToGround(const std::vector<const ISensorModel*>& sensorModels,
+  bool ImagesToGround(const std::vector<const ISensorModel*>& sensorModels,
     const std::vector<Point2d>& images, Point3d& ground) const override {
     return false;
   }
 
-  size_t ImageToGround(const std::vector<Point2d> &images, 
+  size_t ImagesToGround(const std::vector<Point2d> &images, 
     std::vector<Point3d> &grounds) const override { return 0; }
 
-  bool GroundToImage(const Point3d& ground, 
+  bool GroundToImages(const Point3d& ground, 
     std::vector<Point2d>& images) const override { return false; }
 
-  bool GroundToImage(const std::vector<const ISensorModel*>& sensorModels, 
+  bool GroundToImages(const std::vector<const ISensorModel*>& sensorModels, 
     const Point3d& ground, std::vector<Point2d>& images) const override {
     return false;
   }
 
-  size_t GroundToImage(const std::vector<Point3d> &grounds, 
+  size_t GroundToImages(const std::vector<Point3d> &grounds, 
     std::vector<Point2d> &images) const override { return 0; }
 };
 

@@ -2,7 +2,7 @@
  *  Copyright (c) 2020.  All rights reserved.
  * -----------------------------------------------------------------------------
  */
-#include "platform/exai/exaiepipolar.h"
+#include "packages/exai/exaiepipolar.h"
 
 #include <boost/program_options.hpp>
 #include <iostream>

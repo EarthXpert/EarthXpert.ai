@@ -48,6 +48,18 @@ InterpCube<Ty>::InterpCube(const unsigned int dim, const cv::Point3_<Ty>& min,
   LayoutNodes(min, max, spc);
 }
 
+template <typename Ty>
+InterpCube<Ty>::InterpCube(const unsigned int dim, const SpatialCube<Ty>& range,
+  const Ty spcX, const Ty spcY, const Ty spcZ) : mDim(dim) {
+  LayoutNodes(range, spcX, spcY, spcZ);
+}
+
+template <typename Ty>
+InterpCube<Ty>::InterpCube(const unsigned int dim, const SpatialCube<Ty>& range,
+  const cv::Point3_<Ty>& spc) : mDim(dim) {
+  LayoutNodes(range, spc.x, spc.y, spc.z);
+}
+
 template <typename Ty> InterpCube<Ty>::InterpCube(const InterpCube &rhs) {}
 
 template <typename Ty>
@@ -93,14 +105,10 @@ void InterpCube<Ty>::LayoutNodes(const Ty minX,
 }
 
 /**
- * Populate an array with the X,Y,Z positions of the node points defining the
- * cube.
+ * \brief Populate an array with the X,Y,Z positions of the node points 
+ * defining the cube.
  *
- * \param [in/out] nodes Array of point X,Y,Z coordinates.
- *      The array must be allocated by the caller.
- * \remark The ordering of the cube nodes is undefined.  The user
- *      need only know that these nodes and the values returned by
- *      GetArray() are provided in the same order.
+ * \param [in/out] nodes Array of point X,Y,Z coordinates allocated by the caller.
  */
 template <typename Ty>
 void InterpCube<Ty>::GetNodes(cv::Point3_<Ty> *const node) const {

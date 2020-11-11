@@ -27,8 +27,7 @@ using namespace earthxpert;
  */
 template <typename Ty>
 InterpGrid<Ty>::InterpGrid(const unsigned int dim, const Ty minX, const Ty minY, 
-  const Ty maxX, const Ty maxY, const Ty spcX, const Ty spcY) 
-    : mDim(dim) {
+  const Ty maxX, const Ty maxY, const Ty spcX, const Ty spcY) : mDim(dim) {
   LayoutNodes(minX, minY, maxX-minX, maxY-minY, spcX, spcY);
 }
 
@@ -40,9 +39,14 @@ InterpGrid<Ty>::InterpGrid(unsigned int dim, const cv::Point_<Ty>& min,
 
 template <typename Ty>
 InterpGrid<Ty>::InterpGrid(const unsigned int dim,
-  const SpatialTile<Ty>& range, const Ty spcX, const Ty spcY) 
-  : mDim(dim) {
+  const SpatialTile<Ty>& range, const Ty spcX, const Ty spcY) : mDim(dim) {
   LayoutNodes(range, spcX, spcY);
+}
+
+template <typename Ty>
+InterpGrid<Ty>::InterpGrid(const unsigned int dim,
+  const SpatialTile<Ty>& range, const cv::Point_<Ty>& spc) : mDim(dim) {
+  LayoutNodes(range, spc.x, spc.y);
 }
 
 /**
@@ -171,14 +175,10 @@ void InterpGrid<Ty>::LayoutNodes(const Ty minX, const Ty minY,
 }
 
 /**
- * Populate an array with the X & Y positions of the node points defining the
- * grid.
+ * \brief Populate an array with the X & Y positions of the node points 
+ * defining the grid.
  *
- * \param [in/out] nodes Array of point X,Y coordinates.
- *      The array must be allocated by the caller.
- * \remark The ordering of the grid nodes is undefined.  The user
- *      need only know that these nodes and the values returned by
- *      GetArray() are provided in the same order.
+ * \param [in/out] nodes Array of point X,Y coordinates allocated by the caller.
  */
 template <typename Ty>
 void InterpGrid<Ty>::GetNodes(cv::Point_<Ty> *const nodes) const {

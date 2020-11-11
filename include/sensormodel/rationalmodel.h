@@ -17,17 +17,17 @@ namespace earthxpert {
  *
  *  \detail The rational function model is defined by formulae
  *
- *       Ln(L, P, H)
- *  r = ------------
- *       Ld(L, P, H)
+ *       Ln(L, P, H)    p1(u, v, w)
+ *  r = ------------ = -------------
+ *       Ld(L, P, H)    p2(u, v, w)
  *
  *      lnc0 + lnc1 * L + lnc2 * P + lnc3 * H + ... + lnc19 * H * H * H
  *    = ---------------------------------------------------------------
  *      ldc0 + ldc1 * L + ldc2 * P + ldc3 * H + ... + ldc19 * H * H * H
  *
- *       Sn(L, P, H)
- *  c = ------------
- *       Sd(L, P, H)
+ *       Sn(L, P, H)    p3(u, v, w)
+ *  c = ------------ = -------------
+ *       Sd(L, P, H)    p4(u, v, w)
  *
  *      snc0 + snc1 * L + snc2 * P + snc3 * H + ... + snc19 * H * H * H
  *    = ---------------------------------------------------------------
@@ -35,11 +35,11 @@ namespace earthxpert {
  *
  *  where
  *
- *      r the normalized line position
- *      c the normalized sample position
- *      L the normalized longitude position
- *      P the normalized latitude position
- *      H the normalized height
+ *      r/y the normalized line position
+ *      c/x the normalized sample position
+ *      L/u the normalized longitude position
+ *      P/v the normalized latitude position
+ *      H/w the normalized height
  *      lnc 20 line numerator coefficients given in lineNumCoef
  *      ldc 20 line denominator coefficients given in lineDenCoef
  *      snc 20 sample numerator coefficients given in sampNumCoef
@@ -55,8 +55,8 @@ public:
     eISLINE = 0,   // line inversed scale
     eISSAMP = 1,   // sample inversed scale
     eISLAT = 2,    // latitude inversed scale
-    eISLONG = 3,   // longitude inversed scale
-    eISHEIGHT = 4, // height inversed scale
+    eISLON = 3,    // longitude inversed scale
+    eISHGT = 4,    // height inversed scale
     NumInvScl = 5  // number of inversed scales
   };
   using isf = InvScaleFactor;
@@ -158,8 +158,6 @@ public:
    *  \param [in] image 2d position (col, row) in image coordinate system
    *  \param [in/out] ground 3d ground position (Long, Lat, Height) in ground
    * coordinate system \return Returns true if the operation succeeds
-   *
-   *  \details More details
    */
   bool ImageToGround(const Point2d &image, Point3d &ground) const override;
 
@@ -172,8 +170,6 @@ public:
    *  \param [in] ground 3d ground position (Long, Lat, Height)
    *  \param [out] image 2d image position (col, row)
    *  \return Returns true if operation succeeds
-   *
-   *  \details More details
    */
   bool GroundToImage(const Point3d &ground, Point2d &image) const override;
 
@@ -218,12 +214,12 @@ public:
   /**
    *  \return Returns the middle height
    */
-  double GetMeanHeight() const noexcept { return mNormalFators[eOHEIGHT]; }
+  double GetMeanHeight() const noexcept { return mNormalFactors[eOHGT]; }
 
   /**
    *  \brief Get normalization factors including offsets & scales.
    */
-  auto GetNormalFators() const noexcept { return mNormalFators.data(); }
+  auto GetNormalFactors() const noexcept { return mNormalFactors.data(); }
 
   /**
    *  \brief Set bias and random errors in sensor space.
@@ -282,7 +278,7 @@ private:
 
   // rational polynomial coefficients
   std::array<double, NumFact>
-      mNormalFators{}; // normalization factors including offsets & scales
+      mNormalFactors{}; // normalization factors including offsets & scales
   std::array<double, NumCoef>
       mLineNumCoef{}; // numerator polynomial of line formulae
   std::array<double, NumCoef>
@@ -339,7 +335,6 @@ private:
    *  output the 2d position in virtual sensor coordinate system.
    */
   inline Point2d ImageApparantToSensor(const Point2d& image) const {
-    const auto nfc = mNormalFators.data();
     return { (image.x - nfc[eOSAMP]) * mInvScale[eISSAMP],
              (image.y - nfc[eOLINE]) * mInvScale[eISLINE] };
   }
@@ -358,9 +353,13 @@ private:
    *  \return Return 2d apparant rpc position (col, row) in imagery coordinate system
    */
   inline Point2d SensorToImageApparant(const Point2d& sensor) const {
-    auto nfc = mNormalFators.data();
     return { nfc[eOSAMP] + nfc[eSSAMP] * sensor.x,
              nfc[eOLINE] + nfc[eSLINE] * sensor.y };
+  }
+
+  inline Point2d SensorToImageActual(const Point2d& sensor) const {
+    const auto imageApp = SensorToImageApparant(sensor);
+    return ImageApparantToActual(imageApp);
   }
 
   bool mCorrectionFlag{ false };   // flag indicating the correction status
@@ -378,15 +377,14 @@ private:
    * in virtual ground coordinate system
    *  \return Returns true if the operation succeeds
    */
-  bool SensorToGround(const Point2d &sensor, Point3d &uvw) const {
-    return SensorToGround(sensor.x, sensor.y, uvw.z, uvw.x, uvw.y);
+  bool SensorToGroundNormalize(const Point2d &sensor, Point3d &uvw) const {
+    return SensorToGroundNormalize(sensor.x, sensor.y, uvw.z, uvw.x, uvw.y);
   }
 
   inline Point3d GroundNormalize(const Point3d& ground) const {
-    const auto nfc = mNormalFators.data();
-    return { (ground.x - nfc[eOLONG]) * mInvScale[eISLONG],
+    return { (ground.x - nfc[eOLON]) * mInvScale[eISLON],
              (ground.y - nfc[eOLAT]) * mInvScale[eISLAT],
-             (ground.z - nfc[eOHEIGHT]) * mInvScale[eISHEIGHT] };
+             (ground.z - nfc[eOHGT]) * mInvScale[eISHGT] };
   }
 
   /**
@@ -395,7 +393,7 @@ private:
    *  \brief Given a 3d ground position in the virtual ground coordinate
    * system, output the 2d position in the virtual sensor coordinate system.
    *
-   *  \param [in] uvw 3d ground position (L, P, H)
+   *  \param [in] uvw 3d normalized ground position (L, P, H)
    *  \param [out] sensor 2d sensor position (x, y)
    *  \return Returns true if operation succeeds
    */
@@ -416,26 +414,33 @@ private:
   void CalcTerms(const Point3d &uvw, double *const LPH) const {
     CalcTerms(uvw.x, uvw.y, uvw.z, LPH);
   }
-  void CalcTerms(double L, double P, double H, double *const LPH) const;
+  void CalcTerms(double u, double v, double w, double *const uvw) const;
 
   Tuple4d CalcPolynomials(const Point3d &uvw) const {
     return CalcPolynomials(uvw.x, uvw.y, uvw.z);
   }
-  Tuple4d CalcPolynomials(double L, double P, double H) const;
+  Tuple4d CalcPolynomials(double u, double v, double w) const;
 
-  bool SensorToGround(const double x, const double y,
+  bool SensorToGroundNormalize(const double x, const double y,
     const double w, double& u, double& v) const;
 
-  bool SensorToGroundLinear(const Point2d &sensor, Point3d &uvw) const {
-    return SensorToGroundLinear(sensor.x, sensor.y, uvw.z, uvw.x, uvw.y);
+  bool SensorToGroundNormalizeLinear(const Point2d &sensor, Point3d &uvw) const {
+    return SensorToGroundNormalizeLinear(sensor.x, sensor.y, uvw.z, uvw.x, uvw.y);
   }
-  bool SensorToGroundLinear(double x, double y, double w, double &u,
-                            double &v) const;
+  bool SensorToGroundNormalizeLinear(double x, double y, 
+    double w, double &u, double &v) const;
   
   // cached calculation for better performance
   double mTol_c{ 1.0e-7 }; // tolerance proportional to image range
   double mTol_r{ 1.0e-7 };
-    
+  
+  // use short name for convenience
+  const double* const nfc{ mNormalFactors.data() };
+  const double* const snc{ mSampNumCoef.data() };
+  const double* const sdc{ mSampDenCoef.data() };
+  const double* const lnc{ mLineNumCoef.data() };
+  const double* const ldc{ mLineDenCoef.data() };
+
   std::array<double, NumInvScl> mInvScale{1.0}; // reciprocal of scale factors
   
   // interpolation cube to provide approximate X, Y coordinates for ImageToGround()

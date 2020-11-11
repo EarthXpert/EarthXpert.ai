@@ -6,6 +6,7 @@
 
 #include "sensormodel/utils/stereomodel.h"
 #include "core/utils//typehelper.h"
+#include "sensormodel/rationalmodel.h"
 
 namespace earthxpert {
 class ISensorModel;
@@ -49,15 +50,13 @@ public:
    *  in image coordinate system, do forward intersection of pair-rays, and
    *  output the ground position with respect to the ground coordinate system.
    *
-   *  \param [in] leftImage 2d position (x, y) in left image raster coordinate
-   * system
+   *  \param [in] leftImage 2d position (x, y) in left image raster CS
    *  \param [in] rightImage the corresponding 2d position (x, y) in right image
    * raster coordinate system
-   *  \param [in/out] ground 3d ground position (X, Y, Z) in ground coordinate
-   * system
+   *  \param [in/out] ground 3d position (X, Y, Z) in ground coordinate system
    *  \return Returns true if the operation succeeds
    */
-  bool ImageToGround(const Point2d& leftImage,
+  bool ImagesToGround(const Point2d& leftImage,
     const Point2d& rightImage, Point3d& ground) const override;
 
   /**
@@ -71,11 +70,11 @@ public:
    * ground coordinate system \return Returns true if the operation succeeds
    *  \return Returns true if the operation succeeds
    */
-  bool ImageToGround(const std::array<Point2d, 3>& images, Point3d& ground) const override {
+  bool ImagesToGround(const std::array<Point2d, 3>& images, Point3d& ground) const override {
     assert(3 == mRatModels.size());
     std::vector<Point2d> imgs(images.cbegin(), images.cend());
 
-    return ImageToGround(imgs, ground);
+    return ImagesToGround(imgs, ground);
   }
 
   /**
@@ -88,8 +87,10 @@ public:
    *  \param [in/out] ground 3d ground position (X, Y, Z) in ground coordinate system
    *  \return Returns true if the operation succeeds
    */
-  bool RationalStereoModel::ImageToGround(
-    const std::vector<Point2d>& images, Point3d& ground) const override;
+  bool RationalStereoModel::ImagesToGround(
+    const std::vector<Point2d>& images, Point3d& ground) const override {
+    return ImagesToGround(mRatModels, images, ground);
+  }
 
   /**
    *  Image-to-ground forward projection (variable).
@@ -100,19 +101,24 @@ public:
    *
    *  \param [in] sensorModels an array of sensor models.
    *  \param [in] images the corresponding 2d positions (x, y) in
-   * imagery raster coordinate systems, interleaved by sensor models. \param
-   * [in/out] ground 3d ground position (X, Y, Z) in ground coordinate system
+   * imagery raster coordinate systems, interleaved by sensor models. 
+   *  \param [in/out] ground 3d position (X, Y, Z) in ground coordinate system
    *  \return Returns true if the operation succeeds
    */
-  bool ImageToGround(const std::vector<const ISensorModel*>& sensorModels,
+  bool ImagesToGround(const std::vector<const ISensorModel*>& sensorModels,
     const std::vector<Point2d>& images, Point3d& ground) const override {
-    return false;
+    std::vector<const RationalModel*> ratModels;
+    for (auto sm : sensorModels) {
+      ratModels.push_back(dynamic_cast<const RationalModel*>(sm));
+    }
+
+    return ImagesToGround(ratModels, images, ground);
   }
 
-private:
-  static constexpr double kTolD = 1.0e-9; // degree ~= [0.1mm]
-  static constexpr double kTolH = 0.0001; // [0.1mm]
+  bool ImagesToGround(const std::vector<const RationalModel*>& ratModels,
+    const std::vector<Point2d>& images, Point3d& ground) const;
 
+private:
   void Initialize();
 
   Tuple6d CalcJacobianA(RationalModel const* ratModel,
@@ -122,14 +128,14 @@ private:
   Tuple6d CalcJacobianNc(RationalModel const* ratModel,
     const Point3d& ground, Point2d& image) const;
 
-  template<PartialType pT = ePT_ANALYTIC>
+  template<PartialType pT = ePT_ANADIFF>
     Tuple6d CalcJacobian(RationalModel const* ratModel,
       const Point3d& ground, Point2d& image) const {
-      if constexpr (ePT_ANALYTIC == pT) {
+      if constexpr (ePT_ANADIFF == pT) {
         return CalcJacobianA(ratModel, ground, image);
       }
       else if constexpr (ePT_NUMDIFF == pT) {
-        return CalcJacobianA(ratModel, ground, image);
+        return CalcJacobianNc(ratModel, ground, image);
       }
       else {
         throw std::invalid_argument("PartialType");

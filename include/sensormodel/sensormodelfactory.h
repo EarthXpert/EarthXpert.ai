@@ -8,8 +8,6 @@
 #include "sensormodel/framemodel.h"
 #include "sensormodel/rationalmodel.h"
 
-#include <memory>
-
 namespace earthxpert {
 /**
  *  The class SensorModelFactory defines the behaviours for creating

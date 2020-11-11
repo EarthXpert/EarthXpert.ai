@@ -4,7 +4,6 @@
  */
 #include "core/spatialref/earthellipsoid.h"
 
-#include <cmath>
 #include <cstring>
 
 using earthxpert::EarthEllipsoid;
@@ -86,15 +85,11 @@ EarthEllipsoid::operator==(const EarthEllipsoid& rhs) const {
  */
 Point3d EarthEllipsoid::LPHToXYZ(const double lon, const double lat, 
   const double height) const {
-  const double cp = cos(lat);
-  const double sp = sin(lat);
-
-  const double N = RadiusInPrimeVertical(cp, sp);
+  const auto [sp, cp] = sincos(lat);
+  const double N = RadiusInPrimeVertical(cp);
   const double NH = (N + height) * cp;
 
-  const double cl = cos(lon);
-  const double sl = sin(lon);
-
+  const auto [sl, cl] = sincos(lon);
   return { NH * cl, NH * sl, (N * mBsq_Asq + height) * sp };
 }
 
@@ -112,7 +107,7 @@ Point3d EarthEllipsoid::XYZToLPH(const double X, const double Y,
   const double Z) const {
   const double p = sqrt(X * X + Y * Y);
 
-  double lon = 2.0 * atan2(Y, X + p);
+  const double lon = 2.0 * atan2(Y, X + p);
   double lat = atan(Z / (p * (1.0 - mEccSq)));
   double height{};
 
@@ -121,8 +116,7 @@ Point3d EarthEllipsoid::XYZToLPH(const double X, const double Y,
 
   while (kTolH < fabs(dh)) {
     const double cp = cos(lat);
-    const double sp = sin(lat);
-    const double N = RadiusInPrimeVertical(cp, sp);
+    const double N = RadiusInPrimeVertical(cp);
     
     height = p / cp - N;
     lat = atan(Z / (p * (1.0 - (N * mEccSq / (N + height)))));
@@ -143,11 +137,8 @@ void EarthEllipsoid::SetLsrOrigin(const Point3d& origin) {
   mLsrOrigin = origin;
   mLsrOriginXYZ = LPHToXYZ(mLsrOrigin);
 
-  const double cl = cos(mLsrOrigin.x);
-  const double sl = sin(mLsrOrigin.x);
-  const double cp = cos(mLsrOrigin.y);
-  const double sp = sin(mLsrOrigin.y);
-
+  const auto [sl, cl] = sincos(mLsrOrigin.x);
+  const auto [sp, cp] = sincos(mLsrOrigin.y);
   mL2E(0, 0) = -sl;
   mL2E(0, 1) = -sp * cl;
   mL2E(0, 2) = cp * cl;
@@ -157,48 +148,4 @@ void EarthEllipsoid::SetLsrOrigin(const Point3d& origin) {
   mL2E(2, 0) = 0.0;
   mL2E(2, 1) = cp;
   mL2E(2, 2) = sp;
-}
-
-/**
- * Convert coordinates from LSR to XYZ in EXEF 
- *
- * \param [in] lsr LSR XYZ coordinates [m]
- * \return Returns ECEF XYZ coordinates [m]
- */
-Point3d EarthEllipsoid::LSRToXYZ(const Point3d& lsr) const {
-  const cv::Mat E = mL2E * cv::Mat(lsr);
-  const Point3d lsrE(E.at<double>(0), E.at<double>(1), E.at<double>(2));
-  return (mLsrOriginXYZ + lsrE);
-}
-
-/**
- * Convert coordinates from ECEF XYZ to LSR
- *
- * \param [in] ecf ECEF XYZ coordinates [m]
- * \return Returns LSR coordinates [m]
- */
-Point3d EarthEllipsoid::XYZToLSR(const Point3d& xyz) const {
-  const cv::Mat L = mL2E.t() * cv::Mat(xyz - mLsrOriginXYZ);
-  return {L.at<double>(0), L.at<double>(1), L.at<double>(2)};
-}
-
-/**
- * \param [in] lat Geodetic latitude [rad]
-
- * \return Returns radius [m] of curvature in the Prime Meridian
- */
-double EarthEllipsoid::RadiusInPrimeMeridian(const double lat) const {
-  const double sp = sin(lat);
-  return (mA * mBsq_Asq) / pow(1.0 - mEccSq * sp * sp, 1.5);
-}
-
-/**
- * \param [in] lat Geodetic latitude [rad]
- *
- * \return Returns radius [m] of curvature in the Prime Vertical terminated by minor axis
- */
-double EarthEllipsoid::RadiusInPrimeVertical(const double lat) const {
-  const double cp = cos(lat);
-  const double sp = sin(lat);
-  return mAsq / sqrt(mAsq * cp * cp + mBsq * sp * sp);  // RadiusInPrimeVertical(cp, sp)
 }

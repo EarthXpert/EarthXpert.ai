@@ -163,7 +163,7 @@ TEST(pointcloudwriter, WritePointcloud_LAS_XYZC) {
 /**
  *  \brief PointcloudWriter test cases
  *
- *  TestCase 5: write XYZ fields in .las
+ *  TestCase 5: write XYZ fields in .laz
  */
 TEST(pointcloudwriter, WritePointcloud_LAZ_XYZ) {
   constexpr size_t filePointCount{ 823560 };

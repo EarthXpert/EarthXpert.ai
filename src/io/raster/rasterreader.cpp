@@ -85,40 +85,6 @@ std::unique_ptr<Geocoding> RasterReader::GetGeocoding() const {
 }
 
 /**
- *  \brief Calculate the memory size in bytes to hold a raster
- *  given the width and height.
- *
- *  \param [in] numCols horizontal width
- *  \param [in] numRows vertical height
- *  \return Returns number of bytes to accomadate the image data of raster object
- */
-int64_t RasterReader::GetRasterBufferNumBytes(const int numCols,
-  const int numRows) const noexcept {
-  const auto bufNumCols = numCols + mMarginCols * 2;
-  const auto bufNumRows = numRows + mMarginRows * 2;
-  return GetRasterBufferNumBytes(int64_t(bufNumCols) * int64_t(bufNumRows));
-}
-
-/**
- *  \param [in] numPix number of pixels
- *
- *  \return Return number of bytes to accomadate the image data of raster object.
- */
-int64_t RasterReader::GetRasterBufferNumBytes(const int64_t numPix) const noexcept {
-  return (int64_t(CV_ELEM_SIZE(mCvDT)) * numPix);
-}
-
-/**
- *  \brief Reads the entire image.
- *
- *  \param [in] rasterType type of data structure
- *  \return Returns pointer to raster object holding the entire image
- */
-std::unique_ptr<IRaster> RasterReader::ReadRaster(RasterType rasterType) {
-  return ReadRaster(0, 0, mFileNumCols, mFileNumRows, rasterType);
-}
-
-/**
  *  \brief Reads a pixel block defined by offsets, size, internal
  *  margin size, and kind. the offsets are relative to the upper-left corner
  *  pixel whose coordinates are (0, 0).

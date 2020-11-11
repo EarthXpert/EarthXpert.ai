@@ -57,15 +57,15 @@ EpipolarModel<GroundPolicy>::RawToRect(const Point2d &raw, Point2d &rect) const 
     ground.z += mGridI2G->GetVal1(float(raw.x), float(raw.y));
 
   Point3d rect3{ 0, 0, 0 };
-  for (int i = 0; i < kMaxIters; ++i) {
+  for (int iter = 0; iter < kMaxIters; ++iter) {
     if (!mSensorModel->ImageToGround(raw, ground))
       return std::nullopt;
     
     rect3 = mGroundPolicy->GroundToCartesian(ground);
-    const double dz = mHeight - rect3.z;
+    const double dz = mHeight - rect3.z;    // >= 0?
     ground.z += dz;
 
-    if (kHgtTol > dz) break;
+    if (kHgtTol > std::fabs(dz)) break;
   }
 
   rect = { rect3.x, rect3.y };

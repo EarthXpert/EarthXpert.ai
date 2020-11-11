@@ -7,8 +7,6 @@
 #include "imageproc/eximageproc.h"
 #include "core/datasource/iraster.h"
 
-#include <memory>
-
 namespace earthxpert {
 /**
  *  The interface IImageFilter defines the behaviours of image processing algorithms.

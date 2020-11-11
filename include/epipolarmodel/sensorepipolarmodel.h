@@ -251,4 +251,12 @@ private:
 
   // cached data for convenience
 };
+
+using UPSensorEpipolarModel = std::unique_ptr<SensorEpipolarModel>;
+using SPSensorEpipolarModel = std::shared_ptr<SensorEpipolarModel>;
+
+// typically for satellite remote sensing (ref. epipolarmodel.h)
+using OrthoReadyModel = SensorEpipolarModel;
+using UPOrthoReadyModel = std::unique_ptr<OrthoReadyModel>;
+using SPOrthoReadyModel = std::shared_ptr<OrthoReadyModel>;
 } // namespace earthxpert

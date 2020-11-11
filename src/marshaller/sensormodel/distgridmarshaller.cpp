@@ -51,12 +51,8 @@ void DistGridMarshaller::Serialize(std::ostream &outS,
   if (!distGrid || !distGrid->HasGrid()) 
     throw std::invalid_argument(_("Given distortion grid should contain valid data."));
 
-  unsigned int gridCols{};
-  unsigned int gridRows{};
-  std::vector<float> vX;
-  std::vector<float> vY;
-  std::vector<float> vdX;
-  std::vector<float> vdY;
+  unsigned int gridCols{}, gridRows{};
+  std::vector<float> vX, vY, vdX, vdY;
 
   const auto bOk = distGrid->FetchGrid(gridCols, gridRows, vX, vY, vdX, vdY);
   if (!bOk) 
@@ -120,8 +116,7 @@ DistGridMarshaller::Deserialize(std::istream &inS) {
   if (!inS.good()) 
     throw std::invalid_argument(_("Invalid stream"));
 
-  int gridCols{0};
-  int gridRows{0};
+  int gridCols{0}, gridRows{0};
   std::string camName;
 
   std::string line;
@@ -148,10 +143,8 @@ DistGridMarshaller::Deserialize(std::istream &inS) {
     throw std::exception(_("Invalid Z/I grid format"));
 
   const size_t numGridPts = size_t(gridCols) * size_t(gridRows);
-  std::vector<float> vX(numGridPts);
-  std::vector<float> vY(numGridPts);
-  std::vector<float> vdX(numGridPts);
-  std::vector<float> vdY(numGridPts);
+  std::vector<float> vX(numGridPts), vY(numGridPts);
+  std::vector<float> vdX(numGridPts), vdY(numGridPts);
 
   for (size_t i = 0; i < numGridPts; ++i) {
     std::getline(inS, line);

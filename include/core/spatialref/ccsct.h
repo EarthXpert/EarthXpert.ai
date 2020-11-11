@@ -5,7 +5,7 @@
 #pragma once
 
 #include "core/spatialref/ict.h"
-#include "3rdparty/geotrans/exgeotrans.h"
+#include "core/spatialref/ccssrs.h"
 
 #include <memory>
 
@@ -13,11 +13,11 @@ namespace earthxpert {
 /**
  *  The class CcsCT provides service of coordinate transformation
  *  from a source coordinate system to a target coordinate system
- *  with OGR as backend.
+ *  with Geotrans & dtcc as backend.
  */
 class EXCORE_EXPORTS CcsCT : public ICT {
 public:
-  CcsCT();
+  CcsCT(const CcsSRS* srcSrs, const CcsSRS* tgtSrs);
   ~CcsCT() = default;
 
   /**
@@ -33,6 +33,11 @@ public:
     return false;
   }
 
+  bool Transform(const double xSrc, const double ySrc, const double zSrc,
+    double& xTgt, double& yTgt, double& zTgt) {
+    return false;
+  }
+
   /**
    *  \brief Transform a point in-place.
    *
@@ -44,15 +49,29 @@ public:
     return false;
   }
 
+  bool Transform(const Point3d& src, Point3d& tgt) override {
+    return false;
+  }
+
   /**
    *  \brief Transform an array of points in-place.
    *
    *  \param [in] points an array of 3D points
    *  \return Returns if the transformation was successful, otherwise false.
    */
-  bool Transform(std::vector<Point3d>& points) override;
+  bool Transform(std::vector<Point3d>& points) override {
+    return false;
+  }
+
+  bool Transform(const std::vector<Point3d>& src,
+    std::vector<Point3d>& tgt) override {
+    return false;
+  }
 
 private:
   void Initialize();
 };
+
+using UPCcsCT = std::unique_ptr<CcsCT>;
+using SPCcsCT = std::shared_ptr<CcsCT>;
 } // namespace earthxpert

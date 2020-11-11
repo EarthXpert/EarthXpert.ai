@@ -6,7 +6,11 @@
 
 #include "3rdparty/ex3rdparty.h"
 
+#include <chrono>
 #include <iostream>
+#include <vector>
+
+namespace schrono = std::chrono;
 
 namespace earthxpert {
 // 

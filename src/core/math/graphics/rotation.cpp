@@ -18,14 +18,17 @@ namespace earthxpert::math {
 void EulerXYZToMatrix(const double *angles, cv::Mat1d &mat3x3) {
   assert(angles);
   assert(CV_64FC1 == mat3x3.type());
-  const auto [so, co, sp, cp, sk, ck] = sincos(angles); 
+  const auto [so, co, sp, cp, sk, ck] = sincos6(angles);
+  //const auto [[so, co], [sp, cp], [sk, ck]] = sincos3(angles);
+  const double so_sp = so * sp;
+  const double co_sp = co * sp;
 
   mat3x3(0, 0) = cp * ck;
-  mat3x3(0, 1) = so * sp * ck + co * sk;
-  mat3x3(0, 2) = -co * sp * ck + so * sk;
+  mat3x3(0, 1) = so_sp * ck + co * sk;
+  mat3x3(0, 2) = -co_sp * ck + so * sk;
   mat3x3(1, 0) = -cp * sk;
-  mat3x3(1, 1) = -so * sp * sk + co * ck;
-  mat3x3(1, 2) = co * sp * sk + so * ck;
+  mat3x3(1, 1) = -so_sp * sk + co * ck;
+  mat3x3(1, 2) = co_sp * sk + so * ck;
   mat3x3(2, 0) = sp;
   mat3x3(2, 1) = -so * cp;
   mat3x3(2, 2) = co * cp;
@@ -34,14 +37,18 @@ void EulerXYZToMatrix(const double *angles, cv::Mat1d &mat3x3) {
 void EulerYXZToMatrix(const double* angles, cv::Mat1d& mat3x3) {
   assert(angles);
   assert(CV_64FC1 == mat3x3.type());
-  const auto [sr, cr, sp, cp, sy, cy] = sincos(angles);
+  const auto [sr, cr, sp, cp, sy, cy] = sincos6(angles);
+  const double cp_cy = cp * cy;
+  const double sp_sy = sp * sy;
+  const double sp_cy = sp * cy;
+  const double cp_sy = cp * sy;
 
-  mat3x3(0, 0) = cp * cy + sr * sp * sy;
+  mat3x3(0, 0) = cp_cy + sr * sp_sy;
   mat3x3(0, 1) = cr * sy;
-  mat3x3(0, 2) = -sp * cy + sr * cp * sy;
-  mat3x3(1, 0) = -cp * sy + sr * sp * cy;
+  mat3x3(0, 2) = -sp_cy + sr * cp_sy;
+  mat3x3(1, 0) = -cp_sy + sr * sp_cy;
   mat3x3(1, 1) = cr * cy;
-  mat3x3(1, 2) = sp * sy + sr * cp * cy;
+  mat3x3(1, 2) = sp_sy + sr * cp_cy;
   mat3x3(2, 0) = cr * sp;
   mat3x3(2, 1) = -sr;
   mat3x3(2, 2) = cr * cp;
@@ -51,16 +58,20 @@ void EulerZXYToMatrix(const double* angles, cv::Mat1d& mat3x3)
 {
   assert(angles);
   assert(CV_64FC1 == mat3x3.type());
-  const auto [sr, cr, sp, cp, sy, cy] = sincos(angles);
+  const auto [sr, cr, sp, cp, sy, cy] = sincos6(angles);
+  const double cp_cy = cp * cy;
+  const double sp_sy = sp * sy;
+  const double cp_sy = cp * sy;
+  const double sp_cy = sp * cy;
 
-  mat3x3(0, 0) = cp * cy - sr * sp * sy;
-  mat3x3(0, 1) = cp * sy + sr * sp * cy;
+  mat3x3(0, 0) = cp_cy - sr * sp_sy;
+  mat3x3(0, 1) = cp_sy + sr * sp_cy;
   mat3x3(0, 2) = -cr * sp;
   mat3x3(1, 0) = -cr * sy;
   mat3x3(1, 1) = cr * cy;
   mat3x3(1, 2) = sr;
-  mat3x3(2, 0) = sp * cy + sr * cp * sy;
-  mat3x3(2, 1) = sp * sy - sr * cp * cy;
+  mat3x3(2, 0) = sp_cy + sr * cp_sy;
+  mat3x3(2, 1) = sp_sy - sr * cp_cy;
   mat3x3(2, 2) = cr * cp;
 }
 
@@ -75,16 +86,18 @@ void EulerZXYToMatrix(const double* angles, cv::Mat1d& mat3x3)
 void EulerZYXToMatrix(const double* angles, cv::Mat1d& mat3x3) {
   assert(angles);
   assert(CV_64FC1 == mat3x3.type());
-  const auto [sr, cr, sp, cp, sy, cy] = sincos(angles); 
+  const auto [sr, cr, sp, cp, sy, cy] = sincos6(angles); 
+  const double sp_cy = sp * cy;
+  const double sp_sy = sp * sy;
 
   mat3x3(0, 0) = cp * cy;
   mat3x3(0, 1) = cp * sy;
   mat3x3(0, 2) = -sp;
-  mat3x3(1, 0) = -cr * sy + sr * sp * cy;
-  mat3x3(1, 1) = cr * cy + sr * sp * sy;
+  mat3x3(1, 0) = -cr * sy + sr * sp_cy;
+  mat3x3(1, 1) = cr * cy + sr * sp_sy;
   mat3x3(1, 2) = sr * cp;
-  mat3x3(2, 0) = sr * sy + cr * sp * cy;
-  mat3x3(2, 1) = -sr * cy + cr * sp * sy;
+  mat3x3(2, 0) = sr * sy + cr * sp_cy;
+  mat3x3(2, 1) = -sr * cy + cr * sp_sy;
   mat3x3(2, 2) = cr * cp;
 }
 

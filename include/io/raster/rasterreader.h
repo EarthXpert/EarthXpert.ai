@@ -129,9 +129,15 @@ public:
    *  \param [in] numRows vertical height
    *  \return Returns number of bytes to accomadate the image data of raster object
    */
-  int64 GetRasterBufferNumBytes(int numCols, int numRows) const noexcept;
+  int64 GetRasterBufferNumBytes(int numCols, int numRows) const noexcept {
+    const auto bufNumCols = numCols + mMarginCols * 2;
+    const auto bufNumRows = numRows + mMarginRows * 2;
+    return GetRasterBufferNumBytes(int64_t(bufNumCols) * int64_t(bufNumRows));
+  }
 
-  int64 GetRasterBufferNumBytes(int64 numPix) const noexcept;
+  int64 GetRasterBufferNumBytes(int64 numPix) const noexcept {
+    return (int64_t(CV_ELEM_SIZE(mCvDT)) * numPix);
+  }
 
   /**
    *  \brief Reads the entire image.
@@ -139,7 +145,9 @@ public:
    *  \param [in] rasterType type of data structure
    *  \return Returns pointer to raster object holding the entire image
    */
-  std::unique_ptr<IRaster> ReadRaster(RasterType rasterType) override;
+  std::unique_ptr<IRaster> ReadRaster(RasterType rasterType) override {
+    return ReadRaster(0, 0, mFileNumCols, mFileNumRows, rasterType);
+  }
 
   /**
    *  \brief Reads a pixel block defined by offsets, size, internal

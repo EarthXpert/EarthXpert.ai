@@ -27,6 +27,7 @@ public:
     int numCols, int numRows, GDALDataType dataType, int numBands);
   RasterWriter(const fs::path& imageFile, const std::string format,
     int numCols, int numRows, GDALDataType dataType, int numBands);
+  RasterWriter(GDALDataset* dataset, const std::vector<int>& bands = {});
   RasterWriter(const RasterWriter&) = delete;
   RasterWriter(RasterWriter&&) = delete;
   ~RasterWriter() = default;
@@ -56,7 +57,11 @@ public:
   /**
    *  \brief Set metadata NODATA_VALUES.
    */
-  void SetNodataValues(double nodataValue) override;
+  void SetNodataValues(double nodataValue) override {
+    std::vector<double> nodataValues(mWriteNumBands, nodataValue);
+    SetNodataValues(nodataValues);
+  }
+
   void SetNodataValues(const std::vector<double>& nodataValues) override;
 
   /**

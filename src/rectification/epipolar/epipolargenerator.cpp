@@ -404,8 +404,8 @@ void EpipolarGenerator::DensifyPerCells(const int tileId, cv::Mat& tfmMat,
           if (eMK_NORM == mMaskBuf[k]) continue;
 
           auto& tfm = tfmMat.at<cv::Vec2f>(tileRow, tileCol);
-          tfm[0] = float(LinearInterp(tfm1[0], tfm2[0], tfm3[0], tfm4[0], xf, yf));
-          tfm[1] = float(LinearInterp(tfm1[1], tfm2[1], tfm3[1], tfm4[1], xf, yf));
+          tfm[0] = float(LinearInterp<double>(tfm1[0], tfm2[0], tfm3[0], tfm4[0], xf, yf));
+          tfm[1] = float(LinearInterp<double>(tfm1[1], tfm2[1], tfm3[1], tfm4[1], xf, yf));
 
           mMaskBuf[k] = eMK_FAST; 
         }
@@ -472,8 +472,8 @@ void EpipolarGenerator::DensifyPerPixels(const int tileId, cv::Mat& tfmMat,
       const auto yf = double(tileRow - tileRowU) / double(tileRowL - tileRowU);
 
       auto& tfm = tfmMat.at<cv::Vec2f>(tileRow, tileCol);
-      tfm[0] = float(LinearInterp(tfm1[0], tfm2[0], tfm3[0], tfm4[0], xf, yf));
-      tfm[1] = float(LinearInterp(tfm1[1], tfm2[1], tfm3[1], tfm4[1], xf, yf));
+      tfm[0] = float(LinearInterp<double>(tfm1[0], tfm2[0], tfm3[0], tfm4[0], xf, yf));
+      tfm[1] = float(LinearInterp<double>(tfm1[1], tfm2[1], tfm3[1], tfm4[1], xf, yf));
       mMaskBuf[k] = eMK_FAST;   
     }
     else {
@@ -505,8 +505,8 @@ void EpipolarGenerator::EpiToImg(const int tileId, cv::Mat& tfmMat,
   const float tfmCol = float(img.x - 0.5 - imgColOffset);
   const float tfmRow = float(img.y - 0.5 - imgRowOffset);
 
-  if (!insideImg || (0 <= tfmCol && tfmCol < imgNumCols - 1 &&
-                     0 <= tfmRow && tfmRow < imgNumRows - 1)) {
+  if (!insideImg || (0 <= tfmCol && tfmCol <= imgNumCols - 1 &&
+                     0 <= tfmRow && tfmRow <= imgNumRows - 1)) {
     auto& tfm = tfmMat.at<cv::Vec2f>(tileRow, tileCol);
     tfm[0] = tfmCol;
     tfm[1] = tfmRow;

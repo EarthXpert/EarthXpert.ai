@@ -52,6 +52,17 @@ RasterWriter::RasterWriter(const fs::path& imageFile, const std::string format,
 }
 
 /**
+ *  \brief Construct writer object for existing image file.
+ *
+ *  \param [in] dataset an opened dataset for writing
+ *  \param [in] bands an array of 1-based band indices
+ */
+RasterWriter::RasterWriter(GDALDataset* dataset, 
+  const std::vector<int>& bands) : mDataset(dataset) {
+  Initialize(mDataset, bands);
+}
+
+/**
  *  \brief Initialize both reader and writer components for existing image file.
  *
  *  \param [in] dataset an opened dataset for writing
@@ -74,11 +85,6 @@ void RasterWriter::SetMetadata(const RasterMetadata* metaData) {
 /**
  *  \brief Set metadata NODATA_VALUES.
  */
-void RasterWriter::SetNodataValues(const double nodataValue) {
-  std::vector<double> nodataValues(mWriteNumBands, nodataValue);
-  SetNodataValues(nodataValues);
-}
-
 void RasterWriter::SetNodataValues(const std::vector<double>& nodataValues) {
   assert(mWriteNumBands == nodataValues.size());
   std::unique_lock<std::shared_mutex> lock(mMutex);

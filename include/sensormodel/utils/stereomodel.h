@@ -82,19 +82,22 @@ public:
    *  \return Returns true if the operation succeeds
    *  clang-format on
    */
-  virtual bool ImageToGround(const Point2d &leftImage,
+  virtual bool ImagesToGround(const Point2d &leftImage,
     const Point2d &rightImage, Point3d &ground) const override {
     assert(2 == mModels.size());
     switch (mFwdAlgo) {
-    case eSM_CERES: {
-      return ImageToGroundCeres(leftImage, rightImage, ground);
-    }
     case eCA_INTERSECT: {
       Point2d images[2] = { leftImage, rightImage };
-      return ImageToGroundX(images, 2, ground);
+      return ImagesToGroundX(mModels, images, 2, ground);
+    }
+    case eSM_CERES: {
+      return ImagesToGroundCeres(leftImage, rightImage, ground);
+    }
+    case eSM_LS: {
+      return ImagesToGroundLS(leftImage, rightImage, ground);
     }
     case eSM_NR: {
-      return ImageToGroundNR(leftImage, rightImage, ground);
+      return ImagesToGroundNR(leftImage, rightImage, ground);
     }
     default: {
       return false;
@@ -115,7 +118,7 @@ public:
    *  \param [in/out] grounds a
    * list of 3d ground positions (X, Y, Z) in ground coordinate system
    */
-  virtual size_t ImageToGround(const std::vector<Point2d> &leftImages,
+  virtual size_t ImagesToGround(const std::vector<Point2d> &leftImages,
     const std::vector<Point2d> &rightImages, 
     std::vector<Point3d> &grounds) const override;
 
@@ -130,18 +133,21 @@ public:
    * ground coordinate system \return Returns true if the operation succeeds
    *  \return Returns true if the operation succeeds
    */
-  virtual bool ImageToGround(const std::array<Point2d, 3> &images, 
+  virtual bool ImagesToGround(const std::array<Point2d, 3> &images, 
     Point3d &ground) const override {
     assert(3 == mModels.size());
     switch (mFwdAlgo) {
-    case eSM_CERES: {
-      return ImageToGroundCeres(images, ground);
-    }
     case eCA_INTERSECT: {
-      return ImageToGroundX(images.data(), 3, ground);
+      return ImagesToGroundX(mModels, images.data(), 3, ground);
+    }
+    case eSM_CERES: {
+      return ImagesToGroundCeres(images, ground);
+    }
+    case eSM_LS: {
+      return ImagesToGroundLS(images, ground);
     }
     case eSM_NR: {
-      return ImageToGroundNR(images, ground);
+      return ImagesToGroundNR(images, ground);
     }
     default: {
       return false;
@@ -159,25 +165,9 @@ public:
    *  \param [in/out] ground 3d ground position (X, Y, Z) in ground coordinate system
    *  \return Returns true if the operation succeeds
    */
-  virtual bool ImageToGround(const std::vector<Point2d> &images, 
+  virtual bool ImagesToGround(const std::vector<Point2d> &images, 
     Point3d &ground) const override {
-    const int numRays = int(mModels.size());
-    assert(numRays == images.size());
-    switch (mFwdAlgo) {
-    case eSM_CERES: {
-      return ImageToGroundCeres(images.data(), numRays, ground);
-    }
-    case eCA_INTERSECT: {
-      return ImageToGroundX(images.data(), numRays, ground);
-    }
-    case eSM_NR: {
-      //return ImageToGroundNR(images, numRays, ground);
-      throw std::exception(_("StereoModel: not implemented"));
-    }
-    default: {
-        return false;
-    }
-    }
+    return ImagesToGround(mModels, images, ground);
   }
 
   /**
@@ -193,9 +183,30 @@ public:
    *  \param [in/out] ground 3d ground position (X, Y, Z) in ground coordinate system
    *  \return Returns true if the operation succeeds
    */
-  virtual bool ImageToGround(const std::vector<const ISensorModel*>& sensorModels,
+  virtual bool ImagesToGround(const std::vector<const ISensorModel*>& sensorModels,
     const std::vector<Point2d>& images, Point3d& ground) const override {
-    return false;
+    const int numRays = int(sensorModels.size());
+    assert(numRays == images.size());
+
+    switch (mFwdAlgo) {
+    case eCA_INTERSECT: {
+      return ImagesToGroundX(sensorModels, images.data(), numRays, ground);
+    }
+    case eSM_CERES: {
+      return ImagesToGroundCeres(sensorModels, images.data(), numRays, ground);
+    }
+    case eSM_LS: {
+      //return ImagesToGroundLS(sensorModels, images.data(), numRays, ground);
+      throw std::exception(_("StereoModel: not implemented"));
+    }
+    case eSM_NR: {
+      //return ImagesToGroundNR(sensorModels, images.data(), numRays, ground);
+      throw std::exception(_("StereoModel: not implemented"));
+    }
+    default: {
+      return false;
+    }
+    }
   }
 
   /**
@@ -208,7 +219,7 @@ public:
    *  \param [in/out] grounds List of 3d ground positions (X, Y, Z) in ground
    * coordinate system
    */
-  virtual size_t ImageToGround(const std::vector<Point2d> &images,
+  virtual size_t ImagesToGround(const std::vector<Point2d> &images,
                 std::vector<Point3d> &grounds) const override;
 
   /**
@@ -222,7 +233,7 @@ public:
    *  \param [out] images 2d position (x, y) in sensor raster
    * coordinate system \return Returns true if operation succeeds
    */
-  virtual bool GroundToImage(const Point3d &ground,
+  virtual bool GroundToImages(const Point3d &ground,
                 std::vector<Point2d> &images) const override;
 
   /**
@@ -237,7 +248,7 @@ public:
    *  \param [out] images 2d position (x, y) in imagery raster coordinate system 
    *  \return Returns true if operation succeeds
    */
-  virtual bool GroundToImage(const std::vector<const ISensorModel*>& sensorModels,
+  virtual bool GroundToImages(const std::vector<const ISensorModel*>& sensorModels,
     const Point3d& ground, std::vector<Point2d>& images) const {
     return false;
   }
@@ -251,7 +262,7 @@ public:
    *  \param [in/out] images List of 2d positions (x, y) on
    * image, interleaved by sensor models
    */
-  virtual size_t GroundToImage(const std::vector<Point3d> &grounds,
+  virtual size_t GroundToImages(const std::vector<Point3d> &grounds,
                 std::vector<Point2d> &images) const override;
 
   void SetForwardAlgorithm(const ForwardAlgo fwdAlgo);
@@ -267,10 +278,24 @@ public:
 
 protected:
   static constexpr int kMaxIters{ 8 };
-  static constexpr double kTolZ{ 1.0e-4 };  // [mm]
+  static constexpr double kTolXYD = 1.0e-9; // degree ~= [0.1mm]
+  static constexpr double kTolXYL = 0.0001; // linear [0.1mm]
+  static constexpr double kTolZ{ 1.0e-4 };  // [0.1mm]
+  static constexpr double kFacLP = 0.5 / kTolXYD;
+  static constexpr double kFacH = 0.5 / kTolZ;
 
   ForwardAlgo mFwdAlgo{ eSM_NR };
   Solver::Options mOptions;   // the options to control ceres solver
+
+  inline double GetMeanHeight(
+    const std::vector<const ISensorModel*>& models) const noexcept {
+    double z{};
+    for (auto model : models) {
+      z += model->GetMeanHeight();
+    }
+
+    return (z / double(models.size()));
+  }
 
   mutable std::atomic_size_t mNumIters{};
 
@@ -284,17 +309,34 @@ private:
 
   void Initialize();
 
-  bool ImageToGroundCeres(const Point2d& leftImage, const Point2d& rightImage, Point3d& ground) const;
-  bool ImageToGroundNR(const Point2d& leftImage, const Point2d& rightImage, Point3d& ground) const;
+  bool ImagesToGroundCeres(const Point2d& leftImage, const Point2d& rightImage, Point3d& ground) const;
+  bool ImagesToGroundLS(const Point2d& leftImage, const Point2d& rightImage, Point3d& ground) const;
+  bool ImagesToGroundNR(const Point2d& leftImage, const Point2d& rightImage, Point3d& ground) const;
 
-  bool ImageToGroundCeres(const std::array<Point2d, 3>& images, Point3d& ground) const;
-  bool ImageToGroundNR(const std::array<Point2d, 3>& images, Point3d& ground) const;
+  bool ImagesToGroundCeres(const std::array<Point2d, 3>& images, Point3d& ground) const;
+  bool ImagesToGroundLS(const std::array<Point2d, 3>& images, Point3d& ground) const;
+  bool ImagesToGroundNR(const std::array<Point2d, 3>& images, Point3d& ground) const;
 
-  bool ImageToGroundCeres(const Point2d* images, int numRays, Point3d& ground) const;
-  bool ImageToGroundX(const Point2d* images, int numRays, Point3d& ground) const;
+  bool ImagesToGroundX(const std::vector<const ISensorModel*>& sensorModels, 
+    const Point2d* images, int numRays, Point3d& ground) const;
+  bool ImagesToGroundCeres(const std::vector<const ISensorModel*>& sensorModels, 
+    const Point2d* images, int numRays, Point3d& ground) const;
+  bool ImagesToGroundLS(const std::vector<const ISensorModel*>& sensorModels, 
+    const Point2d* images, int numRays, Point3d& ground) const;
+  bool ImagesToGroundNR(const std::vector<const ISensorModel*>& sensorModels, 
+    const Point2d* images, int numRays, Point3d& ground) const;
+
+  Tuple6d CalcJacobianNc(ISensorModel const* model,
+    const Point3d& ground, Point2d& image) const;
 
   // cache
   SensorType mSensorType{ SensorType::eUNDEFINED };
   SrsType mSrsType{ eUNKNOWN };
+
+  double mTolXY{ kTolXYD };
+  double mFacLP{ 0.5 / kTolXYD };
 };
+
+using UPStereoModel = std::unique_ptr<StereoModel>;
+using SPStereoModel = std::shared_ptr<StereoModel>;
 } // namespace earthxpert

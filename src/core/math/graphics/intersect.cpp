@@ -57,15 +57,15 @@ bool XTwoLines::IntersectCeres(const Point3d* segs, Point3d& p,
  *  \return Return true if successful, false if parallel.
  */
 bool XTwoLines::IntersectEigen(const Point3d* s1, const Point3d* s2, Point3d& p) const {
-  const Point3d v1 = s1[1] - s1[0];
-  const Point3d v2 = s2[1] - s2[0];
+  const Point3d v1 = s1[0] - s1[1];
+  const Point3d v2 = s2[0] - s2[1];
 
-  std::array<double, 30> dm{ 1, 0, 0, -v1.x, 0,
-                             0, 1, 0, -v1.y, 0,
-                             0, 0, 1, -v1.z, 0,
-                             1, 0, 0, 0, -v2.x,
-                             0, 1, 0, 0, -v2.y,
-                             0, 0, 1, 0, -v2.z };
+  std::array<double, 30> dm{ 1, 0, 0, v1.x, 0,
+                             0, 1, 0, v1.y, 0,
+                             0, 0, 1, v1.z, 0,
+                             1, 0, 0, 0, v2.x,
+                             0, 1, 0, 0, v2.y,
+                             0, 0, 1, 0, v2.z };
   Map<Eigen::Matrix<double, 6, 5, RowMajor>> A(dm.data());
 
   std::array<double, 6> cv{ s1[0].x, s1[0].y, s1[0].z, s2[0].x, s2[0].y, s2[0].z };
@@ -109,24 +109,24 @@ bool XThreeLines::IntersectCeres(const Point3d* segs,
  *
  *  \param [in] s1 the first line segment defined by two end points
  *  \param [in] s2 the second line segment defined by two end points
- *  \param [in] s3 the second line segment defined by two end points
+ *  \param [in] s3 the third line segment defined by two end points
  *  \return Return true if successful, false if parallel.
  */
 bool XThreeLines::IntersectEigen(const Point3d* s1, const Point3d* s2, 
   const Point3d* s3, Point3d& p) const {
-  const Point3d v1 = s1[1] - s1[0];
-  const Point3d v2 = s2[1] - s2[0];
-  const Point3d v3 = s2[1] - s2[0];
+  const Point3d v1 = s1[0] - s1[1];
+  const Point3d v2 = s2[0] - s2[1];
+  const Point3d v3 = s3[0] - s3[1];
 
-  std::array<double, 54> dm{ 1, 0, 0, -v1.x, 0, 0,
-                             0, 1, 0, -v1.y, 0, 0,
-                             0, 0, 1, -v1.z, 0, 0,
-                             1, 0, 0, 0, -v2.x, 0,
-                             0, 1, 0, 0, -v2.y, 0,
-                             0, 0, 1, 0, -v2.z, 0,
-                             1, 0, 0, 0, 0, -v3.x,
-                             0, 1, 0, 0, 0, -v3.y,
-                             0, 0, 1, 0, 0, -v3.z };
+  std::array<double, 54> dm{ 1, 0, 0, v1.x, 0, 0,
+                             0, 1, 0, v1.y, 0, 0,
+                             0, 0, 1, v1.z, 0, 0,
+                             1, 0, 0, 0, v2.x, 0,
+                             0, 1, 0, 0, v2.y, 0,
+                             0, 0, 1, 0, v2.z, 0,
+                             1, 0, 0, 0, 0, v3.x,
+                             0, 1, 0, 0, 0, v3.y,
+                             0, 0, 1, 0, 0, v3.z };
   Map<Eigen::Matrix<double, 9, 6, RowMajor>> A(dm.data());
 
   std::array<double, 9> cv{ s1[0].x, s1[0].y, s1[0].z, s2[0].x, s2[0].y, s2[0].z, s3[0].x, s3[0].y, s3[0].z };

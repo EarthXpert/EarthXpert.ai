@@ -11,6 +11,7 @@ namespace earthxpert {
 /**
  *  The class TiledSensorModel implements the multi-tile logic.
  *
+ *  \remark all tiles should have same model type.
  *  \ref OGC Universal Sensor Model
  */
 class EXSENSORMODEL_EXPORTS TiledSensorModel final : public SensorModel {
@@ -61,7 +62,8 @@ public:
    * \return Returns type of sensor model
    */
   ModelType GetModelType() const noexcept override {
-    return SensorType::eUNDEFINED;
+    assert(0 < mNumTiles);
+    return mModels[0]->GetModelType();
   }
 
   /**

@@ -33,7 +33,6 @@ private:
 
   void Initialize();
 
-  UPGDALDataset mDataset;  // GDALDataset object of current tile
   std::vector<int> mBands;  // list of bands to read from
 
   // cached information

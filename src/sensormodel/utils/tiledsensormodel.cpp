@@ -21,6 +21,13 @@ void TiledSensorModel::Initialize() {
   mNumTiles = int(mTiles.size());
   if (mNumTiles != int(mModels.size()))
     throw std::invalid_argument(_("Incompatible layout"));
+
+  // verify consistency
+  const auto modelType = mModels[0]->GetModelType();
+  for (int i = 1; i < mNumTiles; ++i) {
+    if (modelType != mModels[i]->GetModelType())
+      throw std::invalid_argument(_("TiledSensorModel: all tiles must have same model type."));
+  }
 }
 
 /**
@@ -102,8 +109,8 @@ bool TiledSensorModel::operator!=(const TiledSensorModel& rhs) const {
  *  \return Return true if two models represent exactly same geometry
  */
 bool TiledSensorModel::EqualTo(const ISensorModel& rhs) const {
-  //if (ModelType::eRATIONAL != rhs.GetModelType())
-  //  return false;
+  if (GetModelType() != rhs.GetModelType())
+    return false;
 
   auto tiledModel = dynamic_cast<const TiledSensorModel*>(&rhs);
   assert(tiledModel);

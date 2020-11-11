@@ -18,6 +18,10 @@ set(sensormodel_srcs "ads/adsmodel.cpp"
   "pushbroom/scannerimagemodel.cpp"
   "pushbroom/scannerip.cpp"
   "rational/rationalmodel.cpp"
+  "rational/rationalmodel_cuda.cpp"
+  "rational/rationalmodel_opencl.cpp"
+  "rational/rationalmodel_simd.cpp"
+  "rational/rationalmodelfactory.cpp"
   "rational/rationalstereomodel.cpp"
   "rational/rmutils.cpp"
   "rollingshutter/rollingshuttermodel.cpp"
@@ -35,8 +39,8 @@ set(sensormodel_srcs "ads/adsmodel.cpp"
   "utils/stereomodelfactory.cpp"
   "utils/tiledsensormodel.cpp"
   "utils/transsensormodel.cpp"
-  "sensormodel.cpp"
-  "sensormodelfactory.cpp")
+  "./sensormodel.cpp"
+  "./sensormodelfactory.cpp")
 earthxpert_add_library(sensormodel "api"
   SRCS ${sensormodel_srcs}
   ITEMS ex3rdparty core

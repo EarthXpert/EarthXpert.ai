@@ -9,7 +9,7 @@
 namespace earthxpert {
 /**
  *  The base class FrameProject implementes the behaviour to access entires
- *  of a project composed of imagery data.
+ *  of a project composed of imagery data acquired by frame sensors.
  */
 class EXPROJECT_EXPORTS FrameProject final : public Project {
 public:
@@ -17,7 +17,7 @@ public:
     ProjectType = ePT_FRAME
   };
   enum ProjectFormat {
-    ePF_BINGO,    // Bingo project format: 
+    ePF_BINGO,    // Bingo project format: geoin.dat
     ePF_EPJ,      // EXAI project format: .epj
     ePF_P4D       // Pix4D project format: .p4d
   };
@@ -32,6 +32,8 @@ public:
   PrjType GetProjectType() const noexcept override { return ePT_FRAME; }
 
 private:
+  friend class BgoPrjMarshaller;
+  friend class OePrjMarshaller;
   friend class P4dPrjMarshaller;
 };
 
