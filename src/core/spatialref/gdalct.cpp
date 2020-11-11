@@ -4,6 +4,8 @@
  */
 #include "core/spatialref/gdalct.h"
 
+#include <omp.h>
+
 using namespace earthxpert;
 using namespace earthxpert::thirdparty;
 
@@ -13,6 +15,10 @@ using namespace earthxpert::thirdparty;
  * \param [in] srcSrs the source SRS
  * \param [in] tgtSrs the target SRS
  */
+GdalCT::GdalCT(const GdalSRS* srcSrs, const GdalSRS* tgtSrs) {
+
+}
+
 GdalCT::GdalCT(OGRSpatialReference* srcSrs,
   OGRSpatialReference* tgtSrs) {
   Initialize(srcSrs, tgtSrs);
@@ -29,35 +35,22 @@ GdalCT::GdalCT(OGRSpatialReference* srcSrs,
  *  That is, the mappings are X -> lat, Y -> lon. To maintain the backward compatibility,
  *  set the stategy OAMS_TRADITIONAL_GIS_ORDER here.
  */
-GdalCT::GdalCT(const std::string& srcWkt, 
-  const std::string& tgtWkt) {
-    OGRSpatialReference srcSrs(srcWkt.c_str());
-    OGRSpatialReference tgtSrs(tgtWkt.c_str());
+GdalCT::GdalCT(const std::string& srcWkt, const std::string& tgtWkt) {
+    auto srcSrs = new OGRSpatialReference(srcWkt.c_str());
+    auto tgtSrs = new OGRSpatialReference(tgtWkt.c_str());
 
 #if 3 <= GDAL_VERSION_MAJOR
-    srcSrs.SetAxisMappingStrategy(OAMS_TRADITIONAL_GIS_ORDER);
-    dstSrs.SetAxisMappingStrategy(OAMS_TRADITIONAL_GIS_ORDER);
+    srcSrs->SetAxisMappingStrategy(OAMS_TRADITIONAL_GIS_ORDER);
+    dstSrs->SetAxisMappingStrategy(OAMS_TRADITIONAL_GIS_ORDER);
 #endif
 
-    Initialize(&srcSrs, &tgtSrs);
-}
-
-void GdalCT::Initialize(OGRSpatialReference* srcSrs,
-  OGRSpatialReference* tgtSrs) {
-  mCT.reset(OGRCreateCoordinateTransformation(srcSrs, tgtSrs));
+    Initialize(srcSrs, tgtSrs);
 }
 
 /**
- *  \brief Transform an array of points in-place.
- *
- *  \param [in] points an array of 3D points
- *  \return Returns if the transformation was successful, otherwise false.
+ *  \remark GdalCT owns the objects of OGRSpatialReference?
  */
-bool GdalCT::Transform(std::vector<Point3d>& points) {
-  bool ret{ true };
-  for (auto& point : points) {
-    ret = ret && Transform(point);
-  }
-
-  return ret;
+void GdalCT::Initialize(OGRSpatialReference* srcSrs,
+  OGRSpatialReference* tgtSrs) {
+  mCT.reset(OGRCreateCoordinateTransformation(srcSrs, tgtSrs));
 }

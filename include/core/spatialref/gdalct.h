@@ -5,7 +5,7 @@
 #pragma once
 
 #include "core/spatialref/ict.h"
-#include "3rdparty/gdal/exgdal.h"
+#include "core/spatialref/gdalsrs.h"
 
 #include <memory>
 
@@ -17,6 +17,7 @@ namespace earthxpert {
  */
 class EXCORE_EXPORTS GdalCT final : public ICT {
 public:
+  GdalCT(const GdalSRS* srcSrs, const GdalSRS* tgtSrs);
   GdalCT(OGRSpatialReference* srcSrs, OGRSpatialReference* tgtSrs);
   GdalCT(const std::string& srcWkt, const std::string& tgtWkt);
   ~GdalCT() = default;
@@ -41,6 +42,12 @@ public:
     return mCT->Transform(1, &x, &y, &z);
   }
 
+  bool Transform(const double xSrc, const double ySrc, const double zSrc,
+    double& xTgt, double& yTgt, double& zTgt) override {
+    xTgt = xSrc; yTgt = ySrc; zTgt = zSrc;
+    return mCT->Transform(1, &xTgt, &yTgt, &zTgt);
+  }
+
   /**
    *  \brief Transform a point in-place.
    *
@@ -52,17 +59,38 @@ public:
     return mCT->Transform(1, &point.x, &point.y, &point.z);
   }
 
+  bool Transform(const Point3d& src, Point3d& tgt) override {
+    tgt = src;
+    return mCT->Transform(1, &tgt.x, &tgt.y, &tgt.z);
+  }
+
   /**
    *  \brief Transform an array of points in-place.
    *
    *  \param [in] points an array of 3D points
    *  \return Returns if the transformation was successful, otherwise false.
    */
-  bool Transform(std::vector<Point3d>& points) override;
+  bool Transform(std::vector<Point3d>& points) override {
+    bool ret{ true };
+    for (auto& point : points) {
+      ret = ret && Transform(point);
+    }
+
+    return ret;
+  }
+
+  bool Transform(const std::vector<Point3d>& src,
+    std::vector<Point3d>& tgt) override {
+    tgt = src;
+    return Transform(tgt);
+  }
 
 private:
   std::unique_ptr<OGRCoordinateTransformation> mCT;
 
   void Initialize(OGRSpatialReference* srcSrs, OGRSpatialReference* tgtSrs);
 };
+
+using UPGdalCT = std::unique_ptr<GdalCT>;
+using SPGdalCT = std::shared_ptr<GdalCT>;
 } // namespace earthxpert

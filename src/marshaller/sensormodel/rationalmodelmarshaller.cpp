@@ -2,7 +2,7 @@
  *  Copyright (c) 2018.  All rights reserved.
  * -----------------------------------------------------------------------------
  */
-#include "marshaller/rationalmodelmarshaller.h"
+#include "marshaller/sensormodel/rationalmodelmarshaller.h"
 #include "core/exceptions/exexcept.h"
 #include "core/utils/stringutils.h"
 #include "sensormodel/rationalmodel.h"

@@ -14,8 +14,7 @@ namespace earthxpert {
  *  The class ICT provides service of coordinate transformation
  *  from a source coordinate system to a target coordinate system
  */
-class EXCORE_EXPORTS ICT
-{
+class EXCORE_EXPORTS ICT {
 public:
   virtual ~ICT() = default;
 
@@ -29,6 +28,9 @@ public:
    *  \return Returns if the transformation was successful, otherwise false.
    */
   virtual bool Transform(double& x, double& y, double& z) = 0;
+  
+  virtual bool Transform(const double xSrc, const double ySrc, const double zSrc,
+    double& xTgt, double& yTgt, double& zTgt) = 0;
 
   /**
    *  \brief Transform a point in-place.
@@ -39,6 +41,8 @@ public:
    */
   virtual bool Transform(Point3d& point) = 0;
 
+  virtual bool Transform(const Point3d& src, Point3d& tgt) = 0;
+
   /**
    *  \brief Transform an array of points in-place.
    *
@@ -46,5 +50,11 @@ public:
    *  \return Returns if the transformation was successful, otherwise false.
    */
   virtual bool Transform(std::vector<Point3d>& points) = 0;
+
+  virtual bool Transform(const std::vector<Point3d>& src,
+    std::vector<Point3d>& tgt) = 0;
 };
+
+using UPICT = std::unique_ptr<ICT>;
+using SPICT = std::shared_ptr<ICT>;
 } // namespace earthxpert
