@@ -52,4 +52,7 @@ public:
   static std::unique_ptr<DistortionGridF> Deserialize(const std::string &gridFile);
   static std::unique_ptr<DistortionGridF> Deserialize(std::istream &inStream);
 };
+
+using UPDistGridMarshaller = std::unique_ptr<DistGridMarshaller>;
+using SPDistGridMarshaller = std::shared_ptr<DistGridMarshaller>;
 } // namespace earthxpert

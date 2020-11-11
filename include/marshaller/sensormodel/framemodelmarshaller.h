@@ -6,7 +6,7 @@
 
 #include "marshaller/exmarshaller.h"
 #include "sensormodel/framemodel.h"
-#include <memory>
+
 #include <unordered_map>
 
 namespace earthxpert {

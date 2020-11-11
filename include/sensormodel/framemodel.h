@@ -255,8 +255,10 @@ private:
  */
 using DigitalFrameModel = FrameModel<DigitalImageModel>;
 using FilmFrameModel = FrameModel<FilmImageModel>;
+
 using UPDigitalFrameModel = std::unique_ptr<DigitalFrameModel>;
 using SPDigitalFrameModel = std::shared_ptr<DigitalFrameModel>;
+
 using UPFilmFrameModel = std::unique_ptr<FilmFrameModel>;
 using SPFilmFrameModel = std::shared_ptr<FilmFrameModel>;
 } // namespace earthxpert

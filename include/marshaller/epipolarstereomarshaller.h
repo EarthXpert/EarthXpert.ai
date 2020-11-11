@@ -8,8 +8,6 @@
 #include "marshaller/marshalltypes.h"
 #include "epipolarmodel/epipolarmodel.h"
 
-#include <memory>
-
 namespace earthxpert {
 struct EpiModelInfo {
   std::string sensorMdlFile;    // path to sensor model file
@@ -52,4 +50,7 @@ private:
   bool CheckEpiStereo(const std::vector<EpiModelInfo>& epiModels) const;
   bool CheckEpiStereo(const std::vector<UPIEpipolarModel>& epiModels) const;
 };
+
+using UPEpipolarStereoMarshaller = std::unique_ptr<EpipolarStereoMarshaller>;
+using SPEpipolarStereoMarshaller = std::shared_ptr<EpipolarStereoMarshaller>;
 } // namespace earthxpert

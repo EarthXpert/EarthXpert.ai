@@ -8,9 +8,7 @@
 #include "sensormodel/rationalmodel.h"
 
 #include <istream>
-#include <memory>
 #include <ostream>
-#include <string>
 
 namespace earthxpert {
 /**
@@ -100,4 +98,6 @@ private:
 };
 
 using RMFormat = RationalModelMarshaller::RMFormat;
+using UPRationalModelMarshaller = std::unique_ptr<RationalModelMarshaller>;
+using SPRationalModelMarshaller = std::shared_ptr<RationalModelMarshaller>;
 } // namespace earthxpert
