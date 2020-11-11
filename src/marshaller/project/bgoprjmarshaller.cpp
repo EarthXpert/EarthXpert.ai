@@ -8,11 +8,17 @@
 
 using namespace earthxpert;
 
-void BgoPrjMarshaller::Serialize(const std::string& bgoFile, 
+/**
+ *  \brief write or update a bingo directory containing geoin.dat
+ */
+void BgoPrjMarshaller::Serialize(const std::string& bgoFile,
   FrameProject const* const bgoPrj) {
 
 }
 
+/**
+ *  \brief read from a bingo directory containing geoin.dat
+ */
 std::unique_ptr<FrameProject> 
 BgoPrjMarshaller::Deserialize(const std::string& bgoFile) {
   return {};

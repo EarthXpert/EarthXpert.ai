@@ -2,7 +2,7 @@
  *  Copyright (c) 2019.  All rights reserved.
  * -----------------------------------------------------------------------------
  */
-#include "platform/pdal/pdaljob.h"
+#include "packages/pdal/pdaljob.h"
 #include <boost/program_options.hpp>
 
 /**
