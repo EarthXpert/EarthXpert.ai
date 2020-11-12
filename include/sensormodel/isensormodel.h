@@ -7,7 +7,8 @@
 #include "sensormodel/exsensormodel.h"
 #include "3rdparty/gdal/exgdal.h"
 #include "3rdparty/opencv/exopencv.h"
-#include "core/spatialref//spatialdef.h"
+#include "core/spatialref/isrs.h"
+#include "core/spatialref/spatialdef.h"
 
 #include <memory>
 #include <vector>
@@ -129,9 +130,13 @@ public:
    *  from results of ImageToGround() or inputs to GroundToImage() methods.
    *
    *  \return Returns pointer to a coordinate system
+   *  \todo replace by ISRS
    */
   virtual std::shared_ptr<SpatialReferenceSystem>
-  GetCoordinateSystem() const noexcept = 0;
+    GetCoordinateSystem() const noexcept = 0;
+
+  //virtual std::shared_ptr<ISRS>
+  //  GetCoordinateSystem() const noexcept = 0;
 
   /**
    *  \return Returns type of SRS

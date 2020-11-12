@@ -17,8 +17,8 @@ namespace earthxpert {
  */
 class EXCORE_EXPORTS GdalCT final : public ICT {
 public:
-  GdalCT(const GdalSRS* srcSrs, const GdalSRS* tgtSrs);
-  GdalCT(OGRSpatialReference* srcSrs, OGRSpatialReference* tgtSrs);
+  GdalCT(const GdalSRS* src, const GdalSRS* tgt);
+  GdalCT(OGRSpatialReference* src, OGRSpatialReference* tgt);
   GdalCT(const std::string& srcWkt, const std::string& tgtWkt);
   ~GdalCT() = default;
 
@@ -88,7 +88,7 @@ public:
 private:
   std::unique_ptr<OGRCoordinateTransformation> mCT;
 
-  void Initialize(OGRSpatialReference* srcSrs, OGRSpatialReference* tgtSrs);
+  void Initialize(OGRSpatialReference* src, OGRSpatialReference* tgt);
 };
 
 using UPGdalCT = std::unique_ptr<GdalCT>;

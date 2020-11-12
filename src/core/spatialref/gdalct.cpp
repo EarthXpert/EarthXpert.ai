@@ -12,16 +12,15 @@ using namespace earthxpert::thirdparty;
 /**
  * constructor.
  *
- * \param [in] srcSrs the source SRS
- * \param [in] tgtSrs the target SRS
+ * \param [in] src the source SRS
+ * \param [in] tgt the target SRS
  */
-GdalCT::GdalCT(const GdalSRS* srcSrs, const GdalSRS* tgtSrs) {
+GdalCT::GdalCT(const GdalSRS* src, const GdalSRS* tgt) {
 
 }
 
-GdalCT::GdalCT(OGRSpatialReference* srcSrs,
-  OGRSpatialReference* tgtSrs) {
-  Initialize(srcSrs, tgtSrs);
+GdalCT::GdalCT(OGRSpatialReference* src, OGRSpatialReference* tgt) {
+  Initialize(src, tgt);
 }
 
 /**
@@ -50,7 +49,7 @@ GdalCT::GdalCT(const std::string& srcWkt, const std::string& tgtWkt) {
 /**
  *  \remark GdalCT owns the objects of OGRSpatialReference?
  */
-void GdalCT::Initialize(OGRSpatialReference* srcSrs,
-  OGRSpatialReference* tgtSrs) {
-  mCT.reset(OGRCreateCoordinateTransformation(srcSrs, tgtSrs));
+void GdalCT::Initialize(OGRSpatialReference* src,
+  OGRSpatialReference* tgt) {
+  mCT.reset(OGRCreateCoordinateTransformation(src, tgt));
 }
