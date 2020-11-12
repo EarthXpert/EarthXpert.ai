@@ -506,8 +506,10 @@ private:
    *  \throw Throws invalid_argument if point cloud does not contain the requested field group.
    */
   template <typename FieldTy> void VerifyFieldType() const {
-    static_assert(std::is_same_v<XYZF, FieldTy> || std::is_same_v<Classification, FieldTy> ||
-      std::is_same_v<Intensity, FieldTy> || std::is_same_v<RGB16, FieldTy>, "VerifyFieldType: FieldTy");
+    static_assert(std::is_same_v<XYZF, FieldTy> || 
+      std::is_same_v<Classification, FieldTy> ||
+      std::is_same_v<Intensity, FieldTy> || 
+      std::is_same_v<RGB16, FieldTy>, "VerifyFieldType: FieldTy");
     if (!mFieldGroup.test(FieldTy::kFieldPos)) 
       throw std::invalid_argument(_("VerifyFieldType: FieldTy"));
   }
@@ -515,8 +517,9 @@ private:
   // cache
   size_t mPointCount{};     // actual number of points held, default to mPointCapacity
   std::optional<SpatialTileD> mBufTile;   // 2D bounding box of all points including focused & buffered
-  std::tuple<std::vector<XYZF>*, std::vector<Classification>*, std::vector<Intensity>*,
-    std::vector<RGB16>*> mData{ &mXYZ, &mCla, &mIntensity, &mRGB }; // indexed by kPOS
+  std::tuple<std::vector<XYZF>*, std::vector<Classification>*, 
+    std::vector<Intensity>*, std::vector<RGB16>*> mData{ 
+    &mXYZ, &mCla, &mIntensity, &mRGB }; // indexed by kPOS
 };
 
 using UPPointcloud = std::unique_ptr<Pointcloud>;

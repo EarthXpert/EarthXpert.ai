@@ -196,6 +196,18 @@ struct GPSTime {
   double time{};
 };
 
+template<typename, typename = std::void_t<>>
+struct IsField : std::false_type {
+};
+
+template<typename Ty>
+struct IsField<Ty, std::void_t<decltype(Ty::kFiledPos)>>
+  : std::true_type {
+};
+
+template<typename Ty>
+constexpr bool IsField_v = IsField<Ty>::value;
+
 /**
  *  The structure ExPoint stores 3D coordinates, classification, and
  *  optional relevant fields of laser point record.
@@ -204,6 +216,7 @@ struct GPSTime {
  */
 template <typename... Fields>
 struct ExPoint : Fields... {
+  //static_assert(IsField_v<Fields> && ..., "ExPoint: Fields");
   static constexpr int kNumFields = sizeof...(Fields);
 
   static_assert(0 < kNumFields, "Empty fields");
@@ -251,4 +264,6 @@ using CRGBPointF = CRGBPoint<float, uint16_t>;
 
 // integer coordinates, 16bit color
 using CRGBPointI = CRGBPoint<int32_t, uint16_t>;
+
+constexpr bool IsXYZ = IsField_v<XYZF>;
 }
