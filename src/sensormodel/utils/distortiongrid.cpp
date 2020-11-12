@@ -131,7 +131,8 @@ bool DistortionGrid<Ty>::operator!=(const DistortionGrid<Ty> &rhs) const {
  */
 template <typename Ty>
 bool DistortionGrid<Ty>::FetchGrid(unsigned int &numCols, unsigned int &numRows, 
-  std::vector<Ty> &vX, std::vector<Ty> &vY, std::vector<Ty> &vdX, std::vector<Ty> &vdY) const {
+  std::vector<Ty> &vX, std::vector<Ty> &vY, 
+  std::vector<Ty> &vdX, std::vector<Ty> &vdY) const {
   if (!mGrid)
     return false;
   std::tie(numCols, numRows) = mGrid->GetSize();

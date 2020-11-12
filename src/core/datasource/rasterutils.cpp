@@ -215,7 +215,7 @@ std::unique_ptr<CvRaster> ConvertRaster(const GdalRaster* gdalRaster, const int 
  *  \return Returns a vector of cv::Mat that points to the internal buffer
  *  but has no ownership.
  */
-std::vector<std::unique_ptr<CvRaster>> EXCORE_EXPORTS ConvertRaster(
+std::vector<UPCvRaster> EXCORE_EXPORTS ConvertRaster(
   const GdalRaster* gdalRaster, const std::vector<int>& bands) {
   std::vector<int> cvtBands{bands};
   const int numBands = gdalRaster->GetNumBands();
@@ -231,7 +231,7 @@ std::vector<std::unique_ptr<CvRaster>> EXCORE_EXPORTS ConvertRaster(
       throw std::out_of_range(_("Requested bands are out of the range of available bands"));
   }
 
-  std::vector<std::unique_ptr<CvRaster>> cvRasters;
+  std::vector<UPCvRaster> cvRasters;
   for (auto b : cvtBands) {
     cvRasters.push_back(ConvertRaster(gdalRaster, b));
   }

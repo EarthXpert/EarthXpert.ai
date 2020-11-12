@@ -22,6 +22,8 @@
 using namespace earthxpert;
 using namespace earthxpert::math;
 
+namespace bpo = boost::program_options;
+
 int main(int argc, char** argv) {
   // get full path of command line app by name
   std::string exe_path = SdkConfig::BinPath("exgeoinfo");

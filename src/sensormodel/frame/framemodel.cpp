@@ -168,7 +168,7 @@ bool FrameModel<ImageModelPolicy>::GroundToImage(const Point3d &ground,
  *  \return pointer to a coordinate system
  */
 template <class ImageModelPolicy>
-std::shared_ptr<SpatialReferenceSystem>
+SPSpatialRefSys
 FrameModel<ImageModelPolicy>::GetCoordinateSystem() const noexcept {
   return mFrameEP->GetCoordinateSystem();
 }

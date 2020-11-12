@@ -6,6 +6,7 @@
 
 #include "io/exio.h"
 #include "core/datasource/pointcloud.h"
+#include "core/spatialref/isrs.h"
 #include "3rdparty//gdal/exgdal.h"
 
 namespace earthxpert {

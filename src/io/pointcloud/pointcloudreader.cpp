@@ -57,7 +57,7 @@ UPSpatialRefSys PointcloudReader::GetCoordinateSystem() const {
  *
  *  \return Return specified number of points
  */
-std::unique_ptr<Pointcloud>
+UPPointcloud
 PointcloudReader::ReadPointcloud(const size_t start, const size_t numPoints) {
   if (start + numPoints > mFilePointCount) 
     throw std::out_of_range(_("ReadPointcloud: requested too many points"));
@@ -93,7 +93,7 @@ size_t PointcloudReader::ReadPointcloud(const size_t start,
  *
  *  \return Return Pointcloud container object.
  */
-std::unique_ptr<Pointcloud>
+UPPointcloud
 PointcloudReader::ReadPointcloud(const SpatialTileD& tile) {
   // fast: direct reading if covering the entire file
   if (tile >= mFileBBox2D) {

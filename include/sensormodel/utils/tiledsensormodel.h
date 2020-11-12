@@ -17,7 +17,7 @@ namespace earthxpert {
 class EXSENSORMODEL_EXPORTS TiledSensorModel final : public SensorModel {
 public:
   TiledSensorModel(std::vector<RasterWindow>&& tiles, 
-    std::vector<std::unique_ptr<ISensorModel>>&& models);
+    std::vector<UPISensorModel>&& models);
 
   TiledSensorModel(const TiledSensorModel& rhs);
   TiledSensorModel(TiledSensorModel&& rhs) noexcept;
@@ -29,7 +29,7 @@ public:
   bool operator==(const TiledSensorModel& rhs) const;
   bool operator!=(const TiledSensorModel& rhs) const;
 
-  std::unique_ptr<ISensorModel> Clone() const override {
+  UPISensorModel Clone() const override {
     return std::make_unique<TiledSensorModel>(*this);
   }
 
@@ -104,13 +104,13 @@ public:
 
   const std::vector<RasterWindow>& GetTiles() const noexcept { return mTiles; }
 
-  const std::vector<std::unique_ptr<ISensorModel>>& GetModels() const noexcept {
+  const std::vector<UPISensorModel>& GetModels() const noexcept {
     return mModels;
   }
 
 private:
   std::vector<RasterWindow> mTiles;   // layout of the entire scene
-  std::vector<std::unique_ptr<ISensorModel>> mModels; // one model per tile
+  std::vector<UPISensorModel> mModels; // one model per tile
 
   void Initialize();
 

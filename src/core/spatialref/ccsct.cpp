@@ -10,10 +10,10 @@ using namespace earthxpert::thirdparty;
 /**
  * constructor.
  *
- * \param [in] srcSrs the source SRS
- * \param [in] tgtSrs the target SRS
+ * \param [in] src the source SRS
+ * \param [in] tgt the target SRS
  */
-CcsCT::CcsCT(const CcsSRS* srcSrs, const CcsSRS* tgtSrs) {
+CcsCT::CcsCT(const CcsSRS* src, const CcsSRS* tgt) {
   Initialize();
 }
 

@@ -20,7 +20,7 @@ template <typename CraftPolicy> PushbroomModel<CraftPolicy>::PushbroomModel(
     std::shared_ptr<ScannerImageModel> imgModel,
     std::unique_ptr<ScannerIP> &&scannerIP,
     std::shared_ptr<ScannerEP> scannerEP,
-    std::shared_ptr<SpatialReferenceSystem> groundSRS) {}
+    SPSpatialRefSys groundSRS) {}
 
 /**
  *  \brief Construct a satellite pushbroom geometry model.
@@ -36,7 +36,7 @@ template <typename CraftPolicy> PushbroomModel<CraftPolicy>::PushbroomModel(
     std::unique_ptr<ScannerIP> &&scannerIP,
     std::shared_ptr<ScannerEP> scannerEP,
     std::shared_ptr<SatelliteDP> satelliteDP,
-    std::shared_ptr<SpatialReferenceSystem> groundSRS) {}
+    SPSpatialRefSys groundSRS) {}
 
 template <typename CraftPolicy> 
 PushbroomModel<CraftPolicy>::PushbroomModel(const PushbroomModel<CraftPolicy>&rhs) {}

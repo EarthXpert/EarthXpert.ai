@@ -23,7 +23,7 @@ using namespace earthxpert;
 AdsModel::AdsModel(std::shared_ptr<ScannerImageModel> imgModel,
                    std::shared_ptr<ScannerIP> scannerIP,
                    std::shared_ptr<ScannerEP> scannerEP, const Point2d &origin,
-                   std::shared_ptr<SpatialReferenceSystem> groundSRS) {}
+                   SPSpatialRefSys groundSRS) {}
 
 AdsModel::AdsModel(const AdsModel &rhs) {}
 

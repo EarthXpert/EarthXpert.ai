@@ -82,7 +82,7 @@ public:
   /**
    *  \return Return all points in the las file
    */
-  std::unique_ptr<Pointcloud> ReadPointcloud() override {
+  UPPointcloud ReadPointcloud() override {
     return ReadPointcloud(0, mFilePointCount);
   }
 
@@ -94,7 +94,7 @@ public:
    *
    *  \return Return specified number of points
    */
-  std::unique_ptr<Pointcloud> ReadPointcloud(size_t start, size_t numPoints) override;
+  UPPointcloud ReadPointcloud(size_t start, size_t numPoints) override;
 
   /**
    *  \brief Reads a point range defined by the passed cloud object,
@@ -117,7 +117,7 @@ public:
    *
    *  \return Return Pointcloud container object.
    */
-  std::unique_ptr<Pointcloud> ReadPointcloud(double minX, double minY,
+  UPPointcloud ReadPointcloud(double minX, double minY,
     double width, double height) override {
     return ReadPointcloud({ minX, minY,width, height });
   }
@@ -129,7 +129,7 @@ public:
    *
    *  \return Return Pointcloud container object.
    */
-  std::unique_ptr<Pointcloud> ReadPointcloud(const SpatialTileD& tile) override;
+  UPPointcloud ReadPointcloud(const SpatialTileD& tile) override;
 
   /**
    *  \return Returns LASreader object.

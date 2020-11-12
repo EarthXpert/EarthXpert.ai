@@ -11,8 +11,8 @@ using namespace earthxpert;
 /**
  *  \brief
  */
-std::unique_ptr<ISensorModel> SensorModelFactory::CreateSensorModel() {
-  return std::unique_ptr<ISensorModel>();
+UPISensorModel SensorModelFactory::CreateSensorModel() {
+  return UPISensorModel();
 }
 
 /**

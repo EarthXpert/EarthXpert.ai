@@ -26,7 +26,7 @@ public:
    *  \param [in] groundSRS ground coordinate reference system
    */
   AffineModel(int numCols, int numRows, std::unique_ptr<Geocoding>&& geocoding,
-    std::shared_ptr<SpatialReferenceSystem> groundSRS);
+    SPSpatialRefSys groundSRS);
 
   AffineModel(const AffineModel& rhs);
   AffineModel(AffineModel&& rhs) noexcept = default;
@@ -86,7 +86,7 @@ private:
   int mNumCols{}; // number of columns of the image product
   int mNumRows{}; // number of rows of the image product
   std::unique_ptr<Geocoding> mGeocoding;
-  std::shared_ptr<SpatialReferenceSystem> mGroundSRS{}; // Ground coordinate system
+  SPSpatialRefSys mGroundSRS{}; // Ground coordinate system
 
   bool EqualTo(const ISensorModel& rhs) const override;
   void CopyFrom(const AffineModel& rhs);

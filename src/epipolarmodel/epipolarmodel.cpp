@@ -27,7 +27,7 @@ using namespace earthxpert;
  */
 template <class GroundPolicy>
 EpipolarModel<GroundPolicy>::EpipolarModel(StereoPos pos, 
-  std::shared_ptr<ISensorModel> sensorModel, const Polygon2d& epiBound, 
+  SPISensorModel sensorModel, const Polygon2d& epiBound, 
   std::unique_ptr<EpipolarRect>&& epiRect, std::shared_ptr<GroundPolicy> groundPolicy)
     : SensorEpipolarModel(pos, sensorModel, epiBound),
       mEpiRect(std::move(epiRect)), mGroundPolicy(groundPolicy) {

@@ -16,7 +16,7 @@ using earthxpert::AffineModel;
  */
 AffineModel::AffineModel(const int numCols, const int numRows, 
   std::unique_ptr<Geocoding>&& geocoding, 
-  std::shared_ptr<SpatialReferenceSystem> groundSRS) 
+  SPSpatialRefSys groundSRS) 
   : mNumCols(numCols), mNumRows(numRows), 
     mGeocoding(std::move(geocoding)), mGroundSRS(groundSRS) {}
 

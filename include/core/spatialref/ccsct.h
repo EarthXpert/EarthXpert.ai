@@ -17,7 +17,7 @@ namespace earthxpert {
  */
 class EXCORE_EXPORTS CcsCT : public ICT {
 public:
-  CcsCT(const CcsSRS* srcSrs, const CcsSRS* tgtSrs);
+  CcsCT(const CcsSRS* src, const CcsSRS* tgt);
   ~CcsCT() = default;
 
   /**

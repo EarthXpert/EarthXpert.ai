@@ -9,6 +9,7 @@
 #include "core/datasource/iraster.h"
 #include "core/datasource/metadata.h"
 #include "core/spatialref/geocoding.h"
+#include "core/spatialref/isrs.h"
 #include "core/utils/rasterwindow.h"
 
 namespace earthxpert {
@@ -67,7 +68,7 @@ public:
    *
    *  \return Returns pointer to a coordinate system
    */
-  virtual std::unique_ptr<SpatialReferenceSystem> GetCoordinateSystem() const = 0;
+  virtual UPSpatialRefSys GetCoordinateSystem() const = 0;
 
   /**
    *  \brief Fetch the geocoding information of the image file.
@@ -80,7 +81,7 @@ public:
    *  \param [in] rasterType type of data structure
    *  \return Returns pointer to raster object holding the entire image
    */
-  virtual std::unique_ptr<IRaster> ReadRaster(RasterType rasterType = RasterType::eCVMAT) = 0;
+  virtual UPIRaster ReadRaster(RasterType rasterType = RasterType::eCVMAT) = 0;
 
   /**
    *  \brief Reads a pixel block defined by offsets, size, internal
@@ -93,10 +94,10 @@ public:
    *  \param [in] numRows vertical height
    *  \return Returns pointer to raster object holding a pixel block
    */
-  virtual std::unique_ptr<IRaster> ReadRaster(int colOffset, int rowOffset,
+  virtual UPIRaster ReadRaster(int colOffset, int rowOffset,
     int numCols, int numRows, RasterType rasterType = RasterType::eCVMAT) = 0;
 
-  virtual std::unique_ptr<IRaster> ReadRaster(const RasterWindow& win, 
+  virtual UPIRaster ReadRaster(const RasterWindow& win,
     RasterType rasterType = RasterType::eCVMAT) = 0;
 
   /**

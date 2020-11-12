@@ -12,7 +12,7 @@
 using namespace earthxpert;
 
 TiledSensorModel::TiledSensorModel(std::vector<RasterWindow>&& tiles,
-  std::vector<std::unique_ptr<ISensorModel>>&& models)
+  std::vector<UPISensorModel>&& models)
   : mTiles(std::move(tiles)), mModels(std::move(models)) {
   Initialize();
 }
@@ -154,7 +154,7 @@ bool TiledSensorModel::GroundToImage(const Point3d& ground, Point2d& image) cons
  *
  *  \return Returns pointer to a coordinate system
  */
-std::shared_ptr<SpatialReferenceSystem> 
+SPSpatialRefSys 
 TiledSensorModel::GetCoordinateSystem() const noexcept {
   return {};
 }

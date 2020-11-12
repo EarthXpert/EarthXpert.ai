@@ -132,8 +132,7 @@ public:
    *  \return Returns pointer to a coordinate system
    *  \todo replace by ISRS
    */
-  virtual std::shared_ptr<SpatialReferenceSystem>
-    GetCoordinateSystem() const noexcept = 0;
+  virtual SPSpatialRefSys GetCoordinateSystem() const noexcept = 0;
 
   //virtual std::shared_ptr<ISRS>
   //  GetCoordinateSystem() const noexcept = 0;

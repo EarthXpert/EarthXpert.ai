@@ -23,7 +23,7 @@ using namespace earthxpert;
 RollingShutterModel::RollingShutterModel(
     std::shared_ptr<DigitalImageModelImp> imgModel, std::shared_ptr<FrameIP> scannerIP,
     std::shared_ptr<ScannerEP> scannerEP,
-    std::shared_ptr<SpatialReferenceSystem> groundSRS) {}
+    SPSpatialRefSys groundSRS) {}
 
 /**
  *  \brief Construct a satellite rolling-shutter geometry model.
@@ -38,7 +38,7 @@ RollingShutterModel::RollingShutterModel(
     std::shared_ptr<DigitalImageModelImp> imgModel, std::shared_ptr<FrameIP> scannerIP,
     std::shared_ptr<ScannerEP> scannerEP,
     std::shared_ptr<SatelliteDP> satelliteDP,
-    std::shared_ptr<SpatialReferenceSystem> groundSRS) {}
+    SPSpatialRefSys groundSRS) {}
 
 RollingShutterModel::RollingShutterModel(const RollingShutterModel &rhs) {}
 

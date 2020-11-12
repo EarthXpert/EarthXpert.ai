@@ -27,7 +27,7 @@ public:
    *  \param [in] epiBound epipolar boundary of valid region
    */
   SensorEpipolarModel(StereoPos pos, 
-    std::shared_ptr<ISensorModel> sensorModel, const Polygon2d& epiBound);
+    SPISensorModel sensorModel, const Polygon2d& epiBound);
   virtual ~SensorEpipolarModel() = default;
 
   /**
@@ -136,7 +136,7 @@ public:
     return mSensorModel->operator!=(rhs);
   }
 
-  std::unique_ptr<ISensorModel> Clone() const override {
+ UPISensorModel Clone() const override {
     return mSensorModel->Clone();
   }
 

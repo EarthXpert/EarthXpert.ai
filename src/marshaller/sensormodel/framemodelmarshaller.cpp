@@ -58,7 +58,7 @@ FrameModelMarshaller::Deserialize(const std::string &modelFileIP,
  *
  *  \return the framemodel for the id
  */
-std::unique_ptr<ISensorModel>
+UPISensorModel
 FrameModelMarshaller::GetModel(const std::string &photoID) {
   auto iterator = mCacheEP.find(photoID);
   if (iterator != mCacheEP.end()) {

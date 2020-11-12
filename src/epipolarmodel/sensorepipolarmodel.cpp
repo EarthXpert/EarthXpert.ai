@@ -15,7 +15,7 @@ using namespace earthxpert;
  *   \brief construct a frame epipolar model
  */
 SensorEpipolarModel::SensorEpipolarModel(StereoPos pos,
-  std::shared_ptr<ISensorModel> sensorModel, const Polygon2d& epiBound)
+  SPISensorModel sensorModel, const Polygon2d& epiBound)
   : mPos(pos), mSensorModel(sensorModel), mBound(epiBound) {
   Initialize();
 }
@@ -30,7 +30,8 @@ SensorEpipolarModel::SensorEpipolarModel(StereoPos pos,
  *  \param [in] raw List of 2d positions (x, y) in image raster coordinate system
  *  \return Returns true if operation succeeds
  */
-size_t SensorEpipolarModel::EpiToRaw(const std::vector<Point2d>& epi, std::vector<Point2d>& raw) const {
+size_t SensorEpipolarModel::EpiToRaw(const std::vector<Point2d>& epi, 
+  std::vector<Point2d>& raw) const {
   const long size = epi.size();
   assert(size == raw.size());
   size_t ret{};
@@ -56,7 +57,8 @@ size_t SensorEpipolarModel::EpiToRaw(const std::vector<Point2d>& epi, std::vecto
  * coordinate system
  *   \return Returns true if operation succeeds
  */
-size_t SensorEpipolarModel::RawToEpi(const std::vector<Point2d>& raw, std::vector<Point2d>& epi) const {
+size_t SensorEpipolarModel::RawToEpi(const std::vector<Point2d>& raw, 
+  std::vector<Point2d>& epi) const {
   const long size = raw.size();
   assert(size == epi.size());
   size_t ret{};
@@ -74,9 +76,8 @@ size_t SensorEpipolarModel::RawToEpi(const std::vector<Point2d>& raw, std::vecto
  *  \brief Given a 2d position in image coordinate system and a list of
  *  heights, output ground horizontal positions in ground coordinate system.
  *
- *  \param [in] image 2d position (x, y) in imagery raster coordinate system
- *  \param [in/out] ground 3d ground positions (X, Y, Z) in ground coordinate
- * system
+ *  \param [in] image 2d position (x, y) in imagery raster CS
+ *  \param [in/out] ground 3d ground positions (X, Y, Z) in ground CS
  */
 size_t SensorEpipolarModel::ImageToGround(const Point2d& image,
   std::vector<Point3d>& ground) const {
@@ -93,8 +94,7 @@ size_t SensorEpipolarModel::ImageToGround(const Point2d& image,
 
 /**
  *  \brief Given a list of 2d positions in image coordinate system and a
- * corresponding list of heights, output the ground horizontal positions in
- * ground coordinate system.
+ * corresponding list of heights, output the ground horizontal positions.
  *
  *  \param [in] image List of 2d positions (x, y) on image
  *  \param [in/out] ground List of 3d ground positions (X, Y, Z)

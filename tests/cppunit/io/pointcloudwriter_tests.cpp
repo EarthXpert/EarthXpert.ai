@@ -13,14 +13,14 @@ using namespace earthxpert;
 using fgt = FieldGroup;
 namespace fs = std::filesystem;
 
-static std::unique_ptr<Pointcloud> ReadPointcloud(
+static UPPointcloud ReadPointcloud(
   const std::string& pcFile, const fgt fieldGroup) {
   PointcloudReader reader(pcFile, fieldGroup);
 
   return reader.ReadPointcloud();
 }
 
-static std::unique_ptr<Pointcloud> ReadPointcloud(const std::string& pcFile) {
+static UPPointcloud ReadPointcloud(const std::string& pcFile) {
   return ReadPointcloud(pcFile, {});
 }
 

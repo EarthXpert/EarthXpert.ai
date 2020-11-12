@@ -33,7 +33,7 @@ RationalModel::RationalModel(const int numCols, const int numRows,
                              const std::array<double, NumCoef> &lineDenCoef,
                              const std::array<double, NumCoef> &sampNumCoef,
                              const std::array<double, NumCoef> &sampDenCoef,
-                             std::shared_ptr<SpatialReferenceSystem> groundSRS)
+                             SPSpatialRefSys groundSRS)
   : mNumCols(numCols), mNumRows(numRows),
     mNormalFactors(normalFators), mLineNumCoef(lineNumCoef),
     mLineDenCoef(lineDenCoef), mSampNumCoef(sampNumCoef),
@@ -63,7 +63,7 @@ RationalModel::RationalModel(const std::array<double, NumFact> &normalFators,
                              const std::array<double, NumCoef> &lineDenCoef,
                              const std::array<double, NumCoef> &sampNumCoef,
                              const std::array<double, NumCoef> &sampDenCoef,
-                             std::shared_ptr<SpatialReferenceSystem> groundSRS)
+                             SPSpatialRefSys groundSRS)
   : RationalModel(0, 0, normalFators, lineNumCoef, lineDenCoef,
     sampNumCoef, sampDenCoef, groundSRS) {
 }
@@ -218,7 +218,7 @@ bool RationalModel::ImageToGround(const Point2d &image, Point3d &ground) const {
   const auto sensor = ImageToSensor(image);
 
   Point3d uvw{0.0, 0.0, (ground.z - nfc[eOHGT]) * mInvScale[eISHGT]}; // lph
-  if (!SensorToGroundNormalize(sensor, uvw))
+  if (!SensorToGroundNm(sensor, uvw))
     return false;
 
   ground.x = nfc[eOLON] + uvw.x * nfc[eSLON];
@@ -493,13 +493,13 @@ Point2d RationalModel::CalcCorrection(const Point2d& image) const {
  *  \remark the scale factors eSSAMP, eSLINE are reduced for a single image.
  *  \ref RationalStereoModel::ImagesToGround()
  */
-bool RationalModel::SensorToGroundNormalize(const double x, const double y,
+bool RationalModel::SensorToGroundNm(const double x, const double y,
   const double w, double& u, double& v) const {
   if (mCubeS2G) {
     std::tie(u, v) = mCubeS2G->GetVal2(x, y, w);
   }
   else { // direct estimates for u, v
-    if (!SensorToGroundNormalizeLinear(x, y, w, u, v))
+    if (!SensorToGroundNmLinear(x, y, w, u, v))
       return false;
   }
   u = std::clamp(u, -1.2, 1.2);
@@ -669,7 +669,7 @@ Tuple4d RationalModel::CalcPolynomials(const double u,
  *    Fc(u, v) = Sn - Sd * x = 0
  *    Fr(u, v) = Ln - Ld * y = 0
  */
-bool RationalModel::SensorToGroundNormalizeLinear(const double x, const double y,
+bool RationalModel::SensorToGroundNmLinear(const double x, const double y,
   const double w, double &u, double &v) const {
   double A[2][2];  // Partial derivatives w.r.t. u and v
   A[0][0] = snc[eL] - sdc[eL] * x;
@@ -695,7 +695,7 @@ bool RationalModel::SensorToGroundNormalizeLinear(const double x, const double y
 }
 
 /**
- *  Build a cube to provide fast X, Y coordinates used by SensorToGroundNormalize.
+ *  Build a cube to provide fast X, Y coordinates used by SensorToGroundNm.
  */
 void RationalModel::BuildCubeS2G() {
   auto cubeS2G = std::make_unique<InterpCubeD>(2,
@@ -707,9 +707,9 @@ void RationalModel::BuildCubeS2G() {
 
   auto cube = cubeS2G->GetArray();
   for (size_t i = 0; i < numNodes; ++i) {
-    if (!SensorToGroundNormalize(cubeNodes[i].x, cubeNodes[i].y,
+    if (!SensorToGroundNm(cubeNodes[i].x, cubeNodes[i].y,
       cubeNodes[i].z, cube[i*2], cube[i*2 + 1])) {
-      throw std::exception(_("RationalModel: SensorToGroundNormalize failed to project."));
+      throw std::exception(_("RationalModel: SensorToGroundNm failed to project."));
     }
   }
 

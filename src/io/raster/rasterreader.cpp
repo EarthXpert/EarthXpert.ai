@@ -93,21 +93,21 @@ std::unique_ptr<Geocoding> RasterReader::GetGeocoding() const {
  *  \param [in] rowOffset starting row
  *  \param [in] numCols horizontal width
  *  \param [in] numRows vertical height
- *  \param [in] rasterType type of data structure
+ *  \param [in] rasType type of data structure
  *  \return Returns pointer to raster object holding a pixel block
  */
-std::unique_ptr<IRaster> 
+UPIRaster 
 RasterReader::ReadRaster(const int colOffset, const int rowOffset,
-  const int numCols, const int numRows, const RasterType rasterType) {
-  std::unique_ptr<IRaster> raster;
+  const int numCols, const int numRows, const RasterType rasType) {
+  UPIRaster raster;
 
-  if (RasterType::eCVMAT == rasterType) {
+  if (RasterType::eCVMAT == rasType) {
     auto cvRaster = new CvRaster(numCols, numRows, mCvDT,
       colOffset, rowOffset, mMarginCols, mMarginRows, mMarginKind);
     raster.reset(cvRaster);
     ReadRaster(cvRaster);
   }
-  else if (RasterType::eGDAL == rasterType) {
+  else if (RasterType::eGDAL == rasType) {
     auto gdalRaster = new GdalRaster(numCols, numRows, mGdalDT, mReadNumBands,
       colOffset, rowOffset, mMarginCols, mMarginRows, mMarginKind);
     raster.reset(gdalRaster);
@@ -127,12 +127,12 @@ RasterReader::ReadRaster(const int colOffset, const int rowOffset,
  *  \param [in/out] raster the raster object to be populated with the pixel block.
  */
 void RasterReader::ReadRaster(IRaster* const raster) {
-  const auto rasterType = raster->GetRasterType();
+  const auto rasType = raster->GetRasterType();
 
-  if (RasterType::eCVMAT == rasterType) {
+  if (RasterType::eCVMAT == rasType) {
     ReadRaster(static_cast<CvRaster* const>(raster));
   }
-  else if (RasterType::eGDAL == rasterType) {
+  else if (RasterType::eGDAL == rasType) {
     ReadRaster(static_cast<GdalRaster* const>(raster));
   }
   else {

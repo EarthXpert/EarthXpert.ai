@@ -377,11 +377,11 @@ private:
    * in virtual ground coordinate system
    *  \return Returns true if the operation succeeds
    */
-  bool SensorToGroundNormalize(const Point2d &sensor, Point3d &uvw) const {
-    return SensorToGroundNormalize(sensor.x, sensor.y, uvw.z, uvw.x, uvw.y);
+  bool SensorToGroundNm(const Point2d &sensor, Point3d &uvw) const {
+    return SensorToGroundNm(sensor.x, sensor.y, uvw.z, uvw.x, uvw.y);
   }
 
-  inline Point3d GroundNormalize(const Point3d& ground) const {
+  inline Point3d GroundNm(const Point3d& ground) const {
     return { (ground.x - nfc[eOLON]) * mInvScale[eISLON],
              (ground.y - nfc[eOLAT]) * mInvScale[eISLAT],
              (ground.z - nfc[eOHGT]) * mInvScale[eISHGT] };
@@ -397,7 +397,7 @@ private:
    *  \param [out] sensor 2d sensor position (x, y)
    *  \return Returns true if operation succeeds
    */
-  inline bool GroundNormalizeToSensor(const Point3d& uvw, Point2d& sensor) const {
+  inline bool GroundNmToSensor(const Point3d& uvw, Point2d& sensor) const {
     const auto [Ln, Ld, Sn, Sd] = CalcPolynomials(uvw);
 
     // col/row computed from RFM
@@ -407,8 +407,8 @@ private:
   }
 
   inline bool GroundToSensor(const Point3d& ground, Point2d& sensor) const {
-    const Point3d uvw = GroundNormalize(ground);
-    return GroundNormalizeToSensor(uvw, sensor);
+    const Point3d uvw = GroundNm(ground);
+    return GroundNmToSensor(uvw, sensor);
   }
 
   void CalcTerms(const Point3d &uvw, double *const LPH) const {
@@ -421,13 +421,13 @@ private:
   }
   Tuple4d CalcPolynomials(double u, double v, double w) const;
 
-  bool SensorToGroundNormalize(const double x, const double y,
+  bool SensorToGroundNm(const double x, const double y,
     const double w, double& u, double& v) const;
 
-  bool SensorToGroundNormalizeLinear(const Point2d &sensor, Point3d &uvw) const {
-    return SensorToGroundNormalizeLinear(sensor.x, sensor.y, uvw.z, uvw.x, uvw.y);
+  bool SensorToGroundNmLinear(const Point2d &sensor, Point3d &uvw) const {
+    return SensorToGroundNmLinear(sensor.x, sensor.y, uvw.z, uvw.x, uvw.y);
   }
-  bool SensorToGroundNormalizeLinear(double x, double y, 
+  bool SensorToGroundNmLinear(double x, double y, 
     double w, double &u, double &v) const;
   
   // cached calculation for better performance
