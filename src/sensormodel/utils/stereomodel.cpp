@@ -357,7 +357,8 @@ bool StereoModel::ImagesToGroundNR(const Point2d& leftImage,
     if (std::numeric_limits<double>::epsilon() > den) 
       return false;
 
-    const double dz = A.ddot(Point2d(leftGrd.x - rightGrd.x, leftGrd.y - rightGrd.y)) / den;
+    const double dz = A.ddot(Point2d(leftGrd.x - rightGrd.x, \
+      leftGrd.y - rightGrd.y)) / den;
     ground.z += dz;
 
     if (kTolZ > fabs(dz)) break;

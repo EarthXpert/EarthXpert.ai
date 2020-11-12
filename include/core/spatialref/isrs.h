@@ -5,7 +5,6 @@
 #pragma once
 
 #include "core/excore.h"
-
 #include <memory>
 
 namespace earthxpert {

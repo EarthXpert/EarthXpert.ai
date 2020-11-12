@@ -10,7 +10,6 @@
 #include "core/spatialref/isrs.h"
 #include "core/spatialref/spatialdef.h"
 
-#include <memory>
 #include <vector>
 #include <utility>
 

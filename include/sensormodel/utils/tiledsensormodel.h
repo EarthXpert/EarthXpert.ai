@@ -73,8 +73,7 @@ public:
    *
    *  \return Returns pointer to a coordinate system
    */
-  std::shared_ptr<SpatialReferenceSystem> 
-  GetCoordinateSystem() const noexcept override;
+  SPSpatialRefSys GetCoordinateSystem() const noexcept override;
 
   /**
    *  \return Returns type of SRS

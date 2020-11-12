@@ -154,8 +154,7 @@ bool TiledSensorModel::GroundToImage(const Point3d& ground, Point2d& image) cons
  *
  *  \return Returns pointer to a coordinate system
  */
-SPSpatialRefSys 
-TiledSensorModel::GetCoordinateSystem() const noexcept {
+SPSpatialRefSys TiledSensorModel::GetCoordinateSystem() const noexcept {
   return {};
 }
 

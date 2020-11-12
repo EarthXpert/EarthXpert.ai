@@ -7,9 +7,6 @@
 #include "epipolarmodel/iepipolarmodel.h"
 #include "sensormodel/isensormodel.h"
 
-#include <memory>
-#include <utility>
-
 namespace earthxpert {
 /**
  *  The class SensorEpipolarModel defines the template algorithms

@@ -35,15 +35,15 @@ GdalCT::GdalCT(OGRSpatialReference* src, OGRSpatialReference* tgt) {
  *  set the stategy OAMS_TRADITIONAL_GIS_ORDER here.
  */
 GdalCT::GdalCT(const std::string& srcWkt, const std::string& tgtWkt) {
-    auto srcSrs = new OGRSpatialReference(srcWkt.c_str());
-    auto tgtSrs = new OGRSpatialReference(tgtWkt.c_str());
+    auto src = new OGRSpatialReference(srcWkt.c_str());
+    auto tgt = new OGRSpatialReference(tgtWkt.c_str());
 
 #if 3 <= GDAL_VERSION_MAJOR
-    srcSrs->SetAxisMappingStrategy(OAMS_TRADITIONAL_GIS_ORDER);
-    dstSrs->SetAxisMappingStrategy(OAMS_TRADITIONAL_GIS_ORDER);
+    src->SetAxisMappingStrategy(OAMS_TRADITIONAL_GIS_ORDER);
+    tgt->SetAxisMappingStrategy(OAMS_TRADITIONAL_GIS_ORDER);
 #endif
 
-    Initialize(srcSrs, tgtSrs);
+    Initialize(src, tgt);
 }
 
 /**

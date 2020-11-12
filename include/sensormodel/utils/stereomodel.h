@@ -11,7 +11,6 @@
 #include "core/spatialref/earthellipsoid.h"
 #include "core/spatialref/groundpolicy.h"
 
-#include <cassert>
 #include <atomic>
 
 namespace earthxpert {
@@ -289,6 +288,7 @@ protected:
 
   inline double GetMeanHeight(
     const std::vector<const ISensorModel*>& models) const noexcept {
+    assert(0 < models.size());
     double z{};
     for (auto model : models) {
       z += model->GetMeanHeight();
