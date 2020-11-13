@@ -1,10 +1,12 @@
-project(blockadjust)
+project(blockadjust CXX)
 
 add_definitions(-DEXBBA_API)
-set(blockadjust_srcs "blockadjust.cpp"
+set(blockadjust_srcs "./blockadjust.cpp"
+  "ads/adjustads.cpp"
   "ads/adsbba.cpp"
-  "frame/framebba.cpp"
   "frame/adjustframe.cpp"
+  "frame/framebba.cpp"
+  "rational/adjustrational.cpp"
   "rational/rationalbba.cpp")
 earthxpert_add_library(blockadjust "api"
   SRCS ${blockadjust_srcs}

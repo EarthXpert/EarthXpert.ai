@@ -8,7 +8,7 @@ set(epipolar_srcs "./epiperf.cpp"
   "./stereomategenerator.cpp")
 earthxpert_add_library(epipolar "api"
   SRCS ${epipolar_srcs}
-  ITEMS ex3rdparty dataio sensormodel epipolarmodel marshaller 
+  ITEMS ex3rdparty core dataio sensormodel epipolarmodel marshaller 
         ${GDAL_LIBRARY} ${GETTEXT_LIBRARY} ${OpenCL_LIBS})
 
 earthxpert_source_group(${epipolar_srcs})
