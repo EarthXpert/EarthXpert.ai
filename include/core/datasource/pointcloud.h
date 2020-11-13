@@ -238,17 +238,18 @@ public:
    *  \param FieldTy the field type of a WxPoint<> component
    *  \param [in] fields an array of FieldTy objects
    */
-  template <typename FieldTy> void SetField_Unchecked(std::vector<FieldTy>&& fields) {
-    if constexpr(std::is_same_v<XYZF, FieldTy>) {
+  template <typename FieldTy> void 
+  SetField_Unchecked(std::vector<FieldTy>&& fields) {
+    if constexpr(IsXYZF<FieldTy>) {
       mXYZ = std::move(fields);
     }
-    if constexpr(std::is_same_v<Classification, FieldTy>) {
+    if constexpr(IsClassification<FieldTy>) {
       mCla = std::move(fields);
     }
-    if constexpr(std::is_same_v<Intensity, FieldTy>) {
+    if constexpr(IsIntensity<FieldTy>) {
       mIntensity = std::move(fields);
     }
-    if constexpr(std::is_same_v<RGB16, FieldTy>) {
+    if constexpr(IsRGB16<FieldTy>) {
       mRGB = std::move(fields);
     }
     // \todo add other field groups
@@ -259,16 +260,16 @@ public:
    *  \return Return a reference to the array of FieldTy objects
    */
   template <typename FieldTy> const std::vector<FieldTy>& GetField_Unchecked() const {
-    if constexpr(std::is_same_v<XYZF, FieldTy>) {
+    if constexpr(IsXYZF<FieldTy>) {
       return mXYZ;
     }
-    if constexpr(std::is_same_v<Classification, FieldTy>) {
+    if constexpr(IsClassification<FieldTy>) {
       return mCla;
     }
-    if constexpr(std::is_same_v<Intensity, FieldTy>) {
+    if constexpr(IsIntensity<FieldTy>) {
       return mIntensity;
     }
-    if constexpr(std::is_same_v<RGB16, FieldTy>) {
+    if constexpr(IsRGB16<FieldTy>) {
       return mRGB;
     }
     // \todo add other field groups
@@ -276,16 +277,16 @@ public:
   }
 
   template <typename FieldTy> std::vector<FieldTy>& GetField_Unchecked() {
-    if constexpr(std::is_same_v<XYZF, FieldTy>) {
+    if constexpr(IsXYZF<FieldTy>) {
       return mXYZ;
     }
-    if constexpr(std::is_same_v<Classification, FieldTy>) {
+    if constexpr(IsClassification<FieldTy>) {
       return mCla;
     }
-    if constexpr(std::is_same_v<Intensity, FieldTy>) {
+    if constexpr(IsIntensity<FieldTy>) {
       return mIntensity;
     }
-    if constexpr(std::is_same_v<RGB16, FieldTy>) {
+    if constexpr(IsRGB16<FieldTy>) {
       return mRGB;
     }
     // \todo add other field groups
@@ -297,17 +298,18 @@ public:
    *  \param [in] i index of point
    *  \param [in] field the FieldTy object
    */
-  template <typename FieldTy> void SetField_Unchecked(const size_t i, const FieldTy& field) {
-    if constexpr(std::is_same_v<XYZF, FieldTy>) {
+  template <typename FieldTy> void 
+  SetField_Unchecked(const size_t i, const FieldTy& field) {
+    if constexpr(IsXYZF<FieldTy>) {
       mXYZ[i] = field;
     }
-    if constexpr(std::is_same_v<Classification, FieldTy>) {
+    if constexpr(IsClassification<FieldTy>) {
       mCla[i] = field;
     }
-    if constexpr(std::is_same_v<Intensity, FieldTy>) {
+    if constexpr(IsIntensity<FieldTy>) {
       mIntensity[i] = field;
     }
-    if constexpr(std::is_same_v<RGB16, FieldTy>) {
+    if constexpr(IsRGB16<FieldTy>) {
       mRGB[i] = field;
     }
     // \todo add other field groups
@@ -319,16 +321,16 @@ public:
    *  \return Returns a field at given index.
    */
   template <typename FieldTy> const FieldTy& GetField_Unchecked(const size_t i) const {
-    if constexpr(std::is_same_v<XYZF, FieldTy>) {
+    if constexpr(IsXYZF<FieldTy>) {
       return mXYZ[i];
     }
-    if constexpr(std::is_same_v<Classification, FieldTy>) {
+    if constexpr(IsClassification<FieldTy>) {
       return mCla[i];
     }
-    if constexpr(std::is_same_v<Intensity, FieldTy>) {
+    if constexpr(IsIntensity<FieldTy>) {
       return mIntensity[i];
     }
-    if constexpr(std::is_same_v<RGB16, FieldTy>) {
+    if constexpr(IsRGB16<FieldTy>) {
       return mRGB[i];
     }
     // \todo add other field groups
@@ -336,16 +338,16 @@ public:
   }
 
   template <typename FieldTy> FieldTy& GetField_Unchecked(const size_t i) {
-    if constexpr(std::is_same_v<XYZF, FieldTy>) {
+    if constexpr(IsXYZF<FieldTy>) {
       return mXYZ[i];
     }
-    if constexpr(std::is_same_v<Classification, FieldTy>) {
+    if constexpr(IsClassification<FieldTy>) {
       return mCla[i];
     }
-    if constexpr(std::is_same_v<Intensity, FieldTy>) {
+    if constexpr(IsIntensity<FieldTy>) {
       return mIntensity[i];
     }
-    if constexpr(std::is_same_v<RGB16, FieldTy>) {
+    if constexpr(IsRGB16<FieldTy>) {
       return mRGB[i];
     }
     // \todo add other field groups
@@ -506,10 +508,7 @@ private:
    *  \throw Throws invalid_argument if point cloud does not contain the requested field group.
    */
   template <typename FieldTy> void VerifyFieldType() const {
-    static_assert(std::is_same_v<XYZF, FieldTy> || 
-      std::is_same_v<Classification, FieldTy> ||
-      std::is_same_v<Intensity, FieldTy> || 
-      std::is_same_v<RGB16, FieldTy>, "VerifyFieldType: FieldTy");
+    static_assert(IsField_v<FieldTy>, "VerifyFieldType: FieldTy");
     if (!mFieldGroup.test(FieldTy::kFieldPos)) 
       throw std::invalid_argument(_("VerifyFieldType: FieldTy"));
   }

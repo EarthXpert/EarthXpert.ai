@@ -21,8 +21,7 @@ using namespace earthxpert;
  *  \param [in] pointCapacity number of points to be held in cloud
  *  \param [in] fieldGroup pointa contain which field groups
  */
-Pointcloud::Pointcloud(const size_t pointCapacity, 
-  const FieldGroup fieldGroup)
+Pointcloud::Pointcloud(const size_t pointCapacity, const FieldGroup fieldGroup)
   : mPointCapacity(pointCapacity), mFieldGroup(fieldGroup) {
   if (0 == mPointCapacity) 
     throw std::invalid_argument(_("pointCapacity"));
@@ -47,7 +46,7 @@ Pointcloud::Pointcloud(const size_t pointCapacity,
       mRGB.resize(mPointCapacity);
       break;
     default:
-      assert(false);
+      assert(false && "Pointcloud");
     }
   }
 }

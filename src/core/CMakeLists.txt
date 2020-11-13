@@ -40,6 +40,7 @@ set(core_srcs "datasource/cvraster.cpp"
   "spatialref/groundpolicy.cpp"
   "spatialref/localgeoid.cpp"
   "spatialref/srsfactory.cpp"
+  "system/sysmem.cpp"
   "system/sysutils.cpp"
   "utils/fsutils.cpp"
   "utils/geomutils.cpp"
@@ -53,8 +54,9 @@ earthxpert_add_library(core "api"
   SRCS ${core_srcs}
   ITEMS ex3rdparty
         Boost::boost Boost::filesystem Boost::iostreams
-        ${CERES_LIBRARY} ${CGAL_LIBRARIES} ${CUDA_LIBRARIES} ${GDAL_LIBRARY} ${GETTEXT_LIBRARY} glog::glog 
-        ${LASLIB_LIBRARY} ${nsimd_LIBRARIES} ${OpenCL_LIBRARIES} ${OpenCV_LIBS} ${Simd_LIBRARIES})
+        ${CERES_LIBRARY} ${CGAL_LIBRARIES} ${CUDA_LIBRARIES} ${GDAL_LIBRARY} 
+        ${GETTEXT_LIBRARY} glog::glog ${LASLIB_LIBRARY} ${nsimd_LIBRARIES} 
+        ${OpenCL_LIBRARIES} ${OpenCV_LIBS} ${Simd_LIBRARIES} ${vld_LIBRARIES})
 
 earthxpert_source_group(${core_srcs})
 earthxpert_install_target(core)
