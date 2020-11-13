@@ -197,6 +197,13 @@ if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
   set(xsimd_DIR "${EX_THIRD_PARTY}/xsimd_7.4.6/share/xsimd")
 
   #set(Python_ROOT_DIR "python37")
+
+  set(vld_ROOT "${EX_THIRD_PARTY}/vld_2.5.1")
+  #set(vld_DIR "${vld_ROOT}/lib/cmake")
+  set(vld_BIN_DIR "${vld_ROOT}/bin")
+  set(vld_INCLUDE_DIR "${vld_ROOT}/include")
+  set(vld_LIBRARY_DIR "${vld_ROOT}/lib")
+  set(vld_LIBRARIES debug "${vld_LIBRARY_DIR}/vld.lib")
   
 elseif(CMAKE_SYSTEM_NAME STREQUAL "Linux")
   set(EARTHXPERT_BIN_ROOT "bin")
@@ -271,6 +278,7 @@ find_package(Qt5 5.11.2 COMPONENTS Core Gui LinguistTools OpenGL Widgets REQUIRE
 #find_package(Simd REQUIRED)
 find_package(Sltbench REQUIRED)
 find_package(xsimd REQUIRED)
+#find_package(vld)
 
 find_package(Java 1.8 REQUIRED Runtime Development)
 find_package(Python3 REQUIRED COMPONENTS Interpreter Development)
@@ -315,6 +323,7 @@ message(STATUS "Protobuf_INCLUDE_DIRS: ${Protobuf_INCLUDE_DIRS}/google")
 message(STATUS "Simd_INCLUDE_DIR: ${Simd_INCLUDE_DIR}")
 message(STATUS "SLTBENCH_INCLUDE_DIRS: ${SLTBENCH_INCLUDE_DIRS}")
 message(STATUS "xsimd_INCLUDE_DIRS: ${xsimd_INCLUDE_DIRS}")
+message(STATUS "vld_INCLUDE_DIR: ${vld_INCLUDE_DIR}")
 
 include_directories(${Boost_INCLUDE_DIR}) 
 include_directories(${CEREAL_INCLUDE_DIR})
@@ -341,6 +350,7 @@ include_directories(${Protobuf_INCLUDE_DIRS}/google)
 include_directories(${Simd_INCLUDE_DIR})
 include_directories(${SLTBENCH_INCLUDE_DIRS})
 include_directories(${xsimd_INCLUDE_DIRS})
+include_directories(${vld_INCLUDE_DIR})
 
 include_directories("include")
 
