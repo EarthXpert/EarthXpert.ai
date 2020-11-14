@@ -14,7 +14,7 @@ function(earthxpert_add_test name tests_dir)
       CXX_STANDARD 17
       DEBUG_POSTFIX "${EARTHXPERT_DEBUG_POSTFIX}")
   target_link_libraries(${name}
-    ${GTEST_BOTH_LIBRARIES} ${SLTBENCH_LIBS}
+    ${GTEST_BOTH_LIBRARIES} ${SLTBENCH_LIBS} ${vld_LIBRARIES}
     ${ARGN})
   add_test(NAME ${name} 
     COMMAND $<TARGET_FILE:${name}>)

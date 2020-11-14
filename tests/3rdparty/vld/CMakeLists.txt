@@ -1,8 +1,7 @@
 project(tests_vld CXX)
 
 add_3rdparty_test(vld_tests
-  ex3rdparty
-  ${vld_LIBRARIES})
+  ex3rdparty)
 
 if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
   get_filename_component(BOOST_BIN_DIR "${Boost_DIR}/../.." ABSOLUTE)

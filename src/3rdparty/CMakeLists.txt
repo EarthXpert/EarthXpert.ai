@@ -53,7 +53,7 @@ earthxpert_add_library(ex3rdparty "api"
          ${LASLIB_LIBRARY} ${LIBXML2_LIBRARIES} ${OpenCV_LIBS} ${OpenEXR_LIBS} 
         OpenImageIO::OpenImageIO OpenImageIO::OpenImageIO_Util 
         ${nsimd_LIBRARIES} ${PDAL_LIBRARIES} ${Protobuf_LIBRARIES} Qt5::Widgets 
-        ${Simd_LIBRARIES} ${SLTBENCH_LIBS} ${vld_LIBRARIES})
+        ${Simd_LIBRARIES} ${SLTBENCH_LIBS})
 
 earthxpert_source_group(${ex3rdparty_srcs})
 earthxpert_install_target(ex3rdparty)
