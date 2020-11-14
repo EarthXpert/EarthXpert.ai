@@ -1,8 +1,13 @@
 project(tests_performance_core CXX)
 
-add_performance_test(graphfit_perf_tests 
-  ex3rdparty core 
-  ${CERES_LIBRARY} ${GDAL_LIBRARY} ${OpenCV_LIBS})
+function(add_core_perf_test name)
+  add_performance_test(${name} 
+    ex3rdparty core 
+    ${CERES_LIBRARY} ${GDAL_LIBRARY} ${OpenCV_LIBS})
+endfunction()
+
+add_core_perf_test(graphfit_perf_tests)
+
 if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
   get_filename_component(BOOST_BIN_DIR "${Boost_DIR}/../.." ABSOLUTE)
   set(TESTS_CORE_PATH "PATH=$<TARGET_FILE_DIR:ex3rdparty>;$<TARGET_FILE_DIR:core>;\

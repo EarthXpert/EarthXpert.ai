@@ -1,8 +1,13 @@
 project(tests_performance_io CXX)
 
-add_performance_test(rasterreader_perf_tests 
-  ex3rdparty core dataio 
-  ${GDAL_LIBRARY} ${OpenCV_LIBS})
+function(add_dataio_perf_test name)
+  add_performance_test(${name} 
+    ex3rdparty core dataio 
+    ${GDAL_LIBRARY} ${OpenCV_LIBS})
+endfunction()
+
+add_dataio_perf_test(rasterreader_perf_tests)
+
 if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
   get_filename_component(BOOST_BIN_DIR "${Boost_DIR}/../.." ABSOLUTE)
   set(TESTS_IO_PATH "PATH=$<TARGET_FILE_DIR:ex3rdparty>;$<TARGET_FILE_DIR:core>;\

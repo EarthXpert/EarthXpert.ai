@@ -1,8 +1,13 @@
 project(tests_cppunit_epigen CXX)
 
-add_cppunit_test(epigen_tests 
-  ex3rdparty core dataio epipolar epipolarmodel marshaller sensormodel
-  ${GDAL_LIBRARY} ${OpenCV_LIBS})
+function(add_epipolar_cppunit_test name)
+  add_cppunit_test(${name} 
+    ex3rdparty core dataio epipolar epipolarmodel marshaller sensormodel
+    ${GDAL_LIBRARY} ${OpenCV_LIBS})
+endfunction()
+
+add_epipolar_cppunit_test(epigen_tests)
+
 if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
   get_filename_component(BOOST_BIN_DIR "${Boost_DIR}/../.." ABSOLUTE)
   set(TESTS_EPIGEN_PATH "PATH=$<TARGET_FILE_DIR:ex3rdparty>;$<TARGET_FILE_DIR:core>;\

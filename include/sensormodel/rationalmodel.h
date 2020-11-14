@@ -421,8 +421,10 @@ private:
   }
   Tuple4d CalcPolynomials(double u, double v, double w) const;
 
-  bool SensorToGroundNm(const double x, const double y,
-    const double w, double& u, double& v) const;
+  bool SensorToGroundNm(double x, double y, double w, double& u, double& v) const;
+
+  Tuple4d CalcJacobianA(double w, double u, double v, double& xp, double& yp) const;
+  Tuple4d CalcJacobianNc(double w, double u, double v, double& xp, double& yp) const;
 
   bool SensorToGroundNmLinear(const Point2d &sensor, Point3d &uvw) const {
     return SensorToGroundNmLinear(sensor.x, sensor.y, uvw.z, uvw.x, uvw.y);

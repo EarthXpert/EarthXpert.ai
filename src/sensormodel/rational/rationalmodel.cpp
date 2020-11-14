@@ -442,6 +442,68 @@ Point2d RationalModel::CalcCorrection(const Point2d& image) const {
 }
 
 /**
+ *  \brief Compute the combinations of normalized longitude, latitude,
+ *  and height that go along with the rational function.
+ *
+ *  \param [in] u normalized longitude
+ *  \param [in] v normalized latitude
+ *  \param [in] w normalized height
+ *  \param [out] uvw array of combined terms.
+ */
+void RationalModel::CalcTerms(const double u, const double v,
+                              const double w, double *uvw) const {
+  uvw[eC] = 1.0;
+  uvw[eL] = u;
+  uvw[eP] = v;
+  uvw[eH] = w;
+  uvw[eLP] = u * v;
+  uvw[eLH] = u * w;
+  uvw[ePH] = v * w;
+  uvw[eLL] = u * u;
+  uvw[ePP] = v * v;
+  uvw[eHH] = w * w;
+  uvw[ePLH] = uvw[eLP] * w; // L * P * H
+  uvw[eLLL] = uvw[eLL] * u; // L * L * L
+  uvw[eLPP] = u * uvw[ePP]; // L * P * P
+  uvw[eLHH] = u * uvw[eHH]; // L * H * H
+  uvw[eLLP] = uvw[eLL] * v; // L * L * P
+  uvw[ePPP] = uvw[ePP] * v; // P * P * P
+  uvw[ePHH] = v * uvw[eHH]; // P * H * H
+  uvw[eLLH] = uvw[eLL] * w; // L * L * H
+  uvw[ePPH] = uvw[ePP] * w; // P * P * H
+  uvw[eHHH] = uvw[eHH] * w; // H * H * H
+}
+
+/**
+ *  \brief Compute the polynomials using RPCs form the normalized longitude, latitude, height.
+ *
+ *  \param [in] u normalized longitude
+ *  \param [in] v normalized latitude
+ *  \param [in] w normalized height
+ *  \return Returns line numerator, line denominator, sample numerator, sample denominator.
+ */
+Tuple4d RationalModel::CalcPolynomials(const double u, 
+  const double v, const double w) const {
+  double uvw[NumCoef];  // combinations of u, v, w for polynomial terms
+  CalcTerms(u, v, w, uvw);
+
+  double Ln{}, Ld{}; // Line numerator/denominator
+  double Sn{}, Sd{}; // Sample numerator/denominator
+
+  for (int i = 0; i < NumCoef; ++i) {
+    Ln += lnc[i] * uvw[i];
+    Ld += ldc[i] * uvw[i];
+    Sn += snc[i] * uvw[i];
+    Sd += sdc[i] * uvw[i];
+  }
+
+  if (fabs(Ld) < kTol || fabs(Sd) < kTol) 
+    throw std::underflow_error(_("RationalModel: denominator is 0"));
+
+  return { Ln, Ld, Sn, Sd };
+}
+
+/**
  *  Sensor-to-ground projection in virtual coordinate systems.
  *
  *  \brief Given a normalized 2d position in image coordinate system and
@@ -542,7 +604,7 @@ bool RationalModel::SensorToGroundNm(const double x, const double y,
 
       // determinant of the partial derivative matrix
       const double det = dFc_du * dFr_dv - dFc_dv * dFr_du;
-      if (kTol >= fabs(det)) 
+      if (kTol >= fabs(det))
         return false;
 
       invDet = 1.0 / det;
@@ -579,65 +641,28 @@ bool RationalModel::SensorToGroundNm(const double x, const double y,
 }
 
 /**
- *  \brief Compute the combinations of normalized longitude, latitude,
- *  and height that go along with the rational function.
+ *  \brief Calculate Jacobian of rational functions at given ground position (analytic).
  *
- *  \param [in] u normalized longitude
- *  \param [in] v normalized latitude
- *  \param [in] w normalized height
- *  \param [out] uvw array of combined terms.
+ *  \param [out] image estimated normalized col/row
+ *  \return Return {dFc_du, dFc_dv, dFr_du, dFr_dv}
  */
-void RationalModel::CalcTerms(const double u, const double v,
-                              const double w, double *uvw) const {
-  uvw[eC] = 1.0;
-  uvw[eL] = u;
-  uvw[eP] = v;
-  uvw[eH] = w;
-  uvw[eLP] = u * v;
-  uvw[eLH] = u * w;
-  uvw[ePH] = v * w;
-  uvw[eLL] = u * u;
-  uvw[ePP] = v * v;
-  uvw[eHH] = w * w;
-  uvw[ePLH] = uvw[eLP] * w; // L * P * H
-  uvw[eLLL] = uvw[eLL] * u; // L * L * L
-  uvw[eLPP] = u * uvw[ePP]; // L * P * P
-  uvw[eLHH] = u * uvw[eHH]; // L * H * H
-  uvw[eLLP] = uvw[eLL] * v; // L * L * P
-  uvw[ePPP] = uvw[ePP] * v; // P * P * P
-  uvw[ePHH] = v * uvw[eHH]; // P * H * H
-  uvw[eLLH] = uvw[eLL] * w; // L * L * H
-  uvw[ePPH] = uvw[ePP] * w; // P * P * H
-  uvw[eHHH] = uvw[eHH] * w; // H * H * H
+Tuple4d RationalModel::CalcJacobianA(double w, double u, double v,
+  double& xp, double& yp) const {
+  return {};
 }
 
 /**
- *  \brief Compute the polynomials using RPCs form the normalized longitude, latitude, height.
+ *  \brief Calculate Jacobian of rational functions at given ground position
+ *  (central finite difference).
  *
- *  \param [in] u normalized longitude
- *  \param [in] v normalized latitude
- *  \param [in] w normalized height
- *  \return Returns line numerator, line denominator, sample numerator, sample denominator.
+ *  \param [out] image estimated normalized col/row
+ *  \return Return {dFc_du, dFc_dv, dFr_du, dFr_dv}
+ *
+ *  \remark xx% faster than CalcJacobianA
  */
-Tuple4d RationalModel::CalcPolynomials(const double u, 
-  const double v, const double w) const {
-  double uvw[NumCoef];  // combinations of u, v, w for polynomial terms
-  CalcTerms(u, v, w, uvw);
-
-  double Ln{}, Ld{}; // Line numerator/denominator
-  double Sn{}, Sd{}; // Sample numerator/denominator
-
-  for (int i = 0; i < NumCoef; ++i) {
-    Ln += lnc[i] * uvw[i];
-    Ld += ldc[i] * uvw[i];
-    Sn += snc[i] * uvw[i];
-    Sd += sdc[i] * uvw[i];
-  }
-
-  if (fabs(Ld) < kTol || fabs(Sd) < kTol) 
-    throw std::underflow_error(_("RationalModel: denominator is 0"));
-
-  return { Ln, Ld, Sn, Sd };
+Tuple4d RationalModel::CalcJacobianNc(double w, double u, double v,
+  double& xp, double& yp) const {
+  return {};
 }
 
 /**
