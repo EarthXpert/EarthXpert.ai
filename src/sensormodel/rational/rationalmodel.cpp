@@ -141,14 +141,13 @@ bool RationalModel::operator==(const RationalModel &rhs) const {
     if (!equalD(mErrBias, rhs.mErrBias) || !equalD(mErrRand, rhs.mErrRand))
       return false;
 
+    if (mCorrAlgo != rhs.mCorrAlgo)
+      return false;
     if (!std::equal(std::cbegin(mLineCorr), std::cend(mLineCorr),
       std::cbegin(rhs.mLineCorr), equalD))
       return false;
     if (!std::equal(std::cbegin(mSampCorr), std::cend(mSampCorr),
       std::cbegin(rhs.mSampCorr), equalD))
-      return false;
-
-    if (mCorrAlgo != rhs.mCorrAlgo)
       return false;
   }
   return true;
@@ -169,22 +168,21 @@ bool RationalModel::operator!=(const RationalModel &rhs) const {
  *  \except Throw invalid_arguments if it is a bad model.
  */
 void RationalModel::CheckModel() const {
-  if (nfc[eSLINE] < 0.0 || nfc[eSSAMP] < 0.0)
-    throw std::invalid_argument(_("Line or Sample scale must not be negative."));
+  if (nfc[eSLINE] <= 0.0 || nfc[eSSAMP] <= 0.0)
+    throw std::invalid_argument(_("Line or Sample scale must be positive."));
   if (nfc[eSLINE] < 1.0 || nfc[eSSAMP] < 1.0)
     throw std::invalid_argument(_("Line or Sample scale is too small."));
-  if (nfc[eSLAT] < 0.0 || nfc[eSLON] < 0.0)
-    throw std::invalid_argument(_("Latitude or Longitude scale must not be negative."));
+  if (nfc[eSLAT] <= 0.0 || nfc[eSLON] <= 0.0)
+    throw std::invalid_argument(_("Latitude or Longitude scale must be positive."));
   if (nfc[eSLAT] < kTol || nfc[eSLON] < kTol)
     throw std::invalid_argument(_("Latitude or Longitude scale is too small."));
-  if (nfc[eSHGT] < 0.0)
-    throw std::invalid_argument(_("Height scale must not be negative."));
+  if (nfc[eSHGT] <= 0.0)
+    throw std::invalid_argument(_("Height scale must be positive."));
   if (nfc[eSHGT] < 1.0)
     throw std::invalid_argument(_("Height scale is too small."));
 
   // numerical reliability, not singular, contineous
   // non-zero denominator
-
 }
 
 /**
@@ -218,7 +216,7 @@ bool RationalModel::ImageToGround(const Point2d &image, Point3d &ground) const {
   const auto sensor = ImageToSensor(image);
 
   Point3d uvw{0.0, 0.0, (ground.z - nfc[eOHGT]) * mInvScale[eISHGT]}; // lph
-  if (!SensorToGroundNm(sensor, uvw))
+  if (!SensorToVirtual(sensor, uvw))
     return false;
 
   ground.x = nfc[eOLON] + uvw.x * nfc[eSLON];
@@ -247,31 +245,31 @@ bool RationalModel::GroundToImage(const Point3d &ground, Point2d &image) const {
 }
 
 /**
- *  \brief Set 2d correction polynomials in sensor space.
+ *  \brief Set 2d correction polynomials in image/sensor space.
  *
  *  \param [in] lineCorr 2nd-order polynomial for line correction
  *  \param [in] sampCorr 2nd-order polynomial for sample correction
  *  \param [in] corrAlgo correction algoirthm
  */
-void RationalModel::SetSensorCorrection(const std::array<double, NumCorr> &lineCorr,
+void RationalModel::SetCorrection(const std::array<double, NumCorr> &lineCorr,
   const std::array<double, NumCorr> &sampCorr, const CorrAlgo corrAlgo) {
   mLineCorr = lineCorr;
   mSampCorr = sampCorr;
   mCorrAlgo = corrAlgo;
 
   auto NotZero = [](const double val) { return 0.0 != val; };
-  mCorrectionFlag = std::any_of(std::cbegin(mLineCorr), std::cend(mLineCorr), NotZero) ||
+  mCorrFlag = std::any_of(std::cbegin(mLineCorr), std::cend(mLineCorr), NotZero) ||
     std::any_of(std::cbegin(mSampCorr), std::cend(mSampCorr), NotZero);
 }
 
 /**
- *  \brief Get 2d correction polynomials in sensor space.
+ *  \brief Get 2d correction polynomials in image/sensor space.
  *
  *  \param [out] lineCorr 2nd-order polynomial for line correction
  *  \param [out] sampCorr 2nd-order polynomial for sample correction
  *  \param [in] corrAlgo correction algoirthm
  */
-void RationalModel::GetSensorCorrection(std::array<double, NumCorr> &lineCorr,
+void RationalModel::GetCorrection(std::array<double, NumCorr> &lineCorr,
   std::array<double, NumCorr> &sampCorr, const CorrAlgo corrAlgo) const {
   if (mCorrAlgo == corrAlgo) {
     lineCorr = mLineCorr;
@@ -279,12 +277,12 @@ void RationalModel::GetSensorCorrection(std::array<double, NumCorr> &lineCorr,
     return;
   }
 
-  if (eSTANDARD == mCorrAlgo) {
-    assert(eENHANCED == corrAlgo);
-  } // convert eSTANDARD to eENHANCED
+  if (eCA_IMAGE == mCorrAlgo) {
+    assert(eCA_SENSOR == corrAlgo);
+  } // convert eCA_IMAGE to eCA_SENSOR
   else {
-    assert(eSTANDARD == corrAlgo);
-  } // convert eENHANCED to eSTANDARD
+    assert(eCA_IMAGE == corrAlgo);
+  } // convert eCA_SENSOR to eCA_IMAGE
 }
 
 void RationalModel::EnableCubeS2G(const bool enable) {
@@ -376,7 +374,7 @@ void RationalModel::Clear() noexcept {
 
   mLineCorr.fill(0.0);
   mSampCorr.fill(0.0);
-  mCorrAlgo = eSTANDARD;
+  mCorrAlgo = eCA_IMAGE;
 
   mInvScale.fill(0.0);
 }
@@ -408,7 +406,7 @@ void RationalModel::Clear() noexcept {
 Point2d RationalModel::ImageActualToApparant(const Point2d& image) const {
   Point2d imageApp{ image };
 
-  if (mCorrectionFlag) {  // apply correction
+  if (mCorrFlag) {  // apply correction
     const EqualD equalD(0.001);  // [unit: pixel]
     Point2d imageP{ imageApp };
 
@@ -424,20 +422,26 @@ Point2d RationalModel::ImageActualToApparant(const Point2d& image) const {
   return imageApp;
 }
 
+Point2d RationalModel::SensorActualToApparant(const Point2d& sensor) const {
+  Point2d sensorApp{ sensor };
+
+  return sensorApp;
+}
+
 /**
- *  \brief calculate the correction in image space.
+ *  \brief calculate the correction in image/sensor space.
  *
- *  \param [in] image The {col, row} position compatible with RPCs
+ *  \param [in] cam The image/sensor position compatible with RPCs
  *  \return Returns {col, row} corrections
  */
-Point2d RationalModel::CalcCorrection(const Point2d& image) const {
+Point2d RationalModel::CalcCorrection(const Point2d& cam) const {
   auto scc = mSampCorr.data();
   auto lcc = mLineCorr.data();
-  const double CR[3] = { image.x * image.x, image.x * image.y, image.y * image.y };
+  const double CR[3] = { cam.x * cam.x, cam.x * cam.y, cam.y * cam.y };
 
-  return { scc[eCO] + scc[eCS] * image.x + scc[eCL] * image.y +
+  return { scc[eCO] + scc[eCS] * cam.x + scc[eCL] * cam.y +
     scc[eCS2] * CR[0] + scc[eCSL] * CR[1] + scc[eCL2] * CR[2],
-           lcc[eCO] + lcc[eCS] * image.x + lcc[eCL] * image.y +
+           lcc[eCO] + lcc[eCS] * cam.x + lcc[eCL] * cam.y +
     lcc[eCS2] * CR[0] + lcc[eCSL] * CR[1] + lcc[eCL2] * CR[2] };
 }
 
@@ -555,13 +559,13 @@ Tuple4d RationalModel::CalcPolynomials(const double u,
  *  \remark the scale factors eSSAMP, eSLINE are reduced for a single image.
  *  \ref RationalStereoModel::ImagesToGround()
  */
-bool RationalModel::SensorToGroundNm(const double x, const double y,
+bool RationalModel::SensorToVirtual(const double x, const double y,
   const double w, double& u, double& v) const {
   if (mCubeS2G) {
     std::tie(u, v) = mCubeS2G->GetVal2(x, y, w);
   }
   else { // direct estimates for u, v
-    if (!SensorToGroundNmLinear(x, y, w, u, v))
+    if (!SensorToVirtualLinear(x, y, w, u, v))
       return false;
   }
   u = std::clamp(u, -1.2, 1.2);
@@ -646,8 +650,8 @@ bool RationalModel::SensorToGroundNm(const double x, const double y,
  *  \param [out] image estimated normalized col/row
  *  \return Return {dFc_du, dFc_dv, dFr_du, dFr_dv}
  */
-Tuple4d RationalModel::CalcJacobianA(double w, double u, double v,
-  double& xp, double& yp) const {
+Tuple4d RationalModel::CalcJacobianA(const double w, const double u, 
+  const double v, double& xp, double& yp) const {
   return {};
 }
 
@@ -660,8 +664,8 @@ Tuple4d RationalModel::CalcJacobianA(double w, double u, double v,
  *
  *  \remark xx% faster than CalcJacobianA
  */
-Tuple4d RationalModel::CalcJacobianNc(double w, double u, double v,
-  double& xp, double& yp) const {
+Tuple4d RationalModel::CalcJacobianNc(const double w, const double u, 
+  const double v, double& xp, double& yp) const {
   return {};
 }
 
@@ -694,7 +698,7 @@ Tuple4d RationalModel::CalcJacobianNc(double w, double u, double v,
  *    Fc(u, v) = Sn - Sd * x = 0
  *    Fr(u, v) = Ln - Ld * y = 0
  */
-bool RationalModel::SensorToGroundNmLinear(const double x, const double y,
+bool RationalModel::SensorToVirtualLinear(const double x, const double y,
   const double w, double &u, double &v) const {
   double A[2][2];  // Partial derivatives w.r.t. u and v
   A[0][0] = snc[eL] - sdc[eL] * x;
@@ -720,7 +724,7 @@ bool RationalModel::SensorToGroundNmLinear(const double x, const double y,
 }
 
 /**
- *  Build a cube to provide fast X, Y coordinates used by SensorToGroundNm.
+ *  Build a cube to provide fast X, Y coordinates used by SensorToVirtual.
  */
 void RationalModel::BuildCubeS2G() {
   auto cubeS2G = std::make_unique<InterpCubeD>(2,
@@ -732,9 +736,9 @@ void RationalModel::BuildCubeS2G() {
 
   auto cube = cubeS2G->GetArray();
   for (size_t i = 0; i < numNodes; ++i) {
-    if (!SensorToGroundNm(cubeNodes[i].x, cubeNodes[i].y,
+    if (!SensorToVirtual(cubeNodes[i].x, cubeNodes[i].y,
       cubeNodes[i].z, cube[i*2], cube[i*2 + 1])) {
-      throw std::exception(_("RationalModel: SensorToGroundNm failed to project."));
+      throw std::exception(_("RationalModel: SensorToVirtual failed to project."));
     }
   }
 

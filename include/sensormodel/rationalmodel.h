@@ -103,8 +103,8 @@ public:
   // my experiments show that eENHANCED is better than eSTANDARD in accuracy at
   // an amount of 10~15%, also ensuring higher-order fits better than lower-order
   enum CorrAlgo {
-    eSTANDARD, // standard correction with full coordinates [pixel]
-    eENHANCED  // enhanced correction with normalized coordinates
+    eCA_IMAGE, // standard correction with full coordinates in image space [pixel]
+    eCA_SENSOR // enhanced correction with normalized coordinates in sensor space
   };
 
   /**
@@ -189,9 +189,7 @@ public:
    *  \return pointer to a coordinate system
    */
   std::shared_ptr<SpatialReferenceSystem> GetCoordinateSystem() const
-      noexcept override {
-    return mGroundSRS;
-  }
+      noexcept override { return mGroundSRS; }
 
   /**
    *  \return Returns type of SRS
@@ -243,26 +241,26 @@ public:
 
   // block adjustment support
   /**
-   *  \brief Set 2d correction polynomials in sensor space.
+   *  \brief Set 2d correction polynomials in image/sensor space.
    *
    *  \param [in] lineCorr 2nd-order polynomial for line correction
    *  \param [in] sampCorr 2nd-order polynomial for sample correction
    *  \param [in] corrAlgo correction algoirthm
    */
-  void SetSensorCorrection(const std::array<double, NumCorr> &lineCorr,
+  void SetCorrection(const std::array<double, NumCorr> &lineCorr,
                            const std::array<double, NumCorr> &sampCorr,
-                           CorrAlgo corrAlgo = eSTANDARD);
+                           CorrAlgo corrAlgo = eCA_IMAGE);
 
   /**
-   *  \brief Get 2d correction polynomials in sensor space.
+   *  \brief Get 2d correction polynomials in image/sensor space.
    *
    *  \param [out] lineCorr 2nd-order polynomial for line correction
    *  \param [out] sampCorr 2nd-order polynomial for sample correction
    *  \param [in] corrAlgo correction algoirthm
    */
-  void GetSensorCorrection(std::array<double, NumCorr> &lineCorr,
+  void GetCorrection(std::array<double, NumCorr> &lineCorr,
                            std::array<double, NumCorr> &sampCorr,
-                           CorrAlgo corrAlgo = eSTANDARD) const;
+                           CorrAlgo corrAlgo = eCA_IMAGE) const;
 
   void EnableCubeS2G(bool enable=true);
 
@@ -302,7 +300,7 @@ private:
   // corrections in sensor space
   std::array<double, NumCorr> mLineCorr{}; // polynomial for line correction
   std::array<double, NumCorr> mSampCorr{}; // polynomial for sample correction
-  CorrAlgo mCorrAlgo{eSTANDARD};           // sensor correction method
+  CorrAlgo mCorrAlgo{ eCA_IMAGE };           // sensor correction method
 
   // uncertainties for the enhanced algorithm [pixel]
   std::array<double, 3> mStdCorr{};   // constant, 1st-, 2nd-order coefficients
@@ -313,6 +311,7 @@ private:
   void Clear() noexcept;
 
   Point2d ImageActualToApparant(const Point2d& image) const;
+  Point2d SensorActualToApparant(const Point2d& sensor) const;
 
   /**
    *  \brief Given a 2d rpc position in image coordinate system,
@@ -323,7 +322,7 @@ private:
    */
   Point2d ImageApparantToActual(const Point2d& image) const {
     Point2d imageAct{ image };
-    if (mCorrectionFlag) {  // apply correction
+    if (mCorrFlag) {  // apply correction
       const auto imageCorr = CalcCorrection(image);
       imageAct += imageCorr;
     }
@@ -362,8 +361,8 @@ private:
     return ImageApparantToActual(imageApp);
   }
 
-  bool mCorrectionFlag{ false };   // flag indicating the correction status
-  Point2d CalcCorrection(const Point2d& image) const;
+  bool mCorrFlag{ false };   // flag indicating the correction status
+  Point2d CalcCorrection(const Point2d& cam) const;
 
   /**
    *  Sensor-to-ground forward projection.
@@ -377,11 +376,11 @@ private:
    * in virtual ground coordinate system
    *  \return Returns true if the operation succeeds
    */
-  bool SensorToGroundNm(const Point2d &sensor, Point3d &uvw) const {
-    return SensorToGroundNm(sensor.x, sensor.y, uvw.z, uvw.x, uvw.y);
+  bool SensorToVirtual(const Point2d &sensor, Point3d &uvw) const {
+    return SensorToVirtual(sensor.x, sensor.y, uvw.z, uvw.x, uvw.y);
   }
 
-  inline Point3d GroundNm(const Point3d& ground) const {
+  inline Point3d GroundToVirtual(const Point3d& ground) const {
     return { (ground.x - nfc[eOLON]) * mInvScale[eISLON],
              (ground.y - nfc[eOLAT]) * mInvScale[eISLAT],
              (ground.z - nfc[eOHGT]) * mInvScale[eISHGT] };
@@ -397,7 +396,7 @@ private:
    *  \param [out] sensor 2d sensor position (x, y)
    *  \return Returns true if operation succeeds
    */
-  inline bool GroundNmToSensor(const Point3d& uvw, Point2d& sensor) const {
+  inline bool VirtualToSensor(const Point3d& uvw, Point2d& sensor) const {
     const auto [Ln, Ld, Sn, Sd] = CalcPolynomials(uvw);
 
     // col/row computed from RFM
@@ -407,8 +406,8 @@ private:
   }
 
   inline bool GroundToSensor(const Point3d& ground, Point2d& sensor) const {
-    const Point3d uvw = GroundNm(ground);
-    return GroundNmToSensor(uvw, sensor);
+    const Point3d uvw = GroundToVirtual(ground);
+    return VirtualToSensor(uvw, sensor);
   }
 
   void CalcTerms(const Point3d &uvw, double *const LPH) const {
@@ -421,16 +420,16 @@ private:
   }
   Tuple4d CalcPolynomials(double u, double v, double w) const;
 
-  bool SensorToGroundNm(double x, double y, double w, double& u, double& v) const;
+  bool SensorToVirtual(double x, double y, double w, double& u, double& v) const;
 
   Tuple4d CalcJacobianA(double w, double u, double v, double& xp, double& yp) const;
   Tuple4d CalcJacobianNc(double w, double u, double v, double& xp, double& yp) const;
 
-  bool SensorToGroundNmLinear(const Point2d &sensor, Point3d &uvw) const {
-    return SensorToGroundNmLinear(sensor.x, sensor.y, uvw.z, uvw.x, uvw.y);
-  }
-  bool SensorToGroundNmLinear(double x, double y, 
+  bool SensorToVirtualLinear(double x, double y,
     double w, double &u, double &v) const;
+  bool SensorToVirtualLinear(const Point2d &sensor, Point3d &uvw) const {
+    return SensorToVirtualLinear(sensor.x, sensor.y, uvw.z, uvw.x, uvw.y);
+  }
   
   // cached calculation for better performance
   double mTol_c{ 1.0e-7 }; // tolerance proportional to image range

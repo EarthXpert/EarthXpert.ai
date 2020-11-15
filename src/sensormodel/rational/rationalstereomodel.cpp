@@ -177,7 +177,7 @@ bool RationalStereoModel::ImagesToGround(
  */
 Tuple6d RationalStereoModel::CalcJacobianA(RationalModel const* ratModel,
   const Point3d& ground, Point2d& image) const {
-  auto [u, v, w] = ratModel->GroundNm(ground);
+  auto [u, v, w] = ratModel->GroundToVirtual(ground);
   const auto [Ln, Ld, Sn, Sd] = ratModel->CalcPolynomials(u, v, w);
 
   const auto invSd = 1.0 / Sd;
