@@ -102,7 +102,8 @@ Pointcloud::Pointcloud(const Point3d& origin, std::vector<XYZF>&& xyz,
  */
 bool Pointcloud::operator==(const Pointcloud& rhs) const {
   if (this != &rhs) {
-    if (mPointCount != rhs.GetPointCount() || mFieldGroup != rhs.GetFieldGroup()) {
+    if (mPointCount != rhs.GetPointCount() || 
+      mFieldGroup != rhs.GetFieldGroup()) {
       return false;
     }
 
@@ -143,9 +144,12 @@ void Pointcloud::SetPoint_Unchecked(const size_t i,
       z_offset = quantizer->z_offset - mOrigin.z;
     }
     
-    mXYZ[i].x = static_cast<float>(double(point.X) * quantizer->x_scale_factor + x_offset);
-    mXYZ[i].y = static_cast<float>(double(point.Y) * quantizer->y_scale_factor + y_offset);
-    mXYZ[i].z = static_cast<float>(double(point.Z) * quantizer->z_scale_factor + z_offset);
+    mXYZ[i].x = static_cast<float>(x_offset + 
+      double(point.X) * quantizer->x_scale_factor);
+    mXYZ[i].y = static_cast<float>(y_offset + 
+      double(point.Y) * quantizer->y_scale_factor);
+    mXYZ[i].z = static_cast<float>(z_offset + 
+      double(point.Z) * quantizer->z_scale_factor);
   }
   if (!mCla.empty()) {
     mCla[i].c = point.classification;

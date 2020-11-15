@@ -98,7 +98,8 @@ public:
    *
    *  \param [in] fields an array of FieldTy objects
    */
-  template <typename FieldTy> void SetField(std::vector<FieldTy>&& fields) {
+  template <typename FieldTy> 
+  void SetField(std::vector<FieldTy>&& fields) {
     VerifyFieldType<FieldTy>();
     assert(mPointCapacity == fields.size());
     SetField_Unchecked<FieldTy>(std::move(fields));
@@ -111,7 +112,8 @@ public:
    *  \param [in] i index of point
    *  \param [in] field the field object.
    */
-  template <typename FieldTy> void SetField(const size_t i, const FieldTy& field) {
+  template <typename FieldTy> 
+  void SetField(const size_t i, const FieldTy& field) {
     VerifyFieldType<FieldTy>();
     assert(i < mPointCapacity);
     SetField_Unchecked<FieldTy>(i, field);
@@ -151,7 +153,8 @@ public:
   /**
    *  \return Returns the array of field objects. XYZ coordinates are w.r.t. the origin.
    */
-  template <typename FieldTy> const std::vector<FieldTy>& GetField() const {
+  template <typename FieldTy> 
+  const std::vector<FieldTy>& GetField() const {
     VerifyFieldType<FieldTy>();
     return GetField_Unchecked<FieldTy>();
   }
@@ -165,7 +168,8 @@ public:
  *  \return Returns XYZ coordinates at specified index.
  */
   auto GetXYZD(const size_t i) noexcept {
-    return XYZD{ mOrigin.x + mXYZ[i].x, mOrigin.y + mXYZ[i].y, mOrigin.z + mXYZ[i].z };
+    return XYZD{ mOrigin.x + mXYZ[i].x, 
+      mOrigin.y + mXYZ[i].y, mOrigin.z + mXYZ[i].z };
   }
   auto GetPoint3d(const size_t i) noexcept {
     return static_cast<Point3d>(GetXYZD(i));
@@ -176,7 +180,8 @@ public:
    *  \param [in] i index of point
    *  \return Returns a field at given index.
    */
-  template <typename FieldTy> const FieldTy& GetField(const size_t i) const {
+  template <typename FieldTy> 
+  const FieldTy& GetField(const size_t i) const {
     VerifyFieldType<FieldTy>();
     if (mPointCapacity <= i) 
       throw std::out_of_range(_("Pointcloud::GetField()"));
@@ -184,7 +189,8 @@ public:
     return GetField_Unchecked<FieldTy>(i);
   }
 
-  template <typename FieldTy> FieldTy& GetField(const size_t i) {
+  template <typename FieldTy> 
+  FieldTy& GetField(const size_t i) {
     VerifyFieldType<FieldTy>();
     if (mPointCapacity <= i) 
       throw std::out_of_range(_("Pointcloud::GetField()"));
@@ -214,7 +220,8 @@ public:
    *  \param [in] i index of point
    *  \param [in] point LASlib point
    */
-  void SetPoint(const size_t i, const LASpoint& point, const LASquantizer* quantizer) {
+  void SetPoint(const size_t i, const LASpoint& point, 
+    const LASquantizer* quantizer) {
     if (mPointCapacity <= i) 
       throw std::out_of_range(_("Pointcloud::SetPoint()"));
 
@@ -226,7 +233,8 @@ public:
    *  \param [in] i index of point
    *  \return Returns a point at given index.
    */
-  template <typename PointTy> PointTy GetPoint(const size_t i) const {
+  template <typename PointTy> 
+  PointTy GetPoint(const size_t i) const {
     if (mPointCapacity <= i) 
       throw std::out_of_range(_("Pointcloud::GetPoint()"));
     VerifyPointFieldBits(PointTy::kPointFieldBits);
@@ -238,8 +246,8 @@ public:
    *  \param FieldTy the field type of a WxPoint<> component
    *  \param [in] fields an array of FieldTy objects
    */
-  template <typename FieldTy> void 
-  SetField_Unchecked(std::vector<FieldTy>&& fields) {
+  template <typename FieldTy> 
+  void SetField_Unchecked(std::vector<FieldTy>&& fields) {
     if constexpr(IsXYZF<FieldTy>) {
       mXYZ = std::move(fields);
     }
@@ -259,7 +267,8 @@ public:
    *  \param FieldTy the field type of a WxPoint<> component
    *  \return Return a reference to the array of FieldTy objects
    */
-  template <typename FieldTy> const std::vector<FieldTy>& GetField_Unchecked() const {
+  template <typename FieldTy> 
+  const std::vector<FieldTy>& GetField_Unchecked() const {
     if constexpr(IsXYZF<FieldTy>) {
       return mXYZ;
     }
@@ -276,7 +285,8 @@ public:
     assert(false);
   }
 
-  template <typename FieldTy> std::vector<FieldTy>& GetField_Unchecked() {
+  template <typename FieldTy> 
+  std::vector<FieldTy>& GetField_Unchecked() {
     if constexpr(IsXYZF<FieldTy>) {
       return mXYZ;
     }
@@ -298,8 +308,8 @@ public:
    *  \param [in] i index of point
    *  \param [in] field the FieldTy object
    */
-  template <typename FieldTy> void 
-  SetField_Unchecked(const size_t i, const FieldTy& field) {
+  template <typename FieldTy> 
+  void SetField_Unchecked(const size_t i, const FieldTy& field) {
     if constexpr(IsXYZF<FieldTy>) {
       mXYZ[i] = field;
     }
@@ -320,7 +330,8 @@ public:
    *  \param [in] i index of point
    *  \return Returns a field at given index.
    */
-  template <typename FieldTy> const FieldTy& GetField_Unchecked(const size_t i) const {
+  template <typename FieldTy> 
+  const FieldTy& GetField_Unchecked(const size_t i) const {
     if constexpr(IsXYZF<FieldTy>) {
       return mXYZ[i];
     }
@@ -337,7 +348,8 @@ public:
     assert(false);
   }
 
-  template <typename FieldTy> FieldTy& GetField_Unchecked(const size_t i) {
+  template <typename FieldTy> 
+  FieldTy& GetField_Unchecked(const size_t i) {
     if constexpr(IsXYZF<FieldTy>) {
       return mXYZ[i];
     }

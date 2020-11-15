@@ -63,7 +63,7 @@ public:
 
   // index of 3rd-order polynomial coefficients
   // The order of terms is from NITF RPC00B standard (STDI-0002).
-  enum RationalPolyCoeff {
+  enum PolyCoeff3rd {
     eC = 0,      // constant term
     eL = 1,      // L normalized longitude
     eP = 2,      // P normalized latitude
@@ -86,7 +86,6 @@ public:
     eHHH = 19,   // H * H * H
     NumCoef = 20 // number of coefficients of 3rd-order polynomial
   };
-  using rpc = RationalPolyCoeff;
 
   // index of 2nd-order corrrection polynomial coefficients
   enum CorrCoeff {
@@ -451,6 +450,7 @@ private:
 
 using rnf = NormalizationFactor;
 using risf = RationalModel::InvScaleFactor;
+using rpc = RationalModel::PolyCoeff3rd;
 using UPRationalModel = std::unique_ptr<RationalModel>;
 using SPRationalModel = std::shared_ptr<RationalModel>;
 } // namespace earthxpert

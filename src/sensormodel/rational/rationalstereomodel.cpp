@@ -185,9 +185,7 @@ Tuple6d RationalStereoModel::CalcJacobianA(RationalModel const* ratModel,
   image.x = Sn * invSd;
   image.y = Ln * invLd;
 
-  double duvw_du[RationalModel::NumCoef];
-  double duvw_dv[RationalModel::NumCoef];
-  double duvw_dw[RationalModel::NumCoef];
+  double duvw_du[rpc::NumCoef], duvw_dv[rpc::NumCoef], duvw_dw[rpc::NumCoef];
   Duvw_duvw(u, v, w, duvw_du, duvw_dv, duvw_dw);
 
   const auto [dSn_du, dSn_dv, dSn_dw] = D_duvw(ratModel->snc, duvw_du, duvw_dv, duvw_dw); // Partial derivative of Sn w.r.t u, v,w
