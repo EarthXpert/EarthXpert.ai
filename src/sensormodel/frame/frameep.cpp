@@ -7,7 +7,6 @@
 
 #include <cmath>
 #include <limits>
-#include <string>
 
 using earthxpert::FrameEP;
 using earthxpert::SpatialReferenceSystem;

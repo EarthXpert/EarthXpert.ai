@@ -244,8 +244,8 @@ private:
   double mCurvFactor{}; // factor for earth curvature correction
   Point3d mSensorCenter{}; // fused 3d position of rear node center in ground
                            // coordinate system
-  cv::Mat1d mG2S{cv::Mat1d::eye(3,
-      3)}; // fused 3x3 rotation matrix from 3d ground space to 3d sensor space
+  cv::Mat1d mG2S{cv::Mat1d::eye(3, 3)}; // fused 3x3 rotation matrix from 
+                                        // 3d ground space to 3d sensor space
 
   void CalcFusedEO();
 };

@@ -16,7 +16,7 @@ namespace earthxpert {
  *  conversion when implementing the interface IEpipolarModel.
  */
 class EXEPIPOLARMODEL_EXPORTS SensorEpipolarModel 
-  : public IEpipolarModel, public ISensorModel{
+  : public IEpipolarModel, public ISensorModel {
 public:
   /**
    *  \param [in] pos Component position of stereo model
@@ -144,9 +144,9 @@ public:
    *  in the ground vertical coordinate system, output the ground horizontal
    *  position with respect to the ground coordinate system.
    *
-   *  \param [in] image 2d position (x, y) in epipolar imagery raster coordinate system
-   *  \param [in/out] ground 3d ground position (X, Y, Z) in ground coordinate
-   * system \return Returns true if the operation succeeds
+   *  \param [in] image 2d position (x, y) in epipolar raster CS
+   *  \param [in/out] ground 3d ground position (X, Y, Z) in ground CS 
+   *  \return Returns true if the operation succeeds
    */
   bool ImageToGround(const Point2d& image, Point3d& ground) const override {
     Point2d raw;
@@ -163,8 +163,7 @@ public:
    *  heights, output ground horizontal positions in ground coordinate system.
    *
    *  \param [in] image 2d position (x, y) in imagery raster coordinate system
-   *  \param [in/out] ground 3d ground positions (X, Y, Z) in ground coordinate
-   * system
+   *  \param [in/out] ground 3d ground positions (X, Y, Z) in ground CS
    */
   size_t ImageToGround(const Point2d& image, std::vector<Point3d>& ground) const override;
 
@@ -186,7 +185,7 @@ public:
    * system, output the 2d image position in the epipolar image coordinate system.
    *
    *  \param [in] ground 3d position (X, Y, Z) in ground coordinate system
-   *  \param [out] image 2d position (x, y) in epipolar imagery raster coordinate system
+   *  \param [out] image 2d position (x, y) in epipolar raster CS
    *  \return Returns true if operation succeeds
    */
   bool GroundToImage(const Point3d& ground, Point2d& image) const override {
@@ -231,12 +230,16 @@ public:
   /**
    *  \return Returns type of SRS
    */
-  SrsType GetSrsType() const noexcept override { return mSensorModel->GetSrsType(); }
+  SrsType GetSrsType() const noexcept override { 
+    return mSensorModel->GetSrsType(); 
+  }
 
   /**
    *  \return Returns the middle height
    */
-  virtual double GetMeanHeight() const noexcept override { return mSensorModel->GetMeanHeight(); }
+  virtual double GetMeanHeight() const noexcept override { 
+    return mSensorModel->GetMeanHeight(); 
+  }
 
 protected:
   StereoPos mPos{ eIGNORE };    // Component position of stereo model

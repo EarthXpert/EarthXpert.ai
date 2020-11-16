@@ -81,9 +81,9 @@ template <int linearUnit>
 void LocalGround<linearUnit>::MoveFrom(LocalGround &&rhs) noexcept {
 }
 
-template class earthxpert::LocalGround<earthxpert::kLU_FEET>;
+template class earthxpert::LocalGround<earthxpert::kLU_FOOT>;
 template class earthxpert::LocalGround<earthxpert::kLU_METER>;
-template class earthxpert::LocalGround<earthxpert::kLU_USFEET>;
+template class earthxpert::LocalGround<earthxpert::kLU_USFOOT>;
 
 /**
  *  Constructor.
@@ -160,6 +160,6 @@ template <int linearUnit>
 void MapGround<linearUnit>::MoveFrom(MapGround<linearUnit>&&rhs) noexcept  {
 }
 
-template class earthxpert::MapGround<earthxpert::kLU_FEET>;
+template class earthxpert::MapGround<earthxpert::kLU_FOOT>;
 template class earthxpert::MapGround<earthxpert::kLU_METER>;
-template class earthxpert::MapGround<earthxpert::kLU_USFEET>;
+template class earthxpert::MapGround<earthxpert::kLU_USFOOT>;

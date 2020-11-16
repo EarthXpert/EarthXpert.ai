@@ -166,9 +166,9 @@ private:
   void MoveFrom(LocalGround&& rhs) noexcept;
 };
 
-using LocalGroundFt = LocalGround<kLU_FEET>;
+using LocalGroundFt = LocalGround<kLU_FOOT>;
 using LocalGroundMe = LocalGround<kLU_METER>;
-using LocalGroundUf = LocalGround<kLU_USFEET>;
+using LocalGroundUf = LocalGround<kLU_USFOOT>;
 
 /**
  *  The class MapGround offers the ground transformation
@@ -231,7 +231,7 @@ private:
   void MoveFrom(MapGround&& rhs) noexcept;
 };
 
-using MapGroundFt = MapGround<kLU_FEET>;
+using MapGroundIf = MapGround<kLU_FOOT>;
 using MapGroundMe = MapGround<kLU_METER>;
-using MapGroundUf = MapGround<kLU_USFEET>;
+using MapGroundUf = MapGround<kLU_USFOOT>;
 } // namespace earthxpert

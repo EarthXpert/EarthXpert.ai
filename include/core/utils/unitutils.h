@@ -14,9 +14,9 @@ constexpr int kAU_GON = 1;
 constexpr int kAU_RADIAN = 2;
 
 // linear unit
-constexpr int kLU_FEET = 0;
+constexpr int kLU_FOOT = 0;   // International Foot
 constexpr int kLU_METER = 1;
-constexpr int kLU_USFEET = 2;
+constexpr int kLU_USFOOT = 2; // US Survey Foot
 
 // \todo units template
 inline Point3d Deg2Rad(const Point3d& deg) {
@@ -62,17 +62,17 @@ template<int unit> struct AngleUnit {
   }
 };
 
-inline Point3d Feet2Meter(const Point3d& feet) {
-  return { feet.x * kFEET2METER, feet.y * kFEET2METER, feet.z * kFEET2METER };
+inline Point3d Foot2Meter(const Point3d& foot) {
+  return { foot.x * kFOOT2METER, foot.y * kFOOT2METER, foot.z * kFOOT2METER };
 }
-inline Point3d Meter2Feet(const Point3d& meter) {
-  return { meter.x * kMETER2FEET, meter.y * kMETER2FEET, meter.z * kMETER2FEET };
+inline Point3d Meter2Foot(const Point3d& meter) {
+  return { meter.x * kMETER2FOOT, meter.y * kMETER2FOOT, meter.z * kMETER2FOOT };
 }
 
-inline Point3d USFeet2Meter(const Point3d& feet) {
-  return { feet.x * kUSFT2METER, feet.y * kUSFT2METER, feet.z * kUSFT2METER };
+inline Point3d USFoot2Meter(const Point3d& foot) {
+  return { foot.x * kUSFT2METER, foot.y * kUSFT2METER, foot.z * kUSFT2METER };
 }
-inline Point3d Meter2USFeet(const Point3d& meter) {
+inline Point3d Meter2USFoot(const Point3d& meter) {
   return { meter.x * kMETER2USFT, meter.y * kMETER2USFT, meter.z * kMETER2USFT };
 }
 
@@ -81,11 +81,11 @@ inline Point3d Meter2USFeet(const Point3d& meter) {
  */
 template<int unit> struct LinearUnit {
   static inline Point3d ToMeter(const Point3d& point) {
-    if constexpr(kLU_FEET == unit) {
-      return Feet2Meter(point);
+    if constexpr(kLU_FOOT == unit) {
+      return Foot2Meter(point);
     }
-    else if constexpr(kLU_USFEET == unit) {
-      return USFeet2Meter(point);
+    else if constexpr(kLU_USFOOT == unit) {
+      return USFoot2Meter(point);
     }
     else {
       return point;
@@ -93,11 +93,11 @@ template<int unit> struct LinearUnit {
   }
 
   static inline Point3d FromMeter(const Point3d& point) {
-    if constexpr(kLU_FEET == unit) {
-      return Meter2Feet(point);
+    if constexpr(kLU_FOOT == unit) {
+      return Meter2Foot(point);
     }
-    else if constexpr(kLU_USFEET == unit) {
-      return Meter2USFeet(point);
+    else if constexpr(kLU_USFOOT == unit) {
+      return Meter2USFoot(point);
     }
     else {
       return point;

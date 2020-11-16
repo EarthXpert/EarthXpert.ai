@@ -103,8 +103,34 @@ public:
 
   Point2d CalcRadialCorr(const Point2d& sensor) const;
   Point2d CalcDecentCorr(const Point2d& sensor) const;
-  Point2d CalcLinearCorr(const Point2d& sensor) const;
-  Point2d CalcGridCorr(const Point2d& sensor) const;
+
+  /**
+   *  \brief Compute correction to linear distortion.
+   *
+   * \param [in] sensor the measured position where the ray actually hits the
+   * focal plane
+   * \return the linear correction.
+   */
+  Point2d CalcLinearCorr(const Point2d& sensor) const {
+    if (!mDistFlags[kLINDIST])
+      return { 0.0, 0.0 };
+
+    return { mLinearDist[0] * sensor.x + mLinearDist[1] * sensor.y, 0.0 };
+  }
+
+  /**
+   *  \brief Compute correction to grid distortion.
+   *
+   * \param [in] sensor the apprant position where the ray would hit the
+   * focal plane after correcting radial and decentering distortions.
+   * \return the grid correction.
+   */
+  Point2d CalcGridCorr(const Point2d& sensor) const {
+    double dX{}, dY{};
+    if (mDistFlags[kGRDDIST])
+      std::tie(dX, dY) = mGridDist->GetDistortion(float(sensor.x), float(sensor.y));
+    return { double(dX), double(dY) };
+  }
 
   Point2d PPSToPPA(const Point2d& sensor) const {
     return { sensor.x - mPPA[0], sensor.y - mPPA[1] };

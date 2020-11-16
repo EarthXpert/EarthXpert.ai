@@ -237,7 +237,6 @@ bool FrameModel<ImageModelPolicy>::SensorToGround(const Point2d &sensor,
     throw std::underflow_error(_("Denominator is 0: SensorToGround"));
 
   const double scale = (ground.z - mSensorCenter.z) / denom;
-
   ground.x = mSensorCenter.x + grd.at<double>(0) * scale;
   ground.y = mSensorCenter.y + grd.at<double>(1) * scale;
   return true;
@@ -266,8 +265,8 @@ bool FrameModel<ImageModelPolicy>::GroundToSensor(const Point3d &ground,
       throw std::underflow_error(_("Denominator is 0: GroundToSensor"));
 
   const double scale = -f / denom;
-  sensor.x = scale * cam.at<double>(0);
-  sensor.y = scale * cam.at<double>(1);
+  sensor.x = cam.at<double>(0) * scale;
+  sensor.y = cam.at<double>(1) * scale;
   return true;
 }
 
@@ -283,12 +282,11 @@ bool FrameModel<ImageModelPolicy>::GroundToSensor(const Point3d &ground,
  * focal plane
  *  \param [in] height the ground height above ellipsoid [m]
  *  \param [in] sensorApp the ideal position where the ray wpould apparantly
- * hit the focal plane if existing no distortions \return Return true if
- * the operation succeeds
+ * hit the focal plane if existing no distortions 
  *  \return Returns true if operation succeeds
  */
-template <class ImageModelPolicy>
-bool FrameModel<ImageModelPolicy>::SensorActualToApparant(
+template <class ImageModelPolicy> bool 
+FrameModel<ImageModelPolicy>::SensorActualToApparant(
   const Point2d& sensorAct, const double height, Point2d& sensorApp) const {
   // optical distortion in focal plane w.r.t. PPS
   sensorApp = SensorActualToApparantPPS(sensorAct);
@@ -302,8 +300,8 @@ bool FrameModel<ImageModelPolicy>::SensorActualToApparant(
 }
 
 // optical distortion in focal plane w.r.t. PPS
-template <class ImageModelPolicy>
-Point2d FrameModel<ImageModelPolicy>::SensorActualToApparantPPS(
+template <class ImageModelPolicy> Point2d 
+FrameModel<ImageModelPolicy>::SensorActualToApparantPPS(
   const Point2d& sensor) const {
   const auto dRad = mFrameIP->CalcRadialCorr(sensor);
   const auto dDec = mFrameIP->CalcDecentCorr(sensor);
@@ -471,10 +469,10 @@ Point2d FrameModel<ImageModelPolicy>::SensorApparantToActualPPS(
   auto sensorAct = sensor;
 
   int iter;
-  auto [hasRadDist, hasDecDist, hasLinDist, hasGridDist] = mFrameIP->GetDistFlags();
+  auto [hasRadD, hasDecD, hasLinD, hasGridD] = mFrameIP->GetDistFlags();
 
   // distortion grid from added parameters
-  if (hasGridDist) {
+  if (hasGridD) {
     const Point2d cRD{ sensorAct }; // fixed position
 
     for (iter = 0; iter < kMaxIterG2I; ++iter) {
@@ -490,7 +488,7 @@ Point2d FrameModel<ImageModelPolicy>::SensorApparantToActualPPS(
       return { 0.0, 0.0 };
   }
 
-  if (hasRadDist || hasDecDist || hasLinDist) {
+  if (hasRadD || hasDecD || hasLinD) {
     const Point2d cEarth{ sensorAct };
 
     for (iter = 0; iter < kMaxIterG2I; ++iter) {

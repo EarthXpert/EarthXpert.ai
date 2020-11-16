@@ -27,22 +27,22 @@ constexpr inline double Rad2Gon(const double rad) {
   return rad * kRAD2GON;
 }
 
-constexpr double kFEET2METER = 0.3048;
-constexpr double kMETER2FEET = 1.0 / kFEET2METER;
+constexpr double kFOOT2METER = 0.3048;
+constexpr double kMETER2FOOT = 1.0 / kFOOT2METER;
 constexpr double kUSFT2METER = 0.3048006096;
 constexpr double kMETER2USFT = 1.0 / kUSFT2METER;
 
-constexpr inline double Feet2Meter(const double feet) {
-  return feet * kFEET2METER;
+constexpr inline double Foot2Meter(const double foot) {
+  return foot * kFOOT2METER;
 }
-constexpr inline double Meter2Feet(const double meter) {
-  return meter * kMETER2FEET;
+constexpr inline double Meter2Foot(const double meter) {
+  return meter * kMETER2FOOT;
 }
 
-constexpr inline double USFeet2Meter(const double feet) {
-  return feet * kUSFT2METER;
+constexpr inline double USFoot2Meter(const double foot) {
+  return foot * kUSFT2METER;
 }
-constexpr inline double Meter2USFeet(const double meter) {
+constexpr inline double Meter2USFoot(const double meter) {
   return meter * kMETER2USFT;
 }
 

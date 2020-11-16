@@ -20,8 +20,8 @@ using namespace earthxpert;
  * \param [in] ppa principla point of autocollimation [mm]
  */
 FrameIP::FrameIP(std::string camName, const double focalLength,
-                 const std::array<double, 2> &ppa)
-    : mCamName(std::move(camName)), mFocalLength(focalLength), mPPA(ppa) {
+  const std::array<double, 2> &ppa) : mCamName(std::move(camName)), 
+    mFocalLength(focalLength), mPPA(ppa) {
   CheckCamParms();
 }
 
@@ -190,8 +190,7 @@ void FrameIP::SetMisalignment(const std::array<double, 3> &pc,
  * focal plane
  * \return the radial correction.
  */
-Point2d FrameIP::CalcRadialCorr(const Point2d& sensor) const
-{
+Point2d FrameIP::CalcRadialCorr(const Point2d& sensor) const {
   if (!mDistFlags[kRADDIST])
     return { 0.0, 0.0 };
 
@@ -214,8 +213,7 @@ Point2d FrameIP::CalcRadialCorr(const Point2d& sensor) const
  * focal plane
  * \return the decentering correction.
  */
-Point2d FrameIP::CalcDecentCorr(const Point2d& sensor) const
-{
+Point2d FrameIP::CalcDecentCorr(const Point2d& sensor) const {
   if (!mDistFlags[kDECDIST])
     return { 0.0, 0.0 };
 
@@ -229,37 +227,6 @@ Point2d FrameIP::CalcDecentCorr(const Point2d& sensor) const
 
   return { (mDecentDist[eP1] * (rc2 + 2.0 * x2) + 2.0 * mDecentDist[eP2] * xy) * factor,
            (mDecentDist[eP2] * (rc2 + 2.0 * y2) + 2.0 * mDecentDist[eP1] * xy) * factor };
-}
-
-/**
- *  \brief Compute correction to linear distortion.
- *
- * \param [in] sensor the measured position where the ray actually hits the
- * focal plane
- * \return the linear correction.
- */
-Point2d FrameIP::CalcLinearCorr(const Point2d& sensor) const
-{
-  if (!mDistFlags[kLINDIST])
-    return { 0.0, 0.0 };
-
-  return { mLinearDist[0] * sensor.x + mLinearDist[1] * sensor.y, 0.0 };
-}
-
-/**
- *  \brief Compute correction to grid distortion.
- *
- * \param [in] sensor the apprant position where the ray would hit the
- * focal plane after correcting radial and decentering distortions.
- * \return the grid correction.
- */
-Point2d FrameIP::CalcGridCorr(const Point2d& sensor) const
-{
-  if (!mDistFlags[kGRDDIST])
-    return { 0.0, 0.0 };
-
-  const auto [dX, dY] = mGridDist->GetDistortion(float(sensor.x), float(sensor.y));
-  return { double(dX), double(dY) };
 }
 
 /**
