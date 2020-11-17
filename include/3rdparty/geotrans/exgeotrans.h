@@ -16,5 +16,8 @@ using ccs_ct = ccs::CoordinateType;
 using ccs_ht = ccs::HeightType;
 using ccs2 = ccs::CoordinateConversionService;
 
+/**
+ *  \env MSPCCS_DATA=D:\home\workspace\install\windows\etc\dtcc
+ */
 namespace earthxpert::thirdparty {
 } // namespace earthxpert::thirdparty
