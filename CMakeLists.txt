@@ -87,7 +87,8 @@ if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
   set(geotrans_ROOT "${EX_THIRD_PARTY}/geotrans_3.8.0")
   set(geotrans_BIN_DIR "${geotrans_ROOT}/bin")
   set(geotrans_INCLUDE_DIR "${geotrans_ROOT}/include")
-  set(geotrans_LIBRARY "${geotrans_ROOT}/lib/MSPCoordinateConversionService.lib")
+  set(geotrans_LIBRARIES "${geotrans_ROOT}/lib/${CDEGREL}/MSPCoordinateConversionService.lib"
+                         "${geotrans_ROOT}/lib/${CDEGREL}/MSPdtcc.lib")
 
   set(GETTEXT_ROOT "${EX_THIRD_PARTY}/gettext_0.19.0")
   set(GETTEXT_BIN_DIR "${GETTEXT_ROOT}/bin/${CDEGREL}")

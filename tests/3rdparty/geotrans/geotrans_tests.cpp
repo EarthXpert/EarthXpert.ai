@@ -68,12 +68,10 @@ TEST(geotrans, CCS_WGS84) {
     ccs_ct::geocentric);
 
   ccs::GeodeticParameters mslEgm96Parameters(
-    ccs_ct::geodetic,
-    ccs_ht::EGM96FifteenMinBilinear);
+    ccs_ct::geodetic, ccs_ht::EGM96FifteenMinBilinear);
 
   ccs::UTMParameters utmParameters(
-    ccs_ct::universalTransverseMercator,
-    1, 0);
+    ccs_ct::universalTransverseMercator, 1, 0);
 
   ccs::CoordinateSystemParameters mgrsParameters(
     ccs_ct::militaryGridReferenceSystem);
@@ -186,7 +184,6 @@ TEST(geotrans, CCS_WGS84_NAD27) {
   double lat = Deg2Rad(43.651070); // [radian]
   double lon = Deg2Rad(-79.347015);
   double hgt = 10000.0;  // [m]
-  std::cout.precision(16);
 
   ccs::GeodeticCoordinates lph84(ccs_ct::geodetic, lon, lat, hgt);
   ccs::GeodeticCoordinates lph27;

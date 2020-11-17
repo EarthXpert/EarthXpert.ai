@@ -3,7 +3,7 @@ project(tests_3rdparty_geotrans CXX)
 include_directories(${geotrans_INCLUDE_DIR})
 
 add_3rdparty_test(geotrans_tests 
-  ex3rdparty ${GDAL_LIBRARY} ${geotrans_LIBRARY})
+  ex3rdparty ${GDAL_LIBRARY} ${geotrans_LIBRARIES})
 
 if(WIN32)
   set(TESTS_GEOTRANS_PATH "PATH=$<TARGET_FILE_DIR:ex3rdparty>;\
