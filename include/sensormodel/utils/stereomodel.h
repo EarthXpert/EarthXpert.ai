@@ -26,6 +26,9 @@ class ISensorModel;
  *  \tparam GroundPolicy defines the behaviour of and relationshp between
  *  the model coordinate system and the Cartesian coordinate system
  *
+ *  \remark To use different sensor models, their model CS must be of same type.
+ *  e.g., Frame/Frame, RFM/RFM, RFM/ADS.
+ *
  *  \todo revist the design for variable number of rays, specifily,
  *  changing freaquently for matched key points: anohter class VariableStereoModel? 
  */

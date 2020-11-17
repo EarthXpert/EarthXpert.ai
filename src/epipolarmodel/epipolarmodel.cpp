@@ -6,8 +6,6 @@
 #include "core/exceptions/exexcept.h"
 
 #include <algorithm>
-#include <cmath>
-#include <cassert>
 #include <execution>
 #include <omp.h>
 
@@ -23,12 +21,13 @@ using namespace earthxpert;
  *              raster coordinate system for the image.
  *  \param [in] epiBound epipolar boundary of valid region
  *  \param [in] groundPolicy ground policy
- *  \remark This implementation requires that the stereo pair are of the same sensro type.
+ *  \remark This implementation requires that the stereo pair are of 
+ *  the same sensro type.
  */
 template <class GroundPolicy>
 EpipolarModel<GroundPolicy>::EpipolarModel(StereoPos pos, 
   SPISensorModel sensorModel, const Polygon2d& epiBound, 
-  std::unique_ptr<EpipolarRect>&& epiRect, std::shared_ptr<GroundPolicy> groundPolicy)
+  UPEpipolarRect&& epiRect, std::shared_ptr<GroundPolicy> groundPolicy)
     : SensorEpipolarModel(pos, sensorModel, epiBound),
       mEpiRect(std::move(epiRect)), mGroundPolicy(groundPolicy) {
   assert(GroundPolicy::kGroundType == sensorModel->GetSrsType());
@@ -43,7 +42,7 @@ EpipolarModel<GroundPolicy>::EpipolarModel(StereoPos pos,
  *  Raw-to-rect transform.
  *
  *  \brief Given a 2d poistion on image, output the 2d position in
- * rectification coordinate system.
+ *  rectification coordinate system.
  *
  *  \param [in] raw 2d position (col, row) in image raster coordinate system
  *  \param [out] rect 2d position (x, y) in rectification coordinate system
@@ -74,14 +73,15 @@ EpipolarModel<GroundPolicy>::RawToRect(const Point2d &raw, Point2d &rect) const 
 
 /**
  *  \brief build grids to get heights in model CRS given image positions
- * and heights in rectification CRS.
+ *  and heights in rectification CRS.
  *
  *  \param [in] numCols Image width [pixel]
  *  \param [in] numRows Image height [pixel]
  *  \return Returns interpolation grid.
  */
 template <class GroundPolicy> std::unique_ptr<InterpGridF> 
-EpipolarModel<GroundPolicy>::BuildGridI2G(const int numCols, const int numRows) const {
+EpipolarModel<GroundPolicy>::BuildGridI2G(const int numCols, 
+  const int numRows) const {
   auto gridI2G = std::make_unique<InterpGridF>(1, 0.0f, 0.0f, 
     float(numCols), float(numRows), float(kGridStride), float(kGridStride));
 

@@ -27,6 +27,8 @@ template <class GroundPolicy>
 class EXEPIPOLARMODEL_EXPORTS EpipolarModel final : public SensorEpipolarModel {
 public:
   using PolicyType = GroundPolicy;
+  using UPGroundPolicy = std::unique_ptr<GroundPolicy>;
+  using SPGroundPolicy = std::shared_ptr<GroundPolicy>;
 
   /**
    *  Constructor.
@@ -61,7 +63,8 @@ public:
    */
   bool EpiToRaw(const Point2d &epi, Point2d &raw) const override {
     const Point2d rect = mEpiRect->EpiToRect(epi);
-    const Point3d ground = mGroundPolicy->CartesianToGround(Point3d(rect.x, rect.y, mHeight));
+    const Point3d ground = 
+      mGroundPolicy->CartesianToGround(Point3d(rect.x, rect.y, mHeight));
     return mSensorModel->GroundToImage(ground, raw);
   }
 

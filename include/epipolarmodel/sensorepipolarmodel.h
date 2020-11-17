@@ -75,7 +75,8 @@ public:
    *  \param [in] epi List of 2d positions (x, y) in epipolar raster CS
    *  \return Returns true if operation succeeds
    */
-  size_t RawToEpi(const std::vector<Point2d>& raw, std::vector<Point2d>& epi) const override;
+  size_t RawToEpi(const std::vector<Point2d>& raw, 
+    std::vector<Point2d>& epi) const override;
 
   /**
    *  \return Returns algorithm of epipolar model
@@ -165,7 +166,8 @@ public:
    *  \param [in] image 2d position (x, y) in imagery raster coordinate system
    *  \param [in/out] ground 3d ground positions (X, Y, Z) in ground CS
    */
-  size_t ImageToGround(const Point2d& image, std::vector<Point3d>& ground) const override;
+  size_t ImageToGround(const Point2d& image, 
+    std::vector<Point3d>& ground) const override;
 
   /**
    *  \brief Given a list of 2d positions in image coordinate system and a
@@ -243,7 +245,7 @@ public:
 
 protected:
   StereoPos mPos{ eIGNORE };    // Component position of stereo model
-  std::shared_ptr<ISensorModel> mSensorModel; // image model composing of the stereo model
+  SPISensorModel mSensorModel; // image model composing of the stereo model
   Polygon2d mBound;   // boundary pixels of valid region w.r.t. the center of UL corner
 
 private:

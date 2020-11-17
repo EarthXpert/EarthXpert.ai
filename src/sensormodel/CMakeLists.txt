@@ -1,4 +1,4 @@
-project(sensormodel)
+project(sensormodel CXX)
 
 add_definitions(-DEXSENSORMODEL_API)
 set(sensormodel_srcs "ads/adsmodel.cpp"
@@ -44,7 +44,7 @@ set(sensormodel_srcs "ads/adsmodel.cpp"
 earthxpert_add_library(sensormodel "api"
   SRCS ${sensormodel_srcs}
   ITEMS ex3rdparty core
-        ${GDAL_LIBRARY} ${GETTEXT_LIBRARY} ${OpenCV_LIBS})
+        ${GDAL_LIBRARY} ${geotrans_LIBRARIES} ${GETTEXT_LIBRARY} ${OpenCV_LIBS})
 
 #source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR} FILES ${sensormodel_srcs})
 earthxpert_source_group(${sensormodel_srcs})
