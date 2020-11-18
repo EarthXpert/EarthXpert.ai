@@ -3,22 +3,16 @@
  * -----------------------------------------------------------------------------
  */
 #include "3rdparty/gtest/gtest_main.h"
+#include "3rdparty/boost/exboost.h"
 
-#include <boost/filesystem.hpp>
-
-#include <boost/geometry.hpp>
 #include <boost/geometry/algorithms/for_each.hpp>
 #include <boost/geometry/algorithms/intersection.hpp>
 #include <boost/geometry/geometries/geometries.hpp>
 #include <boost/geometry/geometries/multi_point.hpp>
-
 #include <boost/pool/object_pool.hpp>
 
 #include <iostream>
 #include <vector>
-
-namespace bfs = boost::filesystem;
-namespace bg = boost::geometry;
 
 // geometry
 using point_t = bg::model::point<double, 3, bg::cs::cartesian>;

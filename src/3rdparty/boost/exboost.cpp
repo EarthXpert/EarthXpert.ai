@@ -4,8 +4,6 @@
  */
 #include "3rdparty/boost/exboost.h"
 
-namespace bfs = boost::filesystem;
-
 namespace earthxpert::thirdparty {
 /**
  *  \brief insert prefix for filename component
@@ -25,7 +23,8 @@ std::string PathPrefixFilename(
 /**
  *  \return Return distance of point to polygon edges.
  */
-template <typename Ty> Ty distance(const PointXY<Ty>& p, const Polygon2<Ty>& poly) {
+template <typename Ty> Ty 
+distance(const PointXY<Ty>& p, const Polygon2<Ty>& poly) {
   auto dist = std::numeric_limits<Ty>::max();
   if (bg::within(p, poly)) {
     bgc::Segment nearestSeg;
