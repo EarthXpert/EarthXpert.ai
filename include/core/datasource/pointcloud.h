@@ -12,7 +12,6 @@
 #include <laszip.hpp>
 #include <cassert>
 #include <optional>
-#include <type_traits>
 #include <vector>
 
 class LASpoint;

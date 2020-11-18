@@ -1,16 +1,8 @@
 #include "3rdparty/gtest/gtest_main_gdal.h"
 #include "3rdparty/geotrans/exgeotrans.h"
 #include "core/math/constants.h"
+#include "core/spatialref/ccsutils.h"
 
-#include <Accuracy.h>
-#include <CartesianCoordinates.h>
-#include <CoordinateSystemParameters.h>
-#include <CoordinateTuple.h>
-#include <GeodeticCoordinates.h>
-#include <GeodeticParameters.h>
-#include <MGRSorUSNGCoordinates.h>
-#include <UTMCoordinates.h>
-#include <UTMParameters.h>
 #include <iostream>
 #include <memory>
 
@@ -18,22 +10,6 @@ using namespace earthxpert;
 
 static constexpr double kTolR = Deg2Rad(1.0e-8);   // [mm]
 static constexpr double kTol = 1.0e-3;   // [mm]
-
-static void ConvertGeodeticToGeocentric(ccs2& ccsGeodToGeoc,
-  double lat, double lon, double hgt, double& x, double& y, double& z);
-static void ConvertGeocentricToGeodetic(ccs2& ccsGeodToGeoc,
-  double x, double y, double z, double& lat, double& lon, double& hgt);
-static void ConvertGeocentricToGeodeticMslEgm96(ccs2& ccsGeocToGeodMslEgm96,
-  double x, double y, double z, double& lat, double& lon, double& hgt);
-static void ConvertMslEgm96ToEllHeight(ccs2& ccsMslEgm96ToEllHeight,
-  double lat, double lon, double hgtMsl, double& ellHeight);
-static void ConvertEllHeightToMslEgm96(ccs2& ccsEllHeightToMslEgm96,
-  double lat, double lon, double ellHeight, double& hgtMsl);
-static void ConvertGeocentricToUtm(ccs2& ccsGeocToUtm,
-  double x, double y, double z, long& zone, char& hemisphere,
-  double& easting, double& northing);
-static std::string ConvertGeocentricToMgrs(ccs2& ccsGeocToMgrs,
-  double x, double y, double z, ccs::Precision::Enum& precision);
 
 /**
  * \brief test the MSP Coordinate Conversion Service.
@@ -61,23 +37,17 @@ TEST(geotrans, CCS_WGS84) {
 
   // Coordinate System Parameters 
   ccs::GeodeticParameters ellParam(ccs_ct::geodetic, ccs_ht::ellipsoidHeight);
-
   ccs::CoordinateSystemParameters geocParam(ccs_ct::geocentric);
-
   ccs::GeodeticParameters mslEgm96Param(
     ccs_ct::geodetic, ccs_ht::EGM96FifteenMinBilinear);
-
   ccs::UTMParameters utmParam(ccs_ct::universalTransverseMercator, 1, 0);
-
   ccs::CoordinateSystemParameters mgrsParam(ccs_ct::militaryGridReferenceSystem);
 
   // Coordinate Conversion Services 
   ccs2 ccsGeodToGeoc(datum, &ellParam, datum, &geocParam);
   ccs2 ccsGeocToGeodMslEgm96(datum, &geocParam, datum, &mslEgm96Param);
-
   ccs2 ccsMslEgm96ToEllHeight(datum, &mslEgm96Param, datum, &ellParam);
   ccs2 ccsEllHeightToMslEgm96(datum, &ellParam, datum, &mslEgm96Param);
-
   ccs2 ccsGeocToUtm(datum, &geocParam, datum, &utmParam);
   ccs2 ccsGeocToMgrs(datum, &geocParam, datum, &mgrsParam);
 
@@ -217,137 +187,4 @@ TEST(geotrans, CCS_WGS84_NAD27) {
   ASSERT_NEAR(lph84N.latitude(), lph84.latitude(), kTolR*10) << "Latitude diff > 1 cm";
   ASSERT_NEAR(lph84N.longitude(), lph84.longitude(), kTolR*10) << "Latitude diff > 1 cm";
   ASSERT_NEAR(lph84N.height(), lph84.height(), kTol) << "Height diff > 1 mm";
-}
-
- /**
-  * Function which uses the given Geodetic (Ellipsoid Height) to Geocentric
-  * Coordinate Conversion Service, 'ccsGeodToGeoc', to
-  * convert the given lat, lon, and hgt to x, y, z coordinates.
-  **/
-void ConvertGeodeticToGeocentric(ccs2& ccsGeodToGeoc,
-  double lat, double lon, double hgt, double& x, double& y, double& z) {
-  ccs::Accuracy srcAcc, tgtAcc;
-  ccs::GeodeticCoordinates lph(ccs_ct::geodetic, lon, lat, hgt);
-  ccs::CartesianCoordinates xyz(ccs_ct::geocentric);
-
-  ccsGeodToGeoc.convertSourceToTarget(&lph, &srcAcc, xyz, tgtAcc);
-
-  x = xyz.x();
-  y = xyz.y();
-  z = xyz.z();
-}
-
-/**
- * Function which uses the given Geodetic (Ellipsoid Height) to Geocentric
- * Coordinate Conversion Service, 'ccsGeodToGeoc', to
- * convert the given x, y, z coordinates to a lat, lon, and hgt.
- **/
-void ConvertGeocentricToGeodetic(ccs2& ccsGeodToGeoc,
-  double x, double y, double z, double& lat, double& lon, double& hgt) {
-  ccs::Accuracy geocAcc, geodAcc;
-  ccs::CartesianCoordinates xyz(ccs_ct::geocentric, x, y, z);
-  ccs::GeodeticCoordinates lph;
-
-  // Note that the Geodetic (Ellipsoid Height) to Geocentric Coordinate
-  // Conversion Service is used here in conjunction with the
-  // convertTargetToSource() method (as opposed to a Geocentric to
-  // Geodetic (Ellipsoid Height) Coordinate Conversion Service in
-  // conjunction with the convertSourceToTarget() method)
-  ccsGeodToGeoc.convertTargetToSource(&xyz, &geocAcc, lph, geodAcc);
-
-  lat = lph.latitude();
-  lon = lph.longitude();
-  hgt = lph.height();
-}
-
-/**
- * Function which uses the given Geocentric to Geodetic (MSL EGM 96 15M)
- * Coordinate Conversion Service, 'ccsGeocToGeodMslEgm96', to
- * convert the given x, y, z coordinates to a lat, lon, and hgt.
- **/
-void ConvertGeocentricToGeodeticMslEgm96(ccs2& ccsGeocToGeodMslEgm96,
-  double x, double y, double z, double& lat, double& lon, double& hgt) {
-  ccs::Accuracy srcAcc, tgtAcc;
-  ccs::CartesianCoordinates xyz(ccs_ct::geocentric, x, y, z);
-  ccs::GeodeticCoordinates lph(ccs_ct::geodetic, lon, lat, hgt);
-
-  ccsGeocToGeodMslEgm96.convertSourceToTarget(&xyz, &srcAcc, lph, tgtAcc);
-
-  lat = lph.latitude();
-  lon = lph.longitude();
-  hgt = lph.height();
-}
-
-/**
- * Function which uses the given Geodetic (MSL EGM 96 15M) to Geodetic
- * (Ellipsoid Height) Coordinate Conversion Service,
- * 'ccsMslEgm96ToEllHeight', to convert the given MSL hgt at the
- * given lat, lon, to an Ellipsoid hgt.
- **/
-void ConvertMslEgm96ToEllHeight(ccs2& ccsMslEgm96ToEllHeight,
-  double lat, double lon, double hgtMsl, double& ellHeight) {
-  ccs::Accuracy srcAcc, tgtAcc;
-  ccs::GeodeticCoordinates lphMsl(ccs_ct::geodetic, lon, lat, hgtMsl);
-  ccs::GeodeticCoordinates lph;
-
-  ccsMslEgm96ToEllHeight.convertSourceToTarget(&lphMsl, &srcAcc, lph, tgtAcc);
-
-  ellHeight = lph.height();
-}
-
-/**
- * Function which uses the given Geodetic (Ellipsoid Height) to Geodetic
- * (MSL EGM 96 15M) Coordinate Conversion Service,
- * 'ccsEllHeightToMslEgm96', to convert the given Ellipsoid hgt at
- * the given lat, lon, to an MSL hgt.
- **/
-void ConvertEllHeightToMslEgm96(ccs2& ccsEllHeightToMslEgm96,
-  double lat, double lon, double ellHeight, double& hgtMsl) {
-  ccs::Accuracy srcAcc, tgtAcc;
-  ccs::GeodeticCoordinates lph(ccs_ct::geodetic, lon, lat, ellHeight);
-  ccs::GeodeticCoordinates lphMsl;
-
-  ccsEllHeightToMslEgm96.convertSourceToTarget(&lph, &srcAcc, lphMsl, tgtAcc);
-
-  hgtMsl = lphMsl.height();
-}
-
-/**
- * Function which uses the given Geocentric to UTM Coordinate Conversion
- * Service, 'ccsGeocToUtm', to convert the given x, y, z coordinates
- * a UTM zone, hemisphere, Easting and Northing.
- **/
-void ConvertGeocentricToUtm(ccs2& ccsGeocToUtm,
-  double x, double y, double z, long& zone,
-  char& hemisphere, double& easting, double& northing) {
-  ccs::Accuracy srcAcc, tgtAcc;
-  ccs::CartesianCoordinates xyz(ccs_ct::geocentric, x, y, z);
-  ccs::UTMCoordinates utm;
-
-  ccsGeocToUtm.convertSourceToTarget(&xyz, &srcAcc, utm, tgtAcc);
-
-  zone = utm.zone();
-  hemisphere = utm.hemisphere();
-  easting = utm.easting();
-  northing = utm.northing();
-}
-
-/**
- * Function which uses the given Geocentric to MGRS Coordinate Conversion
- * Service, 'ccsGeocToMgrs', to convert the given x, y, z coordinates
- * to an MGRS string and precision.
- **/
-std::string ConvertGeocentricToMgrs(ccs2& ccsGeocToMgrs,
-  double x, double y, double z, ccs::Precision::Enum& precision) {
-  ccs::Accuracy srcAcc, tgtAcc;
-  ccs::CartesianCoordinates xyz(ccs_ct::geocentric, x, y, z);
-  ccs::MGRSorUSNGCoordinates mgrs;
-
-  ccsGeocToMgrs.convertSourceToTarget(&xyz, &srcAcc, mgrs, tgtAcc);
-
-  precision = mgrs.precision();
-
-  // Returned value, 'p', points to targetCoordinate's internal character
-  // array so assign/copy the character array to mgrsString
-  return std::string(mgrs.MGRSString());
 }

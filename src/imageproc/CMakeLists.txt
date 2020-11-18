@@ -1,7 +1,8 @@
 project(imageproc CXX)
 
 add_definitions(-DEXIMAGEPROC_API)
-set(imageproc_srcs "algorithm/clouddetect.cpp"
+set(imageproc_srcs "./opencvutils.cpp"
+  "algorithm/clouddetect.cpp"
   "algorithm/dehaze.cpp"
   "algorithm/wallisfilter.cpp"
   "algorithm/waterbodydetect.cpp"

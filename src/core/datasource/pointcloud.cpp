@@ -7,11 +7,8 @@
 #include "core/math/math.h"
 
 #include <laspoint.hpp>
-#include <laszip.hpp>
-#include <cmath>
 #include <limits>
 #include <omp.h>
-#include <type_traits>
 
 using namespace earthxpert;
 
