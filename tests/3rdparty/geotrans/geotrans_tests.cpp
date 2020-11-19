@@ -1,10 +1,9 @@
-#include "3rdparty/gtest/gtest_main_gdal.h"
+#include "3rdparty/gtest/gtest_main.h"
 #include "3rdparty/geotrans/exgeotrans.h"
 #include "core/math/constants.h"
 #include "core/spatialref/ccsutils.h"
 
 #include <iostream>
-#include <memory>
 
 using namespace earthxpert;
 

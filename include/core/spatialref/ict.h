@@ -7,6 +7,7 @@
 #include "core/excore.h"
 #include "3rdparty/opencv/exopencv.h"
 
+#include <memory>
 #include <vector>
 
 namespace earthxpert {

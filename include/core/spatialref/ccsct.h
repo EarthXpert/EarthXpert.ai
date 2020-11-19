@@ -7,8 +7,6 @@
 #include "core/spatialref/ict.h"
 #include "core/spatialref/ccssrs.h"
 
-#include <memory>
-
 namespace earthxpert {
 /**
  *  The class CcsCT provides service of coordinate transformation
