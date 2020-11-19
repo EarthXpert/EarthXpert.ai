@@ -11,17 +11,24 @@ namespace earthxpert {
 enum SrsType {
   eUNKNOWN = -1,
   eGEO,     // geodetic
-  eLOCAL,
+  eLOCAL,   // Cartisian
   eMAP      // projected
 };
 
-//
-struct SRSInfo {
+enum SrsBackend {
+  eCCS,     // MPS CCS
+  eOGR      // GDAL OGR
+};
 
+//
+struct SrsInfo {
+  SrsBackend backend;
 };
 
 //
 struct CTInfo {
-
+  SrsBackend backend;
+  SrsInfo srcSrs;
+  SrsInfo tgtSrs;
 };
 }

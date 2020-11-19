@@ -3,7 +3,7 @@ project(tests_performance_sensormodel CXX)
 function(add_sensormodel_perf_test name) 
   add_performance_test(${name}
     ex3rdparty core sensormodel
-    ${CERES_LIBRARY} ${GDAL_LIBRARY} ${OpenCV_LIBS})
+    ${CERES_LIBRARY} ${GDAL_LIBRARY} ${geotrans_LIBRARIES} ${OpenCV_LIBS})
 endfunction()
 
 add_sensormodel_perf_test(rationalmodel_perf_tests)
@@ -14,7 +14,7 @@ if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
   set(TESTS_SENSORMODEL_PATH "PATH=$<TARGET_FILE_DIR:ex3rdparty>;$<TARGET_FILE_DIR:core>;\
 $<TARGET_FILE_DIR:dataio>;$<TARGET_FILE_DIR:epipolar>;$<TARGET_FILE_DIR:epipolarmodel>;\
 $<TARGET_FILE_DIR:marshaller>;$<TARGET_FILE_DIR:sensormodel>;\
-${GTEST_BIN_DIR};${BOOST_BIN_DIR};${CERES_BIN_DIR};${GDAL_BIN_DIR};${OpenCV_BIN_DIR};${OPENNI_BIN_DIR};${QT_BIN_DIR};\
+${GTEST_BIN_DIR};${BOOST_BIN_DIR};${CERES_BIN_DIR};${GDAL_BIN_DIR};${geotrans_BIN_DIR};${OpenCV_BIN_DIR};${OPENNI_BIN_DIR};${QT_BIN_DIR};\
 ${TESTS_BIN_DIR};$ENV{PATH}")
   string(REPLACE ";" "\\;" TESTS_SENSORMODEL_PATH "${TESTS_SENSORMODEL_PATH}")
   message(STATUS "Tests_Sensormodel_Path: ${TESTS_SENSORMODEL_PATH}")

@@ -20,7 +20,8 @@ set(dataio_srcs "pointcloud/tiledpointcloudreader.cpp"
 earthxpert_add_library(dataio "api"
   SRCS ${dataio_srcs}
   ITEMS ex3rdparty core 
-        ${GDAL_LIBRARY} ${GETTEXT_LIBRARY} ${LASLIB_LIBRARY} ${OpenCV_LIBS})
+        ${GDAL_LIBRARY} ${geotrans_LIBRARIES} ${GETTEXT_LIBRARY} 
+        ${LASLIB_LIBRARY} ${OpenCV_LIBS})
 
 earthxpert_source_group(${dataio_srcs})
 earthxpert_install_target(dataio)

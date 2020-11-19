@@ -121,6 +121,42 @@ TEST(geotrans, CCS_WGS84) {
   ASSERT_STREQ(mgrsString.c_str(), "17TPJ3330134446");
 }
 
+// WGS84 vs NAD83
+TEST(geotrans, CCS_WGS84_NAD83) {
+  const char* datumWgs84 = "WGE";
+  const char* datumNad83 = "NAR-B"; // NAD83 canada
+
+  ccs::GeodeticParameters ellParam(ccs_ct::geodetic, ccs_ht::ellipsoidHeight);
+  ccs2 ccsWgs84ToNad83(datumWgs84, &ellParam, datumNad83, &ellParam);
+  ccs2 ccsNad83ToWgs84(datumNad83, &ellParam, datumWgs84, &ellParam);
+
+  ccs::Accuracy srcAcc, tgtAcc;
+
+  double lat = Deg2Rad(43.651070); // [radian]
+  double lon = Deg2Rad(-79.347015);
+  double hgt = 10000.0;  // [m]
+
+  ccs::GeodeticCoordinates lph84(ccs_ct::geodetic, lon, lat, hgt);
+  ccs::GeodeticCoordinates nad83;
+  ccsWgs84ToNad83.convertSourceToTarget(&lph84, &srcAcc, nad83, tgtAcc);
+  ASSERT_NEAR(nad83.latitude(), 0.76185489353494085, kTolR) << "Latitude diff > 1 mm";
+  ASSERT_NEAR(nad83.longitude(), -1.3848666633793285, kTolR) << "Latitude diff > 1 mm";
+  ASSERT_NEAR(nad83.height(), 10000.000049856966, kTol) << "Height diff > 1 mm";
+
+  lph84.setHeight(0.0);
+  ccsWgs84ToNad83.convertSourceToTarget(&lph84, &srcAcc, nad83, tgtAcc);
+  ASSERT_NEAR(nad83.latitude(), 0.76185489353494085, kTolR) << "Latitude diff > 1 mm";
+  ASSERT_NEAR(nad83.longitude(), -1.3848666633793285, kTolR) << "Latitude diff > 1 mm";
+  ASSERT_NEAR(nad83.height(), 4.9856966276674999e-05, kTol) << "Height diff > 1 mm";
+
+  ccs::GeodeticCoordinates lph84N;
+  ccsNad83ToWgs84.convertSourceToTarget(&nad83, &srcAcc, lph84N, tgtAcc);
+  ASSERT_NEAR(lph84N.latitude(), lph84.latitude(), kTolR) << "Latitude diff > 1 cm";
+  ASSERT_NEAR(lph84N.longitude(), lph84.longitude(), kTolR) << "Latitude diff > 1 cm";
+  ASSERT_NEAR(lph84N.height(), lph84.height(), kTol) << "Height diff > 1 mm";
+}
+
+// WGS84 vs WGS72
 TEST(geotrans, CCS_WGS84_WGS72) {
   const char* datumWgs84 = "WGE";
   const char* datumWgs72 = "WGC";
@@ -150,11 +186,12 @@ TEST(geotrans, CCS_WGS84_WGS72) {
 
   ccs::GeodeticCoordinates lph84N;
   ccsWgs72ToWgs84.convertSourceToTarget(&lph72, &srcAcc, lph84N, tgtAcc);
-  ASSERT_NEAR(lph84N.latitude(), lph84.latitude(), kTolR * 10) << "Latitude diff > 1 cm";
-  ASSERT_NEAR(lph84N.longitude(), lph84.longitude(), kTolR * 10) << "Latitude diff > 1 cm";
+  ASSERT_NEAR(lph84N.latitude(), lph84.latitude(), kTolR) << "Latitude diff > 1 cm";
+  ASSERT_NEAR(lph84N.longitude(), lph84.longitude(), kTolR) << "Latitude diff > 1 cm";
   ASSERT_NEAR(lph84N.height(), lph84.height(), kTol) << "Height diff > 1 mm";
 }
 
+// WGS84 vs NAD27
 TEST(geotrans, CCS_WGS84_NAD27) {
   const char* datumWgs84 = "WGE";
   const char* datumNad27 = "NAS-E"; // NAD27 Canada

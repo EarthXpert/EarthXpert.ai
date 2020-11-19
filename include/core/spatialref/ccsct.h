@@ -33,8 +33,8 @@ public:
     return false;
   }
 
-  bool Transform(const double xSrc, const double ySrc, const double zSrc,
-    double& xTgt, double& yTgt, double& zTgt) {
+  bool Transform(const double srcX, const double srcY, const double srcZ,
+    double& tgtX, double& tgtY, double& tgtZ) {
     return false;
   }
 

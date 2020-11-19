@@ -9,7 +9,7 @@ set(epipolar_srcs "./epiperf.cpp"
 earthxpert_add_library(epipolar "api"
   SRCS ${epipolar_srcs}
   ITEMS ex3rdparty core dataio sensormodel epipolarmodel marshaller 
-        ${GDAL_LIBRARY} ${GETTEXT_LIBRARY} ${OpenCL_LIBS})
+        ${GDAL_LIBRARY} ${geotrans_LIBRARIES} ${GETTEXT_LIBRARY} ${OpenCL_LIBS})
 
 earthxpert_source_group(${epipolar_srcs})
 earthxpert_install_target(epipolar)

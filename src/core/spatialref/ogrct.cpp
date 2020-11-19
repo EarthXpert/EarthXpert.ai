@@ -2,7 +2,7 @@
  *  Copyright (c) 2019.  All rights reserved.
  * -----------------------------------------------------------------------------
  */
-#include "core/spatialref/gdalct.h"
+#include "core/spatialref/ogrct.h"
 
 #include <omp.h>
 
@@ -15,11 +15,11 @@ using namespace earthxpert::thirdparty;
  * \param [in] src the source SRS
  * \param [in] tgt the target SRS
  */
-GdalCT::GdalCT(const GdalSRS* src, const GdalSRS* tgt) {
+OgrCT::OgrCT(const OgrSRS* src, const OgrSRS* tgt) {
 
 }
 
-GdalCT::GdalCT(OGRSpatialReference* src, OGRSpatialReference* tgt) {
+OgrCT::OgrCT(OGRSpatialReference* src, OGRSpatialReference* tgt) {
   Initialize(src, tgt);
 }
 
@@ -34,7 +34,7 @@ GdalCT::GdalCT(OGRSpatialReference* src, OGRSpatialReference* tgt) {
  *  That is, the mappings are X -> lat, Y -> lon. To maintain the backward compatibility,
  *  set the stategy OAMS_TRADITIONAL_GIS_ORDER here.
  */
-GdalCT::GdalCT(const std::string& srcWkt, const std::string& tgtWkt) {
+OgrCT::OgrCT(const std::string& srcWkt, const std::string& tgtWkt) {
     auto src = new OGRSpatialReference(srcWkt.c_str());
     auto tgt = new OGRSpatialReference(tgtWkt.c_str());
 
@@ -47,9 +47,9 @@ GdalCT::GdalCT(const std::string& srcWkt, const std::string& tgtWkt) {
 }
 
 /**
- *  \remark GdalCT owns the objects of OGRSpatialReference?
+ *  \remark OgrCT owns the objects of OGRSpatialReference?
  */
-void GdalCT::Initialize(OGRSpatialReference* src,
+void OgrCT::Initialize(OGRSpatialReference* src,
   OGRSpatialReference* tgt) {
   mCT.reset(OGRCreateCoordinateTransformation(src, tgt));
 }

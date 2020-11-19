@@ -50,7 +50,8 @@ public:
    *  \param [in] raw List of 2d positions (x, y) in image raster CS
    *  \return Returns true if operation succeeds
    */
-  size_t EpiToRaw(const std::vector<Point2d>& epi, std::vector<Point2d>& raw) const override;
+  size_t EpiToRaw(const std::vector<Point2d>& epi, 
+    std::vector<Point2d>& raw) const override;
 
   /**
    *  Raw-to-epipolar transform.

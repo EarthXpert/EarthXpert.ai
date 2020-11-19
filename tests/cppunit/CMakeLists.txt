@@ -4,8 +4,6 @@ function(add_cppunit_test name)
   earthxpert_add_test(${name} "tests/cppunit" ${ARGN})
 endfunction()
 
-add_definitions(-D_USE_MATH_DEFINES)
-
 add_subdirectory(blockadjust)
 add_subdirectory(core)
 add_subdirectory(epipolarmodel)

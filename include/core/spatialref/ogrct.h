@@ -5,26 +5,26 @@
 #pragma once
 
 #include "core/spatialref/ict.h"
-#include "core/spatialref/gdalsrs.h"
+#include "core/spatialref/ogrsrs.h"
 
 #include <memory>
 
 namespace earthxpert {
 /**
- *  The class GdalCT provides service of coordinate transformation 
+ *  The class OgrCT provides service of coordinate transformation 
  *  from a source coordinate system to a target coordinate system  
  *  with OGR as backend.
  */
-class EXCORE_EXPORTS GdalCT final : public ICT {
+class EXCORE_EXPORTS OgrCT final : public ICT {
 public:
-  GdalCT(const GdalSRS* src, const GdalSRS* tgt);
-  GdalCT(OGRSpatialReference* src, OGRSpatialReference* tgt);
-  GdalCT(const std::string& srcWkt, const std::string& tgtWkt);
-  ~GdalCT() = default;
+  OgrCT(const OgrSRS* src, const OgrSRS* tgt);
+  OgrCT(OGRSpatialReference* src, OGRSpatialReference* tgt);
+  OgrCT(const std::string& srcWkt, const std::string& tgtWkt);
+  ~OgrCT() = default;
 
   /**
    *  \return Returns the backend OGRCoordinateTransformation object. 
-   *  GdalCT exports partially the OGR functions. The caller could 
+   *  OgrCT exports partially the OGR functions. The caller could 
    *  exploit the full OGR capabilities via the returned object pointer.
    */
   OGRCoordinateTransformation* GetCT() { return mCT.get(); }
@@ -42,10 +42,10 @@ public:
     return mCT->Transform(1, &x, &y, &z);
   }
 
-  bool Transform(const double xSrc, const double ySrc, const double zSrc,
-    double& xTgt, double& yTgt, double& zTgt) override {
-    xTgt = xSrc; yTgt = ySrc; zTgt = zSrc;
-    return mCT->Transform(1, &xTgt, &yTgt, &zTgt);
+  bool Transform(const double srcX, const double srcY, const double srcZ,
+    double& tgtX, double& tgtY, double& tgtZ) override {
+    tgtX = srcX; tgtY = srcY; tgtZ = srcZ;
+    return mCT->Transform(1, &tgtX, &tgtY, &tgtZ);
   }
 
   /**
@@ -91,6 +91,6 @@ private:
   void Initialize(OGRSpatialReference* src, OGRSpatialReference* tgt);
 };
 
-using UPGdalCT = std::unique_ptr<GdalCT>;
-using SPGdalCT = std::shared_ptr<GdalCT>;
+using UPGdalCT = std::unique_ptr<OgrCT>;
+using SPGdalCT = std::shared_ptr<OgrCT>;
 } // namespace earthxpert

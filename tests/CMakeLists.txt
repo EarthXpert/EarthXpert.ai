@@ -34,6 +34,9 @@ option(EARTHXPERT_INSTALL_TESTS_3RDPARTY "install 3rd-party tests" OFF)
 option(EARTHXPERT_INSTALL_TESTS_CPPUNIT "install C++ unit tests" OFF)
 option(EARTHXPERT_INSTALL_TESTS_PYUNIT "install python unit tests" OFF)
 
+add_compile_definitions(BOOST_LIB_TOOLSET="vc142")
+add_definitions(-D_USE_MATH_DEFINES -DBOOST_ALL_DYN_LINK)
+
 set(TESTS_BIN_DIR ${CMAKE_INSTALL_PREFIX}/${EARTHXPERT_BIN_DIR})
 set(BOOST_BIN_DIR "${Boost_LIBRARY_DIRS}")
 add_subdirectory(3rdparty)

@@ -1,7 +1,5 @@
 project(tests_3rdparty_boost CXX)
 
-add_compile_definitions(BOOST_LIB_TOOLSET="vc142")
-add_definitions(-DBOOST_ALL_DYN_LINK)
 add_3rdparty_test(boost_tests
   ex3rdparty
   Boost::filesystem Boost::iostreams)

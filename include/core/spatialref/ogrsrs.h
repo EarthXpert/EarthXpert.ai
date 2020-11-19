@@ -11,17 +11,17 @@
 
 namespace earthxpert {
 /**
- *  The class GdalSRS provides service of spatial coordinate system
+ *  The class OgrSRS provides service of spatial coordinate system
  *  with GDAL & OGR as backend.
  */
-class EXCORE_EXPORTS GdalSRS final : public ISRS
+class EXCORE_EXPORTS OgrSRS final : public ISRS
 {
 public:
-  ~GdalSRS() = default;
+  ~OgrSRS() = default;
 
   void GetDatum() override {}
 };
 
-using UPGdalSRS = std::unique_ptr<GdalSRS>;
-using SPGdalSRS = std::shared_ptr<GdalSRS>;
+using UPOgrSRS = std::unique_ptr<OgrSRS>;
+using SPOgrSRS = std::shared_ptr<OgrSRS>;
 }
