@@ -5,8 +5,8 @@
 #pragma once
 
 #include "core/excore.h"
-#include "core/spatialref/gdalct.h"
-#include "core/spatialref/gdalsrs.h"
+#include "core/spatialref/ogrct.h"
+#include "core/spatialref/ogrsrs.h"
 
 namespace earthxpert {
 }
