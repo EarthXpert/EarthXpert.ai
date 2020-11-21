@@ -14,6 +14,9 @@
 #include <string>
 #include <vector>
 
+/**
+ *  GDAL_DATA=D:\home\workspace\install\windows\etc\gdal
+ */
 namespace earthxpert {    // \todo ::thirdparty
 void EX3RDPARTY_EXPORTS GDALInitialize();
 
