@@ -110,7 +110,7 @@ public:
    * @return type of sensor model
    */
   ModelType GetModelType() const noexcept override {
-    return ModelType::ePUSHBROOM;
+    return ModelType::eMT_PUSHBROOM;
   }
 
   /**

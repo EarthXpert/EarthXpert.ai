@@ -15,8 +15,8 @@ namespace earthxpert {
 class EXSENSORMODEL_EXPORTS IImageModelPolicy {
 public:
   enum ImageModelPolicyType {
-    eDIGITAL, //
-    eFILM
+    eIM_DIGITAL, //
+    eIM_FILM
   };
   using impt = ImageModelPolicyType;
 

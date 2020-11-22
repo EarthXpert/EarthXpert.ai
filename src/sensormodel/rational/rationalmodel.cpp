@@ -192,7 +192,7 @@ void RationalModel::CheckModel() const {
  *  \return Return true if two models represent exactly same geometry
  */
 bool RationalModel::EqualTo(const ISensorModel &rhs) const {
-  if (ModelType::eRATIONAL != rhs.GetModelType())
+  if (ModelType::eMT_RATIONAL != rhs.GetModelType())
     return false;
 
   auto rationalModel = dynamic_cast<const RationalModel *>(&rhs);

@@ -201,7 +201,7 @@ void FrameModel<ImageModelPolicy>::CheckModel() const {
  */
 template <class ImageModelPolicy>
 bool FrameModel<ImageModelPolicy>::EqualTo(const ISensorModel &rhs) const {
-  if (ISensorModel::ModelType::eFRAME != rhs.GetModelType())
+  if (ISensorModel::ModelType::eMT_FRAME != rhs.GetModelType())
     return false;
 
   auto frameModel = dynamic_cast<const FrameModel<ImageModelPolicy> *>(&rhs);
@@ -414,7 +414,7 @@ Point2d FrameModel<ImageModelPolicy>::SensorApparantToActualPPA(
       const auto corr = f_rcP / df_drcP;
 
       rc = rcP - corr;
-      if (fabs(corr) < kTolMM)
+      if (fabs(corr) < kTolFP)
         break;
 
       rcP = rc;
@@ -442,7 +442,7 @@ Point2d FrameModel<ImageModelPolicy>::SensorApparantToActualPPA(
       const auto corr = f_rcP / df_drcP;
 
       rc = rcP - corr;
-      if (fabs(corr) < kTolMM)
+      if (fabs(corr) < kTolFP)
         break;
 
       rcP = rc;
@@ -479,7 +479,7 @@ Point2d FrameModel<ImageModelPolicy>::SensorApparantToActualPPS(
       const Point2d res{ cRD - (sensorAct + dGrd) };
       sensorAct += res;
 
-      if (fabs(res.x) < kTolMM && fabs(res.y) < kTolMM)
+      if (fabs(res.x) < kTolFP && fabs(res.y) < kTolFP)
         break;
     }
 
@@ -497,7 +497,7 @@ Point2d FrameModel<ImageModelPolicy>::SensorApparantToActualPPS(
       const auto corr = cEarth - (sensorAct + dRad + dDec + dLin);
       sensorAct += corr;
 
-      if (fabs(corr.x) < kTolMM && fabs(corr.y) < kTolMM)
+      if (fabs(corr.x) < kTolFP && fabs(corr.y) < kTolFP)
         break;
 
       // if corrX or corrY is large, it is not converging. use the original value

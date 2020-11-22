@@ -111,7 +111,7 @@ public:
    * @return type of sensor model
    */
   ModelType GetModelType() const noexcept override {
-    return ModelType::eROLLING;
+    return ModelType::eMT_ROLLING;
   }
 
   /**

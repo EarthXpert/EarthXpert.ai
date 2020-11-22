@@ -16,9 +16,9 @@ namespace earthxpert {
 class EXCORE_EXPORTS IGroundPolicy {
 public:
   enum class GroundPolicyType {
-    eGEOGRAPHIC, //
-    eLOCAL, //
-    eMAP //
+    eGP_GEOGRAPHIC, //
+    eGP_LOCAL, //
+    eGP_MAP //
   };
   using gpt = GroundPolicyType;
 

@@ -88,17 +88,17 @@ public:
     const Point2d &rightImage, Point3d &ground) const override {
     assert(2 == mModels.size());
     switch (mFwdAlgo) {
-    case eCA_INTERSECT: {
+    case eFA_INTERSECT: {
       Point2d images[2] = { leftImage, rightImage };
       return ImagesToGroundX(mModels, images, 2, ground);
     }
-    case eSM_CERES: {
+    case eFA_CERES: {
       return ImagesToGroundCeres(leftImage, rightImage, ground);
     }
-    case eSM_LS: {
+    case eFA_LS: {
       return ImagesToGroundLS(leftImage, rightImage, ground);
     }
-    case eSM_NR: {
+    case eFA_NR: {
       return ImagesToGroundNR(leftImage, rightImage, ground);
     }
     default: {
@@ -139,16 +139,16 @@ public:
     Point3d &ground) const override {
     assert(3 == mModels.size());
     switch (mFwdAlgo) {
-    case eCA_INTERSECT: {
+    case eFA_INTERSECT: {
       return ImagesToGroundX(mModels, images.data(), 3, ground);
     }
-    case eSM_CERES: {
+    case eFA_CERES: {
       return ImagesToGroundCeres(images, ground);
     }
-    case eSM_LS: {
+    case eFA_LS: {
       return ImagesToGroundLS(images, ground);
     }
-    case eSM_NR: {
+    case eFA_NR: {
       return ImagesToGroundNR(images, ground);
     }
     default: {
@@ -191,17 +191,17 @@ public:
     assert(numRays == images.size());
 
     switch (mFwdAlgo) {
-    case eCA_INTERSECT: {
+    case eFA_INTERSECT: {
       return ImagesToGroundX(sensorModels, images.data(), numRays, ground);
     }
-    case eSM_CERES: {
+    case eFA_CERES: {
       return ImagesToGroundCeres(sensorModels, images.data(), numRays, ground);
     }
-    case eSM_LS: {
+    case eFA_LS: {
       //return ImagesToGroundLS(sensorModels, images.data(), numRays, ground);
       throw std::exception(_("StereoModel: not implemented"));
     }
-    case eSM_NR: {
+    case eFA_NR: {
       //return ImagesToGroundNR(sensorModels, images.data(), numRays, ground);
       throw std::exception(_("StereoModel: not implemented"));
     }
@@ -286,7 +286,7 @@ protected:
   static constexpr double kFacLP = 0.5 / kTolXYD;
   static constexpr double kFacH = 0.5 / kTolZ;
 
-  ForwardAlgo mFwdAlgo{ eSM_NR };
+  ForwardAlgo mFwdAlgo{ eFA_NR };
   Solver::Options mOptions;   // the options to control ceres solver
 
   inline double GetMeanHeight(
@@ -334,7 +334,7 @@ private:
 
   // cache
   SensorType mSensorType{ SensorType::eUNDEFINED };
-  SrsType mSrsType{ eUNKNOWN };
+  SrsType mSrsType{ eST_UNKNOWN };
 
   double mTolXY{ kTolXYD };
   double mFacLP{ 0.5 / kTolXYD };

@@ -88,7 +88,7 @@ bool AdsModel::GroundToImage(const Point3d &ground, Point2d &image) const {
 }
 
 bool AdsModel::EqualTo(const ISensorModel &rhs) const {
-  if (ISensorModel::ModelType::eADS != rhs.GetModelType())
+  if (ISensorModel::ModelType::eMT_ADS != rhs.GetModelType())
     return false;
 
   auto adsModel = dynamic_cast<const AdsModel *>(&rhs);

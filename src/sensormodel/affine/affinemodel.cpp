@@ -65,7 +65,7 @@ bool AffineModel::operator!=(const AffineModel& rhs) const {
 }
 
 bool AffineModel::EqualTo(const ISensorModel& rhs) const {
-  if (ISensorModel::ModelType::eADS != rhs.GetModelType())
+  if (ISensorModel::ModelType::eMT_ADS != rhs.GetModelType())
     return false;
 
   auto affModel = dynamic_cast<const AffineModel*>(&rhs);

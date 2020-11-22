@@ -54,6 +54,10 @@ constexpr int kTileDim = 256;   // tile size of raster image
 
 constexpr double kTolDEG = 1.0e-8; // [arc degree] ~= 1mm
 constexpr double kTolRAD = kTolDEG * kDEG2RAD; // [radian] ~= 1mm
+
 constexpr double kTolCM = 1.0e-2; // [meter] = 1cm
 constexpr double kTolMM = 1.0e-3; // [meter] = 1mm
+constexpr double kTolUM = 1.0e-6; // [meter] = 1um
+
+constexpr double kTolPIX = 1.0e-2; // [0.01 pixel]
 } // namespace earthxpert

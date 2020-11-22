@@ -37,14 +37,14 @@ public:
   enum ModelType {
     eUNDEFINED = -1,
     // physical sensor models
-    eADS,       ///< Indicates an aerial push-broom sensor
-    eFRAME,     ///< Indicates a frame based pin-hole camera
-    ePUSHBROOM, ///< Indicates a push-broom sensor
-    eROLLING,   ///< Indicates an aerial push-broom sensor
+    eMT_ADS,       ///< Indicates an aerial push-broom sensor
+    eMT_FRAME,     ///< Indicates a frame based pin-hole camera
+    eMT_PUSHBROOM, ///< Indicates a push-broom sensor
+    eMT_ROLLING,   ///< Indicates an aerial push-broom sensor
     // replacement sensor models
-    eAFFINE,   ///< Indicates an affine model
-    eNETWORK,   ///< Indicates a neural network model
-    eRATIONAL, ///< Indicates a rational polynomial model
+    eMT_AFFINE,   ///< Indicates an affine model
+    eMT_NETWORK,   ///< Indicates a neural network model
+    eMT_RATIONAL, ///< Indicates a rational polynomial model
     NumSensorTypes
   };
 

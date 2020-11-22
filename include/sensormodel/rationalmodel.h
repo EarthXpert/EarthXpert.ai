@@ -177,7 +177,7 @@ public:
    * @return type of sensor model
    */
   ModelType GetModelType() const noexcept override {
-    return ModelType::eRATIONAL;
+    return ModelType::eMT_RATIONAL;
   }
 
   /**
@@ -194,7 +194,7 @@ public:
    *  \return Returns type of SRS
    *  \todo parse from mGroundSRS;
    */
-  virtual SrsType GetSrsType() const noexcept { return eGEO; }
+  virtual SrsType GetSrsType() const noexcept { return eST_GEO; }
 
   void SetImageSize(const int numCols, const int numRows) noexcept {
     mNumCols = numCols;
@@ -271,7 +271,7 @@ private:
   static constexpr int kMaxIterIAA = 5; // max. number of iterations allowed for ImageActualToApparant
   static constexpr double kRatio = 1.0e-4; // ratio of tolerance proportional to image range
   static constexpr double kTol = std::numeric_limits<double>::epsilon();
-  static constexpr double kTol_d = 0.1; // tolerance proportional to ground range
+  static constexpr double kTol_d = 0.1; // tolerance proportional to visual ground range
 
   // rational polynomial coefficients
   std::array<double, NumFact>

@@ -29,7 +29,7 @@ RationalStereoModel::RationalStereoModel(
 }
 
 void RationalStereoModel::Initialize() {
-  mFwdAlgo = eSM_EXAI;
+  mFwdAlgo = eFA_EXAI;
 }
 
 /**

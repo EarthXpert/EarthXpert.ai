@@ -72,7 +72,7 @@ public:
    * @return type of sensor model
    */
   ModelType GetModelType() const noexcept override {
-    return ModelType::eAFFINE;
+    return ModelType::eMT_AFFINE;
   }
 
   /**

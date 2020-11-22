@@ -79,7 +79,7 @@ public:
    *  \return Returns type of SRS
    */
   SrsType GetSrsType() const noexcept override {
-    return SrsType::eUNKNOWN;
+    return SrsType::eST_UNKNOWN;
   }
 
   /**

@@ -93,7 +93,7 @@ public:
    * @return type of sensor model
    */
   ModelType GetModelType() const noexcept override {
-    return ModelType::eADS;
+    return ModelType::eMT_ADS;
   }
 
   /**

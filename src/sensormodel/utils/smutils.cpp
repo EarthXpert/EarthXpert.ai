@@ -20,23 +20,23 @@ namespace detail {
   // sensor names & types
   static std::map<std::string, SensorType> sSensorN2T = {
   {"undefined", SensorType::eUNDEFINED},
-  {"ads", SensorType::eADS},
-  {"frame", SensorType::eFRAME},
-  {"pushbroom", SensorType::ePUSHBROOM},
-  {"rolling", SensorType::eROLLING},
-  {"affine", SensorType::eAFFINE},
-  {"network", SensorType::eNETWORK},
-  {"rational", SensorType::eRATIONAL} };
+  {"ads", SensorType::eMT_ADS},
+  {"frame", SensorType::eMT_FRAME},
+  {"pushbroom", SensorType::eMT_PUSHBROOM},
+  {"rolling", SensorType::eMT_ROLLING},
+  {"affine", SensorType::eMT_AFFINE},
+  {"network", SensorType::eMT_NETWORK},
+  {"rational", SensorType::eMT_RATIONAL} };
 
   static std::map<SensorType, std::string> sSensorT2N = {
   {SensorType::eUNDEFINED, "undefined"},
-  {SensorType::eADS, "ads"},
-  {SensorType::eFRAME, "frame"},
-  {SensorType::ePUSHBROOM, "pushbroom"},
-  {SensorType::eROLLING, "rolling"},
-  {SensorType::eAFFINE, "affine"},
-  {SensorType::eNETWORK, "network"},
-  {SensorType::eRATIONAL, "rational"} };
+  {SensorType::eMT_ADS, "ads"},
+  {SensorType::eMT_FRAME, "frame"},
+  {SensorType::eMT_PUSHBROOM, "pushbroom"},
+  {SensorType::eMT_ROLLING, "rolling"},
+  {SensorType::eMT_AFFINE, "affine"},
+  {SensorType::eMT_NETWORK, "network"},
+  {SensorType::eMT_RATIONAL, "rational"} };
 }
 
 /**
@@ -90,7 +90,7 @@ double CalcGsd(const ISensorModel* sensorModel, const double height) {
   sensorModel->ImageToGround(ic + Point2d(1.0, 1.0), gc2);
 
   double gsd = cv::norm(gc2 - gc) * M_SQRT1_2;
-  if (eGEO == sensorModel->GetSrsType()) {
+  if (eST_GEO == sensorModel->GetSrsType()) {
     gsd = kWGS84_A * Deg2Rad(gsd);
   }
   return gsd;
@@ -145,7 +145,7 @@ void RegisterMulPan(const ISensorModel* mulModel,
  */
 bool ImageToPlane(const Point2d& image, const ISensorModel* sensorModel, 
   const EarthEllipsoid* ee, const double height, PointXYd& rect, const double tolH) {
-  assert(eGEO == sensorModel->GetSrsType());
+  assert(eST_GEO == sensorModel->GetSrsType() && "must be geographic");
   Point3d ground{ 0, 0, height };
 
   Point3d rect3{ 0, 0, 0 };
@@ -170,7 +170,7 @@ bool ImageToPlane(const Point2d& image, const ISensorModel* sensorModel,
  */
 Polygon2d CalcFootprint(const ISensorModel* sensorModel,
   const EarthEllipsoid* ee, const double height) {
-  assert(eGEO == sensorModel->GetSrsType());
+  assert(eST_GEO == sensorModel->GetSrsType());
   auto [numCols, numRows] = sensorModel->GetImageSize();
   std::vector<Point2d> corners;
   FillCorners(numCols, numRows, corners);

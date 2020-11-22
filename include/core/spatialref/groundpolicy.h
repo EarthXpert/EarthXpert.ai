@@ -23,7 +23,7 @@ namespace earthxpert {
 template <int angleUnit = kAU_RADIAN, int linearUnit = kLU_METER>
 class EXCORE_EXPORTS GeographicGround final : public IGroundPolicy {
 public:
-  static constexpr SrsType kGroundType = eGEO;
+  static constexpr SrsType kGroundType = eST_GEO;
 
   /**
    *  \brief Constructor.
@@ -86,7 +86,7 @@ public:
    * \return Return type of ground policy
    */
   GroundPolicyType GetGroundPolicyType() const noexcept override {
-    return gpt::eGEOGRAPHIC;
+    return gpt::eGP_GEOGRAPHIC;
   }
 
   const EarthEllipsoid* GetEarthEllipsoid() const noexcept {
@@ -114,7 +114,7 @@ using GeographicGroundRad = GeographicGround<kAU_RADIAN>;
 template <int linearUnit = kLU_METER>
 class EXCORE_EXPORTS LocalGround final : public IGroundPolicy{
 public:
-  static constexpr SrsType kGroundType = eLOCAL;
+  static constexpr SrsType kGroundType = eST_LOCAL;
 
   /**
    *  \brief Constructor.
@@ -155,7 +155,7 @@ public:
    * \return Return type of ground policy
    */
   GroundPolicyType GetGroundPolicyType() const noexcept override {
-    return gpt::eLOCAL;
+    return gpt::eGP_LOCAL;
   }
 
 private:
@@ -179,7 +179,7 @@ using LocalGroundUf = LocalGround<kLU_USFOOT>;
 template <int linearUnit = kLU_METER>
 class EXCORE_EXPORTS MapGround final : public IGroundPolicy {
 public:
-  static constexpr SrsType kGroundType = eMAP;
+  static constexpr SrsType kGroundType = eST_MAP;
 
   /**
    *  \brief Constructor.
@@ -220,7 +220,7 @@ public:
    * \return Return type of ground policy
    */
   GroundPolicyType GetGroundPolicyType() const noexcept override {
-    return gpt::eMAP;
+    return gpt::eGP_MAP;
   }
 
 private:

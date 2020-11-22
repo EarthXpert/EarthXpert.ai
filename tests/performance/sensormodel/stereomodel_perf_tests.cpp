@@ -56,7 +56,7 @@ void StereoModel_I2G_Ceres() {
   auto cube = CreateCube(leftModel.get(), rightModel.get());
 
   StereoModel smC(leftModel.get(), rightModel.get());
-  smC.SetForwardAlgorithm(StereoModel::eSM_CERES);
+  smC.SetForwardAlgorithm(StereoModel::eFA_CERES);
   I2G_Cube(smC, cube);
   //std::cout << "Total #Iterations: " << smC.GetNumIters() << std::endl;
 }
@@ -76,7 +76,7 @@ void StereoModel_I2G_Intersect() {
 
   StereoModel smI(leftModel.get(), rightModel.get());    // intersect
   smI.SetEarthEllipsoid(std::move(ee));
-  smI.SetForwardAlgorithm(StereoModel::eCA_INTERSECT);
+  smI.SetForwardAlgorithm(StereoModel::eFA_INTERSECT);
   I2G_Cube(smI, cube);
   //std::cout << "Total #Iterations: " << smI.GetNumIters() << std::endl;
 }
@@ -103,7 +103,7 @@ void StereoModel_I2G_LS() {
   auto cube = CreateCube(leftModel.get(), rightModel.get());
 
   StereoModel smL(leftModel.get(), rightModel.get());    // LS
-  smL.SetForwardAlgorithm(StereoModel::eSM_LS);
+  smL.SetForwardAlgorithm(StereoModel::eFA_LS);
   I2G_Cube(smL, cube);
   //std::cout << "Total #Iterations: " << smL.GetNumIters() << std::endl;
 }
@@ -117,7 +117,7 @@ void StereoModel_I2G_NR() {
   auto cube = CreateCube(leftModel.get(), rightModel.get());
 
   StereoModel smN(leftModel.get(), rightModel.get());    // NR
-  smN.SetForwardAlgorithm(StereoModel::eSM_NR);
+  smN.SetForwardAlgorithm(StereoModel::eFA_NR);
   I2G_Cube(smN, cube);
   //std::cout << "Total #Iterations: " << smN.GetNumIters() << std::endl;
 }
@@ -131,7 +131,7 @@ void StereoModel_I2G_CeresOMP() {
   auto cube = CreateCube(leftModel.get(), rightModel.get());
 
   StereoModel smC(leftModel.get(), rightModel.get());    // Ceres
-  smC.SetForwardAlgorithm(StereoModel::eSM_CERES);
+  smC.SetForwardAlgorithm(StereoModel::eFA_CERES);
   I2G_CubeOMP(smC, cube);
 }
 
@@ -150,7 +150,7 @@ void StereoModel_I2G_IntersectOMP() {
 
   StereoModel smI(leftModel.get(), rightModel.get());    // intersect
   smI.SetEarthEllipsoid(std::move(ee));
-  smI.SetForwardAlgorithm(StereoModel::eCA_INTERSECT);
+  smI.SetForwardAlgorithm(StereoModel::eFA_INTERSECT);
   I2G_CubeOMP(smI, cube);
 }
 
@@ -175,7 +175,7 @@ void StereoModel_I2G_LSOMP() {
   auto cube = CreateCube(leftModel.get(), rightModel.get());
 
   StereoModel smL(leftModel.get(), rightModel.get());    // LS
-  smL.SetForwardAlgorithm(StereoModel::eSM_LS);
+  smL.SetForwardAlgorithm(StereoModel::eFA_LS);
   I2G_CubeOMP(smL, cube);
 }
 
@@ -188,7 +188,7 @@ void StereoModel_I2G_NROMP() {
   auto cube = CreateCube(leftModel.get(), rightModel.get());
 
   StereoModel smN(leftModel.get(), rightModel.get());    // NR
-  smN.SetForwardAlgorithm(StereoModel::eSM_NR);
+  smN.SetForwardAlgorithm(StereoModel::eFA_NR);
   I2G_CubeOMP(smN, cube);
 }
 

@@ -128,7 +128,7 @@ void PushbroomModel<CraftPolicy>::SetCorrection(
 
 template <typename CraftPolicy>
 bool PushbroomModel<CraftPolicy>::EqualTo(const ISensorModel &rhs) const {
-  if (ISensorModel::ModelType::ePUSHBROOM != rhs.GetModelType())
+  if (ISensorModel::ModelType::eMT_PUSHBROOM != rhs.GetModelType())
     return false;
 
   auto pbModel = dynamic_cast<const PushbroomModel *>(&rhs);

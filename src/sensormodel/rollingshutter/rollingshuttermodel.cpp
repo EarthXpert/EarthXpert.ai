@@ -121,7 +121,7 @@ void RollingShutterModel::SetCorrection(
     std::shared_ptr<ScannerEPCorr> scannerEPCorr) {}
 
 bool RollingShutterModel::EqualTo(const ISensorModel &rhs) const {
-  if (ISensorModel::ModelType::eROLLING != rhs.GetModelType())
+  if (ISensorModel::ModelType::eMT_ROLLING != rhs.GetModelType())
     return false;
 
   auto rsModel = dynamic_cast<const RollingShutterModel *>(&rhs);

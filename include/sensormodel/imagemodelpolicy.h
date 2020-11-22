@@ -63,7 +63,7 @@ public:
    * \return Return type of image model policy
    */
   ImageModelPolicyType GetImageModelPolicyType() const noexcept override {
-    return impt::eDIGITAL;
+    return impt::eIM_DIGITAL;
   }
 
   std::pair<int, int> GetImageSize() const noexcept override;
@@ -129,7 +129,7 @@ public:
    * \return Return type of image model policy
    */
   ImageModelPolicyType GetImageModelPolicyType() const noexcept override {
-    return impt::eFILM;
+    return impt::eIM_FILM;
   }
 
   std::pair<int, int> GetImageSize() const noexcept override;

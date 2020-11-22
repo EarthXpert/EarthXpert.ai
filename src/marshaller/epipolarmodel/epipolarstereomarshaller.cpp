@@ -182,7 +182,7 @@ std::vector<UPIEpipolarModel> EpipolarStereoMarshaller::DeserializeFS(
   for (const auto& em : epiMdlRecs) {
     rmMarshaller.SetImageSize(em.rawSize.width, em.rawSize.height);
     std::shared_ptr<RationalModel> sensorMdl = rmMarshaller.Deserialize(em.mdlFile);
-    assert(SensorType::eRATIONAL == sensorMdl->GetModelType());
+    assert(SensorType::eMT_RATIONAL == sensorMdl->GetModelType());
 
     Polygon2d bound;
     bg::read_wkt(em.bound, bound);

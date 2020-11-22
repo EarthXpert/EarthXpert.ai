@@ -70,19 +70,19 @@ void StereoModel::Initialize() {
   // default forward intersection algorithm
   mSensorType = mModels[0]->GetModelType();
   switch (mSensorType) {
-  case SensorType::eFRAME:
+  case SensorType::eMT_FRAME:
     break;
-  case SensorType::eRATIONAL:
-    mFwdAlgo = eSM_NR;
+  case SensorType::eMT_RATIONAL:
+    mFwdAlgo = eFA_NR;
     break;
   default:
-    mFwdAlgo = eSM_NR;
+    mFwdAlgo = eFA_NR;
     break;
   }
 
   mSrsType = mModels[0]->GetSrsType();
   switch (mSrsType) {
-  case eGEO:
+  case eST_GEO:
     mTolXY = kTolXYD;
     break;
   default:
@@ -140,14 +140,14 @@ void StereoModel::SetEarthEllipsoid(std::shared_ptr<EarthEllipsoid> earthEllip) 
 void StereoModel::SetForwardAlgorithm(const ForwardAlgo fwdAlgo) {
   // verify consistency
   switch (fwdAlgo) {
-  case eCA_INTERSECT: {
-    if (eGEO == mSrsType && !(mEarthEllip && mIntersect)) 
+  case eFA_INTERSECT: {
+    if (eST_GEO == mSrsType && !(mEarthEllip && mIntersect)) 
       throw std::exception("StereoModel: SetForwardAlgorithm");
     break;
   }
-  case eSM_CERES: 
-  case eSM_LS:
-  case eSM_NR:
+  case eFA_CERES: 
+  case eFA_LS:
+  case eFA_NR:
   default: {
     break;
   }
@@ -464,7 +464,7 @@ bool StereoModel::ImagesToGroundX(
         segs[pi].z = hgtRange[j];
 
         sensorModels[k]->ImageToGround(images[k], segs[pi]);
-        if (eGEO == mSrsType)
+        if (eST_GEO == mSrsType)
           segs[pi] = mEarthEllip->LPHToLSR(Deg2Rad(segs[pi]));
       }
     }
@@ -476,7 +476,7 @@ bool StereoModel::ImagesToGroundX(
     const bool ret = mIntersect->IntersectEigen(segs.data(), lsr, numRays);   // IntersectTwoLines(segs.data(), lsr, numRays)
     
     if (!ret) return false;
-    if (eGEO == mSrsType)
+    if (eST_GEO == mSrsType)
       ground = Rad2Deg(mEarthEllip->LSRToLPH(lsr));
     else
       ground = lsr;
