@@ -259,7 +259,7 @@ double EpipolarStereoFactory::CalcEpiRotation(const ISensorModel* leftModel,
   break;
 
   default:
-    assert(false);
+    assert(false && "undefined epipolar direction.");
   }
 
   if ((fabs(ed.x) > fabs(ed.y) && 0 > ed.x) ||

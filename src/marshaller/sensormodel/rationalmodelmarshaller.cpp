@@ -208,7 +208,7 @@ RationalModelMarshaller::DeserializeRpb(std::istream& inS) {
       errRand = std::stod(tokens[1]);
       break;
     default:
-      assert(false);
+      assert(false && "wrong entry.");
     }
   }
 
@@ -277,7 +277,7 @@ RationalModelMarshaller::DeserializeRpc(std::istream& inS) {
       sampDenCoef[idx] = std::stod(value);
       break;
     default:
-      assert(false);
+      assert(false && "wrong entry.");
     }
   }
 
