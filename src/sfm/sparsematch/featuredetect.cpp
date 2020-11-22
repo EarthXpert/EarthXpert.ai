@@ -3,9 +3,9 @@
  * -----------------------------------------------------------------------------
  */
 #include "sfm/sparsematch/featuredetect.h"
+#include "3rdparty/utils/constants.h"
 #include "core/datasource/cvraster.h"
 #include "core/exceptions/exexcept.h"
-#include "core/math/constants.h"
 #include "core/math/math.h"
 #include "core/utils/layoututils.h"
 #include "core/utils/rasterlayout.h"
