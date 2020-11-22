@@ -4,13 +4,12 @@
  */
 #include "sensormodel/framemodel.h"
 #include "3rdparty/opencv/exopencv.h"
+#include "3rdparty/utils/constants.h"
 #include "core/exceptions/exexcept.h"
-#include "core/math/constants.h"
 #include "core/math/rotation.h"
 
 #include <algorithm>
 #include <cassert>
-#include <cmath>
 #include <numeric>
 
 using namespace earthxpert;

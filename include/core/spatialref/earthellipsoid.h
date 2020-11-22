@@ -5,7 +5,7 @@
 #pragma once
 
 #include "core/excore.h"
-#include "core/math/constants.h"
+#include "3rdparty/utils/constants.h"
 #include "core/math/math.h"
 #include "core/utils/typehelper.h"
 #include "3rdparty/opencv/exopencv.h"

@@ -3,9 +3,9 @@
  * -----------------------------------------------------------------------------
  */
 #include "3rdparty/gtest/gtest_main.h"
+#include "3rdparty/utils/constants.h"
 #include "testconfig.h"
 
-#include "core/math/constants.h"
 #include "core/math/mutils.h"
 #include "core/utils/unitutils.h"
 #include "marshaller/sensormodel/rationalmodelmarshaller.h"

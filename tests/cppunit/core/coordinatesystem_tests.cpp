@@ -3,9 +3,9 @@
  * -----------------------------------------------------------------------------
  */
 #include "3rdparty/gtest/gtest_main_gdal.h"
+#include "3rdparty/utils/constants.h"
 #include "testconfig.h"
 
-#include "core/math/constants.h"
 #include "core/spatialref/srsfactory.h"
 #include "core/utils/typehelper.h"
 

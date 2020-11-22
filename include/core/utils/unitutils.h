@@ -5,7 +5,7 @@
 #pragma once
 
 #include "3rdparty/opencv/exopencv.h"
-#include "core/math/constants.h"
+#include "3rdparty/utils/constants.h"
 
 namespace earthxpert {
 // angle unit
