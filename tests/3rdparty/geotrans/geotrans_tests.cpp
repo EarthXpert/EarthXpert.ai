@@ -1,7 +1,6 @@
 #include "3rdparty/gtest/gtest_main.h"
 #include "3rdparty/geotrans/exgeotrans.h"
-#include "core/math/constants.h"
-#include "core/spatialref/ccsutils.h"
+#include "3rdparty/utils/constants.h"
 
 #include <iostream>
 
