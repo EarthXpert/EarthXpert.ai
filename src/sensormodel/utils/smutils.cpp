@@ -15,7 +15,8 @@
 namespace earthxpert {
 namespace detail {
   static constexpr int kMaxIters = 5;
-  static constexpr size_t kNP = 9;
+  static constexpr int kNN = 5;  // #nodes
+  static constexpr size_t kNP = 9;  // #key points
 
   // sensor names & types
   static std::map<std::string, SensorType> sSensorN2T = {
@@ -80,14 +81,37 @@ std::string SensorTypeToName(const SensorType type) {
  */
 double CalcGsd(const ISensorModel* sensorModel, const double height) {
   auto [numCols, numRows] = sensorModel->GetImageSize();
-  const Point2d ic{ numCols * 0.5, numRows * 0.5 };
+  const auto intCols = numCols / detail::kNN;
+  const auto intRows = numRows / detail::kNN;
+  const auto startCol = (numCols - intCols * detail::kNN) / 2;
+  const auto startRow = (numRows - intRows * detail::kNN) / 2;
 
-  // image center at height
+  double gsd{};
+  int count{};
+  for (int c = startCol; c <= numCols; c+=intCols)
+    for (int r = startRow; r <= numRows; r += intRows) {
+      gsd += CalcGsd(sensorModel, Point2d(c, r), height);
+      count++;
+    }
+
+  return (gsd / count);
+}
+
+/**
+ *  \brief estimate GSD at the given location and the given height
+ *
+ *  \param [in] sensorModel
+ *  \param [in] ip image location where GSD is to be estimated
+ *  \param [in] height the height in model CS
+ *  \return Retruns GSD at image center
+ */
+double CalcGsd(const ISensorModel* sensorModel,
+  const Point2d& ip, const double height) {
   Point3d gc{ 0.0, 0.0, height };
-  sensorModel->ImageToGround(ic, gc);
+  sensorModel->ImageToGround(ip, gc);
 
   Point3d gc2{ 0.0, 0.0, height };
-  sensorModel->ImageToGround(ic + Point2d(1.0, 1.0), gc2);
+  sensorModel->ImageToGround(ip + Point2d(1.0, 1.0), gc2);
 
   double gsd = cv::norm(gc2 - gc) * M_SQRT1_2;
   if (eST_GEO == sensorModel->GetSrsType()) {
@@ -104,15 +128,39 @@ double CalcGsd(const ISensorModel* sensorModel, const double height) {
  *  \param [in] height the height in LSR
  *  \return Retruns GSD at image center
  */
-double CalcGsd(const ISensorModel* sensorModel,
+double CalcGsd(const ISensorModel* sensorModel, 
   const EarthEllipsoid* ee, const double height) {
   const auto [numCols, numRows] = sensorModel->GetImageSize();
-  const Point2d ic{ numCols * 0.5, numRows * 0.5 };
+  const auto intCols = numCols / detail::kNN;
+  const auto intRows = numRows / detail::kNN;
+  const auto startCol = (numCols - intCols * detail::kNN) / 2;
+  const auto startRow = (numRows - intRows * detail::kNN) / 2;
 
-  // image center at height
+  double gsd{};
+  int count{};
+  for (int c = startCol; c <= numCols; c += intCols)
+    for (int r = startRow; r <= numRows; r += intRows) {
+      gsd += CalcGsd(sensorModel, Point2d(c, r), ee, height);
+      count++;
+    }
+
+  return (gsd / count);
+}
+
+/**
+ *  \brief estimate GSD at the given location and the given height
+ *
+ *  \param [in] sensorModel
+ *  \param [in] ip image location where GSD is to be estimated
+ *  \param [in] ee the LSR
+ *  \param [in] height the height in LSR
+ *  \return Retruns GSD at image center
+ */
+double CalcGsd(const ISensorModel* sensorModel, const Point2d& ip,
+  const EarthEllipsoid* ee, const double height) {
   PointXYd rc, rc2;
-  ImageToPlane(ic, sensorModel, ee, height, rc);
-  ImageToPlane(ic + Point2d(1.0, 1.0), sensorModel, ee, height, rc2);
+  ImageToPlane(ip, sensorModel, ee, height, rc);
+  ImageToPlane(ip + Point2d(1.0, 1.0), sensorModel, ee, height, rc2);
 
   return cv::norm(Point2d(rc2.x() - rc.x(), rc2.y() - rc.y())) * M_SQRT1_2;
 }

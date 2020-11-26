@@ -16,9 +16,15 @@ class RationalModel;
 ISensorModel::ModelType EXSENSORMODEL_EXPORTS SensorNameToType(const std::string& name);
 std::string EXSENSORMODEL_EXPORTS SensorTypeToName(ISensorModel::ModelType type);
 
-double EXSENSORMODEL_EXPORTS CalcGsd(const ISensorModel* sensorModel, double height=0);
+double EXSENSORMODEL_EXPORTS 
+CalcGsd(const ISensorModel* sensorModel, double height = 0);
+double EXSENSORMODEL_EXPORTS CalcGsd(const ISensorModel* sensorModel,
+ const Point2d& ip, double height = 0);
+
 double EXSENSORMODEL_EXPORTS CalcGsd(const ISensorModel* sensorModel,
   const EarthEllipsoid* ee, double height);
+double EXSENSORMODEL_EXPORTS CalcGsd(const ISensorModel* sensorModel,
+  const Point2d& ip, const EarthEllipsoid* ee, double height);
 
 void EXSENSORMODEL_EXPORTS RegisterMulPan(const ISensorModel* mulModel,
   const ISensorModel* panModel, int ratio = 4);
