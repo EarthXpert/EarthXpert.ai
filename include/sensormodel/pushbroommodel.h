@@ -25,6 +25,11 @@ namespace earthxpert {
 template <typename CraftPolicy>
 class EXSENSORMODEL_EXPORTS PushbroomModel final : public SensorModel {
 public:
+  enum CcdUnit {
+    eCU_ANGLE,
+    eCU_METRIC
+  };
+
   /**
    *  \brief Construct an aerial pushbroom geometry model.
    *

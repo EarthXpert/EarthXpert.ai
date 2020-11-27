@@ -169,6 +169,7 @@ void FeatureDetect::ProcessTile(const int tileId) {
   const auto start = mClock.TimeSinceStart();
 
   // in-memory ProcessTile(imgMat, kpVec, dctMat)
+  //ConvertTile();    // RGB -> Grey
 
   mPerf.tmProcess += mClock.TimeSinceStart() - start;
 }

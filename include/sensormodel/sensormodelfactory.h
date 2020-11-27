@@ -33,6 +33,7 @@ public:
   /**
    *  \brief create rational model from another sensor model
    */
-  static std::unique_ptr<RationalModel> CreateRationalModel(const ISensorModel* sensorModel);
+  static std::unique_ptr<RationalModel> 
+  CreateRationalModel(const ISensorModel* sensorModel);
 };
 } // namespace earthxpert

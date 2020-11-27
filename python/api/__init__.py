@@ -5,7 +5,7 @@
 import frameepipolar as frmepi
 import rationalepipolar as ratepi
 
-class exapi():
+class ExApi():
 
   def __init__(self):
     self.ver = ''

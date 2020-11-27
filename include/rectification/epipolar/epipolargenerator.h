@@ -149,9 +149,9 @@ private:
 
   void RigorousGridNodes(const int tileId, cv::Mat& tfmMat,
     const std::vector<int>& gridCols, const std::vector<int>& gridRows);
-  void DensifyPerCells(const int tileId, cv::Mat& tfmMat,
+  void DensifyCells(const int tileId, cv::Mat& tfmMat,
     const std::vector<int>& gridCols, const std::vector<int>& gridRows);
-  void DensifyPerPixels(const int tileId, cv::Mat& tfmMat,
+  void DensifyPixels(const int tileId, cv::Mat& tfmMat,
     const std::vector<int>& gridCols, const std::vector<int>& gridRows);
   void EpiToImg(int tileId, cv::Mat& tfmMat,
     int tileCol, int tileRow, bool insideImg=true);
@@ -160,7 +160,7 @@ private:
   WallClock mClock;
   EpiGenPerf mPerf;
 
-  void GatherStatistics(int tileId);
+  void GatherStatTile(int tileId);
 
   // cached information
   int mNumPT{ 1 };    // number of processing threads

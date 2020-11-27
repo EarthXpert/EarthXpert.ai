@@ -273,7 +273,7 @@ void EpipolarGenerator::ProcessTile(const int tileId) {
 
   mRasResample->Resample(imgMat, epiMat, tfmMat); // ResampleTile
 
-  //GatherStatistics(tileId);
+  //GatherStatTile(tileId);
   mPerf.tmProcess += mClock.TimeSinceStart() - start;
 }
 
@@ -327,8 +327,8 @@ void EpipolarGenerator::GeotransformTile(const int tileId, cv::Mat& tfmMat) {
 
   RigorousGridNodes(tileId, tfmMat, gridCols, gridRows);
 
-  DensifyPerCells(tileId, tfmMat, gridCols, gridRows);
-  //DensifyPerPixels(tileId, tfmMat, gridCols, gridRows);
+  DensifyCells(tileId, tfmMat, gridCols, gridRows);
+  //DensifyPixels(tileId, tfmMat, gridCols, gridRows);
 }
 
 /**
@@ -370,7 +370,7 @@ void EpipolarGenerator::RigorousGridNodes(const int tileId, cv::Mat& tfmMat,
  *
  *  \remark 15% faster than PerPixels
  */
-void EpipolarGenerator::DensifyPerCells(const int tileId, cv::Mat& tfmMat,
+void EpipolarGenerator::DensifyCells(const int tileId, cv::Mat& tfmMat,
   const std::vector<int>& gridCols, const std::vector<int>& gridRows) {
   if (1 == mStride) return;  
   const auto start = mClock.TimeSinceStart();
@@ -442,7 +442,7 @@ void EpipolarGenerator::DensifyPerCells(const int tileId, cv::Mat& tfmMat,
  *  \param [in] gridCols grid col positions for rigorous geometry
  *  \param [in] gridRows grid row positions for rigorous geometry
  */
-void EpipolarGenerator::DensifyPerPixels(const int tileId, cv::Mat& tfmMat,
+void EpipolarGenerator::DensifyPixels(const int tileId, cv::Mat& tfmMat,
   const std::vector<int>& gridCols, const std::vector<int>& gridRows) {
   if (1 == mStride) return;  // Densify non-grid positions
   const auto start = mClock.TimeSinceStart();
@@ -529,7 +529,7 @@ void EpipolarGenerator::EpiToImg(const int tileId, cv::Mat& tfmMat,
  *
  *  \param [in] tileId the index of tile to analyze
  */
-void EpipolarGenerator::GatherStatistics(const int tileId) {
+void EpipolarGenerator::GatherStatTile(const int tileId) {
   const auto [colOffset, rowOffset, numCols, numRows] = EpiTile(tileId);
   const int64_t numPix = int64_t(numCols) * numRows;
 

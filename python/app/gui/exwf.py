@@ -2,8 +2,8 @@
 #   Copyright (c) 2019.  All rights reserved.
 #  -----------------------------------------------------------------------------
 
-from exgui import Ui_MainWindow
 import os, sys, time
+from exgui import Ui_MainWindow
 from PyQt5 import QtWidgets
 
 '''

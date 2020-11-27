@@ -33,6 +33,12 @@ public:
     eOD_VERTICAL   // vertical
   };
 
+  // unit of IO parameters
+  enum IoUnit {
+    eIU_METRIC,    // metric mm
+    eIU_PIXEL      // non-metric pixel
+  };
+
   /**
    *  Constructor.
    *
@@ -152,7 +158,9 @@ private:
       mFrameEP{}; // extrinsic parameters defining exterior orientation
   std::shared_ptr<FrameCP>
       mFrameCP{}; // correction parameters defining external effects
+
   OpticalDir mOpticalDir{ eOD_VERTICAL };
+  IoUnit mIoUnit{ eIU_METRIC };    // parameter unit
 
   std::shared_ptr<FrameIPCorr> mFrameIPCorr{}; // interior orienttion corrections
   std::shared_ptr<FrameEPCorr> mFrameEPCorr{}; // exterior orienttion corrections

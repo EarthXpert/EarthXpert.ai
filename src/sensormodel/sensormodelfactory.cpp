@@ -8,6 +8,8 @@
 
 using namespace earthxpert;
 
+static constexpr int kNUMINT = 10;  // number of intervals
+
 /**
  *  \brief
  */
@@ -26,7 +28,8 @@ SensorModelFactory::CreateDigitalFrameModel() {
 /**
  *  \brief
  */
-std::unique_ptr<FilmFrameModel> SensorModelFactory::CreateFilmFrameModel() {
+std::unique_ptr<FilmFrameModel> 
+SensorModelFactory::CreateFilmFrameModel() {
   return std::unique_ptr<FilmFrameModel>();
 }
 
@@ -41,7 +44,7 @@ std::unique_ptr<FilmFrameModel> SensorModelFactory::CreateFilmFrameModel() {
 std::unique_ptr<RationalModel> 
 SensorModelFactory::CreateRationalModel(const ISensorModel* sensorModel) {
   std::array<double, rnf::NumFact> normalFators;
-  int numHoriz{ 10 }, numVert{ 10 }, numLayers{ 10 };
+  int numHoriz{ kNUMINT }, numVert{ kNUMINT }, numLayers{ kNUMINT };
   CubeType cubeType{ CubeType::eMODEL };
   SensorCube sensorCube(normalFators, numHoriz, numVert, numLayers, cubeType);
 
