@@ -8,6 +8,7 @@
 
 #include <chrono>
 #include <iostream>
+#include <memory>
 #include <vector>
 
 namespace schrono = std::chrono;
@@ -24,4 +25,7 @@ std::ostream& operator<<(std::ostream& s, const std::vector<Ty>& v) {
   }
   return s << ']';
 }
+
+template <class Ty>
+using SP = std::shared_ptr<Ty>;
 } // namespace earthxpert
