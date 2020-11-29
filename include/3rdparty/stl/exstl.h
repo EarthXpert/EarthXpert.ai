@@ -14,7 +14,7 @@
 namespace schrono = std::chrono;
 
 namespace earthxpert {
-// 
+// print a 1D array
 template<typename Ty>
 std::ostream& operator<<(std::ostream& s, const std::vector<Ty>& v) {
   s.put('[');
@@ -28,4 +28,7 @@ std::ostream& operator<<(std::ostream& s, const std::vector<Ty>& v) {
 
 template <class Ty>
 using SP = std::shared_ptr<Ty>;
+
+template<class Ty, class Deleter = std::default_delete<Ty>>
+using UP = class std::unique_ptr<Ty, Deleter>;
 } // namespace earthxpert
