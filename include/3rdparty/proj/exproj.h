@@ -12,6 +12,12 @@
 
 /**
  *  PROJ_LIB=D:\home\workspace\install\windows\etc\proj
+ *
+ *  \details 
+ *
+ *    grid shift files format: 
+ *      horizontal: b, dac, gsb, los/las, tif
+ *      vertical: gtx, json, tif
  */
 namespace earthxpert::thirdparty {
 } // namespace earthxpert::thirdparty
