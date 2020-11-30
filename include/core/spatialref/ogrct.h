@@ -86,7 +86,7 @@ public:
   }
 
 private:
-  std::unique_ptr<OGRCoordinateTransformation> mCT;
+  UPSpatialCoordTrans mCT;
 
   void Initialize(OGRSpatialReference* src, OGRSpatialReference* tgt);
 };

@@ -8,6 +8,7 @@
 #include "3rdparty/proj/exproj.h"
 
 #include <memory>
+#include <string>
 
 namespace earthxpert {
 /**
@@ -17,9 +18,17 @@ namespace earthxpert {
 class EXCORE_EXPORTS ProjSRS final : public ISRS
 {
 public:
+  ProjSRS(const std::string& wkt);
   ~ProjSRS() = default;
 
   void GetDatum() override {}
+
+  const PJ* GetPJ() const { return mSRS.get(); }
+
+private:
+  friend class ProjCT;
+
+  UPPJ mSRS;
 };
 
 using UPProjSRS = std::unique_ptr<ProjSRS>;

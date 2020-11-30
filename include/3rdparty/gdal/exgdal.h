@@ -59,4 +59,6 @@ EX3RDPARTY_EXPORTS GDALDataset* CreateVectorDataset(const std::string& vecFile,
 using UPGDALDataset = GDALDatasetUniquePtr;
 using UPSpatialRefSys = std::unique_ptr<SpatialReferenceSystem>;
 using SPSpatialRefSys = std::shared_ptr<SpatialReferenceSystem>;
+using UPSpatialCoordTrans = std::unique_ptr<SpatialCoordinateTransform>;
+using SPSpatialCoordTrans = std::shared_ptr<SpatialCoordinateTransform>;
 } // namespace earthxpert::thirdparty

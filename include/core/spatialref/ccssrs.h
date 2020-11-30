@@ -18,6 +18,9 @@ public:
   ~CcsSRS() = default;
 
   void GetDatum() override {}
+
+private:
+  friend class CcsCT;
 };
 
 using UPCcsSRS = std::unique_ptr<CcsSRS>;

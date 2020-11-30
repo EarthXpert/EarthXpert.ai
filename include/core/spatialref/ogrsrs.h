@@ -20,6 +20,11 @@ public:
   ~OgrSRS() = default;
 
   void GetDatum() override {}
+
+private:
+  friend class OgrCT;
+
+  UPSpatialRefSys mSRS;
 };
 
 using UPOgrSRS = std::unique_ptr<OgrSRS>;
