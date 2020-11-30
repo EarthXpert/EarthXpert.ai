@@ -14,11 +14,11 @@ std::shared_ptr<ICT> CTFactory::CreateCT() {
   return {};
 }
 
-std::shared_ptr<OgrCT> CTFactory::CreateOgrCT() {
+std::shared_ptr<CcsCT> CTFactory::CreateCcsCT() {
   return {};
 }
 
-std::shared_ptr<CcsCT> CTFactory::CreateCcsCT() {
+std::shared_ptr<OgrCT> CTFactory::CreateOgrCT() {
   return {};
 }
 

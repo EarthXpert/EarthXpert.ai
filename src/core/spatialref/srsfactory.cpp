@@ -14,11 +14,11 @@ std::shared_ptr<ISRS> SrsFactory::CreateSRS() {
   return {};
 }
 
-std::shared_ptr<OgrSRS> SrsFactory::CreateOgrSRS() {
+std::shared_ptr<CcsSRS> SrsFactory::CreateCcsSRS() {
   return {};
 }
 
-std::shared_ptr<CcsSRS> SrsFactory::CreateCcsSRS() {
+std::shared_ptr<OgrSRS> SrsFactory::CreateOgrSRS() {
   return {};
 }
 

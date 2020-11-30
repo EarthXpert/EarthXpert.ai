@@ -15,9 +15,9 @@ class EXCORE_EXPORTS CTFactory {
 public:
   static std::shared_ptr<ICT> CreateCT();
 
-  static std::shared_ptr<OgrCT> CreateOgrCT();
-
   static std::shared_ptr<CcsCT> CreateCcsCT();
+
+  static std::shared_ptr<OgrCT> CreateOgrCT();
 
   static std::shared_ptr<ProjCT> CreateProjCT();
 };

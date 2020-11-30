@@ -15,9 +15,9 @@ class EXCORE_EXPORTS SrsFactory {
 public:
   static std::shared_ptr<ISRS> CreateSRS();
 
-  static std::shared_ptr<OgrSRS> CreateOgrSRS();
-
   static std::shared_ptr<CcsSRS> CreateCcsSRS();
+
+  static std::shared_ptr<OgrSRS> CreateOgrSRS();
 
   static std::shared_ptr<ProjSRS> CreateProjSRS();
 };
