@@ -17,7 +17,8 @@ enum SrsType {
 
 enum SrsBackend {
   eSB_CCS,     // MPS CCS
-  eSB_OGR      // GDAL OGR
+  eSB_OGR,     // GDAL OGR
+  eSB_PROJ     // PROJ.4
 };
 
 //

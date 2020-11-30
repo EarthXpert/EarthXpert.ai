@@ -7,6 +7,7 @@
 #include "core/excore.h"
 #include "core/spatialref/ccssrs.h"
 #include "core/spatialref/ogrsrs.h"
+#include "core/spatialref/projsrs.h"
 #include "core/spatialref/spatialdef.h"
 
 namespace earthxpert {
@@ -17,5 +18,7 @@ public:
   static std::shared_ptr<OgrSRS> CreateOgrSRS();
 
   static std::shared_ptr<CcsSRS> CreateCcsSRS();
+
+  static std::shared_ptr<ProjSRS> CreateProjSRS();
 };
 }
