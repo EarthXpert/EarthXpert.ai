@@ -2,5 +2,4 @@
 #   Copyright (c) 2020.  All rights reserved.
 #  -----------------------------------------------------------------------------
 
-from api import exapi
-import unittest
+from api import ExApi
