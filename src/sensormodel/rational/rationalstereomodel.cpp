@@ -196,7 +196,7 @@ Tuple6d RationalStereoModel::CalcJacobianA(RationalModel const* ratModel,
   const auto dFc_duvw = (Point3d(dSn_du, dSn_dv, dSn_dw) - \
     image.x * Point3d(dSd_du, dSd_dv, dSd_dw)) * invSd;  // dFc_du, dFc_dv, dFc_dw
   const auto dFr_duvw = (Point3d(dLn_du, dLn_dv, dLn_dw) - \
-    image.y * Point3d(dLn_du, dLn_dv, dLn_dw)) * invLd;  // dFr_du, dFr_dv, dFr_dw
+    image.y * Point3d(dLd_du, dLd_dv, dLd_dw)) * invLd;  // dFr_du, dFr_dv, dFr_dw
 
   const double du_dL = ratModel->mInvScale[risf::eISLON];    // 1.0 / nfc[rnf::eSLON]; u = (Lon - nfc[rnf::eOLON]) / nfc[rnf::eSLON]
   const double dv_dP = ratModel->mInvScale[risf::eISLAT];    // 1.0 / nfc[rnf::eSLAT]; v = (Lat - nfc[rnf::eOLAT])/ nfc[rnf::eSLAT]
