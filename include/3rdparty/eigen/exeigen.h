@@ -8,5 +8,7 @@
 
 #include <Eigen/Eigen>
 
-namespace earthxpert::thirdparty {
-} // namespace earthxpert::thirdparty
+using EGTri = Eigen::Triplet<double>;
+
+namespace earthxpert {
+} // namespace earthxpert
