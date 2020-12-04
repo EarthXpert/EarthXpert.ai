@@ -6,7 +6,7 @@
 
 #include "core/datasource/iraster.h"
 
-#include "gdal_priv.h"
+#include <gdal_priv.h>
 
 namespace earthxpert {
 /**

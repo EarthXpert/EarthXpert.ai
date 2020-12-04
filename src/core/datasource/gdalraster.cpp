@@ -4,7 +4,7 @@
  */
 #include "core/datasource/gdalraster.h"
 
-#include "ogrsf_frmts.h"
+#include <ogrsf_frmts.h>
 
 using namespace earthxpert;
 

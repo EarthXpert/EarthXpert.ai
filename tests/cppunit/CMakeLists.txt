@@ -4,6 +4,7 @@ function(add_cppunit_test name)
   earthxpert_add_test(${name} "tests/cppunit" ${ARGN})
 endfunction()
 
+add_subdirectory(3rdparty)
 add_subdirectory(blockadjust)
 add_subdirectory(core)
 add_subdirectory(epipolarmodel)

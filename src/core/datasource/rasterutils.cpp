@@ -70,7 +70,7 @@ int ConvertPixelType(const GDALDataType gdalType, const int numBands) {
  *  \param [in] cvType
  *  \return Returns GDAL data type and band numbers
  */
-std::pair<GDALDataType, int> EXCORE_EXPORTS ConvertPixelType(const int cvType) {
+std::pair<GDALDataType, int> ConvertPixelType(const int cvType) {
   const auto depth = CV_MAT_DEPTH(cvType);
 
   const auto it = detail::sDataTypesC2G.find(depth);
@@ -89,7 +89,8 @@ std::pair<GDALDataType, int> EXCORE_EXPORTS ConvertPixelType(const int cvType) {
  *  \param [in] cp col of source pixel
  *  \param [in] rp row of source pixel
  */
-void CopyPixel(const CvRaster* raster, const int c, const int r, const int cp, const int rp) {
+void CopyPixel(const CvRaster* raster, const int c, const int r, 
+  const int cp, const int rp) {
   auto tgt = raster->GetPixel(c, r);
   auto src = raster->GetPixel(cp, rp);
   const int bpp{raster->GetBytesPerPixel()};
@@ -140,7 +141,7 @@ void FillMargins(CvRaster* const raster, MarginFillDim dim) {
  *  \param [in] gdalRaster pointer to GDAL raster object
  *  \return Return pointer to OpenCV raster object
  */
-std::unique_ptr<CvRaster> ConvertRaster(const GdalRaster* gdalRaster) {
+UPCvRaster ConvertRaster(const GdalRaster* gdalRaster) {
   auto [numCols, numRows] = gdalRaster->GetSize();
   auto gdalType = gdalRaster->GetDataType();
   auto numBands = gdalRaster->GetNumBands();
@@ -187,7 +188,7 @@ std::unique_ptr<CvRaster> ConvertRaster(const GdalRaster* gdalRaster) {
  *  \return Returns a cv::Mat that points to the internal buffer
  *  but has no ownership.
  */
-std::unique_ptr<CvRaster> ConvertRaster(const GdalRaster* gdalRaster, const int band) {
+UPCvRaster ConvertRaster(const GdalRaster* gdalRaster, const int band) {
   auto numBands = gdalRaster->GetNumBands();
   if (band >= numBands) 
     throw std::out_of_range(_("band ID is out of range"));
@@ -215,7 +216,7 @@ std::unique_ptr<CvRaster> ConvertRaster(const GdalRaster* gdalRaster, const int 
  *  \return Returns a vector of cv::Mat that points to the internal buffer
  *  but has no ownership.
  */
-std::vector<UPCvRaster> EXCORE_EXPORTS ConvertRaster(
+std::vector<UPCvRaster> ConvertRaster(
   const GdalRaster* gdalRaster, const std::vector<int>& bands) {
   std::vector<int> cvtBands{bands};
   const int numBands = gdalRaster->GetNumBands();
@@ -245,12 +246,12 @@ std::vector<UPCvRaster> EXCORE_EXPORTS ConvertRaster(
  *  \param [in] cvRaster pointer to OpenCV raster object
  *  \return Return pointer to GDAL raster object
  */
-std::unique_ptr<GdalRaster> ConvertRaster(const CvRaster* cvRaster) {
+UPGdalRaster ConvertRaster(const CvRaster* cvRaster) {
   //cv::split();
   return nullptr;
 }
 
-std::unique_ptr<GdalRaster> ConvertRaster(const CvRaster* cvRaster, const int band) {
+UPGdalRaster ConvertRaster(const CvRaster* cvRaster, const int band) {
   return nullptr;
 }
 }

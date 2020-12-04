@@ -39,7 +39,6 @@ add_definitions(-D_USE_MATH_DEFINES -DBOOST_ALL_DYN_LINK)
 
 set(TESTS_BIN_DIR ${CMAKE_INSTALL_PREFIX}/${EARTHXPERT_BIN_DIR})
 set(BOOST_BIN_DIR "${Boost_LIBRARY_DIRS}")
-add_subdirectory(3rdparty)
 add_subdirectory(cppunit)
 add_subdirectory(performance)
 #add_subdirectory(pyunit)
