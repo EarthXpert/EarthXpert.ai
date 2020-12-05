@@ -27,7 +27,7 @@ TEST(eigen, SparseSolver) {
     b[i] = i;
   }
 
-  std::cout << "Condition number: " << ConditionNumber(A) << std::endl;
+  //std::cout << "Condition number: " << ConditionNumber(A) << std::endl;
 
   // CG
   ConjugateGradient<SpMatDR, Lower | Upper> cg;
@@ -36,10 +36,9 @@ TEST(eigen, SparseSolver) {
 
   ASSERT_EQ(1, cg.iterations()) << "converge in 1 step";
   ASSERT_NEAR(0, cg.error(), DBL_EPSILON) << "full rank";
-
-  //ASSERT_NEAR(0,      x[0],    DBL_EPSILON) << "x[0]";
-  //ASSERT_NEAR(0.001,  x[999],  DBL_EPSILON) << "x[999]";
-  //ASSERT_NEAR(0.0001, x[9999], DBL_EPSILON) << "x[9999]";
+  ASSERT_NEAR(0,      x[0],    DBL_EPSILON) << "x[0]";
+  ASSERT_NEAR(0.999,  x[999],  DBL_EPSILON) << "x[999]";
+  ASSERT_NEAR(0.9999, x[9999], DBL_EPSILON) << "x[9999]";
 
   // LSCG
   LeastSquaresConjugateGradient<SpMatDR> lscg;
@@ -48,10 +47,9 @@ TEST(eigen, SparseSolver) {
 
   ASSERT_EQ(0, lscg.iterations()) << "converge in 1 step";
   ASSERT_NEAR(6.81325e-17, lscg.error(), DBL_EPSILON) << "full rank";
-
-  //ASSERT_NEAR(0,      x[0],    DBL_EPSILON) << "x[0]";
-  //ASSERT_NEAR(0.001,  x[999],  DBL_EPSILON) << "x[999]";
-  //ASSERT_NEAR(0.0001, x[9999], DBL_EPSILON) << "x[9999]";
+  ASSERT_NEAR(0,      x[0],    DBL_EPSILON) << "x[0]";
+  ASSERT_NEAR(0.999,  x[999],  DBL_EPSILON) << "x[999]";
+  ASSERT_NEAR(0.9999, x[9999], DBL_EPSILON) << "x[9999]";
 }
 
 /**
@@ -64,25 +62,29 @@ TEST(eigen, SparseSolver_Diagonal) {
   SpMatDR A(kN30M, kN30M);
   VectorXd b(kN30M);
 
+  std::vector<int> reserveSizes(kN30M, 3);
+  A.reserve(reserveSizes);
+
   // fill A and b
-  for (int i = 0; i < kN30M; ++i) {
-    A.insert(i, i) = double(i) + rng() * kScale;
-    b[i] = i + (rng() * kScale - 0.5) * 0.1;  // [-0.05, 0.05]
-
-    // add two elements [-0.5, 0.5] to each row
-    if (0 < i && i < kN30M - 1) {
-      A.insert(i, i - 1) = rng() * kScale - 0.5;
-      A.insert(i, i + 1) = rng() * kScale - 0.5;
-    }
-  }
-
   // first row
+  A.insert(0, 0) = rng() * kScale;
   A.insert(0, 1) = rng() * kScale - 0.5;
   A.insert(0, 2) = rng() * kScale - 0.5;
+  b[0] = (rng() * kScale - 0.5) * 0.1;  // [-0.05, 0.05]
 
+  for (int i = 1; i < kN30M - 1; ++i) {
+    A.insert(i, i) = double(i) + rng() * kScale;
+    b[i] = double(i) + (rng() * kScale - 0.5) * 0.1;  // [-0.05, 0.05]
+
+    // add two elements [-0.5, 0.5] to each row
+    A.insert(i, i - 1) = rng() * kScale - 0.5;
+    A.insert(i, i + 1) = rng() * kScale - 0.5;
+  }
   // last row
   A.insert(kN30M - 1, kN30M - 3) = rng() * kScale - 0.5;
   A.insert(kN30M - 1, kN30M - 2) = rng() * kScale - 0.5;
+  A.insert(kN30M - 1, kN30M - 1) = double(kN30M - 1) + rng() * kScale;
+  b[kN30M - 1] = double(kN30M - 1) + (rng() * kScale - 0.5) * 0.1;  // [-0.05, 0.05]
 
   //std::cout << "Condition number: " << ConditionNumber(A) << std::endl;
 
@@ -92,9 +94,12 @@ TEST(eigen, SparseSolver_Diagonal) {
 
   ASSERT_EQ(4, lscg.iterations()) << "converge";
   ASSERT_NEAR(0, lscg.error(), DBL_EPSILON) << "full rank";
-  //ASSERT_NEAR(0.0016456911197363748,  x[0], DBL_EPSILON) << "x[0]";
-  //ASSERT_NEAR(6.6666662302292853e-08, x[kN30M/2], DBL_EPSILON) << "x[kN30M/2]";
-  //ASSERT_NEAR(3.3333333346269354e-08, x[kN30M-1], DBL_EPSILON) << "x[kN30M-1]";
+  ASSERT_NEAR(0.090088967211201298,  x[0], DBL_EPSILON) << "x[0]";
+  ASSERT_NEAR(0.99999995778632444, x[kN30M/2], DBL_EPSILON) << "x[kN30M/2]";
+  ASSERT_NEAR(1.0000000072469144, x[kN30M-1], DBL_EPSILON) << "x[kN30M-1]";
+
+  double relativeError = (A * x - b).norm() / b.norm();
+  std::cout << "relative error: " << relativeError << std::endl;
 }
 
 /**
@@ -107,10 +112,13 @@ TEST(eigen, SparseSolver_NonDiagonal) {
   SpMatDR A(kN30M, kN30M);
   VectorXd b(kN30M);
 
+  std::vector<int> reserveSizes(kN30M, 3);
+  A.reserve(reserveSizes);
+
   // fill A and b
   for (int i = 0; i < kN30M; ++i) {
     A.insert(i, i) = double(i) + rng() * kScale;  // [0, 1]
-    b[i] = i + (rng() * kScale - 0.5) * 0.1;  // [-0.05, 0.05]
+    b[i] = double(i) + (rng() * kScale - 0.5) * 0.1;  // [-0.05, 0.05]
 
     // add two elements [-0.5, 0.5] to each row
     A.insert(i, rng() % kN30M) += rng() * kScale - 0.5;
@@ -125,7 +133,10 @@ TEST(eigen, SparseSolver_NonDiagonal) {
 
   //ASSERT_EQ(6, lscg.iterations()) << "converge";
   //ASSERT_NEAR(0, lscg.error(), DBL_EPSILON) << "full rank";
-  //ASSERT_NEAR(0.0031678088890426804, x[0], DBL_EPSILON) << "x[0]";
-  //ASSERT_NEAR(6.6666662302292853e-08, x[kN30M/2], DBL_EPSILON) << "x[kN30M/2]";
-  //ASSERT_NEAR(3.3333333346269354e-08, x[kN30M-1], DBL_EPSILON) << "x[kN30M-1]";
+  ASSERT_NEAR(-0.084974989099441012, x[0], DBL_EPSILON) << "x[0]";
+  ASSERT_NEAR(0.99999991487069606, x[kN30M/2], DBL_EPSILON) << "x[kN30M/2]";
+  ASSERT_NEAR(0.99999999529972705, x[kN30M-1], DBL_EPSILON) << "x[kN30M-1]";
+
+  double relativeError = (A * x - b).norm() / b.norm();
+  std::cout << "relative error: " << relativeError << std::endl;
 }

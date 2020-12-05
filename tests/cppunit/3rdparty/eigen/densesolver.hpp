@@ -14,6 +14,8 @@ using namespace Eigen;
 using ComplexD = bmp::cpp_complex_double;
 using ComplexQ = bmp::cpp_complex_quad;
 
+static constexpr int kNumIters = 100;
+
 /**
  *  \tparam Ty number type
  */
@@ -33,16 +35,18 @@ template<typename Ty> void DenseSolver() {
 
   // Compute the error using the norms of Ax - b and b:
   Ty::value_type relativeError = (A * x - b).norm() / b.norm();
-  std::cout << "relative error: " << relativeError << std::endl;
+  //std::cout << "relative error: " << relativeError << std::endl;
 }
 
 /**
  *  Test case 1: solve Ax = b for x
  */
 TEST(eigen, DenseSolverD) {
-  DenseSolver<ComplexD>();
+  for (int i =0; i < kNumIters; ++i)
+    DenseSolver<ComplexD>();
 }
 
 TEST(eigen, DenseSolverQ) {
-  DenseSolver<ComplexQ>();
+  for (int i = 0; i < kNumIters; ++i)
+    DenseSolver<ComplexQ>();
 }
