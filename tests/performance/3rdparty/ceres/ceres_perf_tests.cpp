@@ -6,7 +6,7 @@
 #include "testconfig.h"
 
 #include "3rdparty/ceres/exceres.h"
-#include "tinysolver.hpp"
+#include "p_tinysolver.hpp"
 
 #include <iostream>
 #include <tuple>

@@ -13,6 +13,7 @@ using namespace Eigen;
 
 using ComplexD = bmp::cpp_complex_double;
 using ComplexQ = bmp::cpp_complex_quad;
+using ComplexO = bmp::cpp_complex_oct;
 
 static constexpr int kNumIters = 100;
 
@@ -21,20 +22,22 @@ static constexpr int kNumIters = 100;
  */
 template<typename Ty> void DenseSolver() {
   // fill A and b
-  Matrix<Ty, 2, 2> A;
-  A << Ty(2, 3), Ty(-1, -2), Ty(-1, -4), Ty(3, 6);
+  Matrix<Ty, 3, 3> A;
+  A << Ty(2, 3), Ty(-1, -2), Ty(-1, -4), \
+       Ty(3, 6), Ty(-3, 7), Ty(5, -6), \
+       Ty(7, -5), Ty(-7, 2), Ty(3, -1);
   //std::cout << "A:\n" << A << std::endl;
 
-  Matrix<Ty, 2, 2> b;
-  b << 1, 2, 3, 1;
+  Matrix<Ty, 3, 2> b;
+  b << 1, -2, 3, 10, -5, 6;
   //std::cout << "rhs b:\n" << b << std::endl;
 
   // Solve for x:
-  Matrix<Ty, 2, 2> x = A.fullPivHouseholderQr().solve(b);
+  Matrix<Ty, 3, 2> x = A.fullPivHouseholderQr().solve(b);
   //std::cout << "solution:\n" << x << std::endl;
 
   // Compute the error using the norms of Ax - b and b:
-  Ty::value_type relativeError = (A * x - b).norm() / b.norm();
+  Ty::value_type err = (A * x - b).norm() / b.norm();
   //std::cout << "relative error: " << relativeError << std::endl;
 }
 
@@ -42,11 +45,13 @@ template<typename Ty> void DenseSolver() {
  *  Test case 1: solve Ax = b for x
  */
 TEST(eigen, DenseSolverD) {
-  for (int i =0; i < kNumIters; ++i)
-    DenseSolver<ComplexD>();
+  DenseSolver<ComplexD>();
 }
 
 TEST(eigen, DenseSolverQ) {
-  for (int i = 0; i < kNumIters; ++i)
-    DenseSolver<ComplexQ>();
+  DenseSolver<ComplexQ>();
+}
+
+TEST(eigen, DenseSolverO) {
+  DenseSolver<ComplexO>();
 }

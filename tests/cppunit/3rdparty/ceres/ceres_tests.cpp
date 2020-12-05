@@ -6,7 +6,7 @@
 #include "testconfig.h"
 
 #include "3rdparty/ceres/exceres.h"
-#include "bundle_adjuster.hpp"
+#include "bundleadjuster.hpp"
 
 TEST(ceres, DUMMY) {
   std::cout << "[   EXAI   ]" << std::endl;

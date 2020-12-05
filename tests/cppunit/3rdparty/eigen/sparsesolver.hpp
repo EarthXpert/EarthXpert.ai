@@ -98,8 +98,8 @@ TEST(eigen, SparseSolver_Diagonal) {
   ASSERT_NEAR(0.99999995778632444, x[kN30M/2], DBL_EPSILON) << "x[kN30M/2]";
   ASSERT_NEAR(1.0000000072469144, x[kN30M-1], DBL_EPSILON) << "x[kN30M-1]";
 
-  double relativeError = (A * x - b).norm() / b.norm();
-  std::cout << "relative error: " << relativeError << std::endl;
+  double err = (A * x - b).norm() / b.norm();
+  std::cout << "relative error: " << err << std::endl;
 }
 
 /**
@@ -137,6 +137,6 @@ TEST(eigen, SparseSolver_NonDiagonal) {
   ASSERT_NEAR(0.99999991487069606, x[kN30M/2], DBL_EPSILON) << "x[kN30M/2]";
   ASSERT_NEAR(0.99999999529972705, x[kN30M-1], DBL_EPSILON) << "x[kN30M-1]";
 
-  double relativeError = (A * x - b).norm() / b.norm();
-  std::cout << "relative error: " << relativeError << std::endl;
+  double err = (A * x - b).norm() / b.norm();
+  std::cout << "relative error: " << err << std::endl;
 }
