@@ -72,6 +72,7 @@ endfunction()
 
 add_compile_definitions(BOOST_LIB_TOOLSET="vc142")
 add_definitions(-D_USE_MATH_DEFINES -DBOOST_ALL_DYN_LINK)
+add_definitions(-DMPFR_USE_FILE -DMPFR_USE_INTMAX_T -DMPFR_USE_VA_LIST -D)
 
 add_subdirectory(3rdparty)
 add_subdirectory(app)

@@ -6,6 +6,7 @@
 
 #include "3rdparty/ex3rdparty.h"
 
+#include <cstdint>  // MPFR_USE_INTMAX_T
 #include <mpfr.h>
 
 namespace earthxpert::thirdparty {
