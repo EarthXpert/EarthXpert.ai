@@ -411,6 +411,8 @@ if(OpenCV_LICENSES)
   install(DIRECTORY ${OpenCV_LICENSES} DESTINATION etc/opencv/licenses)
 endif()
 
+install(DIRECTORY cmake DESTINATION sdk/lib)
+
 option(EARTHXPERT_INSTALL_PACKAGES_3RDPARTY "install 3rdparty packages" OFF)
 if(EARTHXPERT_INSTALL_PACKAGES_3RDPARTY)
 endif()

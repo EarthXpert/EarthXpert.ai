@@ -329,3 +329,19 @@ void SolveProblem(const char* filename) {
     bal_problem.WriteToPLYFile(FLAGS_final_ply);
   }
 }
+
+TEST(ceres, BundelAdjuster) {
+  int argc{ 3 };
+  char** argv = new char* [3];
+  argv[0] = "bundle_adjuster";
+  argv[1] = "--input=D:/home/workspace/TestData/bal/problem-1723-156502-pre.txt";
+  argv[2] = "--num_iterations=80";
+
+  GFLAGS_NAMESPACE::ParseCommandLineFlags(&argc, &argv, true);
+  //google::InitGoogleLogging(argv[0]);
+
+  ASSERT_FALSE(FLAGS_input.empty());
+  SolveProblem(FLAGS_input.c_str());
+
+  delete[] argv;
+}
