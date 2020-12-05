@@ -26,7 +26,7 @@ struct CeresTraits {
 
   // bit fields
   unsigned int sized : 1;  // 0: kDynamic;  1: kSized
-  unsigned int diff  : 1;  // 0: kAutoDiff; 1: kNumericDiff
+  unsigned int diff  : 2;  // 0: kAnalyticDiff; 1: kAutoDiff; 2: kNumericDiff
 };
 
 // the interface IResidual defines the base of cost functor

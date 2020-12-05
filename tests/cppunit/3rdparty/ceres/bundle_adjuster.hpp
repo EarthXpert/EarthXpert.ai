@@ -54,9 +54,9 @@
 #include "3rdparty/ceres/bal_problem.h"
 #include "3rdparty/ceres/snavely_reprojection_error.h"
 
-#include "ceres/ceres.h"
-#include "gflags/gflags.h"
-#include "glog/logging.h"
+#include <ceres/ceres.h>
+#include <gflags/gflags.h>
+#include <glog/logging.h>
 
 #include <algorithm>
 #include <cmath>
