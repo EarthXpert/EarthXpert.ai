@@ -6,12 +6,9 @@
 #include "testconfig.h"
 
 #include "3rdparty/eigen/exeigen.h"
-#include "p_densesolver.hpp"
-#include "p_sparsematrix.hpp"
+//#include "p_densesolver.hpp"
+//#include "p_sparsematrix.hpp"
 #include "p_sparsesolver.hpp"
-
-#include <Eigen/IterativeLinearSolvers>
-#include <tuple>
 
 void EigenDummy() {
 }

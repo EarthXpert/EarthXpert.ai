@@ -57,7 +57,7 @@ TEST(eigen, SparseSolver) {
  *
  *  \brief add 3x3 subblocks to form block diagonal with band width of 3
  */
-TEST(eigen, SparseSolver_Diagonal) {
+TEST(eigen, LSCG_Diagonal) {
   std::mt19937 rng;
   SpMatDR A(kN30M, kN30M);
   VectorXd b(kN30M);
@@ -107,7 +107,7 @@ TEST(eigen, SparseSolver_Diagonal) {
  *
  *  \brief add 3 fill-ins randomly on each row
  */
-TEST(eigen, SparseSolver_NonDiagonal) {
+TEST(eigen, LSCG_NonDiagonal) {
   std::mt19937 rng;
   SpMatDR A(kN30M, kN30M);
   VectorXd b(kN30M);
