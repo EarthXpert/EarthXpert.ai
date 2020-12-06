@@ -41,7 +41,9 @@ if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
   set(EARTHXPERT_BIN_ROOT "bin")
   set(EARTHXPERT_BIN_DIR "${EARTHXPERT_BIN_ROOT}/${CDEGREL}")
 
-  set(BOOST_ROOT "${EX_THIRD_PARTY}/boost_1.71.0")
+  set(Boost_ROOT "${EX_THIRD_PARTY}/boost_1.71.0")
+  set(Boost_DIR "${Boost_ROOT}/lib/cmake/Boost-1.71.0")
+  set(Boost_INCLUDE_DIR "${Boost_ROOT}/include")
 
   set(CEREAL_INCLUDE_DIR "${EX_THIRD_PARTY}/cereal_1.3.0/include")
 

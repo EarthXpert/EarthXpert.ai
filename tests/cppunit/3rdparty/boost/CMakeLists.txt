@@ -2,7 +2,7 @@ project(tests_cppunit_3rdparty_boost CXX)
 
 add_3rdparty_cppunit_test(boost_tests
   ex3rdparty
-  Boost::filesystem Boost::iostreams)
+  Boost::boost Boost::filesystem Boost::iostreams)
 
 if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
   get_filename_component(BOOST_BIN_DIR "${Boost_DIR}/../.." ABSOLUTE)

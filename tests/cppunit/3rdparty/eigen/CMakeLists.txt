@@ -1,9 +1,8 @@
 project(tests_cppunit_3rdparty_eigen CXX)
 
-include_directories(${EIGEN_INCLUDE_DIR})
-
 add_3rdparty_cppunit_test(eigen_tests 
-  ex3rdparty)
+  ex3rdparty
+  Boost::boost)
 
 if(WIN32)
   set(TESTS_EIGEN_PATH "PATH=$<TARGET_FILE_DIR:ex3rdparty>;${GTEST_BIN_DIR};$ENV{PATH}")
