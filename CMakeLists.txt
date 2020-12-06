@@ -121,7 +121,7 @@ if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
   set(LIBXML2_DIR "${LIBXML2_ROOT}/share/libxml2/CMake")
   set(LIBXML2_INCLUDE_DIR "${LIBXML2_ROOT}/include")
   set(LIBXML2_LIBRARY_DIR "${LIBXML2_ROOT}/lib")
-  set(LIBXML2_LIBRARIES "${LIBXML2_LIBRARY_DIR}/${CDEGREL}/libxml2.lib")
+  set(LIBXML2_LIBRARY "${LIBXML2_LIBRARY_DIR}/${CDEGREL}/libxml2.lib")
 
   set(MPFR4_ROOT "${EX_THIRD_PARTY}/mpfr_4.0.2")
   #set(MPFR4_DIR "${MPFR4_ROOT}/share/mpfr")

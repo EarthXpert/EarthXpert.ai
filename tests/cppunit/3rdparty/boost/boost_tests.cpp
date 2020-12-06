@@ -7,7 +7,7 @@
 
 #include "geometry.hpp"
 #include "hana.hpp"
-//#include "multiprecision.hpp"
+#include "multiprecision.hpp"
 
 #include <boost/pool/object_pool.hpp>
 

@@ -6,7 +6,7 @@ message(STATUS "GDAL_LIBRARY: ${GDAL_LIBRARY}")
 message(STATUS "GETTEXT_LIBRARY: ${GETTEXT_LIBRARY}")
 message(STATUS "GTEST_BOTH_LIBRARIES: ${GTEST_BOTH_LIBRARIES}")
 message(STATUS "LASLIB_LIBRARY: ${LASLIB_LIBRARY}")
-message(STATUS "LIBXML2_LIBRARIES: ${LIBXML2_LIBRARIES}")
+message(STATUS "LIBXML2_LIBRARY: ${LIBXML2_LIBRARY}")
 message(STATUS "MPFR4_LIBRARIES: ${MPFR4_LIBRARIES}")
 message(STATUS "MPIR_LIBRARIES: ${MPIR_LIBRARIES}")
 message(STATUS "nsimd_LIBRARIES: ${nsimd_LIBRARIES}")
@@ -58,7 +58,7 @@ earthxpert_add_library(ex3rdparty "api"
   SRCS ${ex3rdparty_srcs}
   ITEMS Boost::boost Boost::filesystem Boost::locale ${CERES_LIBRARY} ${CGAL_LIBRARIES} 
         ${GDAL_LIBRARY} ${geotrans_LIBRARIES} ${GETTEXT_LIBRARY} glog::glog 
-        ${GTEST_BOTH_LIBRARIES} ${LASLIB_LIBRARY} ${LIBXML2_LIBRARIES} ${MPFR4_LIBRARIES} 
+        ${GTEST_BOTH_LIBRARIES} ${LASLIB_LIBRARY} libxml2 ${MPFR4_LIBRARIES} 
         ${MPIR_LIBRARIES} ${OpenCV_LIBS} ${OpenEXR_LIBS} 
         OpenImageIO::OpenImageIO OpenImageIO::OpenImageIO_Util 
         ${nsimd_LIBRARIES} ${PDAL_LIBRARIES} ${proj_LIBRARIES} ${Protobuf_LIBRARIES} 
