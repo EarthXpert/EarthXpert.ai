@@ -5,7 +5,7 @@
 #include "3rdparty/gtest/gtest_main.h"
 #include "3rdparty/eigen/exeigen.h"
 
-#include "densesolver.hpp"
+//#include "densesolver.hpp"
 #include "sparsesolver.hpp"
 
 TEST(eigen, DUMMY) {
