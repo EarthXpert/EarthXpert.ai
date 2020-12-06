@@ -4,7 +4,7 @@ include_directories(${CERES_INCLUDE_DIRS})
 
 add_3rdparty_cppunit_test(ceres_tests 
   ex3rdparty 
-  ${CERES_LIBRARY})
+  Boost::boost ${CERES_LIBRARY})
 
 if(WIN32)
   set(TESTS_CERES_PATH "PATH=$<TARGET_FILE_DIR:ex3rdparty>;${GTEST_BIN_DIR};${CERES_BIN_DIR};$ENV{PATH}")
