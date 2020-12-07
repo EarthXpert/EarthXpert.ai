@@ -19,6 +19,7 @@ class EXCORE_EXPORTS ProjCT final : public ICT {
 public:
   ProjCT(const ProjSRS* src, const ProjSRS* tgt);
   ProjCT(const PJ* src, const PJ* tgt);
+  ProjCT(const std::string& src, const std::string& tgt);
   ~ProjCT() = default;
 
   /**

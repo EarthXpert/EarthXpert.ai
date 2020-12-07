@@ -2,44 +2,143 @@
  *  Copyright (c) 2019.  All rights reserved.                          -
  * ----------------------------------------------------------------------
  */
+#include <boost/multiprecision/cpp_dec_float.hpp>
+#include <boost/multiprecision/gmp.hpp>
+#include <boost/multiprecision/eigen.hpp>
 #include <Eigen/IterativeLinearSolvers>
 
 #include <random>
 
+namespace bmp = boost::multiprecision;
 using namespace::Eigen;
-using SpMatDR = SparseMatrix<double, RowMajor>;
+
+//  \tparam bmp::number<backend>
+template<typename Ty>
+using SpMatR = SparseMatrix<Ty, RowMajor>;
+
+template<typename Ty>
+using DenseVec = Matrix<Ty, Dynamic, 1>;
 
 static constexpr auto kScale = 1.0 / static_cast<double>(std::mt19937::max());
-static constexpr int64_t kN20M = 20'000'000;
+static constexpr int64_t kNs = 10'000'000;
 
-void LSCG_NonDiagonal(const int& count) {
+/**
+ *  \brief fill A and b
+ *
+ *  \param [in] count the number of fill-ins on each row of sparse matrix
+ */
+template<typename Ty = double>
+void LSCG_NonDiagonalFill(SpMatR<Ty>& A, DenseVec<Ty>& b, const int count) {
   std::mt19937 rng;
-  SpMatDR A(kN20M, kN20M);
-  VectorXd b(kN20M);
+  A.resize(kNs, kNs);
+  b.resize(kNs);
 
-  std::vector<int> reserveSizes(kN20M, count);
+  std::vector<int> reserveSizes(kNs, count);
   A.reserve(reserveSizes);
 
   // fill A and b
-  for (int i = 0; i < kN20M; ++i) {
-    A.insert(i, i) = double(i) + rng() * kScale;  // [0, 1]
-    b[i] = double(i) + (rng() * kScale - 0.5) * 0.1;  // [-0.05, 0.05]
+  for (int i = 0; i < kNs; ++i) {
+    A.insert(i, i) = Ty(i + rng() * kScale);  // i + [0, 1]
+    b[i] = Ty(i + (rng() * kScale - 0.5) * 0.1);  // [-0.05, 0.05]
 
     // add count-1 elements [-0.5, 0.5] to each row
-    for (int j =1; j < count; ++j)
-      A.insert(i, rng() % kN20M) += rng() * kScale - 0.5;
+    for (int j = 1; j < count; ++j)
+      A.insert(i, rng() % kNs) += Ty(rng() * kScale - 0.5);
   }
-
-  LeastSquaresConjugateGradient<SpMatDR> lscg;
-  lscg.compute(A);
-  VectorXd x = lscg.solve(b);
-
-  std::cout << "absolute error: " << lscg.error() << std::endl;
-
-  double err = (A * x - b).norm() / b.norm();
-  std::cout << "relative error: " << err << std::endl;
 }
 
-static const std::vector<int> args_cg{ 3, 15, 30 };
+template<typename Ty = double>
+void LSCG_NonDiagonal_Fill(const int count) {
+  SpMatR<Ty> A;
+  DenseVec<Ty> b;
+  LSCG_NonDiagonalFill<Ty>(A, b, count);
+}
 
-SLTBENCH_FUNCTION_WITH_ARGS(LSCG_NonDiagonal, args_cg);
+template<typename Ty = double>
+void LSCG_NonDiagonal_Solve(const int& count) {
+  SpMatR<Ty> A;
+  DenseVec<Ty> b;
+  LSCG_NonDiagonalFill<Ty>(A, b, count);
+
+  LeastSquaresConjugateGradient<SpMatR<Ty>> lscg;
+  lscg.compute(A);
+  DenseVec<Ty> x = lscg.solve(b);
+
+  //std::cout << "LSCG error: " << lscg.error() << std::endl;
+
+  //double err = (A * x - b).norm() / b.norm();
+  //std::cout << "relative error: " << err << std::endl;
+}
+
+/**
+ *  TestCase 1: double
+ */
+void LSCGF16_NonDiagonal_Fill(const int& count) {
+  LSCG_NonDiagonal_Fill<double>(count);
+}
+
+void LSCGF16_NonDiagonal_Solve(const int& count) {
+  LSCG_NonDiagonal_Solve<double>(count);
+}
+
+/**
+ *  TestCase 2: bmp::cpp_dec_float_50
+ */
+void LSCGF50_NonDiagonal_Fill(const int& count) {
+  LSCG_NonDiagonal_Fill<bmp::cpp_dec_float_50>(count);
+}
+
+void LSCGF50_NonDiagonal_Solve(const int& count) {
+  LSCG_NonDiagonal_Solve<bmp::cpp_dec_float_50>(count);
+}
+
+/**
+ *  TestCase 3: bmp::cpp_dec_float_100
+ */
+void LSCGF100_NonDiagonal_Fill(const int& count) {
+  LSCG_NonDiagonal_Fill<bmp::cpp_dec_float_100>(count);
+}
+
+void LSCGF100_NonDiagonal_Solve(const int& count) {
+  LSCG_NonDiagonal_Solve<bmp::cpp_dec_float_100>(count);
+}
+
+/**
+ *  TestCase 4: mpf_float_50
+ */
+void LSCGF50_NonDiagonal_Fill_GMP(const int& count) {
+  LSCG_NonDiagonal_Fill<bmp::mpf_float_50>(count);
+}
+
+void LSCGF50_NonDiagonal_Solve_GMP(const int& count) {
+  LSCG_NonDiagonal_Solve<bmp::mpf_float_50>(count);
+}
+
+/**
+ *  TestCase 5: mpf_float_100
+ */
+void LSCGF100_NonDiagonal_Fill_GMP(const int& count) {
+  LSCG_NonDiagonal_Fill<bmp::mpf_float_100>(count);
+}
+
+void LSCGF100_NonDiagonal_Solve_GMP(const int& count) {
+  LSCG_NonDiagonal_Solve<bmp::mpf_float_100>(count);
+}
+
+static const std::vector<int> args_cg{ 3 };   // 5, 15, 30
+
+/**
+ *  \remark test 100 digits on computer with 32GB+ memory
+ */
+SLTBENCH_FUNCTION_WITH_ARGS(LSCGF16_NonDiagonal_Fill, args_cg);
+SLTBENCH_FUNCTION_WITH_ARGS(LSCGF16_NonDiagonal_Solve, args_cg);
+
+SLTBENCH_FUNCTION_WITH_ARGS(LSCGF50_NonDiagonal_Fill, args_cg);
+SLTBENCH_FUNCTION_WITH_ARGS(LSCGF50_NonDiagonal_Solve, args_cg);
+//SLTBENCH_FUNCTION_WITH_ARGS(LSCGF100_NonDiagonal_Fill, args_cg);
+//SLTBENCH_FUNCTION_WITH_ARGS(LSCGF100_NonDiagonal_Solve, args_cg);
+
+SLTBENCH_FUNCTION_WITH_ARGS(LSCGF50_NonDiagonal_Fill_GMP, args_cg);
+SLTBENCH_FUNCTION_WITH_ARGS(LSCGF50_NonDiagonal_Solve_GMP, args_cg);
+//SLTBENCH_FUNCTION_WITH_ARGS(LSCGF100_NonDiagonal_Fill_GMP, args_cg);
+//SLTBENCH_FUNCTION_WITH_ARGS(LSCGF100_NonDiagonal_Solve_GMP, args_cg);

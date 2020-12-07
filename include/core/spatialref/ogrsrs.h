@@ -17,6 +17,8 @@ namespace earthxpert {
 class EXCORE_EXPORTS OgrSRS final : public ISRS
 {
 public:
+  OgrSRS(int epsg);
+  OgrSRS(const std::string& wkt);
   ~OgrSRS() = default;
 
   void GetDatum() override {}
@@ -25,6 +27,8 @@ private:
   friend class OgrCT;
 
   UPSpatialRefSys mSRS;
+
+  // cached info
 };
 
 using UPOgrSRS = std::unique_ptr<OgrSRS>;

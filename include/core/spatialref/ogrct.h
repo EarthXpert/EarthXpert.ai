@@ -18,7 +18,8 @@ namespace earthxpert {
 class EXCORE_EXPORTS OgrCT final : public ICT {
 public:
   OgrCT(const OgrSRS* src, const OgrSRS* tgt);
-  OgrCT(OGRSpatialReference* src, OGRSpatialReference* tgt);
+  OgrCT(OGRSpatialRef* src, OGRSpatialRef* tgt);
+  OgrCT(int srcEpsg, int tgtEpsg);
   OgrCT(const std::string& srcWkt, const std::string& tgtWkt);
   ~OgrCT() = default;
 
@@ -27,7 +28,7 @@ public:
    *  OgrCT exports partially the OGR functions. The caller could 
    *  exploit the full OGR capabilities via the returned object pointer.
    */
-  OGRCoordinateTransformation* GetCT() { return mCT.get(); }
+  OGRCoordTrans* GetCT() { return mCT.get(); }
 
   /**
    *  \brief Transform a point in-place.
@@ -88,7 +89,7 @@ public:
 private:
   UPSpatialCoordTrans mCT;
 
-  void Initialize(OGRSpatialReference* src, OGRSpatialReference* tgt);
+  void Initialize(OGRSpatialRef* src, OGRSpatialRef* tgt);
 };
 
 using UPGdalCT = std::unique_ptr<OgrCT>;

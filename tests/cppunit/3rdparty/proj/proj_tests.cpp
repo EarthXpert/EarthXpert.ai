@@ -3,13 +3,15 @@
 
 #include <iostream>
 
-TEST(proj, crs) {
-  std::cout << "[   EXAI   ]" << std::endl;
+using namespace earthxpert;
 
+TEST(proj, SRS_PJ) {
   std::string utmWkt{ R"wkt(+proj=utm +zone=17 +datum=WGS84 +units=m +no_defs)wkt" };
+  UPPJ pj{ proj_create(PJ_DEFAULT_CTX, utmWkt.c_str()) };
+  ASSERT_TRUE(pj) << "create PJ from PROJ.4 WKT";
 }
 
-TEST(proj, ct) {
+TEST(proj, CT_PJ) {
   std::cout << "[   EXAI   ]" << std::endl;
 }
 

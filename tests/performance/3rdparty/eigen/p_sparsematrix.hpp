@@ -37,7 +37,7 @@ void Insert(const int64_t count) {
 
 template<StorageOptions option = RowMajor, FillOrder fillOrder = FillOrder::eFO_ByCol>
 void SetTriplets(const int64_t count) {
-  std::vector<EGTri> egTri;
+  std::vector<Triplet<double>> egTri;
   egTri.reserve(count);
 
   int r, c;
