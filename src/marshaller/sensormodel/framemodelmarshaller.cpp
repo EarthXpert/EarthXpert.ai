@@ -63,7 +63,7 @@ FrameModelMarshaller::GetModel(const std::string &photoID) {
   auto iterator = mCacheEP.find(photoID);
   if (iterator != mCacheEP.end()) {
     // spitialite system
-    auto groundSRS = std::make_shared<SpatialReferenceSystem>();
+    auto groundSRS = std::make_shared<OGRSpatialRef>();
 
     // build frameep from cache
     auto frameep = std::make_unique<FrameEP>(

@@ -11,7 +11,7 @@ namespace earthxpert {
 /**
  *  The class NullRasterWriter provides mock functios doing nothing.
  *
- *  \todo deal with mock objects of RasterMetadata, SpatialReferenceSystem, 
+ *  \todo deal with mock objects of RasterMetadata, OGRSpatialRef, 
  *  Geocoding, CvRaster, GdalRaster, etc.
  */
 class EXIO_EXPORTS NullRasterWriter final : public IRasterWriter, public IRasterReader {
@@ -34,7 +34,7 @@ public:
   void SetNodataValues(double) {}
   void SetNodataValues(const std::vector<double>&) {}
 
-  void SetCoordinateSystem(const SpatialReferenceSystem*) override {}
+  void SetCoordinateSystem(const OGRSpatialRef*) override {}
 
   void SetGeocoding(const Geocoding*) override {}
 

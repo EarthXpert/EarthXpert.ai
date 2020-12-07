@@ -21,7 +21,7 @@ class EXSENSORMODEL_EXPORTS FrameEP {
 public:
   FrameEP(const std::array<double, 3> &position,
           const std::array<double, 3> &rotation,
-          std::shared_ptr<SpatialReferenceSystem> groundSRS);
+          std::shared_ptr<OGRSpatialRef> groundSRS);
 
   FrameEP(const FrameEP &rhs);
   FrameEP(FrameEP &&rhs) noexcept;
@@ -40,7 +40,7 @@ public:
   /**
    *  \brief Fetch the ground coordinate system where the sensor model operates.
    */
-  std::shared_ptr<SpatialReferenceSystem> GetCoordinateSystem() const
+  std::shared_ptr<OGRSpatialRef> GetCoordinateSystem() const
       noexcept {
     return mGroundSRS;
   }
@@ -54,7 +54,7 @@ private:
   std::array<double, 3> mPosition{}; // position of body in world coordinate system
   std::array<double, 3> mRotation{}; // rotation angles of body in world
                                      // coordinate system [unit: degree]
-  std::shared_ptr<SpatialReferenceSystem> mGroundSRS;
+  std::shared_ptr<OGRSpatialRef> mGroundSRS;
 
   // uncertainties
   std::array<double, 3> mStdPos{};

@@ -5,6 +5,8 @@
 
 TEST(proj, crs) {
   std::cout << "[   EXAI   ]" << std::endl;
+
+  std::string utmWkt{ R"wkt(+proj=utm +zone=17 +datum=WGS84 +units=m +no_defs)wkt" };
 }
 
 TEST(proj, ct) {

@@ -66,7 +66,7 @@ std::unique_ptr<RasterMetadata> RasterReader::GetMetadata() const {
  */
 UPSpatialRefSys RasterReader::GetCoordinateSystem() const {
   auto spatialRef = 
-    std::make_unique<SpatialReferenceSystem>(mDataset->GetProjectionRef());
+    std::make_unique<OGRSpatialRef>(mDataset->GetProjectionRef());
   if (!spatialRef) 
     throw IOError(_("This image file has no infomation on coordinate system "));
   return spatialRef;

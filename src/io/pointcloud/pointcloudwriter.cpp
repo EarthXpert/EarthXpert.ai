@@ -69,7 +69,7 @@ void PointcloudWriter::SetMetadata(const VectorMetadata* metaData) {
  *
  *  \param [in] spatialref the coordinate system
  */
-void PointcloudWriter::SetCoordinateSystem(const SpatialReferenceSystem* srs) {
+void PointcloudWriter::SetCoordinateSystem(const OGRSpatialRef* srs) {
 }
 
 /**

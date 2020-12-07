@@ -51,5 +51,5 @@ OgrCT::OgrCT(const std::string& srcWkt, const std::string& tgtWkt) {
  */
 void OgrCT::Initialize(OGRSpatialReference* src,
   OGRSpatialReference* tgt) {
-  mCT.reset(OGRCreateCoordinateTransformation(src, tgt));
+  mCT.reset(OGRCreateCT(src, tgt));
 }

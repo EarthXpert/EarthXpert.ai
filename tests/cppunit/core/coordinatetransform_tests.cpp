@@ -20,25 +20,24 @@ using namespace earthxpert;
  *  Test case: OGR
  */
 TEST(coordinatetransform, OGR_WGS84_UTM) {
-  std::string wgs84Wkt{"WGS84"};    // EPSG:4326
-  OGRSpatialReference wgs84Srs(wgs84Wkt.c_str());
+  OGRSpatialRef wgs84Srs;
+  wgs84Srs.importFromEPSG(4326);  // WGS84
   
-  std::string utmWkt{"+proj=utm +zone=17 +datum=WGS84 +units=m +no_defs"};
-  OGRSpatialReference utmSrs(utmWkt.c_str());
-  //utmSrs.SetProjCS("UTM 17 / WGS84");
-  //utmSrs.SetWellKnownGeogCS("WGS84");
-  //utmSrs.SetUTM(17);
+  std::string utmWkt{ R"wkt(+proj=utm +zone=17 +datum=WGS84 +units=m +no_defs)wkt"};
+  OGRSpatialRef utmSrs;
+  utmSrs.importFromProj4(utmWkt.c_str());
+  //utmSrs.importFromEPSG(32617);
 
   // WGS84 -> UTM
   OgrCT g2mCT(&wgs84Srs, &utmSrs);
 
-  Point3d geoPt(Deg2Rad(-79.347015), Deg2Rad(43.651070), 0);  // Toronto
+  Point3d geoPt(-79.347015, 43.651070, 0);  // Toronto
   Point3d mapPt;
   g2mCT.Transform(geoPt, mapPt);
 
   EqualD eqM(1.0e-3);  // [mm]
-  ASSERT_TRUE(eqM(0.0, mapPt.x)) << "X difference > 1 mm";
-  ASSERT_TRUE(eqM(0.0, mapPt.y)) << "Y difference > 1 mm";
+  ASSERT_TRUE(eqM(633301.7104163748, mapPt.x)) << "X difference > 1 mm";
+  ASSERT_TRUE(eqM(4834446.627614007, mapPt.y)) << "Y difference > 1 mm";
   ASSERT_TRUE(eqM(0.0, mapPt.z)) << "Z difference > 1 mm";
 
   // UTM -> WGS84

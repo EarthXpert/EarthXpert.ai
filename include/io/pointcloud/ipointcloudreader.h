@@ -46,7 +46,7 @@ public:
   /**
    *  \return Returns pointer to a coordinate system
    */
-  virtual std::unique_ptr<SpatialReferenceSystem> GetCoordinateSystem() const = 0;
+  virtual std::unique_ptr<OGRSpatialRef> GetCoordinateSystem() const = 0;
 
   /**
    *  \return Returns total number of points of las file

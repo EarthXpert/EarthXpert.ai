@@ -121,7 +121,7 @@ public:
    *
    *  \return pointer to a coordinate system
    */
-  std::shared_ptr<SpatialReferenceSystem> GetCoordinateSystem() const
+  std::shared_ptr<OGRSpatialRef> GetCoordinateSystem() const
       noexcept override;
 
   /**

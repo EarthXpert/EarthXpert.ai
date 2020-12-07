@@ -124,14 +124,14 @@ public:
     const std::array<double, NumCoef> &lineDenCoef,
     const std::array<double, NumCoef> &sampNumCoef,
     const std::array<double, NumCoef> &sampDenCoef,
-    std::shared_ptr<SpatialReferenceSystem> groundSRS);
+    std::shared_ptr<OGRSpatialRef> groundSRS);
 
   RationalModel(const std::array<double, NumFact> &normalFators,
     const std::array<double, NumCoef> &lineNumCoef,
     const std::array<double, NumCoef> &lineDenCoef,
     const std::array<double, NumCoef> &sampNumCoef,
     const std::array<double, NumCoef> &sampDenCoef,
-    std::shared_ptr<SpatialReferenceSystem> groundSRS);
+    std::shared_ptr<OGRSpatialRef> groundSRS);
 
   RationalModel(const RationalModel &rhs);
   RationalModel(RationalModel &&rhs) noexcept;
@@ -187,7 +187,7 @@ public:
    *
    *  \return pointer to a coordinate system
    */
-  std::shared_ptr<SpatialReferenceSystem> GetCoordinateSystem() const
+  std::shared_ptr<OGRSpatialRef> GetCoordinateSystem() const
       noexcept override { return mGroundSRS; }
 
   /**
@@ -285,7 +285,7 @@ private:
   std::array<double, NumCoef>
       mSampDenCoef{}; // denominator polynomial of sample formulae
 
-  std::shared_ptr<SpatialReferenceSystem>
+  std::shared_ptr<OGRSpatialRef>
       mGroundSRS{}; // Ground coordinate system
 
   int mNumCols{}; // number of columns of the image product

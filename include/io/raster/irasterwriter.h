@@ -40,7 +40,7 @@ public:
    *  \param [in] spatialref the coordinate system
    *  \todo ISRS
    */
-  virtual void SetCoordinateSystem(const SpatialReferenceSystem* srs) = 0;
+  virtual void SetCoordinateSystem(const OGRSpatialRef* srs) = 0;
   //virtual void SetCoordinateSystem(const ISRS* srs) = 0;
 
   /**

@@ -319,7 +319,7 @@ std::unique_ptr<RationalModel> CreateRationalModelALeft() {
     -3.854645E-07, -1.514237E-06, +2.438273E-06, +1.138310E-07,
     +3.018330E-07, +3.725428E-06, -3.713386E-07, -4.588691E-07 };
 
-  auto wgs84Geog = std::make_shared<SpatialReferenceSystem>("WGS84");
+  auto wgs84Geog = std::make_shared<OGRSpatialRef>("WGS84");
   auto rm = std::make_unique<RationalModel>(normalFators,
     lineNumCoef, lineDenCoef, sampNumCoef, sampDenCoef, wgs84Geog);
   rm->SetErrors(36.87, 0.13);
@@ -358,7 +358,7 @@ std::unique_ptr<RationalModel> CreateRationalModelARight() {
     -1.768367E-07, -3.220970E-06, -7.220123E-07, +0.000000E+00,
     -4.376586E-07, +5.630521E-07, +5.859119E-08, -2.803118E-07 };
 
-  auto wgs84Geog = std::make_shared<SpatialReferenceSystem>("WGS84");
+  auto wgs84Geog = std::make_shared<OGRSpatialRef>("WGS84");
   auto rm = std::make_unique<RationalModel>(normalFators,
     lineNumCoef, lineDenCoef, sampNumCoef, sampDenCoef, wgs84Geog);
   rm->SetErrors(51.53, 0.13);
@@ -398,7 +398,7 @@ std::unique_ptr<RationalModel> CreateRationalModelBLeft() {
     +9.289130E-07, -5.578129E-08, +7.709145E-07, -1.884327E-06,
     -1.749326E-08, +1.599896E-08, -9.276634E-08, +1.988493E-08 };
 
-  auto wgs84Geog = std::make_shared<SpatialReferenceSystem>("WGS84");
+  auto wgs84Geog = std::make_shared<OGRSpatialRef>("WGS84");
   auto rm = std::make_unique<RationalModel>(normalFators,
     lineNumCoef, lineDenCoef, sampNumCoef, sampDenCoef, wgs84Geog);
   rm->SetErrors(227.56, 0.13);
@@ -437,7 +437,7 @@ std::unique_ptr<RationalModel> CreateRationalModelBRight() {
     +4.066869E-07, -6.278089E-08, +8.102032E-07, -2.620842E-06,
     +0.000000E+00, +0.000000E+00, -5.450526E-08, +1.890781E-08 };
 
-  auto wgs84Geog = std::make_shared<SpatialReferenceSystem>("WGS84");
+  auto wgs84Geog = std::make_shared<OGRSpatialRef>("WGS84");
   auto rm = std::make_unique<RationalModel>(normalFators,
     lineNumCoef, lineDenCoef, sampNumCoef, sampDenCoef, wgs84Geog);
   rm->SetErrors(227.34, 0.13);

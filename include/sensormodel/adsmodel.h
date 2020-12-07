@@ -36,7 +36,7 @@ public:
   AdsModel(std::shared_ptr<ScannerImageModel> imgModel,
            std::shared_ptr<ScannerIP> scannerIP,
            std::shared_ptr<ScannerEP> scannerEP, const Point2d &origin,
-           std::shared_ptr<SpatialReferenceSystem> groundSRS);
+           std::shared_ptr<OGRSpatialRef> groundSRS);
 
   AdsModel(const AdsModel &rhs);
   AdsModel(AdsModel &&rhs) noexcept;

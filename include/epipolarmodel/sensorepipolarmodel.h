@@ -225,7 +225,7 @@ public:
    *
    *  \return Returns pointer to a coordinate system
    */
-  std::shared_ptr<SpatialReferenceSystem>
+  std::shared_ptr<OGRSpatialRef>
     GetCoordinateSystem() const noexcept override {
     return mSensorModel->GetCoordinateSystem();
   }

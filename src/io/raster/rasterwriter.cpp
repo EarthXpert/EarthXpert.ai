@@ -102,7 +102,7 @@ void RasterWriter::SetNodataValues(const std::vector<double>& nodataValues) {
  *
  *  \param [in] spatialref the coordinate system
  */
-void RasterWriter::SetCoordinateSystem(const SpatialReferenceSystem* srs) {
+void RasterWriter::SetCoordinateSystem(const OGRSpatialRef* srs) {
   std::unique_lock<std::shared_mutex> lock(mMutex);
   char* wkt{nullptr};
   srs->exportToWkt(&wkt);

@@ -31,7 +31,7 @@ public:
    *
    *  \param [in] spatialref the coordinate system
    */
-  virtual void SetCoordinateSystem(const SpatialReferenceSystem* srs) = 0;
+  virtual void SetCoordinateSystem(const OGRSpatialRef* srs) = 0;
 
   /**
    *  \brief Write the vector block contained in the layer object into vector file.

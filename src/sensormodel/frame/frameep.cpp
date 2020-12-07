@@ -9,7 +9,7 @@
 #include <limits>
 
 using earthxpert::FrameEP;
-using earthxpert::SpatialReferenceSystem;
+using earthxpert::OGRSpatialRef;
 
 /**
  * Constructor

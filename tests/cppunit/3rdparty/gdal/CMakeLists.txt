@@ -1,7 +1,5 @@
 project(tests_cppunit_3rdparty_gdal CXX)
 
-include_directories(${GDAL_INCLUDE_DIR})
-
 add_3rdparty_cppunit_test(gdal_tests 
   ex3rdparty ${GDAL_LIBRARY})
 

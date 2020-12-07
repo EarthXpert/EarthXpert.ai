@@ -41,7 +41,7 @@ public:
   PushbroomModel(std::shared_ptr<ScannerImageModel> imgModel,
                  std::unique_ptr<ScannerIP> &&scannerIP,
                  std::shared_ptr<ScannerEP> scannerEP,
-                 std::shared_ptr<SpatialReferenceSystem> groundSRS);
+                 std::shared_ptr<OGRSpatialRef> groundSRS);
 
   /**
    *  \brief Construct a satellite pushbroom geometry model.
@@ -56,7 +56,7 @@ public:
                  std::unique_ptr<ScannerIP> &&scannerIP,
                  std::shared_ptr<ScannerEP> scannerEP,
                  std::shared_ptr<SatelliteDP> satelliteDP,
-                 std::shared_ptr<SpatialReferenceSystem> groundSRS);
+                 std::shared_ptr<OGRSpatialRef> groundSRS);
 
   PushbroomModel(const PushbroomModel &rhs);
   PushbroomModel(PushbroomModel &&rhs) noexcept;
