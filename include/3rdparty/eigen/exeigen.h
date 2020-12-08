@@ -23,4 +23,18 @@ template<typename MatTy> double ConditionNumber(const MatTy& A) {
   const double cn = sv(0) / sv(sv.size() - 1);
   return cn;
 }
+
+/**
+ *  \brief insert multiple fill-ins on a row
+ *
+ *  \tparam InputIterators iterator to a container of std::pair as elements
+ *  \todo hack to get row storage once
+ */
+template<typename _Scalar, typename _StorageIndex, typename InputIterators>
+void SpMat_Insert(Eigen::SparseMatrix<_Scalar, Eigen::RowMajor, _StorageIndex>& spMat,
+  Eigen::Index row, const InputIterators& begCol, const InputIterators& endCol) {
+  for (auto col = begCol; col != endCol; ++col) {
+    spMat.insert(row, col->first) = col->second;
+  }
+}
 } // namespace earthxpert

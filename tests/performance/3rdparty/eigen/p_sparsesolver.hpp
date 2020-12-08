@@ -125,7 +125,7 @@ void LSCGF100_NonDiagonal_Solve_GMP(const int& count) {
   LSCG_NonDiagonal_Solve<bmp::mpf_float_100>(count);
 }
 
-static const std::vector<int> args_cg{ 3 };   // 5, 15, 30
+static const std::vector<int> args_cg{ 5 };   // 3
 
 /**
  *  \remark test 100 digits on computer with 32GB+ memory

@@ -35,6 +35,7 @@ void Insert(const int64_t count) {
   }
 }
 
+//  \todo iterator to Triplet generator
 template<StorageOptions option = RowMajor, FillOrder fillOrder = FillOrder::eFO_ByCol>
 void SetTriplets(const int64_t count) {
   std::vector<Triplet<double>> egTri;

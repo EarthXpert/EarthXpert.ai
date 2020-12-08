@@ -11,12 +11,6 @@
 namespace bmp = boost::multiprecision;
 using namespace Eigen;
 
-using ComplexD = bmp::cpp_complex_double;
-using ComplexQ = bmp::cpp_complex_quad;
-using ComplexO = bmp::cpp_complex_oct;
-
-static constexpr int kNumIters = 100;
-
 /**
  *  \tparam Ty number type
  */
@@ -45,13 +39,13 @@ template<typename Ty> void DenseSolver() {
  *  Test case 1: solve Ax = b for x
  */
 TEST(eigen, DenseSolverD) {
-  DenseSolver<ComplexD>();
+  DenseSolver<bmp::cpp_complex_double>();
 }
 
 TEST(eigen, DenseSolverQ) {
-  DenseSolver<ComplexQ>();
+  DenseSolver<bmp::cpp_complex_quad>();
 }
 
 TEST(eigen, DenseSolverO) {
-  DenseSolver<ComplexO>();
+  DenseSolver<bmp::cpp_complex_oct>();
 }
