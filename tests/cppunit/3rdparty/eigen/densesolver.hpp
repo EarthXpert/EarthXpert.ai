@@ -32,7 +32,7 @@ template<typename Ty> void DenseSolver() {
 
   // Compute the error using the norms of Ax - b and b:
   Ty::value_type err = (A * x - b).norm() / b.norm();
-  //std::cout << "relative error: " << relativeError << std::endl;
+  //std::cout << "relative error: " << err << std::endl;
 }
 
 /**
