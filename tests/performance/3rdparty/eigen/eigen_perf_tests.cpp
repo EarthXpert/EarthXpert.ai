@@ -7,8 +7,8 @@
 
 #include "3rdparty/eigen/exeigen.h"
 //#include "p_densesolver.hpp"
-//#include "p_sparsematrix.hpp"
-#include "p_sparsesolver.hpp"
+#include "p_sparsematrix.hpp"
+//#include "p_sparsesolver.hpp"
 
 void EigenDummy() {
 }
