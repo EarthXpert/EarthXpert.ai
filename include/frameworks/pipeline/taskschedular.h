@@ -4,14 +4,15 @@
  */
 #pragma once
 
-#include "frameworks/exframeworks.h"
+#include "frameworks/pipeline/itask.h"
 
 #include <memory>
 
 namespace earthxpert {
   /**
-   *  The class TaskSchedular streamlines and runs tasks in parallel,
-   *  possibly overlapping the data IO communication and the computation.
+   *  The class TaskSchedular configures the task based pipeline,
+   *  streamlines and runs tasks in parallel, possibly
+   *  overlapping the data IO communication and the computation.
    */
   class EXFRAMEWORKS_EXPORTS TaskSchedular {
   public:

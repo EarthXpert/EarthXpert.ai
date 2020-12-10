@@ -1,7 +1,8 @@
 project(frameworks CXX)
 
 add_definitions(-DEXFRAMEWORKS_API)
-set(frameworks_srcs "pipeline/tasksschedular.cpp"
+set(frameworks_srcs "pipeline/task.cpp"
+  "pipeline/tasksschedular.cpp"
   "pipeline/tileslayout.cpp"
   "utils/utils.cpp")
 earthxpert_add_library(frameworks "api"
