@@ -1,4 +1,4 @@
-project(epipolarmodel)
+project(epipolarmodel CXX)
 
 add_definitions(-DEXEPIPOLARMODEL_API)
 set(epipolarmodel_srcs "./epipolarmodel.cpp"
