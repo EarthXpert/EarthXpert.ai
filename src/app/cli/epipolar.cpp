@@ -4,11 +4,6 @@
  */
 #include "packages/exai/exaiepipolar.h"
 
-#include <boost/program_options.hpp>
-#include <iostream>
-
-namespace bpo = boost::program_options;
-
 /**
  *  The console program epipolar generates epipolar or pseudo epipolar images
  *  from a pair of overlapping images acquired by the same sensor.

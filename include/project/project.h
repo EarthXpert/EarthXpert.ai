@@ -32,7 +32,7 @@ protected:
   
   std::vector<TiePoint> mTPs;  // tie points
   std::vector<ControlPoint> mCPs;  // GCPs, ICPs
-  std::shared_ptr<SpatialReferenceSystem> mSrsGP;   // Coordinate system of ground points
+  std::shared_ptr<OGRSpatialRef> mSrsGP;   // Coordinate system of ground points
 
   std::map<std::string, std::vector<ExImage*>> mStripes;  // pair of stripe_name and the associated array of images
 

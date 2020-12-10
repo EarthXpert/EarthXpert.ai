@@ -135,6 +135,8 @@ struct XYZ /*: public cv::Point3_<CoordTy>*/{
  *  The structure Classfication stores feature category value.
  */
 struct Classification {
+  using value_type = uint8_t;
+
   static constexpr size_t kFieldPos = FieldGroup::kPOSCLA;
   static constexpr size_t kFieldBit = FieldGroup::kBITCLA;
   static constexpr size_t kFieldBytes = sizeof(uint8_t);
@@ -147,6 +149,8 @@ struct Classification {
  *  The structure Intensity stores lidar intensity value.
  */
 struct Intensity {
+  using value_type = uint16_t;
+
   static constexpr size_t kFieldPos = FieldGroup::kPOSINT;
   static constexpr size_t kFieldBit = FieldGroup::kBITINT;
   static constexpr size_t kFieldBytes = sizeof(uint16_t);
@@ -190,11 +194,33 @@ struct RGBN : RGB<ColorTy> {
  *  The structure GPSTime stores time stamp.
  */
 struct GPSTime {
+  using value_type = double;
+
   static constexpr size_t kFieldPos = FieldGroup::kPOSTIM;
   static constexpr size_t kFieldBit = FieldGroup::kBITTIM;
   static constexpr size_t kFieldBytes = sizeof(double);
   double time{};
 };
+
+/**
+ *  \brief determine if given type of a field
+ */
+template<typename, typename = std::void_t<>>
+struct IsField : std::false_type {
+};
+
+template<typename Ty>
+struct IsField<Ty, std::void_t<typename Ty::value_type, \
+  decltype(Ty::kFieldBit), decltype(Ty::kFieldBytes)>>
+  : std::true_type {
+};
+
+/**
+ *  \remark std::is_same_v<XYZF, FieldTy> || std::is_same_v<Classification, FieldTy> ||
+ *          std::is_same_v<Intensity, FieldTy> || std::is_same_v<RGB16, FieldTy>
+ */
+template<typename Ty>
+constexpr bool IsField_v = IsField<Ty>::value;
 
 /**
  *  The structure ExPoint stores 3D coordinates, classification, and
@@ -204,6 +230,7 @@ struct GPSTime {
  */
 template <typename... Fields>
 struct ExPoint : Fields... {
+  static_assert((... && IsField_v<Fields>), "ExPoint: Fields");
   static constexpr int kNumFields = sizeof...(Fields);
 
   static_assert(0 < kNumFields, "Empty fields");
@@ -251,4 +278,16 @@ using CRGBPointF = CRGBPoint<float, uint16_t>;
 
 // integer coordinates, 16bit color
 using CRGBPointI = CRGBPoint<int32_t, uint16_t>;
+
+template<typename Ty>
+constexpr bool IsXYZF = std::is_same_v<XYZF, std::remove_cv_t<Ty>>;
+
+template<typename Ty>
+constexpr bool IsClassification = std::is_same_v<Classification, std::remove_cv_t<Ty>>;
+
+template<typename Ty>
+constexpr bool IsIntensity = std::is_same_v<Intensity, std::remove_cv_t<Ty>>;
+
+template<typename Ty>
+constexpr bool IsRGB16 = std::is_same_v<RGB16, std::remove_cv_t<Ty>>;
 }

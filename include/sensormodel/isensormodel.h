@@ -7,10 +7,9 @@
 #include "sensormodel/exsensormodel.h"
 #include "3rdparty/gdal/exgdal.h"
 #include "3rdparty/opencv/exopencv.h"
-#include "core/spatialref//spatialdef.h"
+#include "core/spatialref/isrs.h"
+#include "core/spatialref/spatialdef.h"
 
-#include <memory>
-#include <vector>
 #include <utility>
 
 namespace earthxpert {
@@ -38,14 +37,14 @@ public:
   enum ModelType {
     eUNDEFINED = -1,
     // physical sensor models
-    eADS,       ///< Indicates an aerial push-broom sensor
-    eFRAME,     ///< Indicates a frame based pin-hole camera
-    ePUSHBROOM, ///< Indicates a push-broom sensor
-    eROLLING,   ///< Indicates an aerial push-broom sensor
+    eMT_ADS,       ///< Indicates an aerial push-broom sensor
+    eMT_FRAME,     ///< Indicates a frame based pin-hole camera
+    eMT_PUSHBROOM, ///< Indicates a push-broom sensor
+    eMT_ROLLING,   ///< Indicates an aerial push-broom sensor
     // replacement sensor models
-    eAFFINE,   ///< Indicates an affine model
-    eNETWORK,   ///< Indicates a neural network model
-    eRATIONAL, ///< Indicates a rational polynomial model
+    eMT_AFFINE,   ///< Indicates an affine model
+    eMT_NETWORK,   ///< Indicates a neural network model
+    eMT_RATIONAL, ///< Indicates a rational polynomial model
     NumSensorTypes
   };
 
@@ -129,9 +128,12 @@ public:
    *  from results of ImageToGround() or inputs to GroundToImage() methods.
    *
    *  \return Returns pointer to a coordinate system
+   *  \todo replace by ISRS
    */
-  virtual std::shared_ptr<SpatialReferenceSystem>
-  GetCoordinateSystem() const noexcept = 0;
+  virtual SPSpatialRefSys GetCoordinateSystem() const noexcept = 0;
+
+  //virtual std::shared_ptr<ISRS>
+  //  GetCoordinateSystem() const noexcept = 0;
 
   /**
    *  \return Returns type of SRS

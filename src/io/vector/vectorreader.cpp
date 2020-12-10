@@ -64,7 +64,7 @@ std::unique_ptr<VectorMetadata> VectorReader::GetMetadata() const {
  */
 UPSpatialRefSys VectorReader::GetCoordinateSystem() const {
   auto spatialRef = 
-    std::make_unique<SpatialReferenceSystem>(mDataset->GetProjectionRef());
+    std::make_unique<OGRSpatialRef>(mDataset->GetProjectionRef());
   if (!spatialRef) 
     throw IOError(_("This data source file has no infomation on coordinate system"));
   return spatialRef;

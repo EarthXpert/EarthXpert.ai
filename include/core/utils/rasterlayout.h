@@ -21,9 +21,9 @@ enum class LayoutKind;
 class EXCORE_EXPORTS RasterLayout {
 public:
   RasterLayout(int numCols, int numRows, int winNumCols, int winNumRows, 
-    LayoutKind kind = LayoutKind::eHORIZONTAL);
+    LayoutKind kind = LayoutKind::eLK_HORIZONTAL);
   RasterLayout(const RasterWindow& range, int winNumCols, int winNumRows, 
-    LayoutKind kind = LayoutKind::eHORIZONTAL);
+    LayoutKind kind = LayoutKind::eLK_HORIZONTAL);
   RasterLayout(const RasterLayout& rhs) = default;
   RasterLayout(RasterLayout&& rhs) noexcept = default;
   ~RasterLayout() = default;
@@ -54,7 +54,7 @@ private:
   RasterWindow mRange;    // raster range to divide into smaller windows
   int mWinNumCols{};  // width of window
   int mWinNumRows{};  // height of window
-  LayoutKind mLayoutkind{LayoutKind::eHORIZONTAL};  // major direction
+  LayoutKind mLayoutkind{LayoutKind::eLK_HORIZONTAL};  // major direction
   std::vector<RasterWindow> mWins;  // array of raster windows formulating the layout
 
   void LayoutWindows();

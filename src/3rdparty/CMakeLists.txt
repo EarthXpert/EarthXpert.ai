@@ -6,13 +6,17 @@ message(STATUS "GDAL_LIBRARY: ${GDAL_LIBRARY}")
 message(STATUS "GETTEXT_LIBRARY: ${GETTEXT_LIBRARY}")
 message(STATUS "GTEST_BOTH_LIBRARIES: ${GTEST_BOTH_LIBRARIES}")
 message(STATUS "LASLIB_LIBRARY: ${LASLIB_LIBRARY}")
-message(STATUS "LIBXML2_LIBRARIES: ${LIBXML2_LIBRARIES}")
+message(STATUS "LIBXML2_LIBRARY: ${LIBXML2_LIBRARY}")
+message(STATUS "MPFR4_LIBRARIES: ${MPFR4_LIBRARIES}")
+message(STATUS "MPIR_LIBRARIES: ${MPIR_LIBRARIES}")
 message(STATUS "nsimd_LIBRARIES: ${nsimd_LIBRARIES}")
 message(STATUS "OpenCV_LIBS: ${OpenCV_LIBS}")
 message(STATUS "PDAL_LIBRARIES: ${PDAL_LIBRARIES}")
+message(STATUS "proj_LIBRARIES: ${proj_LIBRARIES}")
 message(STATUS "Protobuf_LIBRARIES: ${Protobuf_LIBRARIES}")
 message(STATUS "Simd_LIBRARIES: ${Simd_LIBRARIES}")
 message(STATUS "SLTBENCH_LIBS: ${SLTBENCH_LIBS}")
+message(STATUS "vld_LIBRARIES: ${vld_LIBRARIES}")
 
 add_definitions(-DEX3RDPARTY_API)
 set(ex3rdparty_srcs "boost/exboost.cpp"
@@ -23,22 +27,28 @@ set(ex3rdparty_srcs "boost/exboost.cpp"
   "eigen/exeigen.cpp"
   "gdal/exgdal.cpp"
   "geotrans/exgeotrans.cpp"
+  #"geotrans/exgeotrans_utils.cpp"
   "gettext/exgettext.cpp"
   "gflags/exgflags.cpp"
   "glog/exglog.cpp"
   "gtest/exgtest.cpp"
   "laslib/exlaslib.cpp"
+  "mpfr/exmpfr.cpp"
+  "mpir/exmpir.cpp"
   "nsimd/exnsimd.cpp"
   "opencl/exopencl.cpp"
   "opencv/exopencv.cpp"
   "pdal/expdal.cpp"
+  "proj/exproj.cpp"
   "protobuf/exprotobuf.cpp"
   "pybind11/expybind11.cpp"
   "qt/exqt.cpp"
   "simd/exsimd.cpp"
   "sltbench/exsltbench.cpp"
+  "sqlite3/exsqlite3.cpp"
   "thrust/exthrust.cpp"
   "stl/exstl.cpp"
+  "utils/utils.cpp"
   "vld/exvld.cpp"
   "vxl/exvxl.cpp"
   "wxwidgets/exwxwidgets.cpp"
@@ -47,11 +57,12 @@ set(ex3rdparty_srcs "boost/exboost.cpp"
 earthxpert_add_library(ex3rdparty "api"
   SRCS ${ex3rdparty_srcs}
   ITEMS Boost::boost Boost::filesystem Boost::locale ${CERES_LIBRARY} ${CGAL_LIBRARIES} 
-        ${GDAL_LIBRARY} ${geotrans_LIBRARY} ${GETTEXT_LIBRARY} glog::glog ${GTEST_BOTH_LIBRARIES}
-         ${LASLIB_LIBRARY} ${LIBXML2_LIBRARIES} ${OpenCV_LIBS} ${OpenEXR_LIBS} 
+        ${GDAL_LIBRARY} ${geotrans_LIBRARIES} ${GETTEXT_LIBRARY} glog::glog 
+        ${GTEST_BOTH_LIBRARIES} ${LASLIB_LIBRARY} libxml2 ${MPFR4_LIBRARIES} 
+        ${MPIR_LIBRARIES} ${OpenCV_LIBS} ${OpenEXR_LIBS} 
         OpenImageIO::OpenImageIO OpenImageIO::OpenImageIO_Util 
-        ${nsimd_LIBRARIES} ${PDAL_LIBRARIES} ${Protobuf_LIBRARIES} Qt5::Widgets 
-        ${Simd_LIBRARIES} ${SLTBENCH_LIBS})
+        ${nsimd_LIBRARIES} ${PDAL_LIBRARIES} ${proj_LIBRARIES} ${Protobuf_LIBRARIES} 
+        Qt5::Widgets ${Simd_LIBRARIES} ${SLTBENCH_LIBS})
 
 earthxpert_source_group(${ex3rdparty_srcs})
 earthxpert_install_target(ex3rdparty)

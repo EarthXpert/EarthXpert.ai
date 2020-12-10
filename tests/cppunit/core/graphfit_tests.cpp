@@ -14,8 +14,7 @@ using namespace earthxpert;
 using namespace earthxpert::math;
 using namespace ceres;
 
-static constexpr auto kRngMax = static_cast<double>(std::mt19937::max());
-static constexpr auto kScale = 1.0 / kRngMax;
+static constexpr auto kScale = 1.0 / static_cast<double>(std::mt19937::max());
 
 static std::vector<Point2d> ObtainLinePoints();
 static std::vector<Point2d> ObtainCurvePoints();

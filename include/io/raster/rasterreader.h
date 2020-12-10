@@ -17,10 +17,13 @@ class GdalRaster;
 
 /**
  *  The class RasterReader provides format in-dependent functios to read from
- *  an image file with GDAL as backend, and deserialize pixle block in an IRaster object
- *  having specific configurations, such as size, offset, margin, bands, etc.
+ *  an image file with GDAL as backend, and deserialize pixle block in 
+ *  an IRaster object having specific configurations, such as size, offset, 
+ *  margin, bands, etc. 
+ *
  *  Each RasterReader instance is connected and thus bound to specific bands.
- *  Therefore a new instance is needed to read from different subsets of available bands.
+ *  Therefore a new instance is needed to read from different subsets of 
+ *  available bands.
  */
 class EXIO_EXPORTS RasterReader final : public IRasterReader {
 public:
@@ -142,11 +145,11 @@ public:
   /**
    *  \brief Reads the entire image.
    *
-   *  \param [in] rasterType type of data structure
+   *  \param [in] rasType type of data structure
    *  \return Returns pointer to raster object holding the entire image
    */
-  std::unique_ptr<IRaster> ReadRaster(RasterType rasterType) override {
-    return ReadRaster(0, 0, mFileNumCols, mFileNumRows, rasterType);
+  std::unique_ptr<IRaster> ReadRaster(RasterType rasType) override {
+    return ReadRaster(0, 0, mFileNumCols, mFileNumRows, rasType);
   }
 
   /**
@@ -158,23 +161,23 @@ public:
    *  \param [in] rowOffset starting row
    *  \param [in] numCols horizontal width
    *  \param [in] numRows vertical height
-   *  \param [in] rasterType type of data structure
+   *  \param [in] rasType type of data structure
    *  \return Returns pointer to raster object holding a pixel block
    */
   std::unique_ptr<IRaster> ReadRaster(int colOffset, int rowOffset,
-    int numCols, int numRows, RasterType rasterType) override;
+    int numCols, int numRows, RasterType rasType) override;
 
   /**
    *  \brief Reads a pixel block defined by a window.
    *
    *  \param [in] win Raster window
-   *  \param [in] rasterType type of data structure
+   *  \param [in] rasType type of data structure
    *  \return Returns pointer to raster object holding a pixel block
    */
   std::unique_ptr<IRaster> ReadRaster(const RasterWindow& win,
-    RasterType rasterType) override {
+    RasterType rasType) override {
     return ReadRaster(win.colOffset, win.rowOffset, 
-      win.numCols, win.numRows, rasterType);
+      win.numCols, win.numRows, rasType);
   }
 
   /**

@@ -70,7 +70,7 @@ void VectorWriter::SetMetadata(const VectorMetadata* metaData) {
  *
  *  \param [in] spatialref the coordinate system
  */
-void VectorWriter::SetCoordinateSystem(const SpatialReferenceSystem* srs) {
+void VectorWriter::SetCoordinateSystem(const OGRSpatialRef* srs) {
   std::unique_lock<std::shared_mutex> lock(mMutex);
   char* wkt{nullptr};
   srs->exportToWkt(&wkt);

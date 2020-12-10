@@ -3,9 +3,9 @@
  * -----------------------------------------------------------------------------
  */
 #include "core/utils/rasterlayout.h"
+#include "3rdparty/utils/constants.h"
 #include "core/exceptions/exexcept.h"
 #include "core/utils/layoututils.h"
-#include "core/math/constants.h"
 #include "core/math/math.h"
 
 #include <algorithm>
@@ -93,7 +93,7 @@ void RasterLayout::LayoutWindows() {
   mWins.resize(numWins);
   for (int w = 0; w < numWins; ++w) {
     int c{}, r{};
-    if (LayoutKind::eHORIZONTAL == mLayoutkind) {
+    if (LayoutKind::eLK_HORIZONTAL == mLayoutkind) {
       std::tie(c, r) = IndexToCR(w, numHoriWins);
     }
     else {

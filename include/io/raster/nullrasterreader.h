@@ -15,7 +15,7 @@ class GdalRaster;
 /**
  *  The class NullRasterReader provides mock behaviour that does nothing.
  *
- *  \todo deal with mock objects of RasterMetadata, SpatialReferenceSystem, 
+ *  \todo deal with mock objects of RasterMetadata, OGRSpatialRef, 
  *  Geocoding, CvRaster, GdalRaster, etc.
  */
 class EXIO_EXPORTS NullRasterReader final : public IRasterReader {
@@ -54,7 +54,7 @@ public:
 
   MarginKind GetMarginKind() const noexcept override { return MarginKind::eCONSTANT; }
 
-  std::unique_ptr<SpatialReferenceSystem> GetCoordinateSystem() const override { return nullptr; }
+  std::unique_ptr<OGRSpatialRef> GetCoordinateSystem() const override { return nullptr; }
 
   std::unique_ptr<Geocoding> GetGeocoding() const override { return nullptr; }
 

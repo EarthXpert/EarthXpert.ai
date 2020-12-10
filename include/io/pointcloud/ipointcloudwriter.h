@@ -6,6 +6,7 @@
 
 #include "io/exio.h"
 #include "core/datasource/pointcloud.h"
+#include "core/spatialref/isrs.h"
 #include "3rdparty//gdal/exgdal.h"
 
 namespace earthxpert {
@@ -36,7 +37,7 @@ public:
    *
    *  \param [in] spatialref the coordinate system
    */
-  virtual void SetCoordinateSystem(const SpatialReferenceSystem* srs) = 0;
+  virtual void SetCoordinateSystem(const OGRSpatialRef* srs) = 0;
 
   /**
    *  \brief Write an array of points into the opened file.

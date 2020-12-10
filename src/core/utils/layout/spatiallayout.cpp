@@ -20,7 +20,7 @@ using earthxpert::SpatialTile;
 template <typename Ty>
 SpatialLayout<Ty>::SpatialLayout(const Ty width, const Ty height,
   const Ty tileWidth, const Ty tileHeight, const LayoutKind kind)
-  : SpatialLayout(SpatialTile<Ty>{Ty(0), Ty(0), width, height}, tileWidth, tileHeight, kind) {
+  : SpatialLayout(SpatialTile<Ty>{0, 0, width, height}, tileWidth, tileHeight, kind) {
 }
 
 /**
@@ -91,7 +91,7 @@ template <typename Ty> void SpatialLayout<Ty>::LayoutTiles() {
   mTiles.resize(numTiles);
   for (int t = 0; t < numTiles; ++t) {
     int x{}, y{};
-    if (LayoutKind::eHORIZONTAL == mLayoutkind) {
+    if (LayoutKind::eLK_HORIZONTAL == mLayoutkind) {
       std::tie(x, y) = IndexToCR(t, numHoriTiles);
     }
     else {

@@ -14,22 +14,24 @@
 #include <string>
 #include <vector>
 
+/**
+ *  GDAL_DATA=D:\home\workspace\install\windows\etc\gdal
+ */
 namespace earthxpert {    // \todo ::thirdparty
 void EX3RDPARTY_EXPORTS GDALInitialize();
 
-// using SpatialRefSys          = OGRSpatialReference;
-using SpatialReferenceSystem = OGRSpatialReference;
+using OGRSpatialRef = OGRSpatialReference;
+using OGRCoordTrans = OGRCoordinateTransformation;
 
-// using SpatialCoordTrans          = OGRCoordinateTransformation;
-using SpatialCoordinateTransform = OGRCoordinateTransformation;
+#define OGRCreateCT OGRCreateCoordinateTransformation
 
-inline bool operator==(const SpatialReferenceSystem &lhs,
-                       const SpatialReferenceSystem &rhs) {
+inline bool operator==(const OGRSpatialRef &lhs,
+                       const OGRSpatialRef &rhs) {
   return lhs.IsSame(&rhs);
 }
 
-inline bool operator!=(const SpatialReferenceSystem &lhs,
-                       const SpatialReferenceSystem &rhs) {
+inline bool operator!=(const OGRSpatialRef &lhs,
+                       const OGRSpatialRef &rhs) {
   return !(operator==(lhs, rhs));
 }
 
@@ -54,6 +56,8 @@ EX3RDPARTY_EXPORTS GDALDataset* CreateVectorDataset(const std::string& vecFile,
 }
 
 using UPGDALDataset = GDALDatasetUniquePtr;
-using UPSpatialRefSys = std::unique_ptr<SpatialReferenceSystem>;
-using SPSpatialRefSys = std::shared_ptr<SpatialReferenceSystem>;
+using UPSpatialRefSys = std::unique_ptr<OGRSpatialRef>;
+using SPSpatialRefSys = std::shared_ptr<OGRSpatialRef>;
+using UPSpatialCoordTrans = std::unique_ptr<OGRCoordTrans>;
+using SPSpatialCoordTrans = std::shared_ptr<OGRCoordTrans>;
 } // namespace earthxpert::thirdparty

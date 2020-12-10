@@ -96,6 +96,7 @@ bool IntersectI2G0(const Point2d* images, const ISensorModel* const* sensorModel
 }
 
 // \todo pre-allocate CostFunction & CostFunctor 
+// \todo round up sizeof(NumericDiffCostFunc) to a multiplier of alignof(NumericDiffCostFunc)
 template <class ResidualPolicy, class LossPolicy = void>
 bool IntersectI2G(const Point2d* images, const ISensorModel* const* sensorModels,
   const int num, Point3d& ground, const Solver::Options& options,
@@ -113,6 +114,7 @@ bool IntersectI2G(const Point2d* images, const ISensorModel* const* sensorModels
 
   LossFunction* lossF = (lossFunc) ? static_cast<LossFunction*>(lossFunc) : nullptr;
   std::vector<CostFunctor> costFunctors(num);
+  //std::vector<NumericDiffCostFunc> costFuncs;   // no default constructor!
   std::unique_ptr<uchar[]> costFuncs(new uchar[sizeof(NumericDiffCostFunc) * num]);
 
   for (int i = 0; i < num; ++i) {

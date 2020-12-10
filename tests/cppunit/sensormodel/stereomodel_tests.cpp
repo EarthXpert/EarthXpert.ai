@@ -3,9 +3,9 @@
  * -----------------------------------------------------------------------------
  */
 #include "3rdparty/gtest/gtest_main.h"
+#include "3rdparty/utils/constants.h"
 #include "testconfig.h"
 
-#include "core/math/constants.h"
 #include "core/math/mutils.h"
 #include "core/utils/unitutils.h"
 #include "marshaller/sensormodel/rationalmodelmarshaller.h"
@@ -19,7 +19,6 @@
 using namespace earthxpert;
 using rfm = earthxpert::RationalModel;
 
-static constexpr double kTolP = 1.0e-2; // [0.01 pixel]
 static constexpr int kNum = 5;
 static constexpr double kFactor = 0.75;
 
@@ -39,22 +38,22 @@ TEST(stereomodel, ImageToGround) {
   const auto rightModel = CreateRationalModelARight();
 
   StereoModel smC(leftModel.get(), rightModel.get());    // Ceres
-  smC.SetForwardAlgorithm(IStereoModel::eSM_CERES);
+  smC.SetForwardAlgorithm(IStereoModel::eFA_CERES);
 
   StereoModel smI(leftModel.get(), rightModel.get());    // intersect
   Point3d origin(109.2114, 34.6557, 396);
   auto ee = std::make_shared<EarthEllipsoid>();
   ee->SetLsrOrigin(Deg2Rad(origin));
   smI.SetEarthEllipsoid(ee);
-  smI.SetForwardAlgorithm(IStereoModel::eCA_INTERSECT);
+  smI.SetForwardAlgorithm(IStereoModel::eFA_INTERSECT);
 
   RationalStereoModel smE(leftModel.get(), rightModel.get()); // EXAI
 
   StereoModel smL(leftModel.get(), rightModel.get());    // LS 
-  smL.SetForwardAlgorithm(IStereoModel::eSM_LS);
+  smL.SetForwardAlgorithm(IStereoModel::eFA_LS);
 
   StereoModel smN(leftModel.get(), rightModel.get());    // NR 
-  smN.SetForwardAlgorithm(IStereoModel::eSM_NR);
+  smN.SetForwardAlgorithm(IStereoModel::eFA_NR);
 
   Point2d imageL, imageR;
   Point3d grdC, grdI, grdE, grdL, grdN;
@@ -98,26 +97,26 @@ TEST(stereomodel, ImageToGround) {
     smL.GroundToImages(grdL, imgL);
     smN.GroundToImages(grdN, imgN);
 
-    ASSERT_NEAR(imageL.x, imgC[0].x, kTolP);
-    ASSERT_NEAR(imageL.y, imgC[0].y, kTolP);
-    ASSERT_NEAR(imageR.x, imgC[1].x, kTolP);
-    ASSERT_NEAR(imageR.y, imgC[1].y, kTolP);
-    ASSERT_NEAR(imageL.x, imgI[0].x, kTolP);
-    ASSERT_NEAR(imageL.y, imgI[0].y, kTolP);
-    ASSERT_NEAR(imageR.x, imgI[1].x, kTolP);
-    ASSERT_NEAR(imageR.y, imgI[1].y, kTolP);
-    ASSERT_NEAR(imageL.x, imgE[0].x, kTolP);
-    ASSERT_NEAR(imageL.y, imgE[0].y, kTolP);
-    ASSERT_NEAR(imageR.x, imgE[1].x, kTolP);
-    ASSERT_NEAR(imageR.y, imgE[1].y, kTolP);
-    ASSERT_NEAR(imageL.x, imgL[0].x, kTolP);
-    ASSERT_NEAR(imageL.y, imgL[0].y, kTolP);
-    ASSERT_NEAR(imageR.x, imgL[1].x, kTolP);
-    ASSERT_NEAR(imageR.y, imgL[1].y, kTolP);
-    ASSERT_NEAR(imageL.x, imgN[0].x, kTolP);
-    ASSERT_NEAR(imageL.y, imgN[0].y, kTolP);
-    ASSERT_NEAR(imageR.x, imgN[1].x, kTolP);
-    ASSERT_NEAR(imageR.y, imgN[1].y, kTolP);
+    ASSERT_NEAR(imageL.x, imgC[0].x, kTolPIX);
+    ASSERT_NEAR(imageL.y, imgC[0].y, kTolPIX);
+    ASSERT_NEAR(imageR.x, imgC[1].x, kTolPIX);
+    ASSERT_NEAR(imageR.y, imgC[1].y, kTolPIX);
+    ASSERT_NEAR(imageL.x, imgI[0].x, kTolPIX);
+    ASSERT_NEAR(imageL.y, imgI[0].y, kTolPIX);
+    ASSERT_NEAR(imageR.x, imgI[1].x, kTolPIX);
+    ASSERT_NEAR(imageR.y, imgI[1].y, kTolPIX);
+    ASSERT_NEAR(imageL.x, imgE[0].x, kTolPIX);
+    ASSERT_NEAR(imageL.y, imgE[0].y, kTolPIX);
+    ASSERT_NEAR(imageR.x, imgE[1].x, kTolPIX);
+    ASSERT_NEAR(imageR.y, imgE[1].y, kTolPIX);
+    ASSERT_NEAR(imageL.x, imgL[0].x, kTolPIX);
+    ASSERT_NEAR(imageL.y, imgL[0].y, kTolPIX);
+    ASSERT_NEAR(imageR.x, imgL[1].x, kTolPIX);
+    ASSERT_NEAR(imageR.y, imgL[1].y, kTolPIX);
+    ASSERT_NEAR(imageL.x, imgN[0].x, kTolPIX);
+    ASSERT_NEAR(imageL.y, imgN[0].y, kTolPIX);
+    ASSERT_NEAR(imageR.x, imgN[1].x, kTolPIX);
+    ASSERT_NEAR(imageR.y, imgN[1].y, kTolPIX);
   }
 }
 
@@ -133,15 +132,18 @@ TEST(stereomodel, ImageToGround_Cube) {
   //const auto rightModelB = CreateRationalModelBRight();
   //TestImageToGround_Cube(leftModelB.get(), rightModelB.get());
 
-  std::string leftMdlFileC = TestConfig::DataPath("Imagery/Satellite/zy302a_006911_258169_20170827/zy302a_fwd_006911_258169_20170827181359_01_sec_0001_1709018015_rpc.txt");
-  std::string rightMdlFileC = TestConfig::DataPath("Imagery/Satellite/zy302a_006911_258169_20170827/zy302a_bwd_006911_258169_20170827181359_01_sec_0001_1709011888_rpc.txt");
+  std::string leftMdlFileC = 
+    TestConfig::DataPath("Imagery/Satellite/zy302a_006911_258169_20170827/zy302a_fwd_006911_258169_20170827181359_01_sec_0001_1709018015_rpc.txt");
+  std::string rightMdlFileC = 
+    TestConfig::DataPath("Imagery/Satellite/zy302a_006911_258169_20170827/zy302a_bwd_006911_258169_20170827181359_01_sec_0001_1709011888_rpc.txt");
   RationalModelMarshaller rmMarshaller;
   auto leftModelC = rmMarshaller.Deserialize(leftMdlFileC);
   auto rightModelC = rmMarshaller.Deserialize(rightMdlFileC);
   TestImageToGround_Cube(leftModelC.get(), rightModelC.get());
 }
 
-void TestImageToGround_Cube(const RationalModel* leftModel, const RationalModel* rightModel) {
+void TestImageToGround_Cube(const RationalModel* leftModel, 
+  const RationalModel* rightModel) {
   auto nfcL = leftModel->GetNormalFactors();
   const auto minLonL = nfcL[rnf::eOLON] - nfcL[rnf::eSLON] * kFactor;
   const auto maxLonL = nfcL[rnf::eOLON] + nfcL[rnf::eSLON] * kFactor;
@@ -176,22 +178,22 @@ void TestImageToGround_Cube(const RationalModel* leftModel, const RationalModel*
   Point3d maxDiffN(-1.0, -1.0, -1.0);
 
   StereoModel smC(leftModel, rightModel);    // Ceres 
-  smC.SetForwardAlgorithm(IStereoModel::eSM_CERES);
+  smC.SetForwardAlgorithm(IStereoModel::eFA_CERES);
 
   Point3d origin((minLon + maxLon) / 2, (minLat + maxLat) / 2, (minHgt + maxHgt) / 2);
   auto ee = std::make_shared<EarthEllipsoid>();
   ee->SetLsrOrigin(Deg2Rad(origin));
   StereoModel smI(leftModel, rightModel);    // intersect
   smI.SetEarthEllipsoid(ee);
-  smI.SetForwardAlgorithm(IStereoModel::eCA_INTERSECT);
+  smI.SetForwardAlgorithm(IStereoModel::eFA_INTERSECT);
 
   StereoModel smE(leftModel, rightModel);    // EXAI 
 
   StereoModel smL(leftModel, rightModel);    // LS 
-  smL.SetForwardAlgorithm(IStereoModel::eSM_LS);
+  smL.SetForwardAlgorithm(IStereoModel::eFA_LS);
 
   StereoModel smN(leftModel, rightModel);    // NR 
-  smN.SetForwardAlgorithm(IStereoModel::eSM_NR);
+  smN.SetForwardAlgorithm(IStereoModel::eFA_NR);
 
   auto [leftNumCols, leftNumRows] = leftModel->GetImageSize();
   auto [rightNumCols, rightNumRows] = rightModel->GetImageSize();
@@ -213,12 +215,14 @@ void TestImageToGround_Cube(const RationalModel* leftModel, const RationalModel*
 
         Point2d imageL;
         leftModel->GroundToImage(ground, imageL);
-        if (0 > imageL.x || imageL.x > leftNumCols || 0 > imageL.y || imageL.y > leftNumRows)
+        if (0 > imageL.x || imageL.x > leftNumCols || 
+          0 > imageL.y || imageL.y > leftNumRows)
           continue;
 
         Point2d imageR;
         rightModel->GroundToImage(ground, imageR);
-        if (0 > imageR.x || imageR.x > rightNumCols || 0 > imageR.y || imageR.y > rightNumRows)
+        if (0 > imageR.x || imageR.x > rightNumCols || 
+          0 > imageR.y || imageR.y > rightNumRows)
           continue;
 
         Point3d grdC{ ground };
@@ -315,7 +319,7 @@ std::unique_ptr<RationalModel> CreateRationalModelALeft() {
     -3.854645E-07, -1.514237E-06, +2.438273E-06, +1.138310E-07,
     +3.018330E-07, +3.725428E-06, -3.713386E-07, -4.588691E-07 };
 
-  auto wgs84Geog = std::make_shared<SpatialReferenceSystem>("WGS84");
+  auto wgs84Geog = std::make_shared<OGRSpatialRef>("WGS84");
   auto rm = std::make_unique<RationalModel>(normalFators,
     lineNumCoef, lineDenCoef, sampNumCoef, sampDenCoef, wgs84Geog);
   rm->SetErrors(36.87, 0.13);
@@ -354,7 +358,7 @@ std::unique_ptr<RationalModel> CreateRationalModelARight() {
     -1.768367E-07, -3.220970E-06, -7.220123E-07, +0.000000E+00,
     -4.376586E-07, +5.630521E-07, +5.859119E-08, -2.803118E-07 };
 
-  auto wgs84Geog = std::make_shared<SpatialReferenceSystem>("WGS84");
+  auto wgs84Geog = std::make_shared<OGRSpatialRef>("WGS84");
   auto rm = std::make_unique<RationalModel>(normalFators,
     lineNumCoef, lineDenCoef, sampNumCoef, sampDenCoef, wgs84Geog);
   rm->SetErrors(51.53, 0.13);
@@ -394,7 +398,7 @@ std::unique_ptr<RationalModel> CreateRationalModelBLeft() {
     +9.289130E-07, -5.578129E-08, +7.709145E-07, -1.884327E-06,
     -1.749326E-08, +1.599896E-08, -9.276634E-08, +1.988493E-08 };
 
-  auto wgs84Geog = std::make_shared<SpatialReferenceSystem>("WGS84");
+  auto wgs84Geog = std::make_shared<OGRSpatialRef>("WGS84");
   auto rm = std::make_unique<RationalModel>(normalFators,
     lineNumCoef, lineDenCoef, sampNumCoef, sampDenCoef, wgs84Geog);
   rm->SetErrors(227.56, 0.13);
@@ -433,7 +437,7 @@ std::unique_ptr<RationalModel> CreateRationalModelBRight() {
     +4.066869E-07, -6.278089E-08, +8.102032E-07, -2.620842E-06,
     +0.000000E+00, +0.000000E+00, -5.450526E-08, +1.890781E-08 };
 
-  auto wgs84Geog = std::make_shared<SpatialReferenceSystem>("WGS84");
+  auto wgs84Geog = std::make_shared<OGRSpatialRef>("WGS84");
   auto rm = std::make_unique<RationalModel>(normalFators,
     lineNumCoef, lineDenCoef, sampNumCoef, sampDenCoef, wgs84Geog);
   rm->SetErrors(227.34, 0.13);

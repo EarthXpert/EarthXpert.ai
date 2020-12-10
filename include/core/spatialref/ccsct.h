@@ -7,8 +7,6 @@
 #include "core/spatialref/ict.h"
 #include "core/spatialref/ccssrs.h"
 
-#include <memory>
-
 namespace earthxpert {
 /**
  *  The class CcsCT provides service of coordinate transformation
@@ -17,7 +15,7 @@ namespace earthxpert {
  */
 class EXCORE_EXPORTS CcsCT : public ICT {
 public:
-  CcsCT(const CcsSRS* srcSrs, const CcsSRS* tgtSrs);
+  CcsCT(const CcsSRS* src, const CcsSRS* tgt);
   ~CcsCT() = default;
 
   /**
@@ -33,8 +31,8 @@ public:
     return false;
   }
 
-  bool Transform(const double xSrc, const double ySrc, const double zSrc,
-    double& xTgt, double& yTgt, double& zTgt) {
+  bool Transform(const double srcX, const double srcY, const double srcZ,
+    double& tgtX, double& tgtY, double& tgtZ) {
     return false;
   }
 

@@ -9,19 +9,27 @@
 namespace earthxpert {
 //
 enum SrsType {
-  eUNKNOWN = -1,
-  eGEO,     // geodetic
-  eLOCAL,
-  eMAP      // projected
+  eST_UNKNOWN = -1,
+  eST_GEO,     // geodetic
+  eST_LOCAL,   // Cartisian
+  eST_MAP      // projected
+};
+
+enum SrsBackend {
+  eSB_CCS,     // MPS CCS
+  eSB_OGR,     // GDAL OGR
+  eSB_PROJ     // PROJ.4
 };
 
 //
-struct SRSInfo {
-
+struct SrsInfo {
+  SrsBackend backend;
 };
 
 //
 struct CTInfo {
-
+  SrsBackend backend;
+  SrsInfo srcSrs;
+  SrsInfo tgtSrs;
 };
 }

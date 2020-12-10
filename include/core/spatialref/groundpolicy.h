@@ -23,7 +23,7 @@ namespace earthxpert {
 template <int angleUnit = kAU_RADIAN, int linearUnit = kLU_METER>
 class EXCORE_EXPORTS GeographicGround final : public IGroundPolicy {
 public:
-  static constexpr SrsType kGroundType = eGEO;
+  static constexpr SrsType kGroundType = eST_GEO;
 
   /**
    *  \brief Constructor.
@@ -86,7 +86,7 @@ public:
    * \return Return type of ground policy
    */
   GroundPolicyType GetGroundPolicyType() const noexcept override {
-    return gpt::eGEOGRAPHIC;
+    return gpt::eGP_GEOGRAPHIC;
   }
 
   const EarthEllipsoid* GetEarthEllipsoid() const noexcept {
@@ -114,7 +114,7 @@ using GeographicGroundRad = GeographicGround<kAU_RADIAN>;
 template <int linearUnit = kLU_METER>
 class EXCORE_EXPORTS LocalGround final : public IGroundPolicy{
 public:
-  static constexpr SrsType kGroundType = eLOCAL;
+  static constexpr SrsType kGroundType = eST_LOCAL;
 
   /**
    *  \brief Constructor.
@@ -155,7 +155,7 @@ public:
    * \return Return type of ground policy
    */
   GroundPolicyType GetGroundPolicyType() const noexcept override {
-    return gpt::eLOCAL;
+    return gpt::eGP_LOCAL;
   }
 
 private:
@@ -166,9 +166,9 @@ private:
   void MoveFrom(LocalGround&& rhs) noexcept;
 };
 
-using LocalGroundFt = LocalGround<kLU_FEET>;
+using LocalGroundFt = LocalGround<kLU_FOOT>;
 using LocalGroundMe = LocalGround<kLU_METER>;
-using LocalGroundUf = LocalGround<kLU_USFEET>;
+using LocalGroundUf = LocalGround<kLU_USFOOT>;
 
 /**
  *  The class MapGround offers the ground transformation
@@ -179,7 +179,7 @@ using LocalGroundUf = LocalGround<kLU_USFEET>;
 template <int linearUnit = kLU_METER>
 class EXCORE_EXPORTS MapGround final : public IGroundPolicy {
 public:
-  static constexpr SrsType kGroundType = eMAP;
+  static constexpr SrsType kGroundType = eST_MAP;
 
   /**
    *  \brief Constructor.
@@ -220,7 +220,7 @@ public:
    * \return Return type of ground policy
    */
   GroundPolicyType GetGroundPolicyType() const noexcept override {
-    return gpt::eMAP;
+    return gpt::eGP_MAP;
   }
 
 private:
@@ -231,7 +231,7 @@ private:
   void MoveFrom(MapGround&& rhs) noexcept;
 };
 
-using MapGroundFt = MapGround<kLU_FEET>;
+using MapGroundIf = MapGround<kLU_FOOT>;
 using MapGroundMe = MapGround<kLU_METER>;
-using MapGroundUf = MapGround<kLU_USFEET>;
+using MapGroundUf = MapGround<kLU_USFOOT>;
 } // namespace earthxpert

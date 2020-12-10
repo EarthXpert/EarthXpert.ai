@@ -273,7 +273,7 @@ void EpipolarGenerator::ProcessTile(const int tileId) {
 
   mRasResample->Resample(imgMat, epiMat, tfmMat); // ResampleTile
 
-  //GatherStatistics(tileId);
+  //GatherStatTile(tileId);
   mPerf.tmProcess += mClock.TimeSinceStart() - start;
 }
 
@@ -327,8 +327,8 @@ void EpipolarGenerator::GeotransformTile(const int tileId, cv::Mat& tfmMat) {
 
   RigorousGridNodes(tileId, tfmMat, gridCols, gridRows);
 
-  DensifyPerCells(tileId, tfmMat, gridCols, gridRows);
-  //DensifyPerPixels(tileId, tfmMat, gridCols, gridRows);
+  DensifyCells(tileId, tfmMat, gridCols, gridRows);
+  //DensifyPixels(tileId, tfmMat, gridCols, gridRows);
 }
 
 /**
@@ -336,6 +336,8 @@ void EpipolarGenerator::GeotransformTile(const int tileId, cv::Mat& tfmMat) {
  *
  *  \param [in] tileId the index of tile to process
  *  \param [in] tfmMat transfomration map
+ *  \param [in] gridCols grid col positions for rigorous geometry
+ *  \param [in] gridRows grid row positions for rigorous geometry
  */
 void EpipolarGenerator::RigorousGridNodes(const int tileId, cv::Mat& tfmMat,
   const std::vector<int>& gridCols, const std::vector<int>& gridRows) {
@@ -363,10 +365,12 @@ void EpipolarGenerator::RigorousGridNodes(const int tileId, cv::Mat& tfmMat,
  *
  *  \param [in] tileId the index of tile to process
  *  \param [in] tfmMat transfomration map
+ *  \param [in] gridCols grid col positions for rigorous geometry
+ *  \param [in] gridRows grid row positions for rigorous geometry
  *
  *  \remark 15% faster than PerPixels
  */
-void EpipolarGenerator::DensifyPerCells(const int tileId, cv::Mat& tfmMat,
+void EpipolarGenerator::DensifyCells(const int tileId, cv::Mat& tfmMat,
   const std::vector<int>& gridCols, const std::vector<int>& gridRows) {
   if (1 == mStride) return;  
   const auto start = mClock.TimeSinceStart();
@@ -390,8 +394,8 @@ void EpipolarGenerator::DensifyPerCells(const int tileId, cv::Mat& tfmMat,
     if (MaskAllOne(mMaskBuf.get(), i1, i2, i3, i4)) {
       const auto invTileCols = 1.0 / (tileColR - tileColL);
       const auto invTileRows = 1.0 / (tileRowL - tileRowU);
-      const auto [tfm1, tfm2, tfm3, tfm4] =
-        MatCorners<cv::Vec2f>(tfmMat, tileColL, tileRowU, tileColR, tileRowL);
+      const auto [tfm1, tfm2, tfm3, tfm4] = MatCorners<cv::Vec2f>(tfmMat, 
+        tileColL, tileRowU, tileColR, tileRowL);
 
       double xf{};
       for (int c = 0; c < mStride; ++c, xf+= invTileCols) {
@@ -404,8 +408,10 @@ void EpipolarGenerator::DensifyPerCells(const int tileId, cv::Mat& tfmMat,
           if (eMK_NORM == mMaskBuf[k]) continue;
 
           auto& tfm = tfmMat.at<cv::Vec2f>(tileRow, tileCol);
-          tfm[0] = float(LinearInterp<double>(tfm1[0], tfm2[0], tfm3[0], tfm4[0], xf, yf));
-          tfm[1] = float(LinearInterp<double>(tfm1[1], tfm2[1], tfm3[1], tfm4[1], xf, yf));
+          tfm[0] = float(LinearInterp<double>(
+            tfm1[0], tfm2[0], tfm3[0], tfm4[0], xf, yf));
+          tfm[1] = float(LinearInterp<double>(
+            tfm1[1], tfm2[1], tfm3[1], tfm4[1], xf, yf));
 
           mMaskBuf[k] = eMK_FAST; 
         }
@@ -433,8 +439,10 @@ void EpipolarGenerator::DensifyPerCells(const int tileId, cv::Mat& tfmMat,
  *
  *  \param [in] tileId the index of tile to process
  *  \param [in] tfmMat transfomration map
+ *  \param [in] gridCols grid col positions for rigorous geometry
+ *  \param [in] gridRows grid row positions for rigorous geometry
  */
-void EpipolarGenerator::DensifyPerPixels(const int tileId, cv::Mat& tfmMat,
+void EpipolarGenerator::DensifyPixels(const int tileId, cv::Mat& tfmMat,
   const std::vector<int>& gridCols, const std::vector<int>& gridRows) {
   if (1 == mStride) return;  // Densify non-grid positions
   const auto start = mClock.TimeSinceStart();
@@ -495,15 +503,15 @@ void EpipolarGenerator::DensifyPerPixels(const int tileId, cv::Mat& tfmMat,
  */
 void EpipolarGenerator::EpiToImg(const int tileId, cv::Mat& tfmMat,
   const int tileCol, const int tileRow, const bool insideImg) {
-  const auto [imgColOffset, imgRowOffset, imgNumCols, imgNumRows] = ImgTile(tileId);
-  const auto [colOffset, rowOffset, numCols, numRows] = EpiTile(tileId);
+  const auto [imgColOff, imgRowOff, imgNumCols, imgNumRows] = ImgTile(tileId);
+  const auto [colOff, rowOff, numCols, numRows] = EpiTile(tileId);
 
-  Point2d epi(0.5 + colOffset + tileCol, 0.5 + rowOffset + tileRow), img;
+  Point2d epi(0.5 + colOff + tileCol, 0.5 + rowOff + tileRow), img;
   const auto ret = mEpiModel->EpiToRaw(epi, img);
   if (!ret) return;
   
-  const float tfmCol = float(img.x - 0.5 - imgColOffset);
-  const float tfmRow = float(img.y - 0.5 - imgRowOffset);
+  const float tfmCol = float(img.x - 0.5 - imgColOff);
+  const float tfmRow = float(img.y - 0.5 - imgRowOff);
 
   if (!insideImg || (0 <= tfmCol && tfmCol <= imgNumCols - 1 &&
                      0 <= tfmRow && tfmRow <= imgNumRows - 1)) {
@@ -521,7 +529,7 @@ void EpipolarGenerator::EpiToImg(const int tileId, cv::Mat& tfmMat,
  *
  *  \param [in] tileId the index of tile to analyze
  */
-void EpipolarGenerator::GatherStatistics(const int tileId) {
+void EpipolarGenerator::GatherStatTile(const int tileId) {
   const auto [colOffset, rowOffset, numCols, numRows] = EpiTile(tileId);
   const int64_t numPix = int64_t(numCols) * numRows;
 

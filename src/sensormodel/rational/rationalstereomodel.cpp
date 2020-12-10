@@ -29,7 +29,7 @@ RationalStereoModel::RationalStereoModel(
 }
 
 void RationalStereoModel::Initialize() {
-  mFwdAlgo = eSM_EXAI;
+  mFwdAlgo = eFA_EXAI;
 }
 
 /**
@@ -177,7 +177,7 @@ bool RationalStereoModel::ImagesToGround(
  */
 Tuple6d RationalStereoModel::CalcJacobianA(RationalModel const* ratModel,
   const Point3d& ground, Point2d& image) const {
-  auto [u, v, w] = ratModel->GroundNormalize(ground);
+  auto [u, v, w] = ratModel->GroundToVirtual(ground);
   const auto [Ln, Ld, Sn, Sd] = ratModel->CalcPolynomials(u, v, w);
 
   const auto invSd = 1.0 / Sd;
@@ -185,9 +185,7 @@ Tuple6d RationalStereoModel::CalcJacobianA(RationalModel const* ratModel,
   image.x = Sn * invSd;
   image.y = Ln * invLd;
 
-  double duvw_du[RationalModel::NumCoef];
-  double duvw_dv[RationalModel::NumCoef];
-  double duvw_dw[RationalModel::NumCoef];
+  double duvw_du[rpc::NumCoef], duvw_dv[rpc::NumCoef], duvw_dw[rpc::NumCoef];
   Duvw_duvw(u, v, w, duvw_du, duvw_dv, duvw_dw);
 
   const auto [dSn_du, dSn_dv, dSn_dw] = D_duvw(ratModel->snc, duvw_du, duvw_dv, duvw_dw); // Partial derivative of Sn w.r.t u, v,w
@@ -198,7 +196,7 @@ Tuple6d RationalStereoModel::CalcJacobianA(RationalModel const* ratModel,
   const auto dFc_duvw = (Point3d(dSn_du, dSn_dv, dSn_dw) - \
     image.x * Point3d(dSd_du, dSd_dv, dSd_dw)) * invSd;  // dFc_du, dFc_dv, dFc_dw
   const auto dFr_duvw = (Point3d(dLn_du, dLn_dv, dLn_dw) - \
-    image.y * Point3d(dLn_du, dLn_dv, dLn_dw)) * invLd;  // dFr_du, dFr_dv, dFr_dw
+    image.y * Point3d(dLd_du, dLd_dv, dLd_dw)) * invLd;  // dFr_du, dFr_dv, dFr_dw
 
   const double du_dL = ratModel->mInvScale[risf::eISLON];    // 1.0 / nfc[rnf::eSLON]; u = (Lon - nfc[rnf::eOLON]) / nfc[rnf::eSLON]
   const double dv_dP = ratModel->mInvScale[risf::eISLAT];    // 1.0 / nfc[rnf::eSLAT]; v = (Lat - nfc[rnf::eOLAT])/ nfc[rnf::eSLAT]

@@ -25,6 +25,11 @@ namespace earthxpert {
 template <typename CraftPolicy>
 class EXSENSORMODEL_EXPORTS PushbroomModel final : public SensorModel {
 public:
+  enum CcdUnit {
+    eCU_ANGLE,
+    eCU_METRIC
+  };
+
   /**
    *  \brief Construct an aerial pushbroom geometry model.
    *
@@ -36,7 +41,7 @@ public:
   PushbroomModel(std::shared_ptr<ScannerImageModel> imgModel,
                  std::unique_ptr<ScannerIP> &&scannerIP,
                  std::shared_ptr<ScannerEP> scannerEP,
-                 std::shared_ptr<SpatialReferenceSystem> groundSRS);
+                 std::shared_ptr<OGRSpatialRef> groundSRS);
 
   /**
    *  \brief Construct a satellite pushbroom geometry model.
@@ -51,7 +56,7 @@ public:
                  std::unique_ptr<ScannerIP> &&scannerIP,
                  std::shared_ptr<ScannerEP> scannerEP,
                  std::shared_ptr<SatelliteDP> satelliteDP,
-                 std::shared_ptr<SpatialReferenceSystem> groundSRS);
+                 std::shared_ptr<OGRSpatialRef> groundSRS);
 
   PushbroomModel(const PushbroomModel &rhs);
   PushbroomModel(PushbroomModel &&rhs) noexcept;
@@ -110,7 +115,7 @@ public:
    * @return type of sensor model
    */
   ModelType GetModelType() const noexcept override {
-    return ModelType::ePUSHBROOM;
+    return ModelType::eMT_PUSHBROOM;
   }
 
   /**

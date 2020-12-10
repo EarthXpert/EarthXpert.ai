@@ -1,23 +1,30 @@
 project(tests_cppunit_io CXX)
 
-add_cppunit_test(pointcloudreader_tests 
-  ex3rdparty core dataio 
-  ${GDAL_LIBRARY} ${LASLIB_LIBRARY})
-add_cppunit_test(pointcloudwriter_tests 
-  ex3rdparty core dataio 
-  ${GDAL_LIBRARY} ${LASLIB_LIBRARY})
-add_cppunit_test(rasterreader_tests 
-  ex3rdparty core dataio 
-  ${GDAL_LIBRARY} ${OpenCV_LIBS})
-add_cppunit_test(rasterwriter_tests 
-  ex3rdparty core dataio 
-  ${GDAL_LIBRARY} ${OpenCV_LIBS})
-add_cppunit_test(vectorreader_tests 
-  ex3rdparty core dataio 
-  ${GDAL_LIBRARY})
-add_cppunit_test(vectorwriter_tests 
-  ex3rdparty core dataio 
-  ${GDAL_LIBRARY})
+function(add_pcio_cppunit_test name)
+  add_cppunit_test(${name} 
+    ex3rdparty core dataio 
+    ${GDAL_LIBRARY} ${LASLIB_LIBRARY})
+endfunction()
+
+function(add_rasterio_cppunit_test name)
+  add_cppunit_test(${name} 
+    ex3rdparty core dataio 
+    ${GDAL_LIBRARY} ${OpenCV_LIBS})
+endfunction()
+
+function(add_vectorio_cppunit_test name)
+  add_cppunit_test(${name} 
+    ex3rdparty core dataio 
+    ${GDAL_LIBRARY})
+endfunction()
+
+add_pcio_cppunit_test(pointcloudreader_tests)
+add_pcio_cppunit_test(pointcloudwriter_tests)
+add_rasterio_cppunit_test(rasterreader_tests)
+add_rasterio_cppunit_test(rasterwriter_tests)
+add_vectorio_cppunit_test(vectorreader_tests)
+add_vectorio_cppunit_test(vectorwriter_tests)
+
 if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
   get_filename_component(BOOST_BIN_DIR "${Boost_DIR}/../.." ABSOLUTE)
   set(TESTS_IO_PATH "PATH=$<TARGET_FILE_DIR:ex3rdparty>;$<TARGET_FILE_DIR:core>;\

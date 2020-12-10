@@ -33,7 +33,7 @@ RationalModel::RationalModel(const int numCols, const int numRows,
                              const std::array<double, NumCoef> &lineDenCoef,
                              const std::array<double, NumCoef> &sampNumCoef,
                              const std::array<double, NumCoef> &sampDenCoef,
-                             std::shared_ptr<SpatialReferenceSystem> groundSRS)
+                             SPSpatialRefSys groundSRS)
   : mNumCols(numCols), mNumRows(numRows),
     mNormalFactors(normalFators), mLineNumCoef(lineNumCoef),
     mLineDenCoef(lineDenCoef), mSampNumCoef(sampNumCoef),
@@ -63,7 +63,7 @@ RationalModel::RationalModel(const std::array<double, NumFact> &normalFators,
                              const std::array<double, NumCoef> &lineDenCoef,
                              const std::array<double, NumCoef> &sampNumCoef,
                              const std::array<double, NumCoef> &sampDenCoef,
-                             std::shared_ptr<SpatialReferenceSystem> groundSRS)
+                             SPSpatialRefSys groundSRS)
   : RationalModel(0, 0, normalFators, lineNumCoef, lineDenCoef,
     sampNumCoef, sampDenCoef, groundSRS) {
 }
@@ -141,14 +141,13 @@ bool RationalModel::operator==(const RationalModel &rhs) const {
     if (!equalD(mErrBias, rhs.mErrBias) || !equalD(mErrRand, rhs.mErrRand))
       return false;
 
+    if (mCorrAlgo != rhs.mCorrAlgo)
+      return false;
     if (!std::equal(std::cbegin(mLineCorr), std::cend(mLineCorr),
       std::cbegin(rhs.mLineCorr), equalD))
       return false;
     if (!std::equal(std::cbegin(mSampCorr), std::cend(mSampCorr),
       std::cbegin(rhs.mSampCorr), equalD))
-      return false;
-
-    if (mCorrAlgo != rhs.mCorrAlgo)
       return false;
   }
   return true;
@@ -169,22 +168,21 @@ bool RationalModel::operator!=(const RationalModel &rhs) const {
  *  \except Throw invalid_arguments if it is a bad model.
  */
 void RationalModel::CheckModel() const {
-  if (nfc[eSLINE] < 0.0 || nfc[eSSAMP] < 0.0)
-    throw std::invalid_argument(_("Line or Sample scale must not be negative."));
+  if (nfc[eSLINE] <= 0.0 || nfc[eSSAMP] <= 0.0)
+    throw std::invalid_argument(_("Line or Sample scale must be positive."));
   if (nfc[eSLINE] < 1.0 || nfc[eSSAMP] < 1.0)
     throw std::invalid_argument(_("Line or Sample scale is too small."));
-  if (nfc[eSLAT] < 0.0 || nfc[eSLON] < 0.0)
-    throw std::invalid_argument(_("Latitude or Longitude scale must not be negative."));
+  if (nfc[eSLAT] <= 0.0 || nfc[eSLON] <= 0.0)
+    throw std::invalid_argument(_("Latitude or Longitude scale must be positive."));
   if (nfc[eSLAT] < kTol || nfc[eSLON] < kTol)
     throw std::invalid_argument(_("Latitude or Longitude scale is too small."));
-  if (nfc[eSHGT] < 0.0)
-    throw std::invalid_argument(_("Height scale must not be negative."));
+  if (nfc[eSHGT] <= 0.0)
+    throw std::invalid_argument(_("Height scale must be positive."));
   if (nfc[eSHGT] < 1.0)
     throw std::invalid_argument(_("Height scale is too small."));
 
   // numerical reliability, not singular, contineous
   // non-zero denominator
-
 }
 
 /**
@@ -194,7 +192,7 @@ void RationalModel::CheckModel() const {
  *  \return Return true if two models represent exactly same geometry
  */
 bool RationalModel::EqualTo(const ISensorModel &rhs) const {
-  if (ModelType::eRATIONAL != rhs.GetModelType())
+  if (ModelType::eMT_RATIONAL != rhs.GetModelType())
     return false;
 
   auto rationalModel = dynamic_cast<const RationalModel *>(&rhs);
@@ -218,7 +216,7 @@ bool RationalModel::ImageToGround(const Point2d &image, Point3d &ground) const {
   const auto sensor = ImageToSensor(image);
 
   Point3d uvw{0.0, 0.0, (ground.z - nfc[eOHGT]) * mInvScale[eISHGT]}; // lph
-  if (!SensorToGroundNormalize(sensor, uvw))
+  if (!SensorToVirtual(sensor, uvw))
     return false;
 
   ground.x = nfc[eOLON] + uvw.x * nfc[eSLON];
@@ -247,31 +245,31 @@ bool RationalModel::GroundToImage(const Point3d &ground, Point2d &image) const {
 }
 
 /**
- *  \brief Set 2d correction polynomials in sensor space.
+ *  \brief Set 2d correction polynomials in image/sensor space.
  *
  *  \param [in] lineCorr 2nd-order polynomial for line correction
  *  \param [in] sampCorr 2nd-order polynomial for sample correction
  *  \param [in] corrAlgo correction algoirthm
  */
-void RationalModel::SetSensorCorrection(const std::array<double, NumCorr> &lineCorr,
+void RationalModel::SetCorrection(const std::array<double, NumCorr> &lineCorr,
   const std::array<double, NumCorr> &sampCorr, const CorrAlgo corrAlgo) {
   mLineCorr = lineCorr;
   mSampCorr = sampCorr;
   mCorrAlgo = corrAlgo;
 
   auto NotZero = [](const double val) { return 0.0 != val; };
-  mCorrectionFlag = std::any_of(std::cbegin(mLineCorr), std::cend(mLineCorr), NotZero) ||
+  mCorrFlag = std::any_of(std::cbegin(mLineCorr), std::cend(mLineCorr), NotZero) ||
     std::any_of(std::cbegin(mSampCorr), std::cend(mSampCorr), NotZero);
 }
 
 /**
- *  \brief Get 2d correction polynomials in sensor space.
+ *  \brief Get 2d correction polynomials in image/sensor space.
  *
  *  \param [out] lineCorr 2nd-order polynomial for line correction
  *  \param [out] sampCorr 2nd-order polynomial for sample correction
  *  \param [in] corrAlgo correction algoirthm
  */
-void RationalModel::GetSensorCorrection(std::array<double, NumCorr> &lineCorr,
+void RationalModel::GetCorrection(std::array<double, NumCorr> &lineCorr,
   std::array<double, NumCorr> &sampCorr, const CorrAlgo corrAlgo) const {
   if (mCorrAlgo == corrAlgo) {
     lineCorr = mLineCorr;
@@ -279,12 +277,12 @@ void RationalModel::GetSensorCorrection(std::array<double, NumCorr> &lineCorr,
     return;
   }
 
-  if (eSTANDARD == mCorrAlgo) {
-    assert(eENHANCED == corrAlgo);
-  } // convert eSTANDARD to eENHANCED
+  if (eCA_IMAGE == mCorrAlgo) {
+    assert(eCA_SENSOR == corrAlgo);
+  } // convert eCA_IMAGE to eCA_SENSOR
   else {
-    assert(eSTANDARD == corrAlgo);
-  } // convert eENHANCED to eSTANDARD
+    assert(eCA_IMAGE == corrAlgo);
+  } // convert eCA_SENSOR to eCA_IMAGE
 }
 
 void RationalModel::EnableCubeS2G(const bool enable) {
@@ -376,7 +374,7 @@ void RationalModel::Clear() noexcept {
 
   mLineCorr.fill(0.0);
   mSampCorr.fill(0.0);
-  mCorrAlgo = eSTANDARD;
+  mCorrAlgo = eCA_IMAGE;
 
   mInvScale.fill(0.0);
 }
@@ -408,7 +406,7 @@ void RationalModel::Clear() noexcept {
 Point2d RationalModel::ImageActualToApparant(const Point2d& image) const {
   Point2d imageApp{ image };
 
-  if (mCorrectionFlag) {  // apply correction
+  if (mCorrFlag) {  // apply correction
     const EqualD equalD(0.001);  // [unit: pixel]
     Point2d imageP{ imageApp };
 
@@ -424,158 +422,27 @@ Point2d RationalModel::ImageActualToApparant(const Point2d& image) const {
   return imageApp;
 }
 
-/**
- *  \brief calculate the correction in image space.
- *
- *  \param [in] image The {col, row} position compatible with RPCs
- *  \return Returns {col, row} corrections
- */
-Point2d RationalModel::CalcCorrection(const Point2d& image) const {
-  auto scc = mSampCorr.data();
-  auto lcc = mLineCorr.data();
-  const double CR[3] = { image.x * image.x, image.x * image.y, image.y * image.y };
+Point2d RationalModel::SensorActualToApparant(const Point2d& sensor) const {
+  Point2d sensorApp{ sensor };
 
-  return { scc[eCO] + scc[eCS] * image.x + scc[eCL] * image.y +
-    scc[eCS2] * CR[0] + scc[eCSL] * CR[1] + scc[eCL2] * CR[2],
-           lcc[eCO] + lcc[eCS] * image.x + lcc[eCL] * image.y +
-    lcc[eCS2] * CR[0] + lcc[eCSL] * CR[1] + lcc[eCL2] * CR[2] };
+  return sensorApp;
 }
 
 /**
- *  Sensor-to-ground projection in virtual coordinate systems.
+ *  \brief calculate the correction in image/sensor space.
  *
- *  \brief Given a normalized 2d position in image coordinate system and
- *  a normalized height in ground vertical coordinate system, output
- *  the ground horizontal position.
- *
- *  \param [in] x/c Normalized col in sensor coordinate system
- *  \param [in] y/r Normalized row in sensor coordinate system
- *  \param [in] w Normalized height in ground coordinate system
- *  \param [out] u Normalized longitude in ground coordinate system
- *  \param [out] v Normalized latitude in ground coordinate system
- *  \return Returns true if the operation succeeds
- *
- *  \details The Rational Function model provide coefficients for projection
- *    from ground space to image space. However, no coeffcients are given
- *    for projection from image space to ground space. Therefore, an iterative
- *    procedure is designed to estimate an approximate start L, P position,
- *    to project it into image space and evaluate the misclosure w.r.t. the
- *    measured known col and row coordinates, and to use the misclosures to
- *    compute corrections to the inital L, P estimates.
- *
- *    The iterations are performed in normalized coordinates.
- *
- *    x/c  normalized column
- *    y/r  normalized row
- *    x'/c' estimated normalized column
- *    y'/r' estimated normalized row
- *    u' estimated normalized longitude
- *    v' estimated normalized latitude
- *    w  normalized height
- *
- *    x' = Sn(u', v', w) / Sd(u', v', w)   // approx. col/row
- *    y' = Ln(u', v', w) / Ld(u', v', w)
- *    dx = x' - x                          // misclosure
- *    dy = y' - y
- *    u = u' - du                          // update
- *    v = v' - dv
- *
- *    Formula comes from consideration of a Taylor series expansion
- *    about the initial approx. position (u', v')
- *
- *    | dx |  = | d(Sn/Sd)_du  d(Sn/Sd)_dv |  | du |
- *    | dy |  = | d(Ln/Ld)_du  d(Ln/Ld)_dv |  | dv |
- *
- *    [du dv] are obtained by inverting the design matrix and multiplying by
- * [dx, dy]. This iternative procedure is repeated until [dx, dy] are
- * sufficiently small.
- *
- *  \remark the scale factors eSSAMP, eSLINE are reduced for a single image.
- *  \ref RationalStereoModel::ImagesToGround()
+ *  \param [in] cam The image/sensor position compatible with RPCs
+ *  \return Returns {col, row} corrections
  */
-bool RationalModel::SensorToGroundNormalize(const double x, const double y,
-  const double w, double& u, double& v) const {
-  if (mCubeS2G) {
-    std::tie(u, v) = mCubeS2G->GetVal2(x, y, w);
-  }
-  else { // direct estimates for u, v
-    if (!SensorToGroundNormalizeLinear(x, y, w, u, v))
-      return false;
-  }
-  u = std::clamp(u, -1.2, 1.2);
-  v = std::clamp(v, -1.2, 1.2);
+Point2d RationalModel::CalcCorrection(const Point2d& cam) const {
+  auto scc = mSampCorr.data();
+  auto lcc = mLineCorr.data();
+  const double CR[3] = { cam.x * cam.x, cam.x * cam.y, cam.y * cam.y };
 
-  // refine the estimated ground horizontal position iteratively
-  bool recalcFlag{ true }; // Flag indicating whether partial derivatives should be recomputed
-
-  // Partial derivatives of Fc = (Sn/Sd) and Fr = (Ln/Ld) w.r.t. u and v
-  // A[2][2] = | dFc_du  dFc_dv |
-  //           | dFr_du  dFr_dv |
-  double dFc_du{}, dFc_dv{}, dFr_du{}, dFr_dv{};
-  double invDet{}; // Inverse of determinant of the partial derivative matrix
-
-  int iter{};
-  for (iter = 0; iter < kMaxIterS2G; ++iter) {
-    const auto [Ln, Ld, Sn, Sd] = CalcPolynomials(u, v, w);
-
-    const double invSd = 1.0 / Sd;
-    const double invLd = 1.0 / Ld;
-    const double xp = Sn * invSd;    // estimated normalized col/row
-    const double yp = Ln * invLd;
-
-    // recompute the partial derivatives of the sample & line w.r.t u, v
-    if (recalcFlag) {
-      // pre-compute partials TODO
-      double duvw_du[NumCoef], duvw_dv[NumCoef];
-      Duvw_duv(u, v, w, duvw_du, duvw_dv);
-
-      const auto [dSn_du, dSn_dv] = D_duv(snc, duvw_du, duvw_dv); // Partial derivative of Sn w.r.t u, v
-      const auto [dSd_du, dSd_dv] = D_duv(sdc, duvw_du, duvw_dv); // Partial derivative of Sd w.r.t u, v
-      const auto [dLn_du, dLn_dv] = D_duv(lnc, duvw_du, duvw_dv); // Partial derivative of Ln w.r.t u, v
-      const auto [dLd_du, dLd_dv] = D_duv(ldc, duvw_du, duvw_dv); // Partial derivative of Ld w.r.t u, v
-
-      // Partial derivatives of (Sn/Sd) and (Ln/Ld) w.r.t u, v
-      dFc_du = (dSn_du - xp * dSd_du) * invSd; // (Sd * dSn_du - Sn * dSd_du) / (Sd * Sd)
-      dFc_dv = (dSn_dv - xp * dSd_dv) * invSd; // (Sd * dSn_dv - Sn * dSd_dv) / (Sd * Sd)
-      dFr_du = (dLn_du - yp * dLd_du) * invLd; // (Ld * dLn_du - Ln * dLd_du) / (Ld * Ld)
-      dFr_dv = (dLn_dv - yp * dLd_dv) * invLd; // (Ld * dLn_dv - Ln * dLd_dv) / (Ld * Ld)
-
-      // determinant of the partial derivative matrix
-      const double det = dFc_du * dFr_dv - dFc_dv * dFr_du;
-      if (kTol >= fabs(det)) 
-        return false;
-
-      invDet = 1.0 / det;
-    }
-
-    // normalized col & row misclosures
-    // b[2] = | dx  dy |
-    const double dx = xp - x; // Normalized column misclosure
-    const double dy = yp - y; // Normalized row misclosure
-
-    // do not re-compute the partial derivatives within 1 pixel
-    if (fabs(dx) < mInvScale[eISSAMP] && fabs(dy) < mInvScale[eISLINE]) {
-      recalcFlag = false;
-    }
-
-    // delta of u and v by solving Ax = b
-    const double du = (dFr_dv * dx - dFc_dv * dy) * invDet; // Normalized longitude error
-    const double dv = (-dFr_du * dx + dFc_du * dy) * invDet; // Normalized latitude error
-
-    u -= du;
-    v -= dv;
-
-    // check if still diverging after several iterations
-    if (5 < iter && (kTol_d < fabs(du) || kTol_d < fabs(dv)))
-      return false;
-
-    // terminate if converged
-    if (fabs(dx) < mTol_c && fabs(dy) < mTol_r)
-      break;
-  }
-
-  // return false if reaching max. iterations
-  return (kMaxIterS2G > iter);
+  return { scc[eCO] + scc[eCS] * cam.x + scc[eCL] * cam.y +
+    scc[eCS2] * CR[0] + scc[eCSL] * CR[1] + scc[eCL2] * CR[2],
+           lcc[eCO] + lcc[eCS] * cam.x + lcc[eCL] * cam.y +
+    lcc[eCS2] * CR[0] + lcc[eCSL] * CR[1] + lcc[eCL2] * CR[2] };
 }
 
 /**
@@ -641,6 +508,168 @@ Tuple4d RationalModel::CalcPolynomials(const double u,
 }
 
 /**
+ *  Sensor-to-ground projection in virtual coordinate systems.
+ *
+ *  \brief Given a normalized 2d position in image coordinate system and
+ *  a normalized height in ground vertical coordinate system, output
+ *  the ground horizontal position.
+ *
+ *  \param [in] x/c Normalized col in sensor coordinate system
+ *  \param [in] y/r Normalized row in sensor coordinate system
+ *  \param [in] w Normalized height in ground coordinate system
+ *  \param [out] u Normalized longitude in ground coordinate system
+ *  \param [out] v Normalized latitude in ground coordinate system
+ *  \return Returns true if the operation succeeds
+ *
+ *  \details The Rational Function model provide coefficients for projection
+ *    from ground space to image space. However, no coeffcients are given
+ *    for projection from image space to ground space. Therefore, an iterative
+ *    procedure is designed to estimate an approximate start L, P position,
+ *    to project it into image space and evaluate the misclosure w.r.t. the
+ *    measured known col and row coordinates, and to use the misclosures to
+ *    compute corrections to the inital L, P estimates.
+ *
+ *    The iterations are performed in normalized coordinates.
+ *
+ *    x/c  normalized column
+ *    y/r  normalized row
+ *    x'/c' estimated normalized column
+ *    y'/r' estimated normalized row
+ *    u' estimated normalized longitude
+ *    v' estimated normalized latitude
+ *    w  normalized height
+ *
+ *    x' = Sn(u', v', w) / Sd(u', v', w)   // approx. col/row
+ *    y' = Ln(u', v', w) / Ld(u', v', w)
+ *    dx = x' - x                          // misclosure
+ *    dy = y' - y
+ *    u = u' - du                          // update
+ *    v = v' - dv
+ *
+ *    Formula comes from consideration of a Taylor series expansion
+ *    about the initial approx. position (u', v')
+ *
+ *    | dx |  = | d(Sn/Sd)_du  d(Sn/Sd)_dv |  | du |
+ *    | dy |  = | d(Ln/Ld)_du  d(Ln/Ld)_dv |  | dv |
+ *
+ *    [du dv] are obtained by inverting the design matrix and multiplying by
+ * [dx, dy]. This iternative procedure is repeated until [dx, dy] are
+ * sufficiently small.
+ *
+ *  \remark the scale factors eSSAMP, eSLINE are reduced for a single image.
+ *  \ref RationalStereoModel::ImagesToGround()
+ */
+bool RationalModel::SensorToVirtual(const double x, const double y,
+  const double w, double& u, double& v) const {
+  if (mCubeS2G) {
+    std::tie(u, v) = mCubeS2G->GetVal2(x, y, w);
+  }
+  else { // direct estimates for u, v
+    if (!SensorToVirtualLinear(x, y, w, u, v))
+      return false;
+  }
+  u = std::clamp(u, -1.2, 1.2);
+  v = std::clamp(v, -1.2, 1.2);
+
+  // refine the estimated ground horizontal position iteratively
+  bool recalcFlag{ true }; // Flag indicating whether partial derivatives should be recomputed
+
+  // Partial derivatives of Fc = (Sn/Sd) and Fr = (Ln/Ld) w.r.t. u and v
+  // A[2][2] = | dFc_du  dFc_dv |
+  //           | dFr_du  dFr_dv |
+  double dFc_du{}, dFc_dv{}, dFr_du{}, dFr_dv{};
+  double invDet{}; // Inverse of determinant of the partial derivative matrix
+
+  int iter{};
+  for (iter = 0; iter < kMaxIterS2G; ++iter) {
+    const auto [Ln, Ld, Sn, Sd] = CalcPolynomials(u, v, w);
+
+    const double invSd = 1.0 / Sd;
+    const double invLd = 1.0 / Ld;
+    const double xp = Sn * invSd;    // estimated normalized col/row
+    const double yp = Ln * invLd;
+
+    // recompute the partial derivatives of the sample & line w.r.t u, v
+    if (recalcFlag) {
+      // pre-compute partials TODO
+      double duvw_du[NumCoef], duvw_dv[NumCoef];
+      Duvw_duv(u, v, w, duvw_du, duvw_dv);
+
+      const auto [dSn_du, dSn_dv] = D_duv(snc, duvw_du, duvw_dv); // Partial derivative of Sn w.r.t u, v
+      const auto [dSd_du, dSd_dv] = D_duv(sdc, duvw_du, duvw_dv); // Partial derivative of Sd w.r.t u, v
+      const auto [dLn_du, dLn_dv] = D_duv(lnc, duvw_du, duvw_dv); // Partial derivative of Ln w.r.t u, v
+      const auto [dLd_du, dLd_dv] = D_duv(ldc, duvw_du, duvw_dv); // Partial derivative of Ld w.r.t u, v
+
+      // Partial derivatives of (Sn/Sd) and (Ln/Ld) w.r.t u, v
+      dFc_du = (dSn_du - xp * dSd_du) * invSd; // (Sd * dSn_du - Sn * dSd_du) / (Sd * Sd)
+      dFc_dv = (dSn_dv - xp * dSd_dv) * invSd; // (Sd * dSn_dv - Sn * dSd_dv) / (Sd * Sd)
+      dFr_du = (dLn_du - yp * dLd_du) * invLd; // (Ld * dLn_du - Ln * dLd_du) / (Ld * Ld)
+      dFr_dv = (dLn_dv - yp * dLd_dv) * invLd; // (Ld * dLn_dv - Ln * dLd_dv) / (Ld * Ld)
+
+      // determinant of the partial derivative matrix
+      const double det = dFc_du * dFr_dv - dFc_dv * dFr_du;
+      if (kTol >= fabs(det))
+        return false;
+
+      invDet = 1.0 / det;
+    }
+
+    // normalized col & row misclosures
+    // b[2] = | dx  dy |
+    const double dx = xp - x; // Normalized column misclosure
+    const double dy = yp - y; // Normalized row misclosure
+
+    // do not re-compute the partial derivatives within 1 pixel
+    if (fabs(dx) < mInvScale[eISSAMP] && fabs(dy) < mInvScale[eISLINE]) {
+      recalcFlag = false;
+    }
+
+    // delta of u and v by solving Ax = b
+    const double du = (dFr_dv * dx - dFc_dv * dy) * invDet; // Normalized longitude error
+    const double dv = (-dFr_du * dx + dFc_du * dy) * invDet; // Normalized latitude error
+
+    u -= du;
+    v -= dv;
+
+    // check if still diverging after several iterations
+    if (5 < iter && (kTol_d < fabs(du) || kTol_d < fabs(dv)))
+      return false;
+
+    // terminate if converged
+    if (fabs(dx) < mTol_c && fabs(dy) < mTol_r)
+      break;
+  }
+
+  // return false if reaching max. iterations
+  return (kMaxIterS2G > iter);
+}
+
+/**
+ *  \brief Calculate Jacobian of rational functions at given ground position (analytic).
+ *
+ *  \param [out] image estimated normalized col/row
+ *  \return Return {dFc_du, dFc_dv, dFr_du, dFr_dv}
+ */
+Tuple4d RationalModel::CalcJacobianA(const double w, const double u, 
+  const double v, double& xp, double& yp) const {
+  return {};
+}
+
+/**
+ *  \brief Calculate Jacobian of rational functions at given ground position
+ *  (central finite difference).
+ *
+ *  \param [out] image estimated normalized col/row
+ *  \return Return {dFc_du, dFc_dv, dFr_du, dFr_dv}
+ *
+ *  \remark xx% faster than CalcJacobianA
+ */
+Tuple4d RationalModel::CalcJacobianNc(const double w, const double u, 
+  const double v, double& xp, double& yp) const {
+  return {};
+}
+
+/**
  *  \brief Do sensor-to-ground projection using linear coefficients.
  *
  *  \param [in] x/c normalized imagery col position
@@ -669,7 +698,7 @@ Tuple4d RationalModel::CalcPolynomials(const double u,
  *    Fc(u, v) = Sn - Sd * x = 0
  *    Fr(u, v) = Ln - Ld * y = 0
  */
-bool RationalModel::SensorToGroundNormalizeLinear(const double x, const double y,
+bool RationalModel::SensorToVirtualLinear(const double x, const double y,
   const double w, double &u, double &v) const {
   double A[2][2];  // Partial derivatives w.r.t. u and v
   A[0][0] = snc[eL] - sdc[eL] * x;
@@ -695,7 +724,7 @@ bool RationalModel::SensorToGroundNormalizeLinear(const double x, const double y
 }
 
 /**
- *  Build a cube to provide fast X, Y coordinates used by SensorToGroundNormalize.
+ *  Build a cube to provide fast X, Y coordinates used by SensorToVirtual.
  */
 void RationalModel::BuildCubeS2G() {
   auto cubeS2G = std::make_unique<InterpCubeD>(2,
@@ -707,9 +736,9 @@ void RationalModel::BuildCubeS2G() {
 
   auto cube = cubeS2G->GetArray();
   for (size_t i = 0; i < numNodes; ++i) {
-    if (!SensorToGroundNormalize(cubeNodes[i].x, cubeNodes[i].y,
+    if (!SensorToVirtual(cubeNodes[i].x, cubeNodes[i].y,
       cubeNodes[i].z, cube[i*2], cube[i*2 + 1])) {
-      throw std::exception(_("RationalModel: SensorToGroundNormalize failed to project."));
+      throw std::exception(_("RationalModel: SensorToVirtual failed to project."));
     }
   }
 

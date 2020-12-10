@@ -208,11 +208,11 @@ RationalModelMarshaller::DeserializeRpb(std::istream& inS) {
       errRand = std::stod(tokens[1]);
       break;
     default:
-      assert(false);
+      assert(false && "wrong entry.");
     }
   }
 
-  auto groundSRS = std::make_shared<SpatialReferenceSystem>("WGS84");
+  auto groundSRS = std::make_shared<OGRSpatialRef>("WGS84");
   auto rationalModel = std::make_unique<RationalModel>(mNumCols, mNumRows,
     normalFators, lineNumCoef, lineDenCoef, sampNumCoef, sampDenCoef, groundSRS);
   rationalModel->SetErrors(errBias, errRand);
@@ -277,11 +277,11 @@ RationalModelMarshaller::DeserializeRpc(std::istream& inS) {
       sampDenCoef[idx] = std::stod(value);
       break;
     default:
-      assert(false);
+      assert(false && "wrong entry.");
     }
   }
 
-  auto groundSRS = std::make_shared<SpatialReferenceSystem>("WGS84");
+  auto groundSRS = std::make_shared<OGRSpatialRef>("WGS84");
   return std::make_unique<RationalModel>(mNumCols, mNumRows, normalFators,
       lineNumCoef, lineDenCoef, sampNumCoef, sampDenCoef, groundSRS);
 }

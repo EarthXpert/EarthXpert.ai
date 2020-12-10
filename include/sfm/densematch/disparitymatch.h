@@ -7,11 +7,11 @@
 #include "sfm/densematch/densematch.h"
 #include "epipolarmodel/iepipolarmodel.h"
 #include "sensormodel/isensormodel.h"
-#include "sfm/densematch/disparitymatchtypes.h"
 #include "sfm/densematch/censuscostfunc.h"
+#include "sfm/densematch/circleneighbor.h"
+#include "sfm/densematch/disparitymatchtypes.h"
 #include "sfm/densematch/micostfunc.h"
 #include "sfm/densematch/rankcostfunc.h"
-#include "sfm/densematch/circleneighbor.h"
 #include "sfm/densematch/rectneighbor.h"
 
 #include <algorithm>
@@ -37,7 +37,8 @@ namespace earthxpert {
  */
 template <class GeometryModel, class CostFunc, class Neighborhood>
 class EXSFM_EXPORTS DisparityMatch final : public DenseMatch {
-  static_assert(std::is_base_of_v<IEpipolarModel, GeometryModel> || std::is_base_of_v<ISensorModel, GeometryModel>, "IEpipolarModel or ISensorModel");
+  static_assert(std::is_base_of_v<IEpipolarModel, GeometryModel> || \
+    std::is_base_of_v<ISensorModel, GeometryModel>, "IEpipolarModel or ISensorModel");
   static_assert(std::is_base_of_v<ICostFunc, CostFunc>, "ICostFunc");
   static_assert(std::is_base_of_v<INeighborhood, Neighborhood>, "INeighborhood");
 

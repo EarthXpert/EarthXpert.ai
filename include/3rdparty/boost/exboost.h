@@ -7,21 +7,34 @@
 #include "3rdparty/ex3rdparty.h"
 
 #include <boost/filesystem.hpp>
+
 #include <boost/geometry.hpp>
 #include <boost/geometry/algorithms/comparable_distance.hpp>
 #include <boost/geometry/geometries/segment.hpp>
 #include <boost/geometry/geometries/point_xy.hpp>
 #include <boost/geometry/geometries/polygon.hpp>
+
 #include <boost/locale.hpp>
 
-#include <string>
-#include <type_traits>
+#include <boost/units/absolute.hpp>
+#include <boost/units/cmath.hpp>
+#include <boost/units/io.hpp>
+#include <boost/units/pow.hpp>
+#include <boost/units/systems/si.hpp>
 
 namespace bfs = boost::filesystem;
+
 namespace bg = boost::geometry;
 namespace bgc = bg::concepts;
 namespace bgm = bg::model;
+
 namespace bl = boost::locale;
+
+namespace bu = boost::units;
+namespace bsi = boost::units::si;
+
+#include <string>
+#include <type_traits>
 
 namespace earthxpert {
 template <typename Ty, typename = std::enable_if_t<std::is_arithmetic_v<Ty>, void>>

@@ -28,9 +28,9 @@ public:
   using ValueType = Ty;
 
   SpatialLayout(Ty width, Ty height, Ty tileWidth, Ty tileHeight, 
-    LayoutKind kind = LayoutKind::eHORIZONTAL);
+    LayoutKind kind = LayoutKind::eLK_HORIZONTAL);
   SpatialLayout(const SpatialTile<Ty>& range, Ty tileWidth, Ty tileHeight, 
-    LayoutKind kind = LayoutKind::eHORIZONTAL);
+    LayoutKind kind = LayoutKind::eLK_HORIZONTAL);
   SpatialLayout(const SpatialLayout& rhs) = default;
   SpatialLayout(SpatialLayout&& rhs) noexcept = default;
   ~SpatialLayout() = default;
@@ -61,7 +61,7 @@ private:
   SpatialTile<Ty> mRange; // spatial range to divide into smaller tiles
   Ty mTileWidth{};     // width of tile
   Ty mTileHeight{};    // height of tile
-  LayoutKind mLayoutkind{LayoutKind::eHORIZONTAL};  // major direction
+  LayoutKind mLayoutkind{LayoutKind::eLK_HORIZONTAL};  // major direction
   std::vector<SpatialTile<Ty>> mTiles;  // array of tiles formulating the layout
 
   void LayoutTiles();

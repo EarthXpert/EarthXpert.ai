@@ -63,7 +63,7 @@ public:
 
   // index of 3rd-order polynomial coefficients
   // The order of terms is from NITF RPC00B standard (STDI-0002).
-  enum RationalPolyCoeff {
+  enum PolyCoeff3rd {
     eC = 0,      // constant term
     eL = 1,      // L normalized longitude
     eP = 2,      // P normalized latitude
@@ -86,7 +86,6 @@ public:
     eHHH = 19,   // H * H * H
     NumCoef = 20 // number of coefficients of 3rd-order polynomial
   };
-  using rpc = RationalPolyCoeff;
 
   // index of 2nd-order corrrection polynomial coefficients
   enum CorrCoeff {
@@ -103,8 +102,8 @@ public:
   // my experiments show that eENHANCED is better than eSTANDARD in accuracy at
   // an amount of 10~15%, also ensuring higher-order fits better than lower-order
   enum CorrAlgo {
-    eSTANDARD, // standard correction with full coordinates [pixel]
-    eENHANCED  // enhanced correction with normalized coordinates
+    eCA_IMAGE, // standard correction with full coordinates in image space [pixel]
+    eCA_SENSOR // enhanced correction with normalized coordinates in sensor space
   };
 
   /**
@@ -125,14 +124,14 @@ public:
     const std::array<double, NumCoef> &lineDenCoef,
     const std::array<double, NumCoef> &sampNumCoef,
     const std::array<double, NumCoef> &sampDenCoef,
-    std::shared_ptr<SpatialReferenceSystem> groundSRS);
+    std::shared_ptr<OGRSpatialRef> groundSRS);
 
   RationalModel(const std::array<double, NumFact> &normalFators,
     const std::array<double, NumCoef> &lineNumCoef,
     const std::array<double, NumCoef> &lineDenCoef,
     const std::array<double, NumCoef> &sampNumCoef,
     const std::array<double, NumCoef> &sampDenCoef,
-    std::shared_ptr<SpatialReferenceSystem> groundSRS);
+    std::shared_ptr<OGRSpatialRef> groundSRS);
 
   RationalModel(const RationalModel &rhs);
   RationalModel(RationalModel &&rhs) noexcept;
@@ -178,7 +177,7 @@ public:
    * @return type of sensor model
    */
   ModelType GetModelType() const noexcept override {
-    return ModelType::eRATIONAL;
+    return ModelType::eMT_RATIONAL;
   }
 
   /**
@@ -188,16 +187,14 @@ public:
    *
    *  \return pointer to a coordinate system
    */
-  std::shared_ptr<SpatialReferenceSystem> GetCoordinateSystem() const
-      noexcept override {
-    return mGroundSRS;
-  }
+  std::shared_ptr<OGRSpatialRef> GetCoordinateSystem() const
+      noexcept override { return mGroundSRS; }
 
   /**
    *  \return Returns type of SRS
    *  \todo parse from mGroundSRS;
    */
-  virtual SrsType GetSrsType() const noexcept { return eGEO; }
+  virtual SrsType GetSrsType() const noexcept { return eST_GEO; }
 
   void SetImageSize(const int numCols, const int numRows) noexcept {
     mNumCols = numCols;
@@ -243,26 +240,26 @@ public:
 
   // block adjustment support
   /**
-   *  \brief Set 2d correction polynomials in sensor space.
+   *  \brief Set 2d correction polynomials in image/sensor space.
    *
    *  \param [in] lineCorr 2nd-order polynomial for line correction
    *  \param [in] sampCorr 2nd-order polynomial for sample correction
    *  \param [in] corrAlgo correction algoirthm
    */
-  void SetSensorCorrection(const std::array<double, NumCorr> &lineCorr,
+  void SetCorrection(const std::array<double, NumCorr> &lineCorr,
                            const std::array<double, NumCorr> &sampCorr,
-                           CorrAlgo corrAlgo = eSTANDARD);
+                           CorrAlgo corrAlgo = eCA_IMAGE);
 
   /**
-   *  \brief Get 2d correction polynomials in sensor space.
+   *  \brief Get 2d correction polynomials in image/sensor space.
    *
    *  \param [out] lineCorr 2nd-order polynomial for line correction
    *  \param [out] sampCorr 2nd-order polynomial for sample correction
    *  \param [in] corrAlgo correction algoirthm
    */
-  void GetSensorCorrection(std::array<double, NumCorr> &lineCorr,
+  void GetCorrection(std::array<double, NumCorr> &lineCorr,
                            std::array<double, NumCorr> &sampCorr,
-                           CorrAlgo corrAlgo = eSTANDARD) const;
+                           CorrAlgo corrAlgo = eCA_IMAGE) const;
 
   void EnableCubeS2G(bool enable=true);
 
@@ -274,7 +271,7 @@ private:
   static constexpr int kMaxIterIAA = 5; // max. number of iterations allowed for ImageActualToApparant
   static constexpr double kRatio = 1.0e-4; // ratio of tolerance proportional to image range
   static constexpr double kTol = std::numeric_limits<double>::epsilon();
-  static constexpr double kTol_d = 0.1; // tolerance proportional to ground range
+  static constexpr double kTol_d = 0.1; // tolerance proportional to visual ground range
 
   // rational polynomial coefficients
   std::array<double, NumFact>
@@ -288,7 +285,7 @@ private:
   std::array<double, NumCoef>
       mSampDenCoef{}; // denominator polynomial of sample formulae
 
-  std::shared_ptr<SpatialReferenceSystem>
+  std::shared_ptr<OGRSpatialRef>
       mGroundSRS{}; // Ground coordinate system
 
   int mNumCols{}; // number of columns of the image product
@@ -302,7 +299,7 @@ private:
   // corrections in sensor space
   std::array<double, NumCorr> mLineCorr{}; // polynomial for line correction
   std::array<double, NumCorr> mSampCorr{}; // polynomial for sample correction
-  CorrAlgo mCorrAlgo{eSTANDARD};           // sensor correction method
+  CorrAlgo mCorrAlgo{ eCA_IMAGE };           // sensor correction method
 
   // uncertainties for the enhanced algorithm [pixel]
   std::array<double, 3> mStdCorr{};   // constant, 1st-, 2nd-order coefficients
@@ -313,6 +310,7 @@ private:
   void Clear() noexcept;
 
   Point2d ImageActualToApparant(const Point2d& image) const;
+  Point2d SensorActualToApparant(const Point2d& sensor) const;
 
   /**
    *  \brief Given a 2d rpc position in image coordinate system,
@@ -323,7 +321,7 @@ private:
    */
   Point2d ImageApparantToActual(const Point2d& image) const {
     Point2d imageAct{ image };
-    if (mCorrectionFlag) {  // apply correction
+    if (mCorrFlag) {  // apply correction
       const auto imageCorr = CalcCorrection(image);
       imageAct += imageCorr;
     }
@@ -362,8 +360,8 @@ private:
     return ImageApparantToActual(imageApp);
   }
 
-  bool mCorrectionFlag{ false };   // flag indicating the correction status
-  Point2d CalcCorrection(const Point2d& image) const;
+  bool mCorrFlag{ false };   // flag indicating the correction status
+  Point2d CalcCorrection(const Point2d& cam) const;
 
   /**
    *  Sensor-to-ground forward projection.
@@ -377,11 +375,11 @@ private:
    * in virtual ground coordinate system
    *  \return Returns true if the operation succeeds
    */
-  bool SensorToGroundNormalize(const Point2d &sensor, Point3d &uvw) const {
-    return SensorToGroundNormalize(sensor.x, sensor.y, uvw.z, uvw.x, uvw.y);
+  bool SensorToVirtual(const Point2d &sensor, Point3d &uvw) const {
+    return SensorToVirtual(sensor.x, sensor.y, uvw.z, uvw.x, uvw.y);
   }
 
-  inline Point3d GroundNormalize(const Point3d& ground) const {
+  inline Point3d GroundToVirtual(const Point3d& ground) const {
     return { (ground.x - nfc[eOLON]) * mInvScale[eISLON],
              (ground.y - nfc[eOLAT]) * mInvScale[eISLAT],
              (ground.z - nfc[eOHGT]) * mInvScale[eISHGT] };
@@ -397,7 +395,7 @@ private:
    *  \param [out] sensor 2d sensor position (x, y)
    *  \return Returns true if operation succeeds
    */
-  inline bool GroundNormalizeToSensor(const Point3d& uvw, Point2d& sensor) const {
+  inline bool VirtualToSensor(const Point3d& uvw, Point2d& sensor) const {
     const auto [Ln, Ld, Sn, Sd] = CalcPolynomials(uvw);
 
     // col/row computed from RFM
@@ -407,8 +405,8 @@ private:
   }
 
   inline bool GroundToSensor(const Point3d& ground, Point2d& sensor) const {
-    const Point3d uvw = GroundNormalize(ground);
-    return GroundNormalizeToSensor(uvw, sensor);
+    const Point3d uvw = GroundToVirtual(ground);
+    return VirtualToSensor(uvw, sensor);
   }
 
   void CalcTerms(const Point3d &uvw, double *const LPH) const {
@@ -421,14 +419,16 @@ private:
   }
   Tuple4d CalcPolynomials(double u, double v, double w) const;
 
-  bool SensorToGroundNormalize(const double x, const double y,
-    const double w, double& u, double& v) const;
+  bool SensorToVirtual(double x, double y, double w, double& u, double& v) const;
 
-  bool SensorToGroundNormalizeLinear(const Point2d &sensor, Point3d &uvw) const {
-    return SensorToGroundNormalizeLinear(sensor.x, sensor.y, uvw.z, uvw.x, uvw.y);
-  }
-  bool SensorToGroundNormalizeLinear(double x, double y, 
+  Tuple4d CalcJacobianA(double w, double u, double v, double& xp, double& yp) const;
+  Tuple4d CalcJacobianNc(double w, double u, double v, double& xp, double& yp) const;
+
+  bool SensorToVirtualLinear(double x, double y,
     double w, double &u, double &v) const;
+  bool SensorToVirtualLinear(const Point2d &sensor, Point3d &uvw) const {
+    return SensorToVirtualLinear(sensor.x, sensor.y, uvw.z, uvw.x, uvw.y);
+  }
   
   // cached calculation for better performance
   double mTol_c{ 1.0e-7 }; // tolerance proportional to image range
@@ -450,6 +450,7 @@ private:
 
 using rnf = NormalizationFactor;
 using risf = RationalModel::InvScaleFactor;
+using rpc = RationalModel::PolyCoeff3rd;
 using UPRationalModel = std::unique_ptr<RationalModel>;
 using SPRationalModel = std::shared_ptr<RationalModel>;
 } // namespace earthxpert

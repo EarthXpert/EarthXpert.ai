@@ -29,8 +29,14 @@ public:
 
   // Optical axis direction
   enum OpticalDir {
-    eOBLIQUE,   // oblique
-    eVERTICAL   // vertical
+    eOD_OBLIQUE,   // oblique
+    eOD_VERTICAL   // vertical
+  };
+
+  // unit of IO parameters
+  enum IoUnit {
+    eIU_METRIC,    // metric mm
+    eIU_PIXEL      // non-metric pixel
   };
 
   /**
@@ -105,7 +111,7 @@ public:
    * \return Return type of sensor model
    */
   ModelType GetModelType() const noexcept override {
-    return ModelType::eFRAME;
+    return ModelType::eMT_FRAME;
   }
 
   /**
@@ -115,14 +121,14 @@ public:
    *
    *  \return pointer to a coordinate system
    */
-  std::shared_ptr<SpatialReferenceSystem> GetCoordinateSystem() const
+  std::shared_ptr<OGRSpatialRef> GetCoordinateSystem() const
       noexcept override;
 
   /**
    *  \return Returns type of SRS
    */
   SrsType GetSrsType() const noexcept override {
-    return eMAP;
+    return eST_MAP;
   }
 
   std::pair<int, int> GetImageSize() const noexcept override;
@@ -142,7 +148,7 @@ private:
   friend class FrameStereoModel;
 
   static constexpr int kMaxIterG2I{ 10 };
-  static constexpr double kTolMM{ 0.0001 }; // \todo [mm]
+  static constexpr double kTolFP{ 0.0001 }; // 0.1 um on focal plane
 
   ImageModelPolicy mImageModel; // model defining the transformation between
                                 // focal plane and imagery
@@ -152,7 +158,9 @@ private:
       mFrameEP{}; // extrinsic parameters defining exterior orientation
   std::shared_ptr<FrameCP>
       mFrameCP{}; // correction parameters defining external effects
-  OpticalDir mOpticalDir{ eVERTICAL };
+
+  OpticalDir mOpticalDir{ eOD_VERTICAL };
+  IoUnit mIoUnit{ eIU_METRIC };    // parameter unit
 
   std::shared_ptr<FrameIPCorr> mFrameIPCorr{}; // interior orienttion corrections
   std::shared_ptr<FrameEPCorr> mFrameEPCorr{}; // exterior orienttion corrections
@@ -244,8 +252,8 @@ private:
   double mCurvFactor{}; // factor for earth curvature correction
   Point3d mSensorCenter{}; // fused 3d position of rear node center in ground
                            // coordinate system
-  cv::Mat1d mG2S{cv::Mat1d::eye(3,
-      3)}; // fused 3x3 rotation matrix from 3d ground space to 3d sensor space
+  cv::Mat1d mG2S{cv::Mat1d::eye(3, 3)}; // fused 3x3 rotation matrix from 
+                                        // 3d ground space to 3d sensor space
 
   void CalcFusedEO();
 };

@@ -3,9 +3,9 @@
  * -----------------------------------------------------------------------------
  */
 #include "3rdparty/gtest/gtest_main_gdal.h"
+#include "3rdparty/utils/constants.h"
 #include "testconfig.h"
 
-#include "core/math/constants.h"
 #include "core/math/mutils.h"
 #include "epipolarmodel/epipolarmodel.h"
 #include "epipolarmodel/epipolarstereofactory.h"
@@ -174,7 +174,7 @@ void TestImageToGround_Cube(const IEpipolarModel* leftEpiModel,
   auto leftModel = dynamic_cast<const SensorEpipolarModel*>(leftEpiModel);
   auto rightModel = dynamic_cast<const SensorEpipolarModel*>(rightEpiModel);
   StereoModel smN(leftModel, rightModel);    // NR 
-  smN.SetForwardAlgorithm(IStereoModel::eSM_NR);
+  smN.SetForwardAlgorithm(IStereoModel::eFA_NR);
 
   auto [leftEpiNumCols, leftEpiNumRows] = leftEpiModel->GetImageSize();
   auto [rightEpiNumCols, rightEpiNumRows] = rightEpiModel->GetImageSize();

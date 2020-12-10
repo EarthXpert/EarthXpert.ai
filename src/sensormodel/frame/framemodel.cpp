@@ -4,13 +4,12 @@
  */
 #include "sensormodel/framemodel.h"
 #include "3rdparty/opencv/exopencv.h"
+#include "3rdparty/utils/constants.h"
 #include "core/exceptions/exexcept.h"
-#include "core/math/constants.h"
 #include "core/math/rotation.h"
 
 #include <algorithm>
 #include <cassert>
-#include <cmath>
 #include <numeric>
 
 using namespace earthxpert;
@@ -168,7 +167,7 @@ bool FrameModel<ImageModelPolicy>::GroundToImage(const Point3d &ground,
  *  \return pointer to a coordinate system
  */
 template <class ImageModelPolicy>
-std::shared_ptr<SpatialReferenceSystem>
+SPSpatialRefSys
 FrameModel<ImageModelPolicy>::GetCoordinateSystem() const noexcept {
   return mFrameEP->GetCoordinateSystem();
 }
@@ -202,7 +201,7 @@ void FrameModel<ImageModelPolicy>::CheckModel() const {
  */
 template <class ImageModelPolicy>
 bool FrameModel<ImageModelPolicy>::EqualTo(const ISensorModel &rhs) const {
-  if (ISensorModel::ModelType::eFRAME != rhs.GetModelType())
+  if (ISensorModel::ModelType::eMT_FRAME != rhs.GetModelType())
     return false;
 
   auto frameModel = dynamic_cast<const FrameModel<ImageModelPolicy> *>(&rhs);
@@ -237,7 +236,6 @@ bool FrameModel<ImageModelPolicy>::SensorToGround(const Point2d &sensor,
     throw std::underflow_error(_("Denominator is 0: SensorToGround"));
 
   const double scale = (ground.z - mSensorCenter.z) / denom;
-
   ground.x = mSensorCenter.x + grd.at<double>(0) * scale;
   ground.y = mSensorCenter.y + grd.at<double>(1) * scale;
   return true;
@@ -266,8 +264,8 @@ bool FrameModel<ImageModelPolicy>::GroundToSensor(const Point3d &ground,
       throw std::underflow_error(_("Denominator is 0: GroundToSensor"));
 
   const double scale = -f / denom;
-  sensor.x = scale * cam.at<double>(0);
-  sensor.y = scale * cam.at<double>(1);
+  sensor.x = cam.at<double>(0) * scale;
+  sensor.y = cam.at<double>(1) * scale;
   return true;
 }
 
@@ -283,12 +281,11 @@ bool FrameModel<ImageModelPolicy>::GroundToSensor(const Point3d &ground,
  * focal plane
  *  \param [in] height the ground height above ellipsoid [m]
  *  \param [in] sensorApp the ideal position where the ray wpould apparantly
- * hit the focal plane if existing no distortions \return Return true if
- * the operation succeeds
+ * hit the focal plane if existing no distortions 
  *  \return Returns true if operation succeeds
  */
-template <class ImageModelPolicy>
-bool FrameModel<ImageModelPolicy>::SensorActualToApparant(
+template <class ImageModelPolicy> bool 
+FrameModel<ImageModelPolicy>::SensorActualToApparant(
   const Point2d& sensorAct, const double height, Point2d& sensorApp) const {
   // optical distortion in focal plane w.r.t. PPS
   sensorApp = SensorActualToApparantPPS(sensorAct);
@@ -302,8 +299,8 @@ bool FrameModel<ImageModelPolicy>::SensorActualToApparant(
 }
 
 // optical distortion in focal plane w.r.t. PPS
-template <class ImageModelPolicy>
-Point2d FrameModel<ImageModelPolicy>::SensorActualToApparantPPS(
+template <class ImageModelPolicy> Point2d 
+FrameModel<ImageModelPolicy>::SensorActualToApparantPPS(
   const Point2d& sensor) const {
   const auto dRad = mFrameIP->CalcRadialCorr(sensor);
   const auto dDec = mFrameIP->CalcDecentCorr(sensor);
@@ -417,7 +414,7 @@ Point2d FrameModel<ImageModelPolicy>::SensorApparantToActualPPA(
       const auto corr = f_rcP / df_drcP;
 
       rc = rcP - corr;
-      if (fabs(corr) < kTolMM)
+      if (fabs(corr) < kTolFP)
         break;
 
       rcP = rc;
@@ -445,7 +442,7 @@ Point2d FrameModel<ImageModelPolicy>::SensorApparantToActualPPA(
       const auto corr = f_rcP / df_drcP;
 
       rc = rcP - corr;
-      if (fabs(corr) < kTolMM)
+      if (fabs(corr) < kTolFP)
         break;
 
       rcP = rc;
@@ -471,10 +468,10 @@ Point2d FrameModel<ImageModelPolicy>::SensorApparantToActualPPS(
   auto sensorAct = sensor;
 
   int iter;
-  auto [hasRadDist, hasDecDist, hasLinDist, hasGridDist] = mFrameIP->GetDistFlags();
+  auto [hasRadD, hasDecD, hasLinD, hasGridD] = mFrameIP->GetDistFlags();
 
   // distortion grid from added parameters
-  if (hasGridDist) {
+  if (hasGridD) {
     const Point2d cRD{ sensorAct }; // fixed position
 
     for (iter = 0; iter < kMaxIterG2I; ++iter) {
@@ -482,7 +479,7 @@ Point2d FrameModel<ImageModelPolicy>::SensorApparantToActualPPS(
       const Point2d res{ cRD - (sensorAct + dGrd) };
       sensorAct += res;
 
-      if (fabs(res.x) < kTolMM && fabs(res.y) < kTolMM)
+      if (fabs(res.x) < kTolFP && fabs(res.y) < kTolFP)
         break;
     }
 
@@ -490,7 +487,7 @@ Point2d FrameModel<ImageModelPolicy>::SensorApparantToActualPPS(
       return { 0.0, 0.0 };
   }
 
-  if (hasRadDist || hasDecDist || hasLinDist) {
+  if (hasRadD || hasDecD || hasLinD) {
     const Point2d cEarth{ sensorAct };
 
     for (iter = 0; iter < kMaxIterG2I; ++iter) {
@@ -500,7 +497,7 @@ Point2d FrameModel<ImageModelPolicy>::SensorApparantToActualPPS(
       const auto corr = cEarth - (sensorAct + dRad + dDec + dLin);
       sensorAct += corr;
 
-      if (fabs(corr.x) < kTolMM && fabs(corr.y) < kTolMM)
+      if (fabs(corr.x) < kTolFP && fabs(corr.y) < kTolFP)
         break;
 
       // if corrX or corrY is large, it is not converging. use the original value

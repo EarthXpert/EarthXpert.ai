@@ -15,28 +15,29 @@
 namespace earthxpert {
 namespace detail {
   static constexpr int kMaxIters = 5;
-  static constexpr size_t kNP = 9;
+  static constexpr int kNN = 5;  // #nodes
+  static constexpr size_t kNP = 9;  // #key points
 
   // sensor names & types
   static std::map<std::string, SensorType> sSensorN2T = {
   {"undefined", SensorType::eUNDEFINED},
-  {"ads", SensorType::eADS},
-  {"frame", SensorType::eFRAME},
-  {"pushbroom", SensorType::ePUSHBROOM},
-  {"rolling", SensorType::eROLLING},
-  {"affine", SensorType::eAFFINE},
-  {"network", SensorType::eNETWORK},
-  {"rational", SensorType::eRATIONAL} };
+  {"ads", SensorType::eMT_ADS},
+  {"frame", SensorType::eMT_FRAME},
+  {"pushbroom", SensorType::eMT_PUSHBROOM},
+  {"rolling", SensorType::eMT_ROLLING},
+  {"affine", SensorType::eMT_AFFINE},
+  {"network", SensorType::eMT_NETWORK},
+  {"rational", SensorType::eMT_RATIONAL} };
 
   static std::map<SensorType, std::string> sSensorT2N = {
   {SensorType::eUNDEFINED, "undefined"},
-  {SensorType::eADS, "ads"},
-  {SensorType::eFRAME, "frame"},
-  {SensorType::ePUSHBROOM, "pushbroom"},
-  {SensorType::eROLLING, "rolling"},
-  {SensorType::eAFFINE, "affine"},
-  {SensorType::eNETWORK, "network"},
-  {SensorType::eRATIONAL, "rational"} };
+  {SensorType::eMT_ADS, "ads"},
+  {SensorType::eMT_FRAME, "frame"},
+  {SensorType::eMT_PUSHBROOM, "pushbroom"},
+  {SensorType::eMT_ROLLING, "rolling"},
+  {SensorType::eMT_AFFINE, "affine"},
+  {SensorType::eMT_NETWORK, "network"},
+  {SensorType::eMT_RATIONAL, "rational"} };
 }
 
 /**
@@ -80,17 +81,40 @@ std::string SensorTypeToName(const SensorType type) {
  */
 double CalcGsd(const ISensorModel* sensorModel, const double height) {
   auto [numCols, numRows] = sensorModel->GetImageSize();
-  const Point2d ic{ numCols * 0.5, numRows * 0.5 };
+  const auto intCols = numCols / detail::kNN;
+  const auto intRows = numRows / detail::kNN;
+  const auto startCol = (numCols - intCols * detail::kNN) / 2;
+  const auto startRow = (numRows - intRows * detail::kNN) / 2;
 
-  // image center at height
+  double gsd{};
+  int count{};
+  for (int c = startCol; c <= numCols; c+=intCols)
+    for (int r = startRow; r <= numRows; r += intRows) {
+      gsd += CalcGsd(sensorModel, Point2d(c, r), height);
+      count++;
+    }
+
+  return (gsd / count);
+}
+
+/**
+ *  \brief estimate GSD at the given location and the given height
+ *
+ *  \param [in] sensorModel
+ *  \param [in] ip image location where GSD is to be estimated
+ *  \param [in] height the height in model CS
+ *  \return Retruns GSD at image center
+ */
+double CalcGsd(const ISensorModel* sensorModel,
+  const Point2d& ip, const double height) {
   Point3d gc{ 0.0, 0.0, height };
-  sensorModel->ImageToGround(ic, gc);
+  sensorModel->ImageToGround(ip, gc);
 
   Point3d gc2{ 0.0, 0.0, height };
-  sensorModel->ImageToGround(ic + Point2d(1.0, 1.0), gc2);
+  sensorModel->ImageToGround(ip + Point2d(1.0, 1.0), gc2);
 
   double gsd = cv::norm(gc2 - gc) * M_SQRT1_2;
-  if (eGEO == sensorModel->GetSrsType()) {
+  if (eST_GEO == sensorModel->GetSrsType()) {
     gsd = kWGS84_A * Deg2Rad(gsd);
   }
   return gsd;
@@ -104,15 +128,39 @@ double CalcGsd(const ISensorModel* sensorModel, const double height) {
  *  \param [in] height the height in LSR
  *  \return Retruns GSD at image center
  */
-double CalcGsd(const ISensorModel* sensorModel,
+double CalcGsd(const ISensorModel* sensorModel, 
   const EarthEllipsoid* ee, const double height) {
   const auto [numCols, numRows] = sensorModel->GetImageSize();
-  const Point2d ic{ numCols * 0.5, numRows * 0.5 };
+  const auto intCols = numCols / detail::kNN;
+  const auto intRows = numRows / detail::kNN;
+  const auto startCol = (numCols - intCols * detail::kNN) / 2;
+  const auto startRow = (numRows - intRows * detail::kNN) / 2;
 
-  // image center at height
+  double gsd{};
+  int count{};
+  for (int c = startCol; c <= numCols; c += intCols)
+    for (int r = startRow; r <= numRows; r += intRows) {
+      gsd += CalcGsd(sensorModel, Point2d(c, r), ee, height);
+      count++;
+    }
+
+  return (gsd / count);
+}
+
+/**
+ *  \brief estimate GSD at the given location and the given height
+ *
+ *  \param [in] sensorModel
+ *  \param [in] ip image location where GSD is to be estimated
+ *  \param [in] ee the LSR
+ *  \param [in] height the height in LSR
+ *  \return Retruns GSD at image center
+ */
+double CalcGsd(const ISensorModel* sensorModel, const Point2d& ip,
+  const EarthEllipsoid* ee, const double height) {
   PointXYd rc, rc2;
-  ImageToPlane(ic, sensorModel, ee, height, rc);
-  ImageToPlane(ic + Point2d(1.0, 1.0), sensorModel, ee, height, rc2);
+  ImageToPlane(ip, sensorModel, ee, height, rc);
+  ImageToPlane(ip + Point2d(1.0, 1.0), sensorModel, ee, height, rc2);
 
   return cv::norm(Point2d(rc2.x() - rc.x(), rc2.y() - rc.y())) * M_SQRT1_2;
 }
@@ -145,7 +193,7 @@ void RegisterMulPan(const ISensorModel* mulModel,
  */
 bool ImageToPlane(const Point2d& image, const ISensorModel* sensorModel, 
   const EarthEllipsoid* ee, const double height, PointXYd& rect, const double tolH) {
-  assert(eGEO == sensorModel->GetSrsType());
+  assert(eST_GEO == sensorModel->GetSrsType() && "must be geographic");
   Point3d ground{ 0, 0, height };
 
   Point3d rect3{ 0, 0, 0 };
@@ -170,7 +218,7 @@ bool ImageToPlane(const Point2d& image, const ISensorModel* sensorModel,
  */
 Polygon2d CalcFootprint(const ISensorModel* sensorModel,
   const EarthEllipsoid* ee, const double height) {
-  assert(eGEO == sensorModel->GetSrsType());
+  assert(eST_GEO == sensorModel->GetSrsType());
   auto [numCols, numRows] = sensorModel->GetImageSize();
   std::vector<Point2d> corners;
   FillCorners(numCols, numRows, corners);

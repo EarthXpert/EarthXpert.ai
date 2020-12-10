@@ -6,16 +6,22 @@
 
 using namespace earthxpert;
 
-static std::map<CTInfo, std::weak_ptr<ICT>> gCTs;
+static std::map<CTInfo, std::weak_ptr<ICT>> gCCsCTs;
+static std::map<CTInfo, std::weak_ptr<ICT>> gOgrCTs;
+static std::map<CTInfo, std::weak_ptr<ICT>> gProjCTs;
 
 std::shared_ptr<ICT> CTFactory::CreateCT() {
   return {};
 }
 
-std::shared_ptr<GdalCT> CTFactory::CreateGdalCT() {
+std::shared_ptr<CcsCT> CTFactory::CreateCcsCT() {
   return {};
 }
 
-std::shared_ptr<CcsCT> CTFactory::CreateCcsCT() {
+std::shared_ptr<OgrCT> CTFactory::CreateOgrCT() {
+  return {};
+}
+
+std::shared_ptr<ProjCT> CTFactory::CreateProjCT() {
   return {};
 }

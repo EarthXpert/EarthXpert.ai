@@ -32,7 +32,7 @@ function(earthxpert_add_library name libs_dir)
     PROPERTIES
       CXX_STANDARD 17
       DEBUG_POSTFIX "${EARTHXPERT_DEBUG_POSTFIX}")
-  target_link_libraries(${name} ${EX_ITEMS})
+  target_link_libraries(${name} ${EX_ITEMS} ${vld_LIBRARIES})
   
   if(libs_dir)
     set_property(TARGET ${name} PROPERTY FOLDER ${libs_dir})
@@ -53,7 +53,7 @@ function(earthxpert_add_executable name exec_dir)
     PROPERTIES
       CXX_STANDARD 17
       DEBUG_POSTFIX "${EARTHXPERT_DEBUG_POSTFIX}")
-  target_link_libraries(${name} ${EX_ITEMS})
+  target_link_libraries(${name} ${EX_ITEMS} ${vld_LIBRARIES})
   
   if(exec_dir)
     set_property(TARGET ${name} PROPERTY FOLDER ${exec_dir})
@@ -70,13 +70,17 @@ function(earthxpert_install_target name)
   endif()
 endfunction()
 
+add_compile_definitions(BOOST_LIB_TOOLSET="vc142")
 add_definitions(-D_USE_MATH_DEFINES -DBOOST_ALL_DYN_LINK)
+add_definitions(-DMPFR_USE_FILE -DMPFR_USE_INTMAX_T -DMPFR_USE_VA_LIST -D)
+
 add_subdirectory(3rdparty)
 add_subdirectory(app)
 add_subdirectory(bindings)
 add_subdirectory(blockadjust)
 add_subdirectory(core)
 add_subdirectory(epipolarmodel)
+add_subdirectory(frameworks)
 add_subdirectory(gui)
 add_subdirectory(imageproc)
 add_subdirectory(io)

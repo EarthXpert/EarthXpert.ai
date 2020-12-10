@@ -25,6 +25,7 @@ endfunction()
 earthxpert_add_py_library(expyext "bindings/python"
   SRCS "expyext.cpp"
   ITEMS ex3rdparty core dataio epipolar epipolarmodel marshaller sensormodel
-        Boost::python37 ${GDAL_LIBRARY} ${GETTEXT_LIBRARY} ${PYTHON_LIBRARIES})
+        Boost::python37 ${GDAL_LIBRARY} ${geotrans_LIBRARIES} ${GETTEXT_LIBRARY} 
+        ${PYTHON_LIBRARIES})
 
 earthxpert_install_target(expyext)

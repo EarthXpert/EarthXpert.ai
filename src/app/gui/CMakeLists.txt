@@ -7,7 +7,7 @@ set(CMAKE_AUTOUIC ON)
 include_directories(${Qt5Core_INCLUDE_DIRS} ${Qt5Gui_INCLUDE_DIRS}
   ${Qt5Widgets_INCLUDE_DIRS})
 
-earthxpert_add_executable(exqt5_hw "apps/gui"
+add_gui_executable(exqt5_hw 
   SRCS "qt5_hw.cpp"
        "mainwindow.cpp"
   ITEMS ex3rdparty exgui ${GETTEXT_LIBRARY} Qt5::Widgets)

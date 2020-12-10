@@ -8,6 +8,8 @@
 #include "3rdparty/ceres/exceres.h"
 #include "3rdparty/opencv/exopencv.h"
 
+#include <memory>
+
 using ceres::Solver;
 
 namespace earthxpert::math {
@@ -54,4 +56,7 @@ public:
    */
   virtual bool IntersectEigen(const Point3d* segs, Point3d& p, int numSegs = -1) const = 0;
 };
+
+using UPIIntersect = std::unique_ptr<IIntersect>;
+using SPIIntersect = std::shared_ptr<IIntersect>;
 } // namespace earthxpert::math

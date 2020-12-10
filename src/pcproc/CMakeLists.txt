@@ -1,7 +1,9 @@
 project(pcproc CXX)
 
 add_definitions(-DEXPCPROC_API)
-set(pcproc_srcs "filter/pcfilter.cpp"
+set(pcproc_srcs "./laslibutils.cpp"
+  "./pdalutils.cpp"
+  "filter/pcfilter.cpp"
   "filter/pmfilter.cpp"
   "filter/pmfilter_pdal.cpp")
 earthxpert_add_library(pcproc "api"

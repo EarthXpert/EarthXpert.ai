@@ -3,7 +3,6 @@
  * -----------------------------------------------------------------------------
  */
 #include "packages/gdal/gdaljob.h"
-#include <boost/program_options.hpp>
 
 /**
  *  The console program gdal provides a suite of commands for processing 

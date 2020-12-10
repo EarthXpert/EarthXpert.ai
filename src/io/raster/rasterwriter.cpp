@@ -17,7 +17,8 @@ using namespace earthxpert;
  *  \param [in] imageFile full path of the image file
  *  \param [in] bands an array of 1-based band indices
  */
-RasterWriter::RasterWriter(const std::string& imageFile, const std::vector<int>& bands) {
+RasterWriter::RasterWriter(const std::string& imageFile, 
+  const std::vector<int>& bands) {
   mDataset = static_cast<GDALDataset*>(GDALOpen(imageFile.c_str(), GA_Update));
   if (!mDataset) 
     throw IOError(_("GDAL failed to open image file for write access."));
@@ -101,7 +102,7 @@ void RasterWriter::SetNodataValues(const std::vector<double>& nodataValues) {
  *
  *  \param [in] spatialref the coordinate system
  */
-void RasterWriter::SetCoordinateSystem(const SpatialReferenceSystem* srs) {
+void RasterWriter::SetCoordinateSystem(const OGRSpatialRef* srs) {
   std::unique_lock<std::shared_mutex> lock(mMutex);
   char* wkt{nullptr};
   srs->exportToWkt(&wkt);

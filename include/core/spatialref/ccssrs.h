@@ -7,8 +7,6 @@
 #include "core/spatialref/isrs.h"
 #include "3rdparty/geotrans/exgeotrans.h"
 
-#include <memory>
-
 namespace earthxpert {
 /**
  *  The class CcsSRS provides service of spatial coordinate system
@@ -20,6 +18,9 @@ public:
   ~CcsSRS() = default;
 
   void GetDatum() override {}
+
+private:
+  friend class CcsCT;
 };
 
 using UPCcsSRS = std::unique_ptr<CcsSRS>;

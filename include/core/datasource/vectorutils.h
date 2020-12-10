@@ -6,7 +6,7 @@
 
 #include "core/excore.h"
 
-#include "gdal_priv.h"
+#include <gdal_priv.h>
 #include <memory>
 #include <vector>
 

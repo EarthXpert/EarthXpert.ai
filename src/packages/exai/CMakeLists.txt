@@ -12,8 +12,8 @@ earthxpert_add_library(pfexai "platform"
   ITEMS ex3rdparty blockadjust exutils colorbal core dataio epipolar epipolarmodel 
         exproject imageproc pcproc pfutils sensormodel sfm
         Boost::boost Boost::filesystem Boost::program_options ${CERES_LIBRARY} 
-        ${CGAL_LIBRARIES} ${GDAL_LIBRARY} ${GETTEXT_LIBRARY} glog::glog 
-        ${LASLIB_LIBRARY} ${OpenCV_LIBS} ${PDAL_LIBRARIES})
+        ${CGAL_LIBRARIES} ${GDAL_LIBRARY} ${geotrans_LIBRARIES} ${GETTEXT_LIBRARY} 
+        glog::glog ${LASLIB_LIBRARY} ${OpenCV_LIBS} ${PDAL_LIBRARIES})
 
 earthxpert_source_group(${pfexai_srcs})
 earthxpert_install_target(pfexai)

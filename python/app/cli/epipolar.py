@@ -2,33 +2,11 @@
 #   Copyright (c) 2019.  All rights reserved.
 #  -----------------------------------------------------------------------------
 
-from api import exapi
 import argparse
+from api import ExApi
 
-'''
-  The script epipolar generates epipolar or pseudo epipolar images 
-  from a pair of overlapping images acquired by the same sensor.
 
-  \detail Epipolar geometry is from the geometry of stereo vision. When a camera
-  views a scene from two or more distinct positions, there are a number of 
-  geometric relations between the 3D surface and its projections onto the 
-  2D images that lead to constraints between the image pixels.
-
-  usage:  epipolar.py 
-            --sensorname <frame|rational>
-            --prjdir [path_of_project_directory_or_file]
-            --leftimg <path_of_left_image_file>    // 'images/img01.tif'
-            --leftmdl <path_of_left_model_file>    // 'images/img01_rpc.tif'
-            --rightimg <path_of_right_image_file>  // 'images/img02.tif'
-            --rightmdl <path_of_right_model_file>  // 'images/img02_rpc.tif'
-            --bands [list_of_band_ids]             // [1,2,3]
-            --sample [downsample_factor]           // 2
-            --outdir [path_of_output_directory]    // 'd:/out/'
-            --resample [cubic|gaussian|sinc]
-            --memsize [memory_size_in_MB]          // 4000
-'''
-
-if __name__ == '__main__':
+def main() -> int:
   ap = argparse.ArgumentParser()
   
   ap.add_argument('-t', '--sensorname', type=str, choices=['frame', 'rational'], required=True,
@@ -66,3 +44,29 @@ if __name__ == '__main__':
   outdir = args['outdir']
   resample = args['resample']
   memsize = args['memsize']
+
+  return 0
+  
+if __name__ == '__main__':
+  """The script epipolar generates epipolar or pseudo epipolar images 
+    from a pair of overlapping images acquired by the same sensor.
+
+    \detail Epipolar geometry is from the geometry of stereo vision. When a camera
+    views a scene from two or more distinct positions, there are a number of 
+    geometric relations between the 3D surface and its projections onto the 
+    2D images that lead to constraints between the image pixels.
+
+    usage:  epipolar.py 
+              --sensorname <frame|rational>
+              --prjdir [path_of_project_directory_or_file]
+              --leftimg <path_of_left_image_file>    // 'images/img01.tif'
+              --leftmdl <path_of_left_model_file>    // 'images/img01_rpc.tif'
+              --rightimg <path_of_right_image_file>  // 'images/img02.tif'
+              --rightmdl <path_of_right_model_file>  // 'images/img02_rpc.tif'
+              --bands [list_of_band_ids]             // [1,2,3]
+              --sample [downsample_factor]           // 2
+              --outdir [path_of_output_directory]    // 'd:/out/'
+              --resample [cubic|gaussian|sinc]
+              --memsize [memory_size_in_MB]          // 4000
+  """
+  sys.exit(main())

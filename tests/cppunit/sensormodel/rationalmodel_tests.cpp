@@ -3,9 +3,9 @@
  * -----------------------------------------------------------------------------
  */
 #include "3rdparty/gtest/gtest_main.h"
+#include "3rdparty/utils/constants.h"
 #include "testconfig.h"
 
-#include "core/math/constants.h"
 #include "core/math/mutils.h"
 #include "marshaller/sensormodel/rationalmodelmarshaller.h"
 #include "sensormodel/rationalmodel.h"
@@ -151,7 +151,7 @@ std::unique_ptr<RationalModel> CreateRationalModelA() {
       -3.961882E-06, -1.172739E-07, -1.775734E-06, +6.411183E-06,
       +5.534508E-08, +8.539990E-08, +9.395855E-07, +1.757215E-08};
 
-  auto wgs84Geog = std::make_shared<SpatialReferenceSystem>("WGS84");
+  auto wgs84Geog = std::make_shared<OGRSpatialRef>("WGS84");
 
   return std::make_unique<RationalModel>(normalFators,
     lineNumCoef, lineDenCoef, sampNumCoef, sampDenCoef, wgs84Geog);
@@ -188,7 +188,7 @@ std::unique_ptr<RationalModel> CreateRationalModelB() {
     +9.289130E-07, -5.578129E-08, +7.709145E-07, -1.884327E-06,
     -1.749326E-08, +1.599896E-08, -9.276634E-08, +1.988493E-08 };
 
-  auto wgs84Geog = std::make_shared<SpatialReferenceSystem>("WGS84");
+  auto wgs84Geog = std::make_shared<OGRSpatialRef>("WGS84");
   auto rm = std::make_unique<RationalModel>(normalFators,
     lineNumCoef, lineDenCoef, sampNumCoef, sampDenCoef, wgs84Geog);
   rm->SetErrors(227.56, 0.13);
@@ -227,7 +227,7 @@ std::unique_ptr<RationalModel> CreateRationalModelC() {
     +4.066869E-07, -6.278089E-08, +8.102032E-07, -2.620842E-06,
     +0.000000E+00, +0.000000E+00, -5.450526E-08, +1.890781E-08 };
 
-  auto wgs84Geog = std::make_shared<SpatialReferenceSystem>("WGS84");
+  auto wgs84Geog = std::make_shared<OGRSpatialRef>("WGS84");
   auto rm = std::make_unique<RationalModel>(normalFators,
     lineNumCoef, lineDenCoef, sampNumCoef, sampDenCoef, wgs84Geog);
   rm->SetErrors(227.34, 0.13);

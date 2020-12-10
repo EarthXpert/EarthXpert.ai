@@ -42,7 +42,7 @@ int ExaiEpipolar::Execute() {
   EpipolarOptions epiOpt;
   epiOpt.sensorName = vm["sensorname"].as<std::string>();
   const auto st = SensorNameToType(epiOpt.sensorName);
-  if (SensorType::eRATIONAL != st && SensorType::eFRAME != st) 
+  if (SensorType::eMT_RATIONAL != st && SensorType::eMT_FRAME != st) 
     throw std::invalid_argument(_("Epipolar not implemented "
       "for sensor type: " + epiOpt.sensorName));
 
@@ -61,7 +61,7 @@ int ExaiEpipolar::Execute() {
   epiOpt.memSize = size_t(vm["memsize"].as<int>()) * 1024 * 1024;  // [unit: bytes]
 
   switch (st) {
-  case SensorType::eRATIONAL: {
+  case SensorType::eMT_RATIONAL: {
     epiOpt.leftMdlFile = vm["leftmdl"].as<std::string>();
     epiOpt.nadMdlFile = vm["nadmdl"].as<std::string>();
     epiOpt.rightMdlFile = vm["rightmdl"].as<std::string>();

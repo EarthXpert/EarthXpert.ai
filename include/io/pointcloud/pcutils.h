@@ -13,7 +13,7 @@ namespace earthxpert {
  *
  *  \return Return a LASfilter object for the given region.
  */
-std::unique_ptr<LASfilter> CreateLasFilter(const SpatialTileD& tile) {
+inline std::unique_ptr<LASfilter> CreateLasFilter(const SpatialTileD& tile) {
   return thirdparty::CreateLasFilter(tile.minX, tile.minY, tile.width, tile.height);
 }
 }

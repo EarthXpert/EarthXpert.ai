@@ -42,8 +42,8 @@ EpipolarStereoFactory::EpipolarStereoFactory(const std::string& outOpt)
  *  \return Returns pointers to epipolar model objects.
  */
 EpiModelPair EpipolarStereoFactory::CreateFrameEpiStereo(
-  std::shared_ptr<ISensorModel> leftModel,
-  std::shared_ptr<ISensorModel> rightModel,
+  SPISensorModel leftModel,
+  SPISensorModel rightModel,
   const int sample, const double height) {
   if (leftModel->GetModelType() != rightModel->GetModelType())
     throw std::exception(_("The stereo pair should be of the same sensor type."));
@@ -164,8 +164,8 @@ EpiModelPair EpipolarStereoFactory::CreateRationalEpiStereo(
  *  \return Returns pointers to epipolar model objects.
  */
 EpiModelPair EpipolarStereoFactory::CreateSensorEpiStereo(
-  std::shared_ptr<ISensorModel> leftModel,
-  std::shared_ptr<ISensorModel> rightModel, const int) {
+  SPISensorModel leftModel,
+  SPISensorModel rightModel, const int) {
   if (leftModel->GetModelType() != rightModel->GetModelType())
     throw std::exception(_("The stereo pair should be of the same sensor type."));
 
@@ -193,14 +193,14 @@ EpiModelPair EpipolarStereoFactory::CreateSensorEpiStereo(
 /**
  *  \brief
  */
-std::vector<std::unique_ptr<IEpipolarModel>>
+std::vector<UPIEpipolarModel>
 EpipolarStereoFactory::CreateEpipolarStereo(
-  const std::vector<std::shared_ptr<ISensorModel>> &sensorModels,
+  const std::vector<SPISensorModel> &sensorModels,
   const int sample, const double height) {
   if (sensorModels.size() < 2)
     throw std::exception(_("Require a minimum of two images"));
 
-  std::vector<std::unique_ptr<IEpipolarModel>> epiModels;
+  std::vector<UPIEpipolarModel> epiModels;
   return epiModels;
 }
 
@@ -259,7 +259,7 @@ double EpipolarStereoFactory::CalcEpiRotation(const ISensorModel* leftModel,
   break;
 
   default:
-    assert(false);
+    assert(false && "undefined epipolar direction.");
   }
 
   if ((fabs(ed.x) > fabs(ed.y) && 0 > ed.x) ||

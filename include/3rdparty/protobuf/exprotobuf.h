@@ -6,7 +6,7 @@
 
 #include "3rdparty/ex3rdparty.h"
 
-#include <protobuf/message.h>
+#include <google/protobuf/message.h>
 
 namespace earthxpert::thirdparty {
 } // namespace earthxpert::thirdparty

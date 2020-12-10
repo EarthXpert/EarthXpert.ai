@@ -32,14 +32,19 @@ set(core_srcs "datasource/cvraster.cpp"
   "parallel/simd/exsimd_utils.cpp"
   "spatialref/ccsct.cpp"
   "spatialref/ccssrs.cpp"
+  "spatialref/ccsutils.cpp"
   "spatialref/ctfactory.cpp"
   "spatialref/earthellipsoid.cpp"
   "spatialref/geocoding.cpp"
-  "spatialref/gdalct.cpp"
-  "spatialref/gdalsrs.cpp"
+  "spatialref/gdalutils.cpp"
   "spatialref/groundpolicy.cpp"
   "spatialref/localgeoid.cpp"
+  "spatialref/ogrct.cpp"
+  "spatialref/ogrsrs.cpp"
+  "spatialref/projct.cpp"
+  "spatialref/projsrs.cpp"
   "spatialref/srsfactory.cpp"
+  "system/sysmem.cpp"
   "system/sysutils.cpp"
   "utils/fsutils.cpp"
   "utils/geomutils.cpp"
@@ -53,8 +58,10 @@ earthxpert_add_library(core "api"
   SRCS ${core_srcs}
   ITEMS ex3rdparty
         Boost::boost Boost::filesystem Boost::iostreams
-        ${CERES_LIBRARY} ${CGAL_LIBRARIES} ${CUDA_LIBRARIES} ${GDAL_LIBRARY} ${GETTEXT_LIBRARY} glog::glog 
-        ${LASLIB_LIBRARY} ${nsimd_LIBRARIES} ${OpenCL_LIBRARIES} ${OpenCV_LIBS} ${Simd_LIBRARIES})
+        ${CERES_LIBRARY} ${CGAL_LIBRARIES} ${CUDA_LIBRARIES} ${GDAL_LIBRARY} 
+        ${geotrans_LIBRARIES} ${GETTEXT_LIBRARY} glog::glog ${LASLIB_LIBRARY}  
+        ${MPFR4_LIBRARIES} ${MPIR_LIBRARIES} ${nsimd_LIBRARIES} ${OpenCL_LIBRARIES} 
+        ${OpenCV_LIBS}  ${proj_LIBRARIES} ${Simd_LIBRARIES})
 
 earthxpert_source_group(${core_srcs})
 earthxpert_install_target(core)

@@ -17,8 +17,7 @@ using namespace earthxpert;
 using namespace earthxpert::math;
 using namespace ceres;
 
-static constexpr auto rngMax = static_cast<double>(std::mt19937::max());
-static constexpr auto scale = 1.0 / rngMax;
+static constexpr auto scale = 1.0 / static_cast<double>(std::mt19937::max());
 
 static std::vector<Point2d> ObtainLinePoints();
 

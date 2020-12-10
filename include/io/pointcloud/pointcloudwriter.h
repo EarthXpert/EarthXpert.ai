@@ -67,7 +67,7 @@ public:
    *
    *  \param [in] spatialref the coordinate system
    */
-  void SetCoordinateSystem(const SpatialReferenceSystem* srs) override;
+  void SetCoordinateSystem(const OGRSpatialRef* srs) override;
 
   /**
    *  \brief Write an array of points into the opened file.

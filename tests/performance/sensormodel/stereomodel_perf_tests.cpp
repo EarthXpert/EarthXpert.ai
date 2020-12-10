@@ -56,7 +56,7 @@ void StereoModel_I2G_Ceres() {
   auto cube = CreateCube(leftModel.get(), rightModel.get());
 
   StereoModel smC(leftModel.get(), rightModel.get());
-  smC.SetForwardAlgorithm(StereoModel::eSM_CERES);
+  smC.SetForwardAlgorithm(StereoModel::eFA_CERES);
   I2G_Cube(smC, cube);
   //std::cout << "Total #Iterations: " << smC.GetNumIters() << std::endl;
 }
@@ -76,7 +76,7 @@ void StereoModel_I2G_Intersect() {
 
   StereoModel smI(leftModel.get(), rightModel.get());    // intersect
   smI.SetEarthEllipsoid(std::move(ee));
-  smI.SetForwardAlgorithm(StereoModel::eCA_INTERSECT);
+  smI.SetForwardAlgorithm(StereoModel::eFA_INTERSECT);
   I2G_Cube(smI, cube);
   //std::cout << "Total #Iterations: " << smI.GetNumIters() << std::endl;
 }
@@ -103,7 +103,7 @@ void StereoModel_I2G_LS() {
   auto cube = CreateCube(leftModel.get(), rightModel.get());
 
   StereoModel smL(leftModel.get(), rightModel.get());    // LS
-  smL.SetForwardAlgorithm(StereoModel::eSM_LS);
+  smL.SetForwardAlgorithm(StereoModel::eFA_LS);
   I2G_Cube(smL, cube);
   //std::cout << "Total #Iterations: " << smL.GetNumIters() << std::endl;
 }
@@ -117,7 +117,7 @@ void StereoModel_I2G_NR() {
   auto cube = CreateCube(leftModel.get(), rightModel.get());
 
   StereoModel smN(leftModel.get(), rightModel.get());    // NR
-  smN.SetForwardAlgorithm(StereoModel::eSM_NR);
+  smN.SetForwardAlgorithm(StereoModel::eFA_NR);
   I2G_Cube(smN, cube);
   //std::cout << "Total #Iterations: " << smN.GetNumIters() << std::endl;
 }
@@ -131,7 +131,7 @@ void StereoModel_I2G_CeresOMP() {
   auto cube = CreateCube(leftModel.get(), rightModel.get());
 
   StereoModel smC(leftModel.get(), rightModel.get());    // Ceres
-  smC.SetForwardAlgorithm(StereoModel::eSM_CERES);
+  smC.SetForwardAlgorithm(StereoModel::eFA_CERES);
   I2G_CubeOMP(smC, cube);
 }
 
@@ -150,7 +150,7 @@ void StereoModel_I2G_IntersectOMP() {
 
   StereoModel smI(leftModel.get(), rightModel.get());    // intersect
   smI.SetEarthEllipsoid(std::move(ee));
-  smI.SetForwardAlgorithm(StereoModel::eCA_INTERSECT);
+  smI.SetForwardAlgorithm(StereoModel::eFA_INTERSECT);
   I2G_CubeOMP(smI, cube);
 }
 
@@ -175,7 +175,7 @@ void StereoModel_I2G_LSOMP() {
   auto cube = CreateCube(leftModel.get(), rightModel.get());
 
   StereoModel smL(leftModel.get(), rightModel.get());    // LS
-  smL.SetForwardAlgorithm(StereoModel::eSM_LS);
+  smL.SetForwardAlgorithm(StereoModel::eFA_LS);
   I2G_CubeOMP(smL, cube);
 }
 
@@ -188,7 +188,7 @@ void StereoModel_I2G_NROMP() {
   auto cube = CreateCube(leftModel.get(), rightModel.get());
 
   StereoModel smN(leftModel.get(), rightModel.get());    // NR
-  smN.SetForwardAlgorithm(StereoModel::eSM_NR);
+  smN.SetForwardAlgorithm(StereoModel::eFA_NR);
   I2G_CubeOMP(smN, cube);
 }
 
@@ -328,7 +328,7 @@ std::unique_ptr<RationalModel> CreateRationalModelLeft() {
     -3.854645E-07, -1.514237E-06, +2.438273E-06, +1.138310E-07,
     +3.018330E-07, +3.725428E-06, -3.713386E-07, -4.588691E-07 };
 
-  auto wgs84Geog = std::make_shared<SpatialReferenceSystem>("WGS84");
+  auto wgs84Geog = std::make_shared<OGRSpatialRef>("WGS84");
   auto rm = std::make_unique<RationalModel>(normalFators,
     lineNumCoef, lineDenCoef, sampNumCoef, sampDenCoef, wgs84Geog);
   rm->SetErrors(36.87, 0.13);
@@ -364,7 +364,7 @@ std::unique_ptr<RationalModel> CreateRationalModelRight() {
     -1.768367E-07, -3.220970E-06, -7.220123E-07, +0.000000E+00,
     -4.376586E-07, +5.630521E-07, +5.859119E-08, -2.803118E-07 };
 
-  auto wgs84Geog = std::make_shared<SpatialReferenceSystem>("WGS84");
+  auto wgs84Geog = std::make_shared<OGRSpatialRef>("WGS84");
   auto rm = std::make_unique<RationalModel>(normalFators,
     lineNumCoef, lineDenCoef, sampNumCoef, sampDenCoef, wgs84Geog);
   rm->SetErrors(51.53, 0.13);

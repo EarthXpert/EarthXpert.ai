@@ -1,0 +1,22 @@
+/* -----------------------------------------------------------------------------
+ *  Copyright (c) 2019.  All rights reserved.
+ * -----------------------------------------------------------------------------
+ */
+#include "3rdparty/gtest/gtest_main.h"
+#include "3rdparty/boost/exboost.h"
+
+#include "geometry.hpp"
+#include "hana.hpp"
+//#include "multiprecision.hpp"
+
+#include <boost/pool/object_pool.hpp>
+
+#include <iostream>
+#include <vector>
+
+TEST(boost, filesystem) {
+  bfs::path filePath("D:/Workspace/Results/output.txt");
+
+  ASSERT_FALSE(filePath.filename_is_dot());
+  ASSERT_TRUE(filePath.has_extension());
+}

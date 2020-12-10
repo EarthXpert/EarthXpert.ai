@@ -7,10 +7,9 @@
 
 #include <cmath>
 #include <limits>
-#include <string>
 
 using earthxpert::FrameEP;
-using earthxpert::SpatialReferenceSystem;
+using earthxpert::OGRSpatialRef;
 
 /**
  * Constructor
@@ -21,7 +20,7 @@ using earthxpert::SpatialReferenceSystem;
  */
 FrameEP::FrameEP(const std::array<double, 3> &position,
                  const std::array<double, 3> &rotation,
-                 std::shared_ptr<SpatialReferenceSystem> groundSRS)
+                 SPSpatialRefSys groundSRS)
     : mPosition(position), mRotation(rotation), mGroundSRS(groundSRS) {
   CheckSRS();
 }

@@ -1,11 +1,14 @@
 project(tests_cppunit_epimodel CXX)
 
-add_cppunit_test(epipolarmodel_tests 
-  ex3rdparty core dataio epipolarmodel marshaller sensormodel
-  ${GDAL_LIBRARY} ${OpenCV_LIBS})
-add_cppunit_test(epipolarstereofactory_tests 
-  ex3rdparty core dataio epipolarmodel marshaller sensormodel
-  ${GDAL_LIBRARY} ${OpenCV_LIBS})
+function(add_epimodel_cppunit_test name)
+  add_cppunit_test(${name} 
+    ex3rdparty core dataio epipolarmodel marshaller sensormodel
+    ${GDAL_LIBRARY} ${OpenCV_LIBS})
+endfunction()
+
+add_epimodel_cppunit_test(epipolarmodel_tests) 
+add_epimodel_cppunit_test(epipolarstereofactory_tests)
+
 if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
   get_filename_component(BOOST_BIN_DIR "${Boost_DIR}/../.." ABSOLUTE)
   set(TESTS_EPIMODEL_PATH "PATH=$<TARGET_FILE_DIR:ex3rdparty>;$<TARGET_FILE_DIR:core>;\
@@ -15,9 +18,7 @@ ${GTEST_BIN_DIR};${BOOST_BIN_DIR};${GDAL_BIN_DIR};${OpenCV_BIN_DIR};${OPENNI_BIN
 ${TESTS_BIN_DIR};$ENV{PATH}")
   string(REPLACE ";" "\\;" TESTS_EPIMODEL_PATH "${TESTS_EPIMODEL_PATH}")
   message(STATUS "Tests_Epimodel_Path: ${TESTS_EPIMODEL_PATH}")
-  set_tests_properties(epipolarmodel_tests 
-    PROPERTIES ENVIRONMENT "${TESTS_EPIMODEL_PATH}")
-  set_tests_properties(epipolarstereofactory_tests 
+  set_tests_properties(epipolarmodel_tests epipolarstereofactory_tests
     PROPERTIES ENVIRONMENT "${TESTS_EPIMODEL_PATH}")
 endif()
 

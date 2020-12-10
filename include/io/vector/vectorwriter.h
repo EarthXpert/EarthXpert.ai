@@ -63,7 +63,7 @@ public:
    *
    *  \param [in] spatialref the coordinate system
    */
-  void SetCoordinateSystem(const SpatialReferenceSystem* srs) override;
+  void SetCoordinateSystem(const OGRSpatialRef* srs) override;
 
   /**
    *  \brief Write the vector block contained in the layer object into vector data source.
@@ -97,7 +97,7 @@ public:
    *
    *  \return Returns pointer to a coordinate system
    */
-  std::unique_ptr<SpatialReferenceSystem> GetCoordinateSystem() const override {
+  std::unique_ptr<OGRSpatialRef> GetCoordinateSystem() const override {
     std::shared_lock<std::shared_mutex> lock(mMutex);
     return mReader->GetCoordinateSystem();
   }

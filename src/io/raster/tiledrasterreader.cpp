@@ -4,6 +4,7 @@
  */
 #include "io/raster/tiledrasterreader.h"
 #include "core/exceptions/exexcept.h"
+#include "io/raster/rasterreader.h"
 
 using namespace earthxpert;
 

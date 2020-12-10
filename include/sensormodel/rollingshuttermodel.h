@@ -36,7 +36,7 @@ public:
   RollingShutterModel(std::shared_ptr<DigitalImageModelImp> imgModel,
                       std::shared_ptr<FrameIP> scannerIP,
                       std::shared_ptr<ScannerEP> scannerEP,
-                      std::shared_ptr<SpatialReferenceSystem> groundSRS);
+                      std::shared_ptr<OGRSpatialRef> groundSRS);
 
   /**
    *  \brief Construct a satellite rolling-shuter geometry model.
@@ -51,7 +51,7 @@ public:
                       std::shared_ptr<FrameIP> scannerIP,
                       std::shared_ptr<ScannerEP> scannerEP,
                       std::shared_ptr<SatelliteDP> satelliteDP,
-                      std::shared_ptr<SpatialReferenceSystem> groundSRS);
+                      std::shared_ptr<OGRSpatialRef> groundSRS);
 
   RollingShutterModel(const RollingShutterModel &rhs);
   RollingShutterModel(RollingShutterModel &&rhs) noexcept;
@@ -111,7 +111,7 @@ public:
    * @return type of sensor model
    */
   ModelType GetModelType() const noexcept override {
-    return ModelType::eROLLING;
+    return ModelType::eMT_ROLLING;
   }
 
   /**

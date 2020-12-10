@@ -5,8 +5,8 @@
 #include "srcconfig.h"
 #include "3rdparty/boost/exboost.h"
 #include "3rdparty/gdal/exgdal.h"
+#include "3rdparty/utils/constants.h"
 #include "core/exceptions/exexcept.h"
-#include "core/math/constants.h"
 #include "core/math/rotation.h"
 #include "core/utils/stringutils.h"
 #include "core/utils/typehelper.h"
@@ -21,6 +21,8 @@
 
 using namespace earthxpert;
 using namespace earthxpert::math;
+
+namespace bpo = boost::program_options;
 
 int main(int argc, char** argv) {
   // get full path of command line app by name

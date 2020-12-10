@@ -14,7 +14,7 @@ function(earthxpert_add_test name tests_dir)
       CXX_STANDARD 17
       DEBUG_POSTFIX "${EARTHXPERT_DEBUG_POSTFIX}")
   target_link_libraries(${name}
-    ${GTEST_BOTH_LIBRARIES} ${SLTBENCH_LIBS}
+    ${GTEST_BOTH_LIBRARIES} ${SLTBENCH_LIBS} ${vld_LIBRARIES}
     ${ARGN})
   add_test(NAME ${name} 
     COMMAND $<TARGET_FILE:${name}>)
@@ -34,9 +34,12 @@ option(EARTHXPERT_INSTALL_TESTS_3RDPARTY "install 3rd-party tests" OFF)
 option(EARTHXPERT_INSTALL_TESTS_CPPUNIT "install C++ unit tests" OFF)
 option(EARTHXPERT_INSTALL_TESTS_PYUNIT "install python unit tests" OFF)
 
+add_compile_definitions(BOOST_LIB_TOOLSET="vc142")
+add_definitions(-D_USE_MATH_DEFINES -DBOOST_ALL_DYN_LINK)
+add_definitions(-DMPFR_USE_FILE -DMPFR_USE_INTMAX_T -DMPFR_USE_VA_LIST -D)
+
 set(TESTS_BIN_DIR ${CMAKE_INSTALL_PREFIX}/${EARTHXPERT_BIN_DIR})
 set(BOOST_BIN_DIR "${Boost_LIBRARY_DIRS}")
-add_subdirectory(3rdparty)
 add_subdirectory(cppunit)
 add_subdirectory(performance)
 #add_subdirectory(pyunit)

@@ -6,6 +6,7 @@
 
 #include "io/exio.h"
 #include "3rdparty/gdal/exgdal.h"
+#include "core/spatialref/isrs.h"
 
 namespace earthxpert {
 class Geocoding;
@@ -37,8 +38,10 @@ public:
    *  \brief Inject the ground coordinate system where the image file operates
    *
    *  \param [in] spatialref the coordinate system
+   *  \todo ISRS
    */
-  virtual void SetCoordinateSystem(const SpatialReferenceSystem* srs) = 0;
+  virtual void SetCoordinateSystem(const OGRSpatialRef* srs) = 0;
+  //virtual void SetCoordinateSystem(const ISRS* srs) = 0;
 
   /**
    *  \brief Inject the geocoding information into the image file.
