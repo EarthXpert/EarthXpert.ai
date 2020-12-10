@@ -4,16 +4,16 @@
  */
 #pragma once
 
-#include "rectification/epipolar/exepipolar.h"
+#include "rectification/trueortho/extortho.h"
 #include "frameworks/pipeline/task.h"
 
 namespace earthxpert {
 /**
- *  The class EpiGenTask implements the epipolar generation task.
+ *  The class OrthoTask implements the ortho generation task.
  */
-class EXEPIPOLAR_EXPORTS EpiGenTask final : public Task {
+class EXTORTHO_EXPORTS TorthoTask final : public Task {
 public:
-  ~EpiGenTask() = default;
+  ~TorthoTask() = default;
 
   void ReadTile() override;
   void ProcessTile() override;
@@ -23,6 +23,6 @@ private:
   void Initialize();
 };
 
-using UPEpiGenTask = std::unique_ptr<EpiGenTask>;
-using SPEpiGenTask = std::shared_ptr<EpiGenTask>;
+using UPTorthoTask = std::unique_ptr<TorthoTask>;
+using SPTorthoTask = std::shared_ptr<TorthoTask>;
 } // namespace earthxpert

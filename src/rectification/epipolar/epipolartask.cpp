@@ -2,18 +2,18 @@
  *  Copyright (c) 2019.  All rights reserved.
  * -----------------------------------------------------------------------------
  */
-#include "rectification/epipolar/epigentask.h"
+#include "rectification/epipolar/epipolartask.h"
 
 using namespace earthxpert;
 
-void EpiGenTask::ReadTile() {
+void EpipolarTask::Initialize() {
 }
 
-void EpiGenTask::ProcessTile() {
+void EpipolarTask::ReadTile() {
 }
 
-void EpiGenTask::WriteTile() {
+void EpipolarTask::ProcessTile() {
 }
 
-void EpiGenTask::Initialize() {
+void EpipolarTask::WriteTile() {
 }
