@@ -5,11 +5,12 @@ set(frameworks_srcs "pipeline/task.cpp"
   "pipeline/tasksschedular.cpp"
   "pipeline/tileslayout.cpp"
   "utils/utils.cpp")
+set(frameworks_items ex3rdparty core  
+  Boost::boost ${GDAL_LIBRARY} ${GETTEXT_LIBRARY} 
+  ${OpenCV_LIBS})
 earthxpert_add_library(frameworks "api"
   SRCS ${frameworks_srcs}
-  ITEMS ex3rdparty core  
-        Boost::boost ${GDAL_LIBRARY} ${GETTEXT_LIBRARY} 
-        ${OpenCV_LIBS})
+  ITEMS ${frameworks_items})
 
 earthxpert_source_group(${frameworks_srcs})
 earthxpert_install_target(frameworks)

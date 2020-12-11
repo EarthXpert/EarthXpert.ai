@@ -54,15 +54,17 @@ set(ex3rdparty_srcs "boost/exboost.cpp"
   "wxwidgets/exwxwidgets.cpp"
   "xml/exxml.cpp"
   "xsimd/exxsimd.cpp")
+set(ex3rdparty_items Boost::boost Boost::filesystem Boost::locale 
+  ${CERES_LIBRARY} ${CGAL_LIBRARIES} 
+  ${GDAL_LIBRARY} ${geotrans_LIBRARIES} ${GETTEXT_LIBRARY} glog::glog 
+  ${GTEST_BOTH_LIBRARIES} ${LASLIB_LIBRARY} libxml2 ${MPFR4_LIBRARIES} 
+  ${MPIR_LIBRARIES} ${OpenCV_LIBS} ${OpenEXR_LIBS} 
+  OpenImageIO::OpenImageIO OpenImageIO::OpenImageIO_Util 
+  ${nsimd_LIBRARIES} ${PDAL_LIBRARIES} ${proj_LIBRARIES} ${Protobuf_LIBRARIES} 
+  Qt5::Widgets ${Simd_LIBRARIES} ${SLTBENCH_LIBS})
 earthxpert_add_library(ex3rdparty "api"
   SRCS ${ex3rdparty_srcs}
-  ITEMS Boost::boost Boost::filesystem Boost::locale ${CERES_LIBRARY} ${CGAL_LIBRARIES} 
-        ${GDAL_LIBRARY} ${geotrans_LIBRARIES} ${GETTEXT_LIBRARY} glog::glog 
-        ${GTEST_BOTH_LIBRARIES} ${LASLIB_LIBRARY} libxml2 ${MPFR4_LIBRARIES} 
-        ${MPIR_LIBRARIES} ${OpenCV_LIBS} ${OpenEXR_LIBS} 
-        OpenImageIO::OpenImageIO OpenImageIO::OpenImageIO_Util 
-        ${nsimd_LIBRARIES} ${PDAL_LIBRARIES} ${proj_LIBRARIES} ${Protobuf_LIBRARIES} 
-        Qt5::Widgets ${Simd_LIBRARIES} ${SLTBENCH_LIBS})
+  ITEMS ${ex3rdparty_items})
 
 earthxpert_source_group(${ex3rdparty_srcs})
 earthxpert_install_target(ex3rdparty)
