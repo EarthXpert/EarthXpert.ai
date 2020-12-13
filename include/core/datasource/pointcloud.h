@@ -534,6 +534,8 @@ private:
 
 using UPPointcloud = std::unique_ptr<Pointcloud>;
 using SPPointcloud = std::shared_ptr<Pointcloud>;
+
+#include "detail/pointcloud.hh"
 }
 
 // overload std::swap
@@ -541,3 +543,4 @@ namespace std {
 inline void swap(earthxpert::Pointcloud& lhs,
   earthxpert::Pointcloud& rhs) noexcept { lhs.Swap(rhs); }
 }
+

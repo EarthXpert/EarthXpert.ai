@@ -160,4 +160,6 @@ private:
   Point3d mLsrOriginXYZ{0.0, 0.0, 0.0}; // LSR origin XYZ position
   cv::Mat1d mL2E{ cv::Mat1d::eye(3, 3) }; // 3x3 rotation matrix from LSR to ECEF
 };
+
+#include "detail/earthellipsoid.hh"
 } // namespace earthxpert

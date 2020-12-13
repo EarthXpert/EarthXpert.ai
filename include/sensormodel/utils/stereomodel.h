@@ -342,4 +342,6 @@ private:
 
 using UPStereoModel = std::unique_ptr<StereoModel>;
 using SPStereoModel = std::shared_ptr<StereoModel>;
+
+#include "detail/stereomodel.hh"
 } // namespace earthxpert

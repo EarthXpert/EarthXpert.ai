@@ -17,8 +17,8 @@ namespace earthxpert {
 class EXCORE_EXPORTS OgrSRS final : public ISRS
 {
 public:
-  OgrSRS(int epsg);
-  OgrSRS(const std::string& wkt);
+  explicit OgrSRS(int epsg);
+  explicit OgrSRS(const std::string& wkt);
   ~OgrSRS() = default;
 
   void GetDatum() override {}

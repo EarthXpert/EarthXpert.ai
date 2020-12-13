@@ -148,4 +148,6 @@ private:
 
 using UPRationalStereoModel = std::unique_ptr<RationalStereoModel>;
 using SPRationalStereoModel = std::shared_ptr<RationalStereoModel>;
+
+#include "detail/rationalstereomodel.hh"
 }

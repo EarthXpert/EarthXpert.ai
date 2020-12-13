@@ -21,7 +21,7 @@ struct EpiModelInfo {
  */
 class EXMARSHALLER_EXPORTS EpipolarStereoMarshaller {
 public:
-  EpipolarStereoMarshaller(MarshallLib mLib= eFileStorage) : mMLib(mLib) {}
+  explicit EpipolarStereoMarshaller(MarshallLib mLib = eFileStorage) : mMLib(mLib) {}
   ~EpipolarStereoMarshaller() = default;
 
   /**

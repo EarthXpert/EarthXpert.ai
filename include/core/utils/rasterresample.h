@@ -19,7 +19,7 @@ namespace earthxpert {
 template <int algoBackend = IRasterResample::eAB_CV>
 class EXCORE_EXPORTS RasterResample final : public IRasterResample {
 public:
-  RasterResample(const std::string& algo);
+  explicit RasterResample(const std::string& algo);
   ~RasterResample() = default;
 
   void SetBorderParams(cv::BorderTypes borderType, cv::Scalar borderValue) {
