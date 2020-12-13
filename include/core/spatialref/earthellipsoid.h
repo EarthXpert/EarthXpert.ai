@@ -25,9 +25,15 @@ public:
   EarthEllipsoid(double semiMajor = kWGS84_A, 
     double eccSq = kWGS84_ECCSQ, const Point3d& origin=Point3d());
   //EarthEllipsoid(double semiMajor = kWGS84_A, double semiMinor = kWGS84_B);
+  EarthEllipsoid(const EarthEllipsoid& rhs) = default;
+  EarthEllipsoid(EarthEllipsoid&& rhs) noexcept = default;
   ~EarthEllipsoid() = default;
 
+  EarthEllipsoid& operator=(const EarthEllipsoid& rhs) = default;
+  EarthEllipsoid& operator=(EarthEllipsoid&& rhs) noexcept = default;
+
   bool operator==(const EarthEllipsoid& rhs) const;
+  bool operator!=(const EarthEllipsoid& rhs) const;
 
   std::unique_ptr<EarthEllipsoid> Clone() const {
     return std::make_unique<EarthEllipsoid>(*this);
