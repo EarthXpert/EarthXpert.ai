@@ -66,10 +66,10 @@ bool XTwoLines::IntersectEigen(const Point3d* s1, const Point3d* s2, Point3d& p)
                              1, 0, 0, 0, v2.x,
                              0, 1, 0, 0, v2.y,
                              0, 0, 1, 0, v2.z };
-  Map<Eigen::Matrix<double, 6, 5, RowMajor>> A(dm.data());
+  Eigen::Map<Eigen::Matrix<double, 6, 5, RowMajor>> A(dm.data());
 
   std::array<double, 6> cv{ s1[0].x, s1[0].y, s1[0].z, s2[0].x, s2[0].y, s2[0].z };
-  Map<Eigen::Matrix<double, 6, 1>> b(cv.data());
+  Eigen::Map<Eigen::Matrix<double, 6, 1>> b(cv.data());
 
   const auto& x = A.bdcSvd(ComputeFullU | ComputeFullV).solve(b);
   //const double err = (A * x - b).norm() / b.norm(); // relative error
@@ -127,10 +127,10 @@ bool XThreeLines::IntersectEigen(const Point3d* s1, const Point3d* s2,
                              1, 0, 0, 0, 0, v3.x,
                              0, 1, 0, 0, 0, v3.y,
                              0, 0, 1, 0, 0, v3.z };
-  Map<Eigen::Matrix<double, 9, 6, RowMajor>> A(dm.data());
+  Eigen::Map<Eigen::Matrix<double, 9, 6, RowMajor>> A(dm.data());
 
   std::array<double, 9> cv{ s1[0].x, s1[0].y, s1[0].z, s2[0].x, s2[0].y, s2[0].z, s3[0].x, s3[0].y, s3[0].z };
-  Map<Eigen::Matrix<double, 9, 1>> b(cv.data());
+  Eigen::Map<Eigen::Matrix<double, 9, 1>> b(cv.data());
 
   const auto& x = A.bdcSvd(ComputeFullU | ComputeFullV).solve(b);
   //if () return false;

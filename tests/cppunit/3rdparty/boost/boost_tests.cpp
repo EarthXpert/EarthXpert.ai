@@ -7,12 +7,10 @@
 
 #include "geometry.hpp"
 #include "hana.hpp"
+#include "math.hpp"
 //#include "multiprecision.hpp"
 
 #include <boost/pool/object_pool.hpp>
-
-#include <iostream>
-#include <vector>
 
 TEST(boost, filesystem) {
   bfs::path filePath("D:/Workspace/Results/output.txt");

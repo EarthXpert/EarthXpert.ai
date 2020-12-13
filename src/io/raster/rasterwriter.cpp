@@ -151,25 +151,16 @@ void RasterWriter::WriteRaster(const CvRaster* raster) {
   std::unique_lock<std::shared_mutex> lock(mMutex);
   const int64_t rowNumBytes = raster->GetRowNumBytes();
   const auto [writeWin, writePixelOff] = ObtainWriteWindow(raster);
-  const auto [writeColOff, writeRowOff, writeNumCols, writeNumRows] = writeWin;
   const int64_t bpp = raster->GetBytesPerPixel();
   const int64_t writeBytesOff = bpp * writePixelOff;
   auto writeBuffer = raster->GetBuffer() + writeBytesOff;
 
   if (1 == raster->GetNumBands()) {
     auto band = mDataset->GetRasterBand(mBands[0]);
-
-    auto writeRow{ writeBuffer };
-    for (int r = 0; r < writeNumRows; ++r) {
-      const auto err = band->RasterIO(GF_Write, writeColOff, writeRowOff + r,
-        writeNumCols, 1, writeRow, writeNumCols, 1, mGdalDT, 0, 0, nullptr);
-      if (CE_None != err) 
-        throw IOError(_("Failure when reading by RasterIO"));
-
-      writeRow += rowNumBytes;
-    }
+    WriteBand(band, writeWin, writeBuffer, rowNumBytes);
   }
   else {
+    const auto [writeColOff, writeRowOff, writeNumCols, writeNumRows] = writeWin;
     const int64_t bpb = raster->GetBytesPerBand();
     const int64_t bandRowNumBytes = bpb * writeNumCols;
     const int64_t pixelRowNumBytes = bpp * writeNumCols;
@@ -216,25 +207,29 @@ void RasterWriter::WriteRaster(const GdalRaster* raster) {
   const int64_t rowNumBytes = raster->GetRowNumBytes();
   const int64_t bandNumBytes = raster->GetBandNumBytes();
   const auto [writeWin, writePixelOff] = ObtainWriteWindow(raster);
-  const auto [writeColOff, writeRowOff, writeNumCols, writeNumRows] = writeWin;
   const int64_t writeBytesOff = raster->GetBytesPerBand() * writePixelOff;
 
   auto writeBuffer = raster->GetBuffer() + writeBytesOff;
 
   for (auto b : mBands) {
     auto band = mDataset->GetRasterBand(b);
-
-    auto writeRow{ writeBuffer };
-    for (int r = 0; r < writeNumRows; ++r) {
-      const auto err = band->RasterIO(GF_Write, writeColOff, writeRowOff + r,
-        writeNumCols, 1, writeRow, writeNumCols, 1, mGdalDT, 0, 0, nullptr);
-      if (CE_None != err) 
-        throw IOError(_("Failure when reading by RasterIO"));
-
-      writeRow += rowNumBytes;
-    }
-
+    WriteBand(band, writeWin, writeBuffer, rowNumBytes);
     writeBuffer += bandNumBytes;
+  }
+}
+
+void RasterWriter::WriteBand(GDALRasterBand* band, const RasterWindow& writeWin,
+  uchar* const writeBuffer, const int64_t rowNumBytes) {
+  const auto [writeColOff, writeRowOff, writeNumCols, writeNumRows] = writeWin;
+
+  auto writeRow{ writeBuffer };
+  for (int r = 0; r < writeNumRows; ++r) {
+    const auto err = band->RasterIO(GF_Write, writeColOff, writeRowOff + r,
+      writeNumCols, 1, writeRow, writeNumCols, 1, mGdalDT, 0, 0, nullptr);
+    if (CE_None != err)
+      throw IOError(_("Failure when reading by RasterIO"));
+
+    writeRow += rowNumBytes;
   }
 }
 

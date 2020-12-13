@@ -11,6 +11,12 @@
 using EGTri = Eigen::Triplet<double>;
 
 namespace earthxpert {
+template<typename _Scalar, int _Rows, int _Cols, int _Options, int _MaxRows, int _MaxCols>
+using MatView = Eigen::Map<Eigen::Matrix<_Scalar, _Rows, _Cols, _Options, _MaxRows, _MaxCols>>;
+
+template<typename _Scalar, int _Rows, int _Options, int _MaxRows, int _MaxCols>
+using VecView = MatView<_Scalar, _Rows, 1, _Options, _MaxRows, _MaxCols>;
+
 /**
  *  \param [in] A a matrix from small to median size.
  *  \return Return condition number by SVD
