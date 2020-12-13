@@ -64,6 +64,29 @@ Point3<Ty> operator*(const Point3<Ty>& p, const Ty& s) {
 }
 
 /**
+ *  \brief View an 3-element array as Point3<Ty>
+ */
+template <typename Ty>
+struct Point3V {
+  Point3V(Ty* const d) : data(d) { }
+  Point3V(Ty* const d, const Point3<Ty>& p) : data(d) { *this = p; }
+  Point3V(Ty* const d, const Ty x, const Ty y, const Ty z) : data(d) { 
+    data[0] = x;
+    data[1] = y;
+    data[2] = z;
+  }
+
+  Point3V<Ty>& operator=(const Point3<Ty>& p) {
+    data[0] = Ty(p.x);
+    data[1] = Ty(p.y);
+    data[2] = Ty(p.z);
+    return *this;
+  }
+
+  Ty* data{nullptr}; // pointer to 3 components
+};
+
+/**
  *  \brief math functions
  */
 // norm of 3d vector
