@@ -49,13 +49,13 @@ private:
   std::shared_ptr<FrameIP> mCacheIP; // cache for storing read IP
 
   /**
-   *  \breif read from itera.dat file and storing the ep info to cache
+   *  \brief read from itera.dat file and storing the ep info to cache
    *  \param[in] modelFile model file name
    */
   void ReadItera(const std::string &modelFile);
 
   /**
-   *  \breif read from geoin.dat into a frameIP object
+   *  \brief read from geoin.dat into a frameIP object
    *  \param[in] modelFile model file name
    */
   void ReadGeoin(const std::string &modelFile);

@@ -14,10 +14,10 @@
 using namespace earthxpert;
 
 /**
- * Constructor
- *
- * \param [in] focalLength Focal length [mm]
- * \param [in] ppa principla point of autocollimation [mm]
+ *  Constructor
+ *  
+ *  \param [in] focalLength Focal length [mm]
+ *  \param [in] ppa principla point of autocollimation [mm]
  */
 FrameIP::FrameIP(std::string camName, const double focalLength,
   const std::array<double, 2> &ppa) : mCamName(std::move(camName)), 
@@ -26,12 +26,12 @@ FrameIP::FrameIP(std::string camName, const double focalLength,
 }
 
 /**
- * Constructor
- *
- * \param [in] focalLength Focal length [mm]
- * \param [in] ppa principla point of autocollimation [mm]
- * \param [in] radialDist Eight coefficients of radial distortion
- * \param [in] decentDist Four coefficients of decentering distortion
+ *  Constructor
+ *  
+ *  \param [in] focalLength Focal length [mm]
+ *  \param [in] ppa principla point of autocollimation [mm]
+ *  \param [in] radialDist Eight coefficients of radial distortion
+ *  \param [in] decentDist Four coefficients of decentering distortion
  */
 FrameIP::FrameIP(std::string camName, const double focalLength,
                  const std::array<double, 2> &ppa,
@@ -42,13 +42,13 @@ FrameIP::FrameIP(std::string camName, const double focalLength,
 }
 
 /**
- * Constructor
- *
- * \param [in] focalLength Focal length [mm]
- * \param [in] ppa principla point of autocollimation [mm]
- * \param [in] radialDist Eight coefficients of radial distortion
- * \param [in] decentDist Four coefficients of decentering distortion
- * \param [in] linearDist Two coefficients of linear distortion
+ *  Constructor
+ *  
+ *  \param [in] focalLength Focal length [mm]
+ *  \param [in] ppa principla point of autocollimation [mm]
+ *  \param [in] radialDist Eight coefficients of radial distortion
+ *  \param [in] decentDist Four coefficients of decentering distortion
+ *  \param [in] linearDist Two coefficients of linear distortion
  */
 FrameIP::FrameIP(std::string camName, const double focalLength,
                  const std::array<double, 2> &ppa,
@@ -63,12 +63,12 @@ FrameIP::FrameIP(std::string camName, const double focalLength,
 }
 
 /**
- * Constructor
+ *  Constructor
  *
- * \param [in] focalLength Focal length [mm]
- * \param [in] ppa principla point of autocollimation [mm]
- * \param [in] radialDist Eight coefficients of radial distortion
- * \param [in] decentDist Four coefficients of decentering distortion
+ *  \param [in] focalLength Focal length [mm]
+ *  \param [in] ppa principla point of autocollimation [mm]
+ *  \param [in] radialDist Eight coefficients of radial distortion
+ *  \param [in] decentDist Four coefficients of decentering distortion
  */
 FrameIP::FrameIP(const double focalLength, const std::array<double, 2> &ppa,
                  std::unique_ptr<DistortionGridF> &&gridDist)
@@ -78,28 +78,28 @@ FrameIP::FrameIP(const double focalLength, const std::array<double, 2> &ppa,
 }
 
 /**
- * Copy constructor
+ *  \brief Copy constructor
  *
- * \param [in] rhs The object to copy from
+ *  \param [in] rhs The object to copy from
  */
 FrameIP::FrameIP(const FrameIP &rhs) {
   CopyFrom(rhs);
 }
 
 /**
- * Move constructor
+ *  \brief Move constructor
  *
- * \param [in/out] rhs The object to move from
+ *  \param [in/out] rhs The object to move from
  */
 FrameIP::FrameIP(FrameIP &&rhs) noexcept {
   MoveFrom(std::move(rhs));
 }
 
 /**
- * Assignment operator
+ *  \brief Assignment operator
  *
- * \param [in] rhs The object to copy from
- * \return A reference to the modified object
+ *  \param [in] rhs The object to copy from
+ *  \return A reference to the modified object
  */
 FrameIP &FrameIP::operator=(const FrameIP &rhs) {
   if (&rhs != this) {
@@ -109,10 +109,10 @@ FrameIP &FrameIP::operator=(const FrameIP &rhs) {
 }
 
 /**
- * Move assignment operator
+ *  \brief Move assignment operator
  *
- * \param [in] rhs The object to move from
- * \return A reference to the modified object
+ *  \param [in] rhs The object to move from
+ *  \return A reference to the modified object
  */
 FrameIP &FrameIP::operator=(FrameIP &&rhs) noexcept {
   if (&rhs != this) {
@@ -122,10 +122,10 @@ FrameIP &FrameIP::operator=(FrameIP &&rhs) noexcept {
 }
 
 /**
- * Comparison operator
+ *  \brief Comparison operator
  *
- * \param [in] rhs The object to compare with
- * \return true if they are the same, false otherwise
+ *  \param [in] rhs The object to compare with
+ *  \return true if they are the same, false otherwise
  */
 bool FrameIP::operator==(const FrameIP &rhs) const {
   if (this != &rhs) {
@@ -160,10 +160,10 @@ bool FrameIP::operator==(const FrameIP &rhs) const {
 }
 
 /**
- * Inequality operator
+ *  \brief Inequality operator
  *
- * \param [in] rhs The object to compare with
- * \return true if they are different, false otherwise
+ *  \param [in] rhs The object to compare with
+ *  \return true if they are different, false otherwise
  */
 bool FrameIP::operator!=(const FrameIP &rhs) const {
   return !(operator==(rhs));
@@ -186,9 +186,17 @@ void FrameIP::SetMisalignment(const std::array<double, 3> &pc,
 /**
  *  \brief Compute correction to radial distortion.
  *
- * \param [in] sensor the measured position where the ray actually hits the
- * focal plane
- * \return the radial correction.
+ *  \param [in] sensor the measured position (x, y) where the ray actually 
+ *  hits the focal plane
+ *  \return the radial correction.
+ *
+ *  \details radial distortion formula used:
+ *
+ *    dr = K0 + K1 * r^3 + K2 * r^5 + K3 * r^7 + ...
+ *
+ *  where
+ *
+ *    r = sqrt(x^2 + y^2)
  */
 Point2d FrameIP::CalcRadialCorr(const Point2d& sensor) const {
   if (!mDistFlags[kRADDIST])
@@ -209,9 +217,15 @@ Point2d FrameIP::CalcRadialCorr(const Point2d& sensor) const {
 /**
  *  \brief Compute correction to decentering distortion.
  *
- * \param [in] sensor the measured position where the ray actually hits the
- * focal plane
- * \return the decentering correction.
+ *  \param [in] sensor the measured position (x, y) where the ray actually 
+ *  hits the focal plane
+ *  \return the decentering correction.
+ *
+ *  \details decentering distortion formula used:
+ *
+ *    f = 1 + P3 * r^2 + P4 * r^4
+ *    dx = (P1 * (r^2 + 2 * x^2) + 2 * P2 * x * y) * f
+ *    dy = (P2 * (r^2 + 2 * y^2) + 2 * P1 * x * y) * f
  */
 Point2d FrameIP::CalcDecentCorr(const Point2d& sensor) const {
   if (!mDistFlags[kDECDIST])
@@ -230,10 +244,10 @@ Point2d FrameIP::CalcDecentCorr(const Point2d& sensor) const {
 }
 
 /**
- * Validate the paramters defining the transformation between the focal plane
- * and the camera coordinate frame.
+ *  \brief Validate the paramters defining the transformation between the focal plane
+ *   and the camera coordinate frame.
  *
- * @throw if focalLength is non-positive.
+ *  \throw if focalLength is non-positive.
  */
 void FrameIP::CheckCamParms() const {
   if (0.0 >= mFocalLength) 
@@ -242,7 +256,7 @@ void FrameIP::CheckCamParms() const {
 
 /**
  *  \brief Validate the paramters defining radial, decentring, and/or grid
- * distortions.
+ *  distortions.
  */
 void FrameIP::CheckDistortions() const {
   auto NotZero = [](const double val) -> bool { return (0.0 != val); };
@@ -269,9 +283,9 @@ void FrameIP::CheckDistortions() const {
 void FrameIP::CheckMisalignment() const { }
 
 /**
- * Copy data from one object to another
+ *  \brief Copy data from one object to another
  *
- * \param [in] rhs The object to copy from
+ *  \param [in] rhs The object to copy from
  */
 void FrameIP::CopyFrom(const FrameIP &rhs) {
   mCamName = rhs.mCamName;
@@ -286,9 +300,9 @@ void FrameIP::CopyFrom(const FrameIP &rhs) {
 }
 
 /**
- * Move data from one object to another
+ *  \brief Move data from one object to another
  *
- * \param [in] rhs The object to move from
+ *  \param [in] rhs The object to move from
  */
 void FrameIP::MoveFrom(FrameIP &&rhs) noexcept {
   mCamName = std::move(rhs.mCamName);
