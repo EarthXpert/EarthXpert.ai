@@ -74,16 +74,6 @@ EarthEllipsoid::operator==(const EarthEllipsoid& rhs) const {
 }
 
 /**
- * Test inequality.
- *
- * \param [in] rhs Object to compare with
- * \return true if not equal.
- */
-bool EarthEllipsoid::operator!=(const EarthEllipsoid& rhs) const {
-  return !(operator==(rhs));
-}
-
-/**
  * Convert a position from geodetic LPH in ECEF to Cartesian XYZ in ECEF.
  *
  * \param [in] lon Geographic longitude [rad]

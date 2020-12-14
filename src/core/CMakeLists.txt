@@ -46,6 +46,7 @@ set(core_srcs "datasource/cvraster.cpp"
   "spatialref/srsfactory.cpp"
   "system/sysmem.cpp"
   "system/sysutils.cpp"
+  "utils/apiinfo.cpp"
   "utils/fsutils.cpp"
   "utils/geomutils.cpp"
   "utils/paramhelper.cpp"
@@ -60,7 +61,7 @@ set(core_items ex3rdparty
   ${geotrans_LIBRARIES} ${GETTEXT_LIBRARY} glog::glog ${LASLIB_LIBRARY} 
   libInterpolate::Interpolate
   ${MPFR4_LIBRARIES} ${MPIR_LIBRARIES} ${nsimd_LIBRARIES} ${OpenCL_LIBRARIES} 
-  ${OpenCV_LIBS}  ${proj_LIBRARIES} ${Simd_LIBRARIES})
+  ${OpenCV_LIBS}  ${proj_LIBRARIES} ${Simd_LIBRARIES} ${TBB_LIBRARIES})
 earthxpert_add_library(core "api"
   SRCS ${core_srcs}
   ITEMS ${core_items})

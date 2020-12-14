@@ -58,8 +58,18 @@ public:
   void MapToImage(const std::vector<Point2d> &maps,
                      std::vector<Point2d> &images);
 
+  void Swap(Geocoding& rhs) noexcept;
+
 private:
   double mInvPixX{ 1.0 };
   double mInvPixY{ 1.0 };
 };
 } // namespace earthxpert
+
+// overload std::swap
+namespace std {
+inline void swap(earthxpert::Geocoding& lhs,
+  earthxpert::Geocoding& rhs) noexcept {
+  lhs.Swap(rhs);
+}
+}

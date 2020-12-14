@@ -9,3 +9,5 @@ unit tests:
 4) perforamnce: benchmark tests
 
 5) pyunit: unit tests in python
+
+6) header file: compilable by itself

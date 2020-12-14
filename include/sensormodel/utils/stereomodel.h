@@ -84,28 +84,8 @@ public:
    *  \return Returns true if the operation succeeds
    *  clang-format on
    */
-  virtual bool ImagesToGround(const Point2d &leftImage,
-    const Point2d &rightImage, Point3d &ground) const override {
-    assert(2 == mModels.size());
-    switch (mFwdAlgo) {
-    case eFA_INTERSECT: {
-      Point2d images[2] = { leftImage, rightImage };
-      return ImagesToGroundX(mModels, images, 2, ground);
-    }
-    case eFA_CERES: {
-      return ImagesToGroundCeres(leftImage, rightImage, ground);
-    }
-    case eFA_LS: {
-      return ImagesToGroundLS(leftImage, rightImage, ground);
-    }
-    case eFA_NR: {
-      return ImagesToGroundNR(leftImage, rightImage, ground);
-    }
-    default: {
-      return false;
-    }
-    }
-  }
+  virtual bool ImagesToGround(const Point2d& leftImage,
+    const Point2d& rightImage, Point3d& ground) const override;
 
   /**
    *  \brief Given a pair of sensor models and associated list of 2d positions
@@ -135,27 +115,8 @@ public:
    * ground coordinate system \return Returns true if the operation succeeds
    *  \return Returns true if the operation succeeds
    */
-  virtual bool ImagesToGround(const std::array<Point2d, 3> &images, 
-    Point3d &ground) const override {
-    assert(3 == mModels.size());
-    switch (mFwdAlgo) {
-    case eFA_INTERSECT: {
-      return ImagesToGroundX(mModels, images.data(), 3, ground);
-    }
-    case eFA_CERES: {
-      return ImagesToGroundCeres(images, ground);
-    }
-    case eFA_LS: {
-      return ImagesToGroundLS(images, ground);
-    }
-    case eFA_NR: {
-      return ImagesToGroundNR(images, ground);
-    }
-    default: {
-      return false;
-    }
-    }
-  }
+  virtual bool ImagesToGround(const std::array<Point2d, 3>& images,
+    Point3d& ground) const override;
 
   /**
    *  \brief Given two or more sensor models and associated 2d positions
@@ -167,10 +128,8 @@ public:
    *  \param [in/out] ground 3d ground position (X, Y, Z) in ground coordinate system
    *  \return Returns true if the operation succeeds
    */
-  virtual bool ImagesToGround(const std::vector<Point2d> &images, 
-    Point3d &ground) const override {
-    return ImagesToGround(mModels, images, ground);
-  }
+  virtual bool ImagesToGround(const std::vector<Point2d>& images,
+    Point3d& ground) const override;
 
   /**
    *  Image-to-ground forward projection (variable).
@@ -186,30 +145,7 @@ public:
    *  \return Returns true if the operation succeeds
    */
   virtual bool ImagesToGround(const std::vector<const ISensorModel*>& sensorModels,
-    const std::vector<Point2d>& images, Point3d& ground) const override {
-    const int numRays = int(sensorModels.size());
-    assert(numRays == images.size());
-
-    switch (mFwdAlgo) {
-    case eFA_INTERSECT: {
-      return ImagesToGroundX(sensorModels, images.data(), numRays, ground);
-    }
-    case eFA_CERES: {
-      return ImagesToGroundCeres(sensorModels, images.data(), numRays, ground);
-    }
-    case eFA_LS: {
-      //return ImagesToGroundLS(sensorModels, images.data(), numRays, ground);
-      throw std::exception(_("StereoModel: not implemented"));
-    }
-    case eFA_NR: {
-      //return ImagesToGroundNR(sensorModels, images.data(), numRays, ground);
-      throw std::exception(_("StereoModel: not implemented"));
-    }
-    default: {
-      return false;
-    }
-    }
-  }
+    const std::vector<Point2d>& images, Point3d& ground) const override;
 
   /**
    *  \brief Given two or more sensor models and associated list of 2d positions
@@ -290,15 +226,7 @@ protected:
   Solver::Options mOptions;   // the options to control ceres solver
 
   inline double GetMeanHeight(
-    const std::vector<const ISensorModel*>& models) const noexcept {
-    assert(0 < models.size());
-    double z{};
-    for (auto model : models) {
-      z += model->GetMeanHeight();
-    }
-
-    return (z / double(models.size()));
-  }
+    const std::vector<const ISensorModel*>& models) const noexcept;
 
   mutable std::atomic_size_t mNumIters{};
 

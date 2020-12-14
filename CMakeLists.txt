@@ -27,6 +27,9 @@ set(OpenCL_ROOT "$ENV{CUDA_PATH}")
 
 #set(GFLAGS_USE_TARGET_NAMESPACE TRUE)
 
+# configuration & utils
+add_subdirectory(cmake)
+
 # section third-party
 if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
   if (MSVC)
@@ -219,6 +222,17 @@ if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
   set(sqlite3_ROOT "${EX_THIRD_PARTY}/sqlite_3.31.1")
   set(sqlite3_DIR "${EX_THIRD_PARTY}/share/sqlite3")
 
+  set(TBB_ROOT "${EX_THIRD_PARTY}/tbb_20.0.0")
+  set(TBB_DIR "${TBB_ROOT}/share/tbb")
+  set(TBB_INCLUDE_DIRS "${TBB_ROOT}/include")
+  set(TBB_LIBRARY_DIR "${TBB_ROOT}/lib")
+  set(TBB_LIBRARIES debug "${TBB_LIBRARY_DIR}/debug/tbb_debug.lib"
+                    debug "${TBB_LIBRARY_DIR}/debug/tbbmalloc_debug.lib"
+                    debug "${TBB_LIBRARY_DIR}/debug/tbbmalloc_proxy_debug.lib"
+                    optimized "${TBB_LIBRARY_DIR}/release/tbb.lib"
+                    optimized "${TBB_LIBRARY_DIR}/release/tbbmalloc.lib"
+                    optimized "${TBB_LIBRARY_DIR}/release/tbbmalloc_proxy.lib")
+
   set(xsimd_DIR "${EX_THIRD_PARTY}/xsimd_7.4.6/share/xsimd")
 
   #set(Python_ROOT_DIR "python37")
@@ -306,19 +320,24 @@ find_package(Qt5 5.11.2 COMPONENTS Core Gui LinguistTools OpenGL Widgets REQUIRE
 #find_package(Simd REQUIRED)
 find_package(sqlite3 REQUIRED)
 find_package(Sltbench REQUIRED)
+#find_package(TBB REQUIRED)
 find_package(xsimd REQUIRED)
 #find_package(vld)
 
 find_package(Java 1.8 REQUIRED Runtime Development)
 find_package(Python3 REQUIRED COMPONENTS Interpreter Development)
 
+#earthxpert_get_INCLUDE_DIRS(libInterpolate libInterpolate::Interpolate)
 get_target_property(libInterpolate_INCLUDE_DIRS libInterpolate::Interpolate INTERFACE_INCLUDE_DIRECTORIES)
 
+#earthxpert_get_INCLUDE_DIRS(SLTBENCH sltbench)
 get_target_property(SLTBENCH_INCLUDE_DIRS sltbench INTERFACE_INCLUDE_DIRECTORIES)
+
+#earthxpert_get_LIBRARIES(SLTBENCH sltbench)
 get_target_property(SLTBENCH_LIBRARY_DEBUG sltbench IMPORTED_LOCATION_DEBUG)
 get_target_property(SLTBENCH_LIBRARY_RELEASE sltbench IMPORTED_LOCATION_RELEASE)
-set(SLTBENCH_LIBS debug ${SLTBENCH_LIBRARY_DEBUG}
-                  optimized ${SLTBENCH_LIBRARY_RELEASE})
+set(SLTBENCH_LIBRARIES debug ${SLTBENCH_LIBRARY_DEBUG}
+                       optimized ${SLTBENCH_LIBRARY_RELEASE})
 
 # remark: BOOST_BIN_DIR is empty in subdirectory!
 if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
@@ -358,6 +377,7 @@ message(STATUS "proj_INCLUDE_DIR: ${proj_INCLUDE_DIR}")
 message(STATUS "Protobuf_INCLUDE_DIRS: ${Protobuf_INCLUDE_DIRS}")
 message(STATUS "Simd_INCLUDE_DIR: ${Simd_INCLUDE_DIR}")
 message(STATUS "SLTBENCH_INCLUDE_DIRS: ${SLTBENCH_INCLUDE_DIRS}")
+message(STATUS "TBB_INCLUDE_DIRS: ${TBB_INCLUDE_DIRS}")
 message(STATUS "xsimd_INCLUDE_DIRS: ${xsimd_INCLUDE_DIRS}")
 message(STATUS "vld_INCLUDE_DIR: ${vld_INCLUDE_DIR}")
 
@@ -389,6 +409,7 @@ include_directories(${proj_INCLUDE_DIR})
 include_directories(${Protobuf_INCLUDE_DIRS})
 include_directories(${Simd_INCLUDE_DIR})
 include_directories(${SLTBENCH_INCLUDE_DIRS})
+include_directories(${TBB_INCLUDE_DIRS})
 include_directories(${xsimd_INCLUDE_DIRS})
 include_directories(${vld_INCLUDE_DIR})
 

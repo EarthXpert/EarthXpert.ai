@@ -12,7 +12,7 @@ namespace earthxpert {
  */
 class EXERVICES_EXPORTS Service : public IService {
 public:
-  ~Service() = default;
+  virtual ~Service() = default;
 
 private:
   void Initialize();

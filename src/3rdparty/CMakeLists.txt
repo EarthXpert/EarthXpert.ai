@@ -15,7 +15,8 @@ message(STATUS "PDAL_LIBRARIES: ${PDAL_LIBRARIES}")
 message(STATUS "proj_LIBRARIES: ${proj_LIBRARIES}")
 message(STATUS "Protobuf_LIBRARIES: ${Protobuf_LIBRARIES}")
 message(STATUS "Simd_LIBRARIES: ${Simd_LIBRARIES}")
-message(STATUS "SLTBENCH_LIBS: ${SLTBENCH_LIBS}")
+message(STATUS "SLTBENCH_LIBRARIES: ${SLTBENCH_LIBRARIES}")
+message(STATUS "TBB_LIBRARIES: ${TBB_LIBRARIES}")
 message(STATUS "vld_LIBRARIES: ${vld_LIBRARIES}")
 
 add_definitions(-DEX3RDPARTY_API)
@@ -49,6 +50,7 @@ set(ex3rdparty_srcs "boost/exboost.cpp"
   "sqlite3/exsqlite3.cpp"
   "thrust/exthrust.cpp"
   "stl/exstl.cpp"
+  "tbb/extbb.cpp"
   "utils/utils.cpp"
   "vld/exvld.cpp"
   "vxl/exvxl.cpp"
@@ -62,7 +64,7 @@ set(ex3rdparty_items Boost::boost Boost::filesystem Boost::locale
   ${MPFR4_LIBRARIES} ${MPIR_LIBRARIES} ${OpenCV_LIBS} ${OpenEXR_LIBS} 
   OpenImageIO::OpenImageIO OpenImageIO::OpenImageIO_Util 
   ${nsimd_LIBRARIES} ${PDAL_LIBRARIES} ${proj_LIBRARIES} ${Protobuf_LIBRARIES} 
-  Qt5::Widgets ${Simd_LIBRARIES} ${SLTBENCH_LIBS})
+  Qt5::Widgets ${Simd_LIBRARIES} ${SLTBENCH_LIBRARIES} ${TBB_LIBRARIES})
 earthxpert_add_library(ex3rdparty "api"
   SRCS ${ex3rdparty_srcs}
   ITEMS ${ex3rdparty_items})
