@@ -453,4 +453,6 @@ using risf = RationalModel::InvScaleFactor;
 using rpc = RationalModel::PolyCoeff3rd;
 using UPRationalModel = std::unique_ptr<RationalModel>;
 using SPRationalModel = std::shared_ptr<RationalModel>;
+
+#include "detail/rationalmodel.hh"
 } // namespace earthxpert

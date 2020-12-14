@@ -151,25 +151,16 @@ void RasterReader::ReadRaster(CvRaster* const raster) {
   std::lock_guard<std::mutex> lock(mMutex);
   const int64_t rowNumBytes = raster->GetRowNumBytes();
   const auto [readWin, readPixelOff] = ObtainReadWindow(raster);
-  const auto [readColOff, readRowOff, readNumCols, readNumRows] = readWin;
   const int64_t bpp = raster->GetBytesPerPixel();
   const int64_t readBytesOff = bpp * readPixelOff;
   auto readBuffer = raster->GetBuffer() + readBytesOff;
 
   if (1 == raster->GetNumBands()) {
     auto band = mDataset->GetRasterBand(mBands[0]);
-
-    auto readRow{ readBuffer };
-    for (int r = 0; r < readNumRows; ++r) {
-      const auto err = band->RasterIO(GF_Read, readColOff, readRowOff + r,
-        readNumCols, 1, readRow, readNumCols, 1, mGdalDT, 0, 0, nullptr);
-      if (CE_None != err) 
-        throw IOError(_("Failaure when reading by RasterIO"));
-
-      readRow += rowNumBytes;
-    }
+    ReadBand(band, readWin, readBuffer, rowNumBytes);
   }
   else {
+    const auto [readColOff, readRowOff, readNumCols, readNumRows] = readWin;
     const int64_t bpb = raster->GetBytesPerBand();
     const int64_t bandRowNumBytes = bpb * readNumCols;
     const int64_t pixelRowNumBytes = bpp * readNumCols;
@@ -217,29 +208,33 @@ void RasterReader::ReadRaster(GdalRaster* const raster) {
   const int64_t rowNumBytes = raster->GetRowNumBytes();
   const int64_t bandNumBytes = raster->GetBandNumBytes();
   const auto [readWin, readPixelOff] = ObtainReadWindow(raster);
-  const auto [readColOff, readRowOff, readNumCols, readNumRows] = readWin;
   const int64_t readBytesOff = raster->GetBytesPerBand() * readPixelOff;
 
   auto readBuffer = raster->GetBuffer() + readBytesOff;
 
   for (auto b : mBands) {
     auto band = mDataset->GetRasterBand(b);
-
-    auto readRow{ readBuffer };
-    for (int r = 0; r < readNumRows; ++r) {
-      const auto err = band->RasterIO(GF_Read, readColOff, readRowOff + r,
-        readNumCols, 1, readRow, readNumCols, 1, mGdalDT, 0, 0, nullptr);
-      if (CE_None != err) 
-        throw IOError(_("Failaure when reading by RasterIO"));
-
-      readRow += rowNumBytes;
-    }
-
+    ReadBand(band, readWin, readBuffer, rowNumBytes);
     readBuffer += bandNumBytes;
   }
 
   const auto fillDim = ObtainMarginFillDim(raster);
   FillMargins(raster, fillDim);
+}
+
+void RasterReader::ReadBand(GDALRasterBand* band, const RasterWindow& readWin,
+  uchar* const readBuffer, const int64_t rowNumBytes) {
+  const auto [readColOff, readRowOff, readNumCols, readNumRows] = readWin;
+
+  auto readRow{ readBuffer };
+  for (int r = 0; r < readNumRows; ++r) {
+    const auto err = band->RasterIO(GF_Read, readColOff, readRowOff + r,
+      readNumCols, 1, readRow, readNumCols, 1, mGdalDT, 0, 0, nullptr);
+    if (CE_None != err)
+      throw IOError(_("Failaure when reading by RasterIO"));
+
+    readRow += rowNumBytes;
+  }
 }
 
 /**

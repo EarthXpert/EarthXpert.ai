@@ -232,6 +232,9 @@ public:
 private:
   void Initialize(GDALDataset* dataset, const std::vector<int>& bands = {});
 
+  void WriteBand(GDALRasterBand* band, const RasterWindow& writeWin,
+    uchar* const writeBuffer, int64_t rowNumBytes);
+
   std::unique_ptr<RasterReader> mReader;  // pointer to reader implementation
   mutable std::shared_mutex mMutex;
 

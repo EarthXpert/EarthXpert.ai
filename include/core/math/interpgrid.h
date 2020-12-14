@@ -195,4 +195,6 @@ private:
 using InterpGridF = InterpGrid<float>;
 using InterpGridD = InterpGrid<double>;
 // using InterpGridLD = InterpGrid<long double>;
+
+#include "detail/interpgrid.hh"
 } // namespace earthxpert

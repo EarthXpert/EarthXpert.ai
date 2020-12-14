@@ -18,7 +18,7 @@ namespace earthxpert {
 class EXCORE_EXPORTS ProjSRS final : public ISRS
 {
 public:
-  ProjSRS(const std::string& wkt);
+  explicit ProjSRS(const std::string& wkt);
   ~ProjSRS() = default;
 
   void GetDatum() override {}

@@ -25,25 +25,25 @@ public:
   EarthEllipsoid(double semiMajor = kWGS84_A, 
     double eccSq = kWGS84_ECCSQ, const Point3d& origin=Point3d());
   //EarthEllipsoid(double semiMajor = kWGS84_A, double semiMinor = kWGS84_B);
+  EarthEllipsoid(const EarthEllipsoid& rhs) = default;
+  EarthEllipsoid(EarthEllipsoid&& rhs) noexcept = default;
   ~EarthEllipsoid() = default;
 
+  EarthEllipsoid& operator=(const EarthEllipsoid& rhs) = default;
+  EarthEllipsoid& operator=(EarthEllipsoid&& rhs) noexcept = default;
+
   bool operator==(const EarthEllipsoid& rhs) const;
+  bool operator!=(const EarthEllipsoid& rhs) const;
 
-  std::unique_ptr<EarthEllipsoid> Clone() const {
-    return std::make_unique<EarthEllipsoid>(*this);
-  }
+  std::unique_ptr<EarthEllipsoid> Clone() const;
 
-  double GetSemiMajor() const noexcept { return mA; }
-  double GetEccSquared() const noexcept { return mEccSq; }
+  double GetSemiMajor() const noexcept;
+  double GetEccSquared() const noexcept;
 
-  inline Point3d LPHToXYZ(const Point3d& lph) const {
-    return LPHToXYZ(lph.x, lph.y, lph.z);
-  }
+  inline Point3d LPHToXYZ(const Point3d& lph) const;
   Point3d LPHToXYZ(double lon, double lat, double height) const;
 
-  inline Point3d XYZToLPH(const Point3d& xyz) const {
-    return XYZToLPH(xyz.x, xyz.y, xyz.z);
-  }
+  inline Point3d XYZToLPH(const Point3d& xyz) const;
   Point3d XYZToLPH(double X, double Y, double Z) const;
 
   /**
@@ -52,14 +52,8 @@ public:
    * \param [in] lsr LSR XYZ coordinates [m]
    * \return Returns ECEF XYZ coordinates [m]
    */
-  inline Point3d LSRToXYZ(const Point3d& lsr) const {
-    const cv::Mat E = mL2E * cv::Mat(lsr);
-    const Point3d lsrE(E.at<double>(0), E.at<double>(1), E.at<double>(2));
-    return (mLsrOriginXYZ + lsrE);
-  }
-  inline Point3d LSRToXYZ(double X, double Y, double Z) const {
-    return LSRToXYZ(Point3d(X, Y, Z));
-  }
+  inline Point3d LSRToXYZ(const Point3d& lsr) const;
+  inline Point3d LSRToXYZ(double X, double Y, double Z) const;
 
   /**
    * Convert coordinates from ECEF XYZ to LSR
@@ -67,13 +61,8 @@ public:
    * \param [in] ecf ECEF XYZ coordinates [m]
    * \return Returns LSR coordinates [m]
    */
-  inline Point3d XYZToLSR(const Point3d& xyz) const {
-    const cv::Mat L = mL2E.t() * cv::Mat(xyz - mLsrOriginXYZ);
-    return { L.at<double>(0), L.at<double>(1), L.at<double>(2) };
-  }
-  inline Point3d XYZToLSR(double X, double Y, double Z) const {
-    return XYZToLSR(Point3d(X, Y, Z));
-  }
+  inline Point3d XYZToLSR(const Point3d& xyz) const;
+  inline Point3d XYZToLSR(double X, double Y, double Z) const;
 
   /**
    * Convert coordinates from LSR to LPH.
@@ -81,14 +70,9 @@ public:
    * \param [in] lsr LSR XYZ coordinates [m]
    * \return Returns geographic longitude [rad], geographic latitude [rad], ellipsoidal height [m]
    */
-  inline Point3d LSRToLPH(const Point3d& lsr) const {
-    const Point3d xyz = LSRToXYZ(lsr);
-    return XYZToLPH(xyz);
-  }
+  inline Point3d LSRToLPH(const Point3d& lsr) const;
 
-  inline Point3d LSRToLPH(double X, double Y, double Z) const {
-    return LSRToLPH(Point3d(X, Y, Z));
-  }
+  inline Point3d LSRToLPH(double X, double Y, double Z) const;
 
   /**
    * Convert coordinates from the Geographic LPH to LSR
@@ -96,11 +80,9 @@ public:
    * \param [in] lph Longitude [rad], Latitude [rad], Ellipsoidal height [m]
    * \return Returns LSR XYZ coordinates [m]
    */
-  Point3d LPHToLSR(const Point3d& lph) const { return XYZToLSR(LPHToXYZ(lph)); }
+  Point3d LPHToLSR(const Point3d& lph) const;
 
-  inline Point3d LPHToLSR(double lon, double lat, double height) const {
-    return LPHToLSR(Point3d(lon, lat, height));
-  }
+  inline Point3d LPHToLSR(double lon, double lat, double height) const;
 
   void SetLsrOrigin(const Point3d& origin);
   inline Point3d GetLsrOrigin() const { return mLsrOrigin; }
@@ -120,20 +102,14 @@ private:
 
    * \return Returns radius [m] of curvature in the Prime Meridian
    */
-  inline double RadiusInPrimeMeridian(const double lat) const {
-    const double sp = sin(lat);
-    return (mA * mBsq_Asq) / pow(1.0 - mEccSq * sp * sp, 1.5);
-  }
+  inline double RadiusInPrimeMeridian(const double lat) const;
 
   /**
    * \param [in] cp cosine(geodetic latitude)
    *
    * \return Returns radius [m] of curvature in the Prime Vertical terminated by minor axis
    */
-  inline double RadiusInPrimeVertical(const double cp) const {
-    const double cp2 = cp * cp;
-    return mAsq / sqrt(mAsq * cp2 + mBsq * (1.0 - cp2));
-  }
+  inline double RadiusInPrimeVertical(const double cp) const;
 
   /**
    * \param [in] lat Geodetic latitude [rad]
@@ -154,4 +130,6 @@ private:
   Point3d mLsrOriginXYZ{0.0, 0.0, 0.0}; // LSR origin XYZ position
   cv::Mat1d mL2E{ cv::Mat1d::eye(3, 3) }; // 3x3 rotation matrix from LSR to ECEF
 };
+
+#include "detail/earthellipsoid.hh"
 } // namespace earthxpert

@@ -73,3 +73,12 @@ void Geocoding::MapToImage(const std::vector<Point2d> &maps,
     images[i].y = (maps[i].y - mOriginY) * mInvPixY;
   }
 }
+
+void Geocoding::Swap(Geocoding& rhs) noexcept {
+  std::swap(mOriginX, rhs.mOriginX);
+  std::swap(mOriginY, rhs.mOriginY);
+  std::swap(mPixelSizeX, rhs.mPixelSizeX);
+  std::swap(mPixelSizeY, rhs.mPixelSizeY);
+  std::swap(mInvPixX, rhs.mInvPixX);
+  std::swap(mInvPixY, rhs.mInvPixY);
+}

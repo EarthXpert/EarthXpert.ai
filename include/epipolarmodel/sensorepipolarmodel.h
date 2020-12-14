@@ -135,7 +135,7 @@ public:
     return mSensorModel->operator!=(rhs);
   }
 
- UPISensorModel Clone() const override {
+  UPISensorModel Clone() const override {
     return mSensorModel->Clone();
   }
 
@@ -262,4 +262,6 @@ using SPSensorEpipolarModel = std::shared_ptr<SensorEpipolarModel>;
 using OrthoReadyModel = SensorEpipolarModel;
 using UPOrthoReadyModel = std::unique_ptr<OrthoReadyModel>;
 using SPOrthoReadyModel = std::shared_ptr<OrthoReadyModel>;
+
+#include "detail/sensorepipolarmodel.hh"
 } // namespace earthxpert

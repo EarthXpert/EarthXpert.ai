@@ -24,7 +24,8 @@ public:
    *  \param [in/out] raster the raster object whose margins to be filled
    *  \param [in] bpp bytes per pixel
    */
-  ConstantFill(CvRaster* const raster, const int bpp, int, int, int, int)
+  ConstantFill(CvRaster* const raster, int bpp, 
+    int readTop, int readBottom, int readLeft, int readRight)
     : mRaster(raster), mBpp(bpp) {}
   ConstantFill(const ConstantFill&) = delete;
   ConstantFill(ConstantFill&&) = delete;

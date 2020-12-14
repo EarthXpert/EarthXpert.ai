@@ -97,4 +97,7 @@ public:
   explicit SfMError(const char* message)
     : exception(message) {}
 };
+
+// global exception pointer across threads
+inline std::exception_ptr gException = nullptr;
 } // namespace earthxpert

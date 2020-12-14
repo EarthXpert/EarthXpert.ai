@@ -204,4 +204,6 @@ private:
 
 using InterpCubeF = InterpCube<float>;
 using InterpCubeD = InterpCube<double>;
+
+#include "detail/interpcube.hh"
 } // namespace earthxpert

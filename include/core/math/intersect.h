@@ -120,9 +120,7 @@ private:
     const Point3<Ty> p1 = segs[0] + v1 * pb[0];
     const Point3<Ty> p2 = segs[2] + v2 * pb[1];
 
-    residual[0] = p2.x - p1.x;
-    residual[1] = p2.y - p1.y;
-    residual[2] = p2.z - p1.z;
+    Point3V<Ty> r(residual, p2 - p1);
     return true;
   }
 
@@ -133,9 +131,7 @@ private:
     const Point3<Ty> p1 = segs[0] + v1 * (*pb[0]);
     const Point3<Ty> p2 = segs[2] + v2 * (*pb[1]);
 
-    residual[0] = p2.x - p1.x;
-    residual[1] = p2.y - p1.y;
-    residual[2] = p2.z - p1.z;
+    Point3V<Ty> r(residual, p2 - p1);
     return true;
   }
 
@@ -269,9 +265,7 @@ private:
     const Point3d p1 = segs[0] + v1 * pb[0];
     const Point3d p2 = segs[2] + v2 * pb[1];
 
-    residual[0] = p2.x - p1.x;
-    residual[1] = p2.y - p1.y;
-    residual[2] = p2.z - p1.z;
+    Point3V<double> r(residual, p2 - p1);
     return true;
   }
 
@@ -282,9 +276,7 @@ private:
     const Point3d p1 = segs[0] + v1 * (*pb[0]);
     const Point3d p2 = segs[2] + v2 * (*pb[1]);
 
-    residual[0] = p2.x - p1.x;
-    residual[1] = p2.y - p1.y;
-    residual[2] = p2.z - p1.z;
+    Point3V<double> r(residual, p2 - p1);
     return true;
   }
 

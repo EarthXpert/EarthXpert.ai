@@ -121,7 +121,7 @@ public:
    *
    *  \param [in] origin 
    */
-  LocalGround(const Point3d& origin);
+  explicit LocalGround(const Point3d& origin);
 
   LocalGround(const LocalGround& rhs);
   LocalGround(LocalGround&& rhs) noexcept;
@@ -186,7 +186,7 @@ public:
    *
    *  \param [in] origin 
    */
-  MapGround(const Point3d& origin);
+  explicit MapGround(const Point3d& origin);
 
   MapGround(const MapGround& rhs);
   MapGround(MapGround&& rhs) noexcept;
