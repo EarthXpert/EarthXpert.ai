@@ -11,6 +11,6 @@ using namespace earthxpert;
  *
  * \param [in] wkt the WKT
  */
-ProjSRS::ProjSRS(const std::string& wkt) {
+ProjSrs::ProjSrs(const std::string& wkt) {
   mSRS.reset(proj_create(PJ_DEFAULT_CTX, wkt.c_str()));
 }

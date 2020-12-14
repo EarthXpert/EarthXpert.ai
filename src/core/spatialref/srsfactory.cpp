@@ -6,22 +6,22 @@
 
 using namespace earthxpert;
 
-static std::map<SrsInfo, std::weak_ptr<CcsSRS>> gCcsSRSs;
-static std::map<SrsInfo, std::weak_ptr<OgrSRS>> gOgrSRSs;
-static std::map<SrsInfo, std::weak_ptr<ProjSRS>> gProjSRSs;
+static std::map<SrsInfo, std::weak_ptr<CcsSrs>> gCcsSrss;
+static std::map<SrsInfo, std::weak_ptr<OgrSrs>> gOgrSrss;
+static std::map<SrsInfo, std::weak_ptr<ProjSrs>> gProjSrss;
 
-std::shared_ptr<ISRS> SrsFactory::CreateSRS() {
+std::shared_ptr<ISrs> SrsFactory::CreateSrs() {
   return {};
 }
 
-std::shared_ptr<CcsSRS> SrsFactory::CreateCcsSRS() {
+std::shared_ptr<CcsSrs> SrsFactory::CreateCcsSrs() {
   return {};
 }
 
-std::shared_ptr<OgrSRS> SrsFactory::CreateOgrSRS() {
+std::shared_ptr<OgrSrs> SrsFactory::CreateOgrSrs() {
   return {};
 }
 
-std::shared_ptr<ProjSRS> SrsFactory::CreateProjSRS() {
+std::shared_ptr<ProjSrs> SrsFactory::CreateProjSrs() {
   return {};
 }

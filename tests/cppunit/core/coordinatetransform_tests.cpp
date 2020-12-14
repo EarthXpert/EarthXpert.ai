@@ -29,11 +29,11 @@ TEST(coordinatetransform, OGR_WGS84_UTM) {
   //utmSrs.importFromEPSG(32617);
 
   // WGS84 -> UTM
-  OgrCT g2mCT(&wgs84Srs, &utmSrs);
+  OgrCt g2mCt(&wgs84Srs, &utmSrs);
 
   Point3d geoPt(-79.347015, 43.651070, 0);  // Toronto
   Point3d mapPt;
-  g2mCT.Transform(geoPt, mapPt);
+  g2mCt.Transform(geoPt, mapPt);
 
   EqualD eqM(1.0e-3);  // [mm]
   ASSERT_TRUE(eqM(633301.7104163748, mapPt.x)) << "X difference > 1 mm";
@@ -41,7 +41,7 @@ TEST(coordinatetransform, OGR_WGS84_UTM) {
   ASSERT_TRUE(eqM(0.0, mapPt.z)) << "Z difference > 1 mm";
 
   // UTM -> WGS84
-  OgrCT m2gCT(&utmSrs, &wgs84Srs);
+  OgrCt m2gCT(&utmSrs, &wgs84Srs);
 
   Point3d geoPtN{ mapPt };
   m2gCT.Transform(geoPtN);

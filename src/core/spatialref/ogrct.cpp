@@ -15,11 +15,11 @@ using namespace earthxpert::thirdparty;
  * \param [in] src the source SRS
  * \param [in] tgt the target SRS
  */
-OgrCT::OgrCT(const OgrSRS* src, const OgrSRS* tgt) {
-  Initialize(src->mSRS.get(), tgt->mSRS.get());
+OgrCt::OgrCt(const OgrSrs* src, const OgrSrs* tgt) {
+  Initialize(src->mSrs.get(), tgt->mSrs.get());
 }
 
-OgrCT::OgrCT(OGRSpatialRef* src, OGRSpatialRef* tgt) {
+OgrCt::OgrCt(OGRSpatialRef* src, OGRSpatialRef* tgt) {
   Initialize(src, tgt);
 }
 
@@ -29,7 +29,7 @@ OgrCT::OgrCT(OGRSpatialRef* src, OGRSpatialRef* tgt) {
  * \param [in] srcEpsg the source EPSG code
  * \param [in] tgtEpsg the target EPSG code
  */
-OgrCT::OgrCT(const int srcEpsg, const int tgtEpsg) {
+OgrCt::OgrCt(const int srcEpsg, const int tgtEpsg) {
   std::unique_ptr<OGRSpatialRef> src{ new OGRSpatialRef };
   src->importFromEPSG(srcEpsg);
   std::unique_ptr<OGRSpatialRef> tgt{ new OGRSpatialRef };
@@ -44,7 +44,7 @@ OgrCT::OgrCT(const int srcEpsg, const int tgtEpsg) {
  * \param [in] srcWkt the source WKT
  * \param [in] tgtWkt the target WKT
  */
-OgrCT::OgrCT(const std::string& srcWkt, const std::string& tgtWkt) {
+OgrCt::OgrCt(const std::string& srcWkt, const std::string& tgtWkt) {
   std::unique_ptr<OGRSpatialRef> src{ new OGRSpatialRef };
   src->importFromWkt(srcWkt.c_str());
   std::unique_ptr<OGRSpatialRef> tgt{ new OGRSpatialRef };
@@ -54,7 +54,7 @@ OgrCT::OgrCT(const std::string& srcWkt, const std::string& tgtWkt) {
 }
 
 /**
- *  \remark OgrCT owns the objects of OGRSpatialRef?
+ *  \remark OgrCt owns the objects of OGRSpatialRef?
  *
  *  \remark With GDAL 2, the axis mappings are X -> lon, Y -> lat. 
  *  Starting with GDAL 3, the axes are mapped according to the WKT definition.
@@ -64,11 +64,11 @@ OgrCT::OgrCT(const std::string& srcWkt, const std::string& tgtWkt) {
  *  \todo use the new WKT definition for GDAL 2
  *  \question what to do when mixing GDAL 2 & 3 with 3rd-party
  */
-void OgrCT::Initialize(OGRSpatialRef* src, OGRSpatialRef* tgt) {
+void OgrCt::Initialize(OGRSpatialRef* src, OGRSpatialRef* tgt) {
 #if 3 <= GDAL_VERSION_MAJOR
   src->SetAxisMappingStrategy(OAMS_TRADITIONAL_GIS_ORDER);
   tgt->SetAxisMappingStrategy(OAMS_TRADITIONAL_GIS_ORDER);
 #endif
 
-  mCT.reset(OGRCreateCT(src, tgt));
+  mCt.reset(OGRCreateCT(src, tgt));
 }

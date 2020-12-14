@@ -11,24 +11,24 @@
 
 namespace earthxpert {
 /**
- *  The class OgrCT provides service of coordinate transformation 
+ *  The class OgrCt provides service of coordinate transformation 
  *  from a source coordinate system to a target coordinate system  
  *  with OGR as backend.
  */
-class EXCORE_EXPORTS OgrCT final : public ICT {
+class EXCORE_EXPORTS OgrCt final : public ICt {
 public:
-  OgrCT(const OgrSRS* src, const OgrSRS* tgt);
-  OgrCT(OGRSpatialRef* src, OGRSpatialRef* tgt);
-  OgrCT(int srcEpsg, int tgtEpsg);
-  OgrCT(const std::string& srcWkt, const std::string& tgtWkt);
-  ~OgrCT() = default;
+  OgrCt(const OgrSrs* src, const OgrSrs* tgt);
+  OgrCt(OGRSpatialRef* src, OGRSpatialRef* tgt);
+  OgrCt(int srcEpsg, int tgtEpsg);
+  OgrCt(const std::string& srcWkt, const std::string& tgtWkt);
+  ~OgrCt() = default;
 
   /**
    *  \return Returns the backend OGRCoordinateTransformation object. 
-   *  OgrCT exports partially the OGR functions. The caller could 
+   *  OgrCt exports partially the OGR functions. The caller could 
    *  exploit the full OGR capabilities via the returned object pointer.
    */
-  OGRCoordTrans* GetCT() { return mCT.get(); }
+  OGRCoordTrans* GetCT() { return mCt.get(); }
 
   /**
    *  \brief Transform a point in-place.
@@ -40,13 +40,13 @@ public:
    *  \return Returns if the transformation was successful, otherwise false.
    */
   bool Transform(double& x, double& y, double& z) override {
-    return mCT->Transform(1, &x, &y, &z);
+    return mCt->Transform(1, &x, &y, &z);
   }
 
   bool Transform(const double srcX, const double srcY, const double srcZ,
     double& tgtX, double& tgtY, double& tgtZ) override {
     tgtX = srcX; tgtY = srcY; tgtZ = srcZ;
-    return mCT->Transform(1, &tgtX, &tgtY, &tgtZ);
+    return mCt->Transform(1, &tgtX, &tgtY, &tgtZ);
   }
 
   /**
@@ -57,12 +57,12 @@ public:
    *  \return Returns if the transformation was successful, otherwise false.
    */
   bool Transform(Point3d& point) override {
-    return mCT->Transform(1, &point.x, &point.y, &point.z);
+    return mCt->Transform(1, &point.x, &point.y, &point.z);
   }
 
   bool Transform(const Point3d& src, Point3d& tgt) override {
     tgt = src;
-    return mCT->Transform(1, &tgt.x, &tgt.y, &tgt.z);
+    return mCt->Transform(1, &tgt.x, &tgt.y, &tgt.z);
   }
 
   /**
@@ -87,11 +87,11 @@ public:
   }
 
 private:
-  UPSpatialCoordTrans mCT;
+  UPSpatialCoordTrans mCt;
 
   void Initialize(OGRSpatialRef* src, OGRSpatialRef* tgt);
 };
 
-using UPGdalCT = std::unique_ptr<OgrCT>;
-using SPGdalCT = std::shared_ptr<OgrCT>;
+using UPGdalCt = std::unique_ptr<OgrCt>;
+using SPGdalCt = std::shared_ptr<OgrCt>;
 } // namespace earthxpert

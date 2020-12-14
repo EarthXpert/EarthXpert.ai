@@ -11,14 +11,14 @@
 #include "core/spatialref/spatialdef.h"
 
 namespace earthxpert {
-class EXCORE_EXPORTS CTFactory {
+class EXCORE_EXPORTS CtFactory {
 public:
-  static std::shared_ptr<ICT> CreateCT();
+  static std::shared_ptr<ICt> CreateCt();
 
-  static std::shared_ptr<CcsCT> CreateCcsCT();
+  static std::shared_ptr<CcsCt> CreateCcsCt();
 
-  static std::shared_ptr<OgrCT> CreateOgrCT();
+  static std::shared_ptr<OgrCt> CreateOgrCt();
 
-  static std::shared_ptr<ProjCT> CreateProjCT();
+  static std::shared_ptr<ProjCt> CreateProjCt();
 };
 }

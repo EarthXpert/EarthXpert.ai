@@ -39,7 +39,7 @@ TEST(boost, bmi_barycentric_rational) {
     {3.08, 2.0015}, {3.24, 2.0008}, {3.40, 2.0004}, {3.56, 2.0002},
     {3.72, 2.0001} };
 
-  // Let's discover the absissa that will generate a potential of exactly 3.0,
+  // Let's discover the abscissa that will generate a potential of exactly 3.0,
   // start by creating 2 ranges for the x and y values:
   auto x_range = boost::adaptors::keys(r);
   auto y_range = boost::adaptors::values(r);
@@ -79,9 +79,9 @@ TEST(boost, bmi_cardinal_cubic_b_spline) {
 
   // Now we can evaluate the spline wherever we please.
   std::mt19937 gen;
-  brd::uniform_real_distribution<double> absissa(0, v.size() * step);
+  brd::uniform_real_distribution<double> abscissa(0, v.size() * step);
   for (size_t i = 0; i < 10; ++i) {
-    double x = absissa(gen);
+    double x = abscissa(gen);
     std::cout << "sin(" << x << ") = " << sin(x) << ", spline interpolation gives " << spline(x) << std::endl;
     std::cout << "cos(" << x << ") = " << cos(x) << ", spline derivative interpolation gives " << spline.prime(x) << std::endl;
   }

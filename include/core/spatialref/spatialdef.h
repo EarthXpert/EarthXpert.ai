@@ -27,7 +27,7 @@ struct SrsInfo {
 };
 
 //
-struct CTInfo {
+struct CtInfo {
   SrsBackend backend;
   SrsInfo srcSrs;
   SrsInfo tgtSrs;

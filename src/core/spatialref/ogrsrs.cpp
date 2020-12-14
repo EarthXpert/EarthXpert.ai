@@ -12,9 +12,9 @@ using namespace earthxpert::thirdparty;
  *
  * \param [in] epsg the EPSG code
  */
-OgrSRS::OgrSRS(int epsg) {
-  mSRS.reset(new OGRSpatialRef);
-  mSRS->importFromEPSG(epsg);
+OgrSrs::OgrSrs(int epsg) {
+  mSrs.reset(new OGRSpatialRef);
+  mSrs->importFromEPSG(epsg);
 }
 
 /**
@@ -22,7 +22,7 @@ OgrSRS::OgrSRS(int epsg) {
  *
  * \param [in] wkt the WKT
  */
-OgrSRS::OgrSRS(const std::string& wkt) {
-  mSRS.reset(new OGRSpatialRef);
-  mSRS->importFromWkt(wkt.c_str());
+OgrSrs::OgrSrs(const std::string& wkt) {
+  mSrs.reset(new OGRSpatialRef);
+  mSrs->importFromWkt(wkt.c_str());
 }

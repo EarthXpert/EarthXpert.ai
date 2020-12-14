@@ -34,3 +34,14 @@ TEST(opencv, imgcodecs) {
   ASSERT_TRUE(ret);
   ASSERT_TRUE(fs::exists(fs::path(imgFileT)));
 }
+
+/**
+ *  TestCase: compare resampling in RGB vs HSI
+ *  
+ *    1) in RGB space, do downsampling, and save as ds_rgb.tif
+ *    2) convert RGB to HSI, do downsampling, convert HSI to RGB, and save as ds_hsi.tif
+ *    3) load ds_rgb.tif and ds_hsi.tif, and compare: min, max, average, rms, etc.
+ */
+TEST(opencv, rgb_hsi_downsample) {
+
+}

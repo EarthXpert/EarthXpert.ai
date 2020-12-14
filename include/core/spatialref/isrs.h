@@ -9,16 +9,16 @@
 
 namespace earthxpert {
 /**
- *  The class ISRS provides service of spatial coordinate system
+ *  The class ISrs provides service of spatial coordinate system
  */
-class EXCORE_EXPORTS ISRS
+class EXCORE_EXPORTS ISrs
 {
 public:
-  virtual ~ISRS() = default;
+  virtual ~ISrs() = default;
 
   virtual void GetDatum() = 0;
 };
 
-using UPISRS = std::unique_ptr<ISRS>;
-using SPISRS = std::shared_ptr<ISRS>;
+using UPISrs = std::unique_ptr<ISrs>;
+using SPISrs = std::shared_ptr<ISrs>;
 } // namespace earthxpert

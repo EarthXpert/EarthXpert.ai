@@ -12,12 +12,12 @@
 
 namespace earthxpert {
 /**
- *  The class ICT provides service of coordinate transformation
+ *  The class ICt provides service of coordinate transformation
  *  from a source coordinate system to a target coordinate system
  */
-class EXCORE_EXPORTS ICT {
+class EXCORE_EXPORTS ICt {
 public:
-  virtual ~ICT() = default;
+  virtual ~ICt() = default;
 
   /**
    *  \brief Transform a point in-place.
@@ -56,6 +56,6 @@ public:
     std::vector<Point3d>& tgt) = 0;
 };
 
-using UPICT = std::unique_ptr<ICT>;
-using SPICT = std::shared_ptr<ICT>;
+using UPICt = std::unique_ptr<ICt>;
+using SPICt = std::shared_ptr<ICt>;
 } // namespace earthxpert
