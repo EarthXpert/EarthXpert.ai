@@ -9,14 +9,14 @@
 
 namespace earthxpert {
 /**
- *  The class CcsCT provides service of coordinate transformation
+ *  The class CcsCt provides service of coordinate transformation
  *  from a source coordinate system to a target coordinate system
  *  with Geotrans & dtcc as backend.
  */
-class EXCORE_EXPORTS CcsCT : public ICT {
+class EXCORE_EXPORTS CcsCt : public ICt {
 public:
-  CcsCT(const CcsSRS* src, const CcsSRS* tgt);
-  ~CcsCT() = default;
+  CcsCt(const CcsSrs* src, const CcsSrs* tgt);
+  ~CcsCt() = default;
 
   /**
    *  \brief Transform a point in-place.
@@ -70,6 +70,6 @@ private:
   void Initialize();
 };
 
-using UPCcsCT = std::unique_ptr<CcsCT>;
-using SPCcsCT = std::shared_ptr<CcsCT>;
+using UPCcsCt = std::unique_ptr<CcsCt>;
+using SPCcsCt = std::shared_ptr<CcsCt>;
 } // namespace earthxpert

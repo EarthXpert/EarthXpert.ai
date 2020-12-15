@@ -58,10 +58,10 @@ set(ex3rdparty_srcs "boost/exboost.cpp"
   "xml/exxml.cpp"
   "xsimd/exxsimd.cpp")
 set(ex3rdparty_items Boost::boost Boost::filesystem Boost::locale 
-  ${CERES_LIBRARY} ${CGAL_LIBRARIES} 
+  ${CERES_LIBRARY} ${CGAL_LIBRARIES} ${CUDA_LIBRARIES}
   ${GDAL_LIBRARY} ${geotrans_LIBRARIES} ${GETTEXT_LIBRARY} glog::glog 
   ${GTEST_BOTH_LIBRARIES} ${LASLIB_LIBRARY} libInterpolate::Interpolate libxml2 
-  ${MPFR4_LIBRARIES} ${MPIR_LIBRARIES} ${OpenCV_LIBS} ${OpenEXR_LIBS} 
+  ${MPFR4_LIBRARIES} ${MPIR_LIBRARIES} ${OpenCL_LIBRARIES} ${OpenCV_LIBS} ${OpenEXR_LIBS} 
   OpenImageIO::OpenImageIO OpenImageIO::OpenImageIO_Util 
   ${nsimd_LIBRARIES} ${PDAL_LIBRARIES} ${proj_LIBRARIES} ${Protobuf_LIBRARIES} 
   Qt5::Widgets ${Simd_LIBRARIES} ${SLTBENCH_LIBRARIES} ${TBB_LIBRARIES})

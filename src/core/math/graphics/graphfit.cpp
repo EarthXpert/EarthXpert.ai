@@ -39,7 +39,12 @@ GraphFit::GraphFit(const Solver::Options& options) : mOptions(options) {
 
 /**
  *  \brief fit a parameterized stright line to a sequence of 2D points.
- *  The line equation is defined by
+ *
+ *  \param [in] points a sequence, at least two, of 2D points
+ *  \param [in/out] pb the parameter block holding all unknown parameters
+ *                  optionally with initial values.
+ *
+ *  \details The line equation is defined by
  *
  *    y = m * x + c
  *
@@ -49,10 +54,6 @@ GraphFit::GraphFit(const Solver::Options& options) : mOptions(options) {
  *    x: input variable
  *    m: the slope parameter
  *    c: the intercept parameter
- *
- *  \param [in] points a sequence, at least two, of 2D points
- *  \param [in/out] pb the parameter block holding all unknown parameters
- *                  optionally with initial values.
  */
 bool GraphFit::FitLineCeres(const std::vector<Point2d>& points, 
   std::vector<double>& pb, Solver::Summary& summary) {
@@ -147,8 +148,14 @@ bool GraphFit::FitLineEigen(const std::vector<Point2d>& points, std::vector<doub
 }
 
 /**
- *  \breif fit a parameterized stright line to a sequence of 3D points.
- *  The line equation is defined by
+ *  \brief fit a parameterized stright line to a sequence of 3D points.
+ *
+ *  \param [in] points a sequence, at least two, of 3D points
+ *  \param [in/out] pb the parameter block holding all unknown parameters
+ *                  optionally with initial values.
+ *  \param [out] summary the report of ceres solver.
+ *
+ *  \details The line equation is defined by
  *
  *    p = p0 + v * t
  *
@@ -158,11 +165,6 @@ bool GraphFit::FitLineEigen(const std::vector<Point2d>& points, std::vector<doub
  *    p0: the anchor point, can be initialized by the average position or a selected observation
  *    v: the direction vector
  *    t: the parametric ratio
- *
- *  \param [in] points a sequence, at least two, of 3D points
- *  \param [in/out] pb the parameter block holding all unknown parameters
- *                  optionally with initial values.
- *  \param [out] summary the report of ceres solver.
  */
 bool GraphFit::FitLineCeres(const std::vector<Point3d>& points,
   std::vector<double>& pb, Solver::Summary& summary) {
@@ -184,8 +186,13 @@ bool GraphFit::FitLineCv(const std::vector<Point3d>& points, cv::Vec6d& pb) {
 }
 
 /**
- *  \breif fit a parameterized exponential curve to a sequence of 2D points.
- *  The line equation is defined by
+ *  \brief fit a parameterized exponential curve to a sequence of 2D points.
+ *
+ *  \param [in] points a sequence, at least two, of 2D points
+ *  \param [in/out] pb the parameter block holding all unknown parameters
+ *                  optionally with initial values.
+ *
+ *  \details The line equation is defined by
  *
  *    y = exp(m * x + c)
  *
@@ -195,10 +202,6 @@ bool GraphFit::FitLineCv(const std::vector<Point3d>& points, cv::Vec6d& pb) {
  *    x: input variable
  *    m: the slope parameter
  *    c: the intercept parameter
- *
- *  \param [in] points a sequence, at least two, of 2D points
- *  \param [in/out] pb the parameter block holding all unknown parameters
- *                  optionally with initial values.
  */
 bool GraphFit::FitCurveCeres(const std::vector<Point2d>& points,
   std::vector<double>& pb, Solver::Summary& summary) {
@@ -210,8 +213,14 @@ bool GraphFit::FitCurveCeres(const std::vector<Point2d>& points,
 }
 
 /**
- *  \breif fit a parameterized plane to a sequence of 3D points.
- *  The plane equation is defined by
+ *  \brief fit a parameterized plane to a sequence of 3D points.
+ *
+ *  \param [in] points a sequence, at least three non-colinear, of 3D points
+ *  \param [in/out] pb the parameter block holding all unknown parameters
+ *                  optionally with initial values.
+ *  \param [out] summary the report of ceres solver.
+ *
+ *  \details The plane equation is defined by
  *
  *    z = m * x + n * y + c
  *
@@ -221,11 +230,6 @@ bool GraphFit::FitCurveCeres(const std::vector<Point2d>& points,
  *    x,y: input variables
  *    m,n: the slope parameters
  *    c: the intercept parameter
- *
- *  \param [in] points a sequence, at least three non-colinear, of 3D points
- *  \param [in/out] pb the parameter block holding all unknown parameters
- *                  optionally with initial values.
- *  \param [out] summary the report of ceres solver.
  */
 bool GraphFit::FitPlaneCeres(const std::vector<Point3d>& points,
   std::vector<double>& pb, Solver::Summary& summary) {

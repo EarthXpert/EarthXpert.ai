@@ -12,14 +12,14 @@
 
 namespace earthxpert {
 /**
- *  The class ProjSRS provides service of spatial coordinate system
+ *  The class ProjSrs provides service of spatial coordinate system
  *  with GDAL & OGR as backend.
  */
-class EXCORE_EXPORTS ProjSRS final : public ISRS
+class EXCORE_EXPORTS ProjSrs final : public ISrs
 {
 public:
-  explicit ProjSRS(const std::string& wkt);
-  ~ProjSRS() = default;
+  explicit ProjSrs(const std::string& wkt);
+  ~ProjSrs() = default;
 
   void GetDatum() override {}
 
@@ -31,6 +31,6 @@ private:
   UPPJ mSRS;
 };
 
-using UPProjSRS = std::unique_ptr<ProjSRS>;
-using SPProjSRS = std::shared_ptr<ProjSRS>;
+using UPProjSRS = std::unique_ptr<ProjSrs>;
+using SPProjSRS = std::shared_ptr<ProjSrs>;
 }

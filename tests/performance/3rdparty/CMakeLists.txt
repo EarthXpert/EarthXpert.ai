@@ -6,4 +6,8 @@ endfunction()
 
 add_subdirectory(ceres)
 add_subdirectory(eigen)
+add_subdirectory(gpu)
+add_subdirectory(mp)
+add_subdirectory(simd)
 add_subdirectory(stl)
+add_subdirectory(tbb)

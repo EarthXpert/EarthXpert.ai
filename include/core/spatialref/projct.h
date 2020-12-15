@@ -11,16 +11,16 @@
 
 namespace earthxpert {
 /**
- *  The class ProjCT provides service of coordinate transformation
+ *  The class ProjCt provides service of coordinate transformation
  *  from a source coordinate system to a target coordinate system
  *  with OGR as backend.
  */
-class EXCORE_EXPORTS ProjCT final : public ICT {
+class EXCORE_EXPORTS ProjCt final : public ICt {
 public:
-  ProjCT(const ProjSRS* src, const ProjSRS* tgt);
-  ProjCT(const PJ* src, const PJ* tgt);
-  ProjCT(const std::string& src, const std::string& tgt);
-  ~ProjCT() = default;
+  ProjCt(const ProjSrs* src, const ProjSrs* tgt);
+  ProjCt(const PJ* src, const PJ* tgt);
+  ProjCt(const std::string& src, const std::string& tgt);
+  ~ProjCt() = default;
 
   /**
    *  \brief Transform a point in-place.
@@ -92,6 +92,6 @@ private:
   void Initialize(const PJ* src, const PJ* tgt);
 };
 
-using UPProjCT = std::unique_ptr<ProjCT>;
-using SPProjCT = std::shared_ptr<ProjCT>;
+using UPProjCt = std::unique_ptr<ProjCt>;
+using SPProjCt = std::shared_ptr<ProjCt>;
 } // namespace earthxpert

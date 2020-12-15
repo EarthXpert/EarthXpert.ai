@@ -13,12 +13,12 @@
 namespace earthxpert {
 class EXCORE_EXPORTS SrsFactory {
 public:
-  static std::shared_ptr<ISRS> CreateSRS();
+  static std::shared_ptr<ISrs> CreateSrs();
 
-  static std::shared_ptr<CcsSRS> CreateCcsSRS();
+  static std::shared_ptr<CcsSrs> CreateCcsSrs();
 
-  static std::shared_ptr<OgrSRS> CreateOgrSRS();
+  static std::shared_ptr<OgrSrs> CreateOgrSrs();
 
-  static std::shared_ptr<ProjSRS> CreateProjSRS();
+  static std::shared_ptr<ProjSrs> CreateProjSrs();
 };
 }

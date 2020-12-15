@@ -122,7 +122,7 @@ void TestStride(const IEpipolarModel* epiModel, int stride, double tol) {
 }
 
 /**
- *  \breif sensor model of epipolar image via the chain between
+ *  \brief sensor model of epipolar image via the chain between
  *  epipolar image space, rectification space, and raw image space.
  */
 void TestCubeI2G(const ISensorModel* epiSensorModel) {
@@ -130,7 +130,7 @@ void TestCubeI2G(const ISensorModel* epiSensorModel) {
 }
 
 /**
- *  \breif stereo model composed of epipolar images as OrthoReady product
+ *  \brief stereo model composed of epipolar images as OrthoReady product
  */
 void TestImageToGround_Cube(const ISensorModel* leftSensorEpiModel,
   const ISensorModel* rightSensorEpiModel) {

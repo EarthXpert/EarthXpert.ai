@@ -13,9 +13,9 @@ using namespace earthxpert::thirdparty;
  * \param [in] src the source SRS
  * \param [in] tgt the target SRS
  */
-CcsCT::CcsCT(const CcsSRS* src, const CcsSRS* tgt) {
+CcsCt::CcsCt(const CcsSrs* src, const CcsSrs* tgt) {
   Initialize();
 }
 
-void CcsCT::Initialize() {
+void CcsCt::Initialize() {
 }
