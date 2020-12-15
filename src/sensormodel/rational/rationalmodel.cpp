@@ -5,6 +5,7 @@
 #include "sensormodel/rationalmodel.h"
 #include "3rdparty/gdal/exgdal.h"
 #include "core/exceptions/exexcept.h"
+#include "core/math/mutils.h"
 #include "core/utils/typehelper.h"
 #include "sensormodel/rmutils.h"
 
@@ -154,16 +155,6 @@ bool RationalModel::operator==(const RationalModel &rhs) const {
 }
 
 /**
- *  Test inequality.
- *
- *  \param [in] rhs Object to compare with
- *  \return true if not equal.
- */
-bool RationalModel::operator!=(const RationalModel &rhs) const {
-  return !(operator==(rhs));
-}
-
-/**
  *  \brief Check coefficients if they represent a valid model.
  *  \except Throw invalid_arguments if it is a bad model.
  */
@@ -257,9 +248,8 @@ void RationalModel::SetCorrection(const std::array<double, NumCorr> &lineCorr,
   mSampCorr = sampCorr;
   mCorrAlgo = corrAlgo;
 
-  auto NotZero = [](const double val) { return 0.0 != val; };
-  mCorrFlag = std::any_of(std::cbegin(mLineCorr), std::cend(mLineCorr), NotZero) ||
-    std::any_of(std::cbegin(mSampCorr), std::cend(mSampCorr), NotZero);
+  mCorrFlag = std::any_of(std::cbegin(mLineCorr), std::cend(mLineCorr), NotZero<>()) ||
+    std::any_of(std::cbegin(mSampCorr), std::cend(mSampCorr), NotZero<>());
 }
 
 /**

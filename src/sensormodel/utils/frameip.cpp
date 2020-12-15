@@ -5,6 +5,7 @@
 #include "sensormodel/utils/frameip.h"
 #include "3rdparty/opencv/exopencv.h"
 #include "core/exceptions/exexcept.h"
+#include "core/math/mutils.h"
 
 #include <algorithm>
 #include <cmath>
@@ -259,14 +260,12 @@ void FrameIP::CheckCamParms() const {
  *  distortions.
  */
 void FrameIP::CheckDistortions() const {
-  auto NotZero = [](const double val) -> bool { return (0.0 != val); };
-
   mDistFlags.set(kRADDIST, std::any_of(std::cbegin(mRadialDist),
-    std::cend(mRadialDist), NotZero));
+    std::cend(mRadialDist), NotZero<>()));
   mDistFlags.set(kDECDIST, std::any_of(std::cbegin(mDecentDist),
-    std::cend(mDecentDist), NotZero));
+    std::cend(mDecentDist), NotZero<>()));
   mDistFlags.set(kLINDIST, std::any_of(std::cbegin(mLinearDist),
-    std::cend(mLinearDist), NotZero));
+    std::cend(mLinearDist), NotZero<>()));
   if (mGridDist)
     mDistFlags.set(kGRDDIST, mGridDist->HasGrid());
 

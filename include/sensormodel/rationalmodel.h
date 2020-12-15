@@ -319,29 +319,15 @@ private:
    *  \param [in] image 2d position (col, row) in image coordinate system
    *  \return Return 2d actual position (col, row) in imagery coordinate system
    */
-  Point2d ImageApparantToActual(const Point2d& image) const {
-    Point2d imageAct{ image };
-    if (mCorrFlag) {  // apply correction
-      const auto imageCorr = CalcCorrection(image);
-      imageAct += imageCorr;
-    }
-    return imageAct;
-  }
+  Point2d ImageApparantToActual(const Point2d& image) const;
 
   /**
    *  \brief Given a 2d position in image coordinate system,
    *  output the 2d position in virtual sensor coordinate system.
    */
-  inline Point2d ImageApparantToSensor(const Point2d& image) const {
-    return { (image.x - nfc[eOSAMP]) * mInvScale[eISSAMP],
-             (image.y - nfc[eOLINE]) * mInvScale[eISLINE] };
-  }
+  inline Point2d ImageApparantToSensor(const Point2d& image) const;
 
-  inline Point2d ImageToSensor(const Point2d& image) const {
-    const Point2d imageAct{ image.x - 0.5, image.y - 0.5 };
-    const auto imageApp = ImageActualToApparant(imageAct);
-    return ImageApparantToSensor(imageApp);
-  }
+  inline Point2d ImageToSensor(const Point2d& image) const;
 
   /**
    *  \brief Given a 2d position in virtual sensor coordinate system,
@@ -350,15 +336,9 @@ private:
    *  \param [in] sensor 2d position (x, y) in virtual sensor coordinate system
    *  \return Return 2d apparant rpc position (col, row) in imagery coordinate system
    */
-  inline Point2d SensorToImageApparant(const Point2d& sensor) const {
-    return { nfc[eOSAMP] + nfc[eSSAMP] * sensor.x,
-             nfc[eOLINE] + nfc[eSLINE] * sensor.y };
-  }
+  inline Point2d SensorToImageApparant(const Point2d& sensor) const;
 
-  inline Point2d SensorToImageActual(const Point2d& sensor) const {
-    const auto imageApp = SensorToImageApparant(sensor);
-    return ImageApparantToActual(imageApp);
-  }
+  inline Point2d SensorToImageActual(const Point2d& sensor) const;
 
   bool mCorrFlag{ false };   // flag indicating the correction status
   Point2d CalcCorrection(const Point2d& cam) const;
@@ -379,11 +359,7 @@ private:
     return SensorToVirtual(sensor.x, sensor.y, uvw.z, uvw.x, uvw.y);
   }
 
-  inline Point3d GroundToVirtual(const Point3d& ground) const {
-    return { (ground.x - nfc[eOLON]) * mInvScale[eISLON],
-             (ground.y - nfc[eOLAT]) * mInvScale[eISLAT],
-             (ground.z - nfc[eOHGT]) * mInvScale[eISHGT] };
-  }
+  inline Point3d GroundToVirtual(const Point3d& ground) const;
 
   /**
    *  Ground-to-sensor backward projection.
@@ -395,14 +371,7 @@ private:
    *  \param [out] sensor 2d sensor position (x, y)
    *  \return Returns true if operation succeeds
    */
-  inline bool VirtualToSensor(const Point3d& uvw, Point2d& sensor) const {
-    const auto [Ln, Ld, Sn, Sd] = CalcPolynomials(uvw);
-
-    // col/row computed from RFM
-    sensor.x = Sn / Sd;
-    sensor.y = Ln / Ld;
-    return true;
-  }
+  bool VirtualToSensor(const Point3d& uvw, Point2d& sensor) const;
 
   inline bool GroundToSensor(const Point3d& ground, Point2d& sensor) const {
     const Point3d uvw = GroundToVirtual(ground);

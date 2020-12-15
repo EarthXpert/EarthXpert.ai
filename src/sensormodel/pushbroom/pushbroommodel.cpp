@@ -74,8 +74,6 @@ PushbroomModel<CraftPolicy>::operator!=(const PushbroomModel<CraftPolicy>&rhs) c
  *  \param [in] image 2d position (x, y) in imagery raster coordinate system
  *  \param [in/out] ground 3d ground position (X, Y, Z) in ground coordinate
  * system \return Returns true if the operation succeeds
- *
- *  \details More details
  */
 template <typename CraftPolicy> bool 
 PushbroomModel<CraftPolicy>::ImageToGround(const Point2d &image,
@@ -90,8 +88,6 @@ PushbroomModel<CraftPolicy>::ImageToGround(const Point2d &image,
  *  \param [in] image 2d position (x, y) in imagery raster coordinate system
  *  \param [in/out] ground 3d ground positions (X, Y, Z) in ground coordinate
  * system
- *
- *  \details More details
  */
 template <typename CraftPolicy> size_t
 PushbroomModel<CraftPolicy>::ImageToGround(const Point2d &image,
@@ -108,8 +104,6 @@ PushbroomModel<CraftPolicy>::ImageToGround(const Point2d &image,
  *  \param [in] ground 3d ground position (X, Y, Z)
  *  \param [out] image 2d image position (x, y)
  *  \return Returns true if operation succeeds
- *
- *  \details More details
  */
 template <typename CraftPolicy> bool 
 PushbroomModel<CraftPolicy>::GroundToImage(const Point3d &ground,
