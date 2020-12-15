@@ -7,6 +7,7 @@
 #include "3rdparty/ex3rdparty.h"
 
 #include <algorithm>
+#include <cassert>
 #include <chrono>
 #include <iostream>
 #include <memory>
@@ -37,7 +38,7 @@ std::ostream& operator<<(std::ostream& s, const std::vector<Ty>& v) {
  *  index re-orderings of elements having equal values 
  */
 template <typename Ty>
-std::vector<size_t> GetSortIndex(const std::vector<Ty>& v) {
+inline std::vector<size_t> GetSortIndex(const std::vector<Ty>& v) {
   // initialize original index locations
   std::vector<size_t> idx(v.size());
   std::iota(idx.begin(), idx.end(), 0);
@@ -50,9 +51,23 @@ std::vector<size_t> GetSortIndex(const std::vector<Ty>& v) {
 }
 
 template <typename Ty>
-void SortUnique(std::vector<Ty>& v) {
+inline void SortUnique(std::vector<Ty>& v) {
   std::sort(v.begin(), v.end());
   std::erase(std::unique(v.begin(), v.end()), v.end());
+}
+
+/**
+ *  Convert two vectors of the same length into one vector of pairs
+ */
+template<typename Ty1, typename Ty2 = Ty1> std::vector<std::pair<Ty1, Ty2>> 
+inline MakeVecOfPairs(const std::vector<Ty1>& v1, const std::vector<Ty1>& v2) {
+  assert(v1.size() = v2.size());
+  std::vector<std::pair<Ty1, Ty2>> vp(v1.size());
+
+  std::transform(v1.begin(), v1.end(), v2.begin(), vp.begin(),
+    [](int a, int b) { return std::make_pair(a, b); });
+
+  return vp;
 }
 
 template <class Ty>
