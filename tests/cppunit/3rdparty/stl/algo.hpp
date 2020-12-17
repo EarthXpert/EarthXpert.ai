@@ -8,9 +8,9 @@
  *  \brief Maximum triangle path sum
  */
 TEST(stl, MaxTriSum) {
-  std::string line;
   std::vector<int> numbers;
 
+  std::string line;
   while (std::getline(std::cin, line)) {
     char* tok = strtok(line.data(), " ");
     while (tok) {
@@ -29,8 +29,10 @@ TEST(stl, MaxTriSum) {
   for (int i = h - 1; i > 0; --i) {
     const int rb = (i * (i - 1)) / 2;
     const int re = (i * (i + 1)) / 2;
+
     for (int j = rb; j < re; ++j) {
       const int k = i + j;
+
       tri[j] += std::max(tri[k], tri[k + 1]);
     }
   }
