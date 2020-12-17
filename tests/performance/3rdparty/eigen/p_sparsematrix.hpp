@@ -77,7 +77,7 @@ void SpMatDC_SetTriplets_ByRow(const int64_t& count) {
 }
 
 /**
- *  \remark reserv() uses compressed mode that has bottlenecks
+ *  \remark reserve() uses compressed mode that has bottlenecks
  *  at 4x+3 ~ 5x, 10x+3 ~ 11x, 22x+3 ~ 23x, etc.
  */
 //static const std::vector<int64_t> args_sp{ kN, kN * 4, kN * 4 + 3,
