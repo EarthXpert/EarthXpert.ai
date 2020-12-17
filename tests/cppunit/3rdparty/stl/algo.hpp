@@ -27,11 +27,11 @@ TEST(stl, MaxTriSum) {
 
   int* tri = numbers.data() + 1;  // start of triangle
   for (int i = h - 1; i > 0; --i) {
-    const int rb = (i * (i - 1)) / 2;
-    const int re = (i * (i + 1)) / 2;
+    const int ib = ((i - 1) * i) / 2; // begin of row i
+    const int ie = (i * (i + 1)) / 2; // end
 
-    for (int j = rb; j < re; ++j) {
-      const int k = j + i;
+    for (int j = ib; j < ie; ++j) {
+      const int k = j + i;  // first neighbor of next row
 
       tri[j] += std::max(tri[k], tri[k + 1]);
     }
