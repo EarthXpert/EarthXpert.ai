@@ -31,7 +31,7 @@ TEST(stl, MaxTriSum) {
     const int re = (i * (i + 1)) / 2;
 
     for (int j = rb; j < re; ++j) {
-      const int k = i + j;
+      const int k = j + i;
 
       tri[j] += std::max(tri[k], tri[k + 1]);
     }
