@@ -5,6 +5,27 @@
 #include <iostream>
 
 /**
+ *  \brief Decode name
+ */
+TEST(stl, DecodeName) {
+  std::string line;
+  while (std::getline(std::cin, line)) {
+    std::string result;
+
+    char* keys = line.data() + line.find('|') + 1;
+    char* tok = strtok(keys, " ");
+    while (tok) {
+      const int i = atoi(tok) - 1;
+      result.append(1, line[i]);
+
+      tok = strtok(nullptr, " ");
+    }
+  
+    std::cout << result << std::endl;
+  }
+}
+
+/**
  *  \brief Maximum triangle path sum
  */
 TEST(stl, MaxTriSum) {
@@ -25,7 +46,7 @@ TEST(stl, MaxTriSum) {
   const auto n = static_cast<int>(numbers.size()) - 1;  // number of triangle elements
   assert(h * (h + 1) == n * 2);
 
-  int* tri = numbers.data() + 1;  // start of triangle
+  int* const tri = numbers.data() + 1;  // start of triangle
   for (int i = h - 1; i > 0; --i) {
     const int ib = ((i - 1) * i) / 2; // begin of row i
     const int ie = (i * (i + 1)) / 2; // end
