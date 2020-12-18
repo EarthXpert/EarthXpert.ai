@@ -26,10 +26,25 @@ struct SrsInfo {
   SrsBackend backend;
 };
 
+inline bool operator==(const SrsInfo& lhs, const SrsInfo& rhs) {
+  return false;
+}
+
+inline bool operator<(const SrsInfo& lhs, const SrsInfo& rhs) {
+  return false;
+}
+
 //
 struct CtInfo {
-  SrsBackend backend;
   SrsInfo srcSrs;
   SrsInfo tgtSrs;
 };
+
+inline bool operator==(const CtInfo& lhs, const CtInfo& rhs) {
+  return false;
+}
+
+inline bool operator<(const CtInfo& lhs, const CtInfo& rhs) {
+  return false;
+}
 }
