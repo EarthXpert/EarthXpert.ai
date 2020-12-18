@@ -4,6 +4,7 @@ message(STATUS "CERES_LIBRARY: ${CERES_LIBRARY}")
 message(STATUS "CGAL_LIBRARIES: ${CGAL_LIBRARIES}")
 message(STATUS "GDAL_LIBRARY: ${GDAL_LIBRARY}")
 message(STATUS "GETTEXT_LIBRARY: ${GETTEXT_LIBRARY}")
+message(STATUS "geotiff_LIBRARIES: ${geotiff_LIBRARIES}")
 message(STATUS "GTEST_BOTH_LIBRARIES: ${GTEST_BOTH_LIBRARIES}")
 message(STATUS "LASLIB_LIBRARY: ${LASLIB_LIBRARY}")
 message(STATUS "LIBXML2_LIBRARY: ${LIBXML2_LIBRARY}")
@@ -17,6 +18,7 @@ message(STATUS "Protobuf_LIBRARIES: ${Protobuf_LIBRARIES}")
 message(STATUS "Simd_LIBRARIES: ${Simd_LIBRARIES}")
 message(STATUS "SLTBENCH_LIBRARIES: ${SLTBENCH_LIBRARIES}")
 message(STATUS "TBB_LIBRARIES: ${TBB_LIBRARIES}")
+message(STATUS "tiff_LIBRARIES: ${tiff_LIBRARIES}")
 message(STATUS "vld_LIBRARIES: ${vld_LIBRARIES}")
 
 add_definitions(-DEX3RDPARTY_API)
@@ -27,6 +29,7 @@ set(ex3rdparty_srcs "boost/exboost.cpp"
   "cuda/excuda.cpp"
   "eigen/exeigen.cpp"
   "gdal/exgdal.cpp"
+  "geotiff/exgeotiff.cpp"
   "geotrans/exgeotrans.cpp"
   #"geotrans/exgeotrans_utils.cpp"
   "gettext/exgettext.cpp"
@@ -59,12 +62,12 @@ set(ex3rdparty_srcs "boost/exboost.cpp"
   "xsimd/exxsimd.cpp")
 set(ex3rdparty_items Boost::boost Boost::filesystem Boost::locale 
   ${CERES_LIBRARY} ${CGAL_LIBRARIES} ${CUDA_LIBRARIES}
-  ${GDAL_LIBRARY} ${geotrans_LIBRARIES} ${GETTEXT_LIBRARY} glog::glog 
+  ${GDAL_LIBRARY} ${geotiff_LIBRARIES} ${geotrans_LIBRARIES} ${GETTEXT_LIBRARY} glog::glog 
   ${GTEST_BOTH_LIBRARIES} ${LASLIB_LIBRARY} libInterpolate::Interpolate libxml2 
   ${MPFR4_LIBRARIES} ${MPIR_LIBRARIES} ${OpenCL_LIBRARIES} ${OpenCV_LIBS} ${OpenEXR_LIBS} 
   OpenImageIO::OpenImageIO OpenImageIO::OpenImageIO_Util 
   ${nsimd_LIBRARIES} ${PDAL_LIBRARIES} ${proj_LIBRARIES} ${Protobuf_LIBRARIES} 
-  Qt5::Widgets ${Simd_LIBRARIES} ${SLTBENCH_LIBRARIES} ${TBB_LIBRARIES})
+  Qt5::Widgets ${Simd_LIBRARIES} ${SLTBENCH_LIBRARIES} ${TBB_LIBRARIES} ${tiff_LIBRARIES})
 earthxpert_add_library(ex3rdparty "api"
   SRCS ${ex3rdparty_srcs}
   ITEMS ${ex3rdparty_items})
