@@ -53,45 +53,30 @@ public:
   }
 
   /**
-   * Interpolate a value for the given X,Y,Z position.
+   * Interpolate a value for the given x,y,z position.
    */
-  void GetVal(cv::Point3_<Ty> point, Ty *const val) const {
-    GetVal(point.x, point.y, point.z, val);
+  void GetVal(cv::Point3_<Ty> point, Ty *const v) const {
+    GetVal(point.x, point.y, point.z, v);
   }
-  void GetVal(Ty X, Ty Y, Ty Z, Ty *const val, uint32_t len=UINT_MAX) const;
+  void GetVal(Ty x, Ty y, Ty z, Ty *const v, uint32_t len=UINT_MAX) const;
 
   // \return Return value of the 1st dimension
   Ty GetVal1(cv::Point3_<Ty> point) const {
     return GetVal1(point.x, point.y, point.z);
   }
-  Ty GetVal1(Ty X, Ty Y, Ty Z) const {
-    assert(1 <= mDim);
-    Ty val;
-    GetVal(X, Y, Z, &val, 1);
-    return val;
-  }
+  Ty GetVal1(Ty x, Ty y, Ty z) const;
 
   // \return Return values of the beginning two dimensions
   std::pair<Ty, Ty> GetVal2(cv::Point3_<Ty> point) const {
     return GetVal2(point.x, point.y, point.z);
   }
-  std::pair<Ty, Ty> GetVal2(Ty X, Ty Y, Ty Z) const {
-    assert(2 <= mDim);
-    Ty val[2];
-    GetVal(X, Y, Z, val, 2);
-    return { val[0], val[1] };
-  }
+  std::pair<Ty, Ty> GetVal2(Ty x, Ty y, Ty z) const;
 
   // \return Return values of the beginning three dimensions
   Tuple3<Ty> GetVal3(cv::Point3_<Ty> point) const {
     return GetVal3(point.x, point.y, point.z);
   }
-  Tuple3<Ty> GetVal3(Ty X, Ty Y, Ty Z) const {
-    assert(3 <= mDim);
-    Ty val[3];
-    GetVal(X, Y, Z, val, 3);
-    return { val[0], val[1], val[2] };
-  }
+  Tuple3<Ty> GetVal3(Ty x, Ty y, Ty z) const;
 
   /**
    * Get the dimension of points stored in the cube
@@ -101,11 +86,11 @@ public:
   unsigned int GetDimension() const noexcept { return mDim; }
 
   /**
-   * Get the X- and Y-coordinate that are used to compute indices within the
+   * Get the x- and y-coordinate that are used to compute indices within the
    * interpolation cube.
    *
-   * \return Returns {X-offset, Y-offset}
-   * \remark The X grid index is computed as (X - offX) / spcX
+   * \return Returns {x-offset, y-offset}
+   * \remark The x grid index is computed as (x - offX) / spcX
    */
   std::tuple<Ty, Ty, Ty> GetOffsets() const noexcept {
     return { mOffX, mOffY, mOffZ };
@@ -138,7 +123,7 @@ public:
   /**
    * Get the number of cubic nodes
    *
-   * \return Returns Number of cube nodes in the X,Y,Z directions
+   * \return Returns Number of cube nodes in the x,y,z directions
    */
   std::tuple<unsigned int, unsigned int, unsigned int> GetSize() const {
     return { mNumX, mNumY, mNumZ };
@@ -153,15 +138,15 @@ public:
 
 private:
   unsigned int mDim{ 1 };   // Dimension of node points stored in the cube.
-  unsigned int mNumX{ 0 };  // Number of grid points in the X-dimension
-  unsigned int mNumY{ 0 };  // Number of grid points in the Y-dimension
-  unsigned int mNumZ{ 0 };  // Number of grid points in the Z-dimension
-  Ty mOffX{ 0 };           // X coordinate offset
-  Ty mOffY{ 0 };           // Y coordinate offset
-  Ty mOffZ{ 0 };           // Z coordinate offset
-  Ty mSpcX{ 1 };           // X coordinate spacing of cube points
-  Ty mSpcY{ 1 };           // Y coordinate spacing of cube points
-  Ty mSpcZ{ 1 };           // Z coordinate spacing of cube points
+  unsigned int mNumX{ 0 };  // Number of grid points in the x-dimension
+  unsigned int mNumY{ 0 };  // Number of grid points in the y-dimension
+  unsigned int mNumZ{ 0 };  // Number of grid points in the z-dimension
+  Ty mOffX{ 0 };           // x coordinate offset
+  Ty mOffY{ 0 };           // y coordinate offset
+  Ty mOffZ{ 0 };           // z coordinate offset
+  Ty mSpcX{ 1 };           // x coordinate spacing of cube points
+  Ty mSpcY{ 1 };           // y coordinate spacing of cube points
+  Ty mSpcZ{ 1 };           // z coordinate spacing of cube points
   std::vector<Ty> mCube; // Array of target coordinates for node points
 
   /**

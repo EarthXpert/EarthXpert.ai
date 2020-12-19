@@ -36,12 +36,12 @@ TEST(opencv, imgcodecs) {
 }
 
 /**
- *  TestCase: compare resampling in RGB vs HSI
+ *  TestCase: compare resampling in RGB vs HSV
  *  
  *    1) in RGB space, do downsampling, and save as ds_rgb.tif
- *    2) convert RGB to HSI, do downsampling, convert HSI to RGB, and save as ds_hsi.tif
- *    3) load ds_rgb.tif and ds_hsi.tif, and compare: min, max, average, rms, etc.
+ *    2) convert RGB to HSV, do downsampling, convert HSV to RGB, and save as ds_hsv.tif
+ *    3) load ds_rgb.tif and ds_hsiv.tif, and compare: min, max, average, rms, etc.
  */
-TEST(opencv, rgb_hsi_downsample) {
+TEST(opencv, rgb_hsv_downsample) {
 
 }

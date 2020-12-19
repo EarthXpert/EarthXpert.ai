@@ -42,35 +42,22 @@ public:
                  std::vector<Ty> &vdX, std::vector<Ty> &vdY) const;
 
   /**
-   * Interpolate a distortion amount at the given X,Y position.
+   * Interpolate a distortion amount at the given x,y position.
    *
-   * \param [in] X X position
-   * \param [in] Y Y position
+   * \param [in] x x position
+   * \param [in] y y position
    * \param [in,out] d Array of interpolated (or extrapolated) distortions
    */
-  bool GetDistortion(const Ty X, const Ty Y, Ty* const d) const {
-    if (mGrid) {
-      assert(d);
-      mGrid->GetVal(X, Y, d);
-      return true;
-    }
-    return false;
-  }
+  bool GetDistortion(const Ty x, const Ty y, Ty* const d) const;
 
   /**
-   * Interpolate a distortion value for the given X,Y position.
+   * Interpolate a distortion value for the given x,y position.
    *
-   * \param [in] X X position
-   * \param [in] Y Y position
-   * \return Returns interpolated (or extrapolated) X & Y distortions
+   * \param [in] x x position
+   * \param [in] y y position
+   * \return Returns interpolated (or extrapolated) x & y distortions
    */
-  std::pair<Ty, Ty> GetDistortion(const Ty X, const Ty Y) const {
-    if (mGrid) {
-      assert(2 == mGrid->GetDimension());
-      return mGrid->GetVal2(X, Y);
-    }
-    return { 0.f, 0.f };
-  }
+  std::pair<Ty, Ty> GetDistortion(const Ty x, const Ty y) const;
 
   std::unique_ptr<DistortionGrid> Clone() const {
     return std::make_unique<DistortionGrid>(*this);
@@ -100,4 +87,6 @@ private:
 using DistortionGridF = DistortionGrid<float>;
 using DistortionGridD = DistortionGrid<double>;
 // using DistortionGridLD = DistortionGrid<long double>;
+
+#include "detail/distortiongrid.hh"
 } // namespace earthxpert

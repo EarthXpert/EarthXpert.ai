@@ -7,7 +7,20 @@
 #include "3rdparty/opencv/exopencv.h"
 #include "core/math/math.h"
 
+#include <type_traits>
+
 namespace earthxpert {
+//
+template<typename Ty, Ty val, typename = std::enable_if<std::is_integral_v<Ty>, void>::type>
+struct NotVal {
+  bool operator()(const Ty v) { return val != v; }
+};
+
+template<typename Ty = double>
+struct NotZero {
+  bool operator()(const Ty v) { return Ty(0) != v; }
+};
+
 /**
  *  \brief compare values, the first value is assgined to be the third
  *  iff the latter is smaller, and the second value is assigned to

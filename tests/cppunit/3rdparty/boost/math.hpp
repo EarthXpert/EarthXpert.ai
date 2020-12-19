@@ -17,15 +17,17 @@ namespace bmi = bm::interpolators;
 namespace bmt = bm::tools;
 namespace brd = boost::random;
 
+constexpr double kStep = 0.01;
+constexpr double kTol = 1.0e-8;
+
 /**
  *  \brief Barycentric rational interpolation is a high-accuracy interpolation method for non-uniformly spaced samples.
  *
  *  \url https://www.boost.org/doc/libs/master/libs/math/doc/html/math_toolkit/barycentric.html
  */
 TEST(boost, bmi_barycentric_rational) {
-  // The lithium potential is given in Kohn's paper, Table I.
-  // (We could equally easily use an unordered_map, a list of tuples or pairs, or a 2-dimensional array).
-  std::map<double, double> r{
+  // equally use an unordered_map, a list of tuples or pairs, or a 2D array.
+  std::map<double, double> xy{
     {0.02, 5.727}, {0.04, 5.544}, {0.06, 5.450}, {0.08, 5.351},
     {0.10, 5.253}, {0.12, 5.157}, {0.14, 5.058}, {0.16, 4.960},
     {0.18, 4.862}, {0.20, 4.762}, {0.24, 4.563}, {0.28, 4.360},
@@ -39,26 +41,24 @@ TEST(boost, bmi_barycentric_rational) {
     {3.08, 2.0015}, {3.24, 2.0008}, {3.40, 2.0004}, {3.56, 2.0002},
     {3.72, 2.0001} };
 
-  // Let's discover the abscissa that will generate a potential of exactly 3.0,
-  // start by creating 2 ranges for the x and y values:
-  auto x_range = boost::adaptors::keys(r);
-  auto y_range = boost::adaptors::values(r);
-  bm::barycentric_rational<double> b(x_range.begin(), x_range.end(), y_range.begin());
-  //
-  // We'll use a lambda expression to provide the functor to our root finder, since we want
-  // the abscissa value that yields 3, not zero.  We pass the functor b by value to the
-  // lambda expression since barycentric_rational is trivial to copy.
-  // Here we're using simple bisection to find the root:
-  boost::uintmax_t iterations = (std::numeric_limits<boost::uintmax_t>::max)();
-  double abscissa_3 = bmt::bisect([=](double x) { return b(x) - 3; }, 0.44, 1.24, boost::math::tools::eps_tolerance<double>(), iterations).first;
+  // the abscissa that will generate a potential of exactly 3.0,
+  auto x_range = boost::adaptors::keys(xy);
+  auto y_range = boost::adaptors::values(xy);
+  bm::barycentric_rational<double> br(x_range.begin(), x_range.end(), y_range.begin());
+
+  // simple bisection to find the root:
+  boost::uintmax_t numIters = (std::numeric_limits<boost::uintmax_t>::max)();
+  double abscissa_3 = bmt::bisect([=](double x) { return br(x) - 3; }, 
+    0.44, 1.24, bmt::eps_tolerance<double>(), numIters).first;
   std::cout << "Abscissa value that yields a potential of 3 = " << abscissa_3 << std::endl;
-  std::cout << "Root was found in " << iterations << " iterations." << std::endl;
+  std::cout << "Root was found in " << numIters << " iterations." << std::endl;
   
-  // However, we have a more efficient root finding algorithm than simple bisection:
-  iterations = (std::numeric_limits<boost::uintmax_t>::max)();
-  abscissa_3 = bmt::bracket_and_solve_root([=](double x) { return b(x) - 3; }, 0.6, 1.2, false, boost::math::tools::eps_tolerance<double>(), iterations).first;
+  // a more efficient root finding algorithm than simple bisection:
+  numIters = (std::numeric_limits<boost::uintmax_t>::max)();
+  abscissa_3 = bmt::bracket_and_solve_root([=](double x) { return br(x) - 3; },
+    0.6, 1.2, false, bmt::eps_tolerance<double>(), numIters).first;
   std::cout << "Abscissa value that yields a potential of 3 = " << abscissa_3 << std::endl;
-  std::cout << "Root was found in " << iterations << " iterations." << std::endl;
+  std::cout << "Root was found in " << numIters << " iterations." << std::endl;
 }
 
 /**
@@ -67,84 +67,67 @@ TEST(boost, bmi_barycentric_rational) {
  *  \url https://www.boost.org/doc/libs/master/libs/math/doc/html/math_toolkit/cardinal_cubic_b.html
  */
 TEST(boost, bmi_cardinal_cubic_b_spline) {
-  std::vector<double> v(500);
-  const double step = 0.01;
-
-  // Initialize the vector with a function we'd like to interpolate:
-  for (size_t i = 0; i < v.size(); ++i) {
-    v[i] = sin(i * step);
+  std::vector<double> y(500);
+  for (size_t i = 0; i < y.size(); ++i) {
+    y[i] = sin(kStep * i);
   }
-  // We could define an arbitrary start time, but for now we'll just use 0:
-  bmi::cardinal_cubic_b_spline<double> spline(v.data(), v.size(), 0 /* start time */, step);
 
-  // Now we can evaluate the spline wherever we please.
+  bmi::cardinal_cubic_b_spline<double> spline(y.data(), y.size(), 0, kStep);
+
   std::mt19937 gen;
-  brd::uniform_real_distribution<double> abscissa(0, v.size() * step);
+  brd::uniform_real_distribution<double> abscissa(0, y.size() * kStep);
   for (size_t i = 0; i < 10; ++i) {
-    double x = abscissa(gen);
-    std::cout << "sin(" << x << ") = " << sin(x) << ", spline interpolation gives " << spline(x) << std::endl;
-    std::cout << "cos(" << x << ") = " << cos(x) << ", spline derivative interpolation gives " << spline.prime(x) << std::endl;
+    const double x = abscissa(gen);
+    ASSERT_NEAR(sin(x), spline(x), kTol) << "interpolated value";
+    ASSERT_NEAR(cos(x), spline.prime(x), kTol) << "interpolated value";
   }
 
-  // The next example is less trivial:
-  // We will try to figure out when the population of the United States crossed 100 million.
-  // Since the census is taken every 10 years, the data is equally spaced, so we can use the cubic b spline.
+  // figure out when the population of the United States crossed 100 million.
+  // Since the census is taken every 10 years, the data is equally spaced, so use the cubic b spline.
   // Data taken from https://en.wikipedia.org/wiki/United_States_Census
-  // We'll start at the year 1860:
-  double t0 = 1860;
-  double time_step = 10;
-  std::vector<double> population{ 31443321,  /* 1860 */
-                                 39818449,  /* 1870 */
-                                 50189209,  /* 1880 */
-                                 62947714,  /* 1890 */
-                                 76212168,  /* 1900 */
-                                 92228496,  /* 1910 */
-                                 106021537, /* 1920 */
-                                 122775046, /* 1930 */
-                                 132164569, /* 1940 */
-                                 150697361, /* 1950 */
-                                 179323175 };/* 1960 */
+  constexpr double t0 = 1860;  // start year
+  constexpr double time_step = 10;
+  std::vector<double> population{ 31443321,    // 1860
+                                  39818449,    // 1870
+                                  50189209,    // 1880
+                                  62947714,    // 1890
+                                  76212168,    // 1900
+                                  92228496,    // 1910
+                                  106021537,   // 1920
+                                  122775046,   // 1930
+                                  132164569,   // 1940
+                                  150697361,   // 1950
+                                  179323175 }; // 1960
 
   // An eyeball estimate indicates that the population crossed 100 million around 1915.
-  // Let's see what interpolation says:
   bmi::cardinal_cubic_b_spline<double> p(population.data(), population.size(), t0, time_step);
 
-  // Now create a function which has a zero at p = 100,000,000:
-  auto f = [=](double t) { return p(t) - 100000000; };
+  // create a function which has a zero at p = 100,000,000:
+  auto f = [=](const double t) { return p(t) - 100000000; };
 
-  // Boost includes a bisection algorithm, which is robust, though not as fast as some others
-  // we provide, but let's try that first.  We need a termination condition for it, which
-  // takes the two endpoints of the range and returns either true (stop) or false (keep going),
-  // we could use a predefined one such as boost::math::tools::eps_tolerance<double>, but that
-  // won't stop until we have full double precision which is overkill, since we just need the
-  // endpoint to yield the same month.  While we're at it, we'll keep track of the number of
-  // iterations required too, though this is strictly optional:
-
-  auto termination = [](double left, double right) {
+  // bisection algorithm
+  auto tol = [](const double left, const double right) {
     double left_month = std::round((left - std::floor(left)) * 12 + 1);
     double right_month = std::round((right - std::floor(right)) * 12 + 1);
-    return (left_month == right_month) && (std::floor(left) == std::floor(right));
-  };
+    return (left_month == right_month) && (std::floor(left) == std::floor(right)); };
 
-  std::uintmax_t iterations = 1000;
-  auto result = boost::math::tools::bisect(f, 1910.0, 1920.0, termination, iterations);
+  std::uintmax_t numIters = 1000;
+  auto result = bmt::bisect(f, 1910.0, 1920.0, tol, numIters);
   auto time = result.first;  // termination condition ensures that both endpoints yield the same result
   auto month = std::round((time - std::floor(time)) * 12 + 1);
   auto year = std::floor(time);
-  std::cout << "The population of the United States surpassed 100 million on the ";
-  std::cout << month << "th month of " << year << std::endl;
-  std::cout << "Found in " << iterations << " iterations" << std::endl;
+  std::cout << "The population of the United States surpassed 100 million on the "
+    << month << "th month of " << year << std::endl;
+  std::cout << "Found in " << numIters << " iterations" << std::endl;
 
-  // Since the cubic B spline offers the first derivative, we could equally have used Newton iterations,
+  // the cubic B spline offers the first derivative, or equally Newton iterations,
   // this takes "number of bits correct" as a termination condition - 20 should be plenty for what we need,
-  // and once again, we track how many iterations are taken:
-
   auto f_n = [=](double t) { return std::make_pair(p(t) - 100000000, p.prime(t)); };
-  iterations = 1000;
-  time = bmt::newton_raphson_iterate(f_n, 1910.0, 1900.0, 2000.0, 20, iterations);
+  numIters = 1000;
+  time = bmt::newton_raphson_iterate(f_n, 1910.0, 1900.0, 2000.0, 20, numIters);
   month = std::round((time - std::floor(time)) * 12 + 1);
   year = std::floor(time);
-  std::cout << "The population of the United States surpassed 100 million on the ";
-  std::cout << month << "th month of " << year << std::endl;
-  std::cout << "Found in " << iterations << " iterations" << std::endl;
+  std::cout << "The population of the United States surpassed 100 million on the "
+    << month << "th month of " << year << std::endl;
+  std::cout << "Found in " << numIters << " iterations" << std::endl;
 }

@@ -13,12 +13,12 @@
 namespace earthxpert {
 class EXCORE_EXPORTS CtFactory {
 public:
-  static std::shared_ptr<ICt> CreateCt();
+  static std::shared_ptr<ICt> CreateCt(const CtInfo* ctInfo);
 
-  static std::shared_ptr<CcsCt> CreateCcsCt();
+  static std::shared_ptr<CcsCt> CreateCcsCt(const CtInfo* ctInfo);
 
-  static std::shared_ptr<OgrCt> CreateOgrCt();
+  static std::shared_ptr<OgrCt> CreateOgrCt(const CtInfo* ctInfo);
 
-  static std::shared_ptr<ProjCt> CreateProjCt();
+  static std::shared_ptr<ProjCt> CreateProjCt(const CtInfo* ctInfo);
 };
 }

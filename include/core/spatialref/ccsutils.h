@@ -11,7 +11,29 @@
 #include "core/spatialref/ccssrs.h"
 
 namespace earthxpert {
-// helper operators
+// helpers & operators
+inline Point3d ToPoint3d(const ccs::GeodeticCoordinates& p) {
+  return { p.longitude(), p.latitude(), p.height() };
+}
+inline Point3d ToPoint3d(const ccs::CartesianCoordinates& p) {
+  return { p.x(), p.y(), p.z() };
+}
+inline Point3d ToPoint3d(const ccs::UTMCoordinates& p) {
+  return { p.easting(), p.northing(), 0.0 };
+}
+
+inline ccs::GeodeticCoordinates
+ToGeodeticCoordinates(const ccs::CoordinateType::Enum ct, const Point3d& p) {
+  return ccs::GeodeticCoordinates(ct, p.x, p.y, p.z);
+}
+inline ccs::CartesianCoordinates
+ToCartesianCoordinates(const ccs::CoordinateType::Enum ct, const Point3d& p) {
+  return ccs::CartesianCoordinates(ct, p.x, p.y, p.z);
+}
+inline ccs::UTMCoordinates
+ToUTMCoordinates(const ccs::CoordinateType::Enum ct, const Point3d& p) {
+  return ccs::UTMCoordinates(ct, 0, 0, p.x, p.y);
+}
 
 /**
  * Function which uses the given Geodetic (Ellipsoid Height) to Geocentric

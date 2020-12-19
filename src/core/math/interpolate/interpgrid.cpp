@@ -18,12 +18,12 @@ using namespace earthxpert;
  * Constructor
  *
  * \param [in] dim Dimension of points for the grid
- * \param [in] minX Minimum X-coordinate to cover
- * \param [in] minY Minimum Y-coordinate to cover
- * \param [in] maxX Maximum X-coordinate to cover
- * \param [in] maxY Maximum Y-coordinate to cover
- * \param [in] spcX X spacing of grid points
- * \param [in] spcY Y spacing of grid points
+ * \param [in] minX Minimum x-coordinate to cover
+ * \param [in] minY Minimum y-coordinate to cover
+ * \param [in] maxX Maximum x-coordinate to cover
+ * \param [in] maxY Maximum y-coordinate to cover
+ * \param [in] spcX x spacing of grid points
+ * \param [in] spcY y spacing of grid points
  */
 template <typename Ty>
 InterpGrid<Ty>::InterpGrid(const unsigned int dim, const Ty minX, const Ty minY, 
@@ -122,25 +122,14 @@ bool InterpGrid<Ty>::operator==(const InterpGrid<Ty> &rhs) const {
 }
 
 /**
- * Test inequality.
- *
- * \param [in] rhs Object to compare with
- * \return Returns true if not equal.
- */
-template <typename Ty>
-bool InterpGrid<Ty>::operator!=(const InterpGrid<Ty> &rhs) const {
-  return !(operator==(rhs));
-}
-
-/**
  * Allocate nodes large enough to cover the grid at the provided spacing.
  *
- * \param [in] minX Minimum X-coordinate 
- * \param [in] minY Minimum Y-coordinate 
+ * \param [in] minX Minimum x-coordinate 
+ * \param [in] minY Minimum y-coordinate 
  * \param [in] width horizontal extent to cover
  * \param [in] height vertical extent to cover
- * \param [in] spcX X spacing of grid points
- * \param [in] spcY Y spacing of grid points
+ * \param [in] spcX x spacing of grid points
+ * \param [in] spcY y spacing of grid points
  */
 template <typename Ty>
 void InterpGrid<Ty>::LayoutNodes(const Ty minX, const Ty minY,
@@ -175,21 +164,21 @@ void InterpGrid<Ty>::LayoutNodes(const Ty minX, const Ty minY,
 }
 
 /**
- * \brief Populate an array with the X & Y positions of the node points 
+ * \brief Populate an array with the x & y positions of the node points 
  * defining the grid.
  *
- * \param [in/out] nodes Array of point X,Y coordinates allocated by the caller.
+ * \param [in/out] nodes Array of point x,y coordinates allocated by the caller.
  */
 template <typename Ty>
 void InterpGrid<Ty>::GetNodes(cv::Point_<Ty> *const nodes) const {
   assert(nodes);
   size_t k = 0;
   for (unsigned int i = 0; i < mNumX; ++i) {
-    const Ty X = mOffX + i * mSpcX;
+    const Ty x = mOffX + i * mSpcX;
     for (unsigned int j = 0; j < mNumY; ++j, ++k) {
-      const Ty Y = mOffY + j * mSpcY;
+      const Ty y = mOffY + j * mSpcY;
 
-      nodes[k] = { X, Y };
+      nodes[k] = { x, y };
     }
   }
 }
@@ -199,29 +188,29 @@ void InterpGrid<Ty>::GetNodes(Ty *const nodes) const {
   assert(nodes);
   size_t k = 0;
   for (unsigned int i = 0; i < mNumX; ++i) {
-    const Ty X = mOffX + i * mSpcX;
+    const Ty x = mOffX + i * mSpcX;
     for (unsigned int j = 0; j < mNumY; ++j, ++k) {
-      const Ty Y = mOffY + j * mSpcY;
+      const Ty y = mOffY + j * mSpcY;
 
-      nodes[k * 2] = X;
-      nodes[k * 2 + 1] = Y;
+      nodes[k * 2] = x;
+      nodes[k * 2 + 1] = y;
     }
   }
 }
 
 /**
- * Interpolate a value for the given X,Y position.
+ * Interpolate a value for the given x,y position.
  *
- * \param [in] X X-position
- * \param [in] Y Y-position
- * \param [in,out] val Array of interpolated (or extrapolated) values
+ * \param [in] x x-position
+ * \param [in] y y-position
+ * \param [in,out] z Array of interpolated (or extrapolated) values
  */
 template <typename Ty>
-void InterpGrid<Ty>::GetVal(const Ty X, const Ty Y, 
-  Ty *const val, const uint32_t len) const {
-  assert(val);
-  const Ty fIdxX = (X - mOffX) * mInvSpcX;
-  const Ty fIdxY = (Y - mOffY) * mInvSpcY;
+void InterpGrid<Ty>::GetVal(const Ty x, const Ty y, 
+  Ty *const z, const uint32_t len) const {
+  assert(z);
+  const Ty fIdxX = (x - mOffX) * mInvSpcX;
+  const Ty fIdxY = (y - mOffY) * mInvSpcY;
 
   int idxX = static_cast<int>(floor(fIdxX));
   int idxY = static_cast<int>(floor(fIdxY));
@@ -236,8 +225,8 @@ void InterpGrid<Ty>::GetVal(const Ty X, const Ty Y,
 
   // Interpolate the values.
   for (unsigned int i = 0; i < mDim && i < len; ++i) {
-    val[i] = w1 * mGrid[i1 + i] + w2 * mGrid[i2 + i] +
-             w3 * mGrid[i3 + i] + w4 * mGrid[i4 + i];
+    z[i] = w1 * mGrid[i1 + i] + w2 * mGrid[i2 + i] +
+           w3 * mGrid[i3 + i] + w4 * mGrid[i4 + i];
   }
 }
 

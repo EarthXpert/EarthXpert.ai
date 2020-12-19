@@ -108,17 +108,6 @@ bool DistortionGrid<Ty>::operator==(const DistortionGrid<Ty> &rhs) const {
 }
 
 /**
- * Test inequality.
- *
- * \param [in] rhs Object to compare with
- * \return true if not equal.
- */
-template <typename Ty>
-bool DistortionGrid<Ty>::operator!=(const DistortionGrid<Ty> &rhs) const {
-  return !(operator==(rhs));
-}
-
-/**
  * Fetch the distortion grid.
  *
  * \param [out] numCols Number of columns

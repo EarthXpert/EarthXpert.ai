@@ -4,7 +4,7 @@
  */
 #include "3rdparty/gtest/gtest_main.h"
 
-#include <iostream>
+#include "algo.hpp"
 
 TEST(stl, DUMMY) {
   std::cout << "[   EXAI   ]" << std::endl;

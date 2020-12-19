@@ -318,8 +318,8 @@ RasterReader::ObtainReadWindow(IRaster* const raster) const {
   const auto readNumCols = readColMax - readColOff;
   const auto readNumRows = readRowMax - readRowOff;
 
-  const int64_t readPixelOff = int64_t(bufNumCols) * (int64_t(readRowOff) - int64_t(bufRowOff)) +
-    int64_t(readColOff) - int64_t(bufColOff);
+  const int64_t readPixelOff = int64_t(bufNumCols) * (int64_t(readRowOff) - 
+    int64_t(bufRowOff)) + int64_t(readColOff) - int64_t(bufColOff);
   return { {readColOff, readRowOff, readNumCols, readNumRows}, readPixelOff };
 }
 

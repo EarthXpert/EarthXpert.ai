@@ -5,6 +5,7 @@
 #include "3rdparty/gtest/gtest_main.h"
 #include "3rdparty/boost/exboost.h"
 
+//#include "algo.hpp"
 #include "geometry.hpp"
 #include "hana.hpp"
 #include "math.hpp"
