@@ -46,6 +46,12 @@ TEST(boost, bmi_barycentric_rational) {
   auto y_range = boost::adaptors::values(xy);
   bm::barycentric_rational<double> br(x_range.begin(), x_range.end(), y_range.begin());
 
+  // extrapolated values are not reliable
+  ASSERT_NEAR(5.9021148470477067, br(0.01), kTol) << "extrapolated value";
+  ASSERT_NEAR(-21.429414212206055, br.prime(0.01), kTol) << "extrapolated prime";
+  ASSERT_NEAR(2.1613367112861273, br(3.73), kTol) << "extrapolated value";
+  ASSERT_NEAR(18.051802894316154, br.prime(3.73), kTol) << "extrapolated prime";
+
   // simple bisection to find the root:
   boost::uintmax_t numIters = (std::numeric_limits<boost::uintmax_t>::max)();
   double abscissa_3 = bmt::bisect([=](double x) { return br(x) - 3; }, 
@@ -73,6 +79,12 @@ TEST(boost, bmi_cardinal_cubic_b_spline) {
   }
 
   bmi::cardinal_cubic_b_spline<double> spline(y.data(), y.size(), 0, kStep);
+
+  // extrapolated values are not reliable
+  ASSERT_NE(sin(-0.01), spline(-0.01)) << "extrapolated value";
+  ASSERT_NE(cos(-0.01), spline.prime(-0.01)) << "extrapolated value";
+  ASSERT_NE(sin(5.01), spline(5.01)) << "extrapolated value";
+  ASSERT_NE(cos(5.01), spline.prime(5.01)) << "extrapolated value";
 
   std::mt19937 gen;
   brd::uniform_real_distribution<double> abscissa(0, y.size() * kStep);

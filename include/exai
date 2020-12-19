@@ -6,7 +6,11 @@
 
 #include "exdef.h"
 
-#include "3rdparty/3rdparty.h"
-#include "core/core.h"
-#include "io/io.h"
-#include "sfm/sfm.h"
+#include "3rdparty/3rdparty"
+#include "blockadjust/blockadjust"
+#include "core/core"
+#include "io/io"
+#include "project/project"
+#include "sensormodel/sensormodel"
+#include "sfm/sfm"
+#include "utils/utils"
