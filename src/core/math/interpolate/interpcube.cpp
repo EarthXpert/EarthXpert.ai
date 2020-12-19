@@ -17,15 +17,15 @@ using earthxpert::InterpCube;
  * Constructor
  *
  * \param [in] dim Dimension of points for the cube
- * \param [in] minX Minimum X-coordinate to cover
- * \param [in] minY Minimum Y-coordinate to cover
- * \param [in] minZ Minimum Z-coordinate to cover
- * \param [in] maxX Maximum X-coordinate to cover
- * \param [in] maxXY Maximum Y-coordinate to cover
- * \param [in] maxXZ Maximum Z-coordinate to cover
- * \param [in] spcX X spacing of cube points
- * \param [in] spcY Y spacing of cube points
- * \param [in] spcZ Z spacing of cube points
+ * \param [in] minX Minimum x-coordinate to cover
+ * \param [in] minY Minimum y-coordinate to cover
+ * \param [in] minZ Minimum z-coordinate to cover
+ * \param [in] maxX Maximum x-coordinate to cover
+ * \param [in] maxXY Maximum y-coordinate to cover
+ * \param [in] maxXZ Maximum z-coordinate to cover
+ * \param [in] spcX x spacing of cube points
+ * \param [in] spcY y spacing of cube points
+ * \param [in] spcZ z spacing of cube points
  */
 template <typename Ty>
 InterpCube<Ty>::InterpCube(const unsigned int dim, const Ty minX,
@@ -80,23 +80,18 @@ bool InterpCube<Ty>::operator==(const InterpCube &rhs) const {
   return true;
 }
 
-template <typename Ty>
-bool InterpCube<Ty>::operator!=(const InterpCube &rhs) const {
-  return !(operator==(rhs));
-}
-
 /**
  * Allocate nodes large enough to cover the cube at the provided spacing.
  *
- * \param [in] minX Minimum X-coordinate 
- * \param [in] minY Minimum Y-coordinate 
- * \param [in] minZ Minimum Z-coordinate 
+ * \param [in] minX Minimum x-coordinate 
+ * \param [in] minY Minimum y-coordinate 
+ * \param [in] minZ Minimum z-coordinate 
  * \param [in] legnth horizontal length to cover
  * \param [in] width horizontal width to cover
  * \param [in] height vertical extent to cover
- * \param [in] spcX X spacing of cube points
- * \param [in] spcY Y spacing of cube points
- * \param [in] spcZ Z spacing of cube points
+ * \param [in] spcX x spacing of cube points
+ * \param [in] spcY y spacing of cube points
+ * \param [in] spcZ z spacing of cube points
  */
 template <typename Ty>
 void InterpCube<Ty>::LayoutNodes(const Ty minX,
@@ -105,10 +100,10 @@ void InterpCube<Ty>::LayoutNodes(const Ty minX,
 }
 
 /**
- * \brief Populate an array with the X,Y,Z positions of the node points 
+ * \brief Populate an array with the x,y,z positions of the node points 
  * defining the cube.
  *
- * \param [in/out] nodes Array of point X,Y,Z coordinates allocated by the caller.
+ * \param [in/out] nodes Array of point x,y,z coordinates allocated by the caller.
  */
 template <typename Ty>
 void InterpCube<Ty>::GetNodes(cv::Point3_<Ty> *const node) const {
@@ -119,15 +114,16 @@ void InterpCube<Ty>::GetNodes(Ty *const nodes) const {
 }
 
 /**
- * Interpolate a value for the given X,Y position.
+ * Interpolate a value for the given x,y position.
  *
- * \param [in] X X-position
- * \param [in] Y Y-position
- * \param [in,out] val Array of interpolated (or extrapolated) values
+ * \param [in] x x-position
+ * \param [in] y y-position
+ * \param [in] z z-position
+ * \param [in,out] v Array of interpolated (or extrapolated) values
  */
 template <typename Ty>
-void InterpCube<Ty>::GetVal(const Ty X, const Ty Y, const Ty Z, 
-  Ty *const val, const uint32_t len) const {
+void InterpCube<Ty>::GetVal(const Ty x, const Ty y, const Ty z, 
+  Ty *const v, const uint32_t len) const {
 }
 
 /**

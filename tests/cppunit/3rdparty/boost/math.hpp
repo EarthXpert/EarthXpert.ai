@@ -17,6 +17,9 @@ namespace bmi = bm::interpolators;
 namespace bmt = bm::tools;
 namespace brd = boost::random;
 
+constexpr double kStep = 0.01;
+constexpr double kTol = 1.0e-8;
+
 /**
  *  \brief Barycentric rational interpolation is a high-accuracy interpolation method for non-uniformly spaced samples.
  *
@@ -64,21 +67,19 @@ TEST(boost, bmi_barycentric_rational) {
  *  \url https://www.boost.org/doc/libs/master/libs/math/doc/html/math_toolkit/cardinal_cubic_b.html
  */
 TEST(boost, bmi_cardinal_cubic_b_spline) {
-  constexpr double step = 0.01;
   std::vector<double> y(500);
-
   for (size_t i = 0; i < y.size(); ++i) {
-    y[i] = sin(i * step);
+    y[i] = sin(kStep * i);
   }
 
-  bmi::cardinal_cubic_b_spline<double> spline(y.data(), y.size(), 0, step);
+  bmi::cardinal_cubic_b_spline<double> spline(y.data(), y.size(), 0, kStep);
 
   std::mt19937 gen;
-  brd::uniform_real_distribution<double> abscissa(0, y.size() * step);
+  brd::uniform_real_distribution<double> abscissa(0, y.size() * kStep);
   for (size_t i = 0; i < 10; ++i) {
     const double x = abscissa(gen);
-    std::cout << "sin(" << x << ") = " << sin(x) << ", spline(" << x << ") = " << spline(x) << std::endl;
-    std::cout << "cos(" << x << ") = " << cos(x) << ", spline.prime(" << x << ") = " << spline.prime(x) << std::endl;
+    ASSERT_NEAR(sin(x), spline(x), kTol) << "interpolated value";
+    ASSERT_NEAR(cos(x), spline.prime(x), kTol) << "interpolated value";
   }
 
   // figure out when the population of the United States crossed 100 million.
