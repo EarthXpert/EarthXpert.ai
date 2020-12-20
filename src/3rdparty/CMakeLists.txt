@@ -5,6 +5,7 @@ message(STATUS "CGAL_LIBRARIES: ${CGAL_LIBRARIES}")
 message(STATUS "GDAL_LIBRARY: ${GDAL_LIBRARY}")
 message(STATUS "GETTEXT_LIBRARY: ${GETTEXT_LIBRARY}")
 message(STATUS "geotiff_LIBRARIES: ${geotiff_LIBRARIES}")
+message(STATUS "gsl_LIBRARIES: ${gsl_LIBRARIES}")
 message(STATUS "GTEST_BOTH_LIBRARIES: ${GTEST_BOTH_LIBRARIES}")
 message(STATUS "LASLIB_LIBRARY: ${LASLIB_LIBRARY}")
 message(STATUS "LIBXML2_LIBRARY: ${LIBXML2_LIBRARY}")
@@ -35,6 +36,7 @@ set(ex3rdparty_srcs "boost/exboost.cpp"
   "gettext/exgettext.cpp"
   "gflags/exgflags.cpp"
   "glog/exglog.cpp"
+  "gsl/exgsl.cpp"
   "gtest/exgtest.cpp"
   "interpolate/exinterpolate.cpp"
   "laslib/exlaslib.cpp"
@@ -63,7 +65,8 @@ set(ex3rdparty_srcs "boost/exboost.cpp"
 set(ex3rdparty_items Boost::boost Boost::filesystem Boost::locale 
   ${CERES_LIBRARY} ${CGAL_LIBRARIES} ${CUDA_LIBRARIES}
   ${GDAL_LIBRARY} ${geotiff_LIBRARIES} ${geotrans_LIBRARIES} ${GETTEXT_LIBRARY} glog::glog 
-  ${GTEST_BOTH_LIBRARIES} ${LASLIB_LIBRARY} libInterpolate::Interpolate libxml2 
+  ${gsl_LIBRARIES} ${GTEST_BOTH_LIBRARIES} ${LASLIB_LIBRARY} 
+  libInterpolate::Interpolate libxml2 
   ${MPFR4_LIBRARIES} ${MPIR_LIBRARIES} ${OpenCL_LIBRARIES} ${OpenCV_LIBS} ${OpenEXR_LIBS} 
   OpenImageIO::OpenImageIO OpenImageIO::OpenImageIO_Util 
   ${nsimd_LIBRARIES} ${PDAL_LIBRARIES} ${proj_LIBRARIES} ${Protobuf_LIBRARIES} 
