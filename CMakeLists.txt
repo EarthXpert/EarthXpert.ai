@@ -84,6 +84,16 @@ if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
 
   set(Eigen3_DIR "${EX_THIRD_PARTY}/eigen_3.3.90/share/eigen3/cmake")
 
+  set(exiv2_ROOT "${EX_THIRD_PARTY}/exiv2_0.27.2")
+  set(exiv2_BIN_DIR "${exiv2_ROOT}/bin/${CDEGREL}")
+  set(exiv2_DIR "${exiv2_ROOT}/share/exiv2")
+  set(exiv2_INCLUDE_DIR "${exiv2_ROOT}/include")
+  set(exiv2_LIBRARY_DIR "${exiv2_ROOT}/lib")
+  set(exiv2_LIBRARIES debug "${exiv2_LIBRARY_DIR}/debug/exiv2.lib"
+                      debug "${exiv2_LIBRARY_DIR}/debug/exiv2-xmp.lib"
+                      optimized "${exiv2_LIBRARY_DIR}/release/exiv2.lib"
+                      optimized "${exiv2_LIBRARY_DIR}/release/exiv2-xmp.lib")
+
   set(GDAL_ROOT "${EX_THIRD_PARTY}/gdal_2.4.1")
   set(GDAL_BIN_DIR "${GDAL_ROOT}/bin/${CDEGREL}")
   set(GDAL_INCLUDE_DIR "${GDAL_ROOT}/include")
@@ -323,6 +333,7 @@ find_package(Ceres REQUIRED)
 find_package(CGAL REQUIRED)
 #find_package(CUDA REQUIRED)
 find_package(Eigen3 REQUIRED)
+find_package(exiv2 REQUIRED)
 find_package(GDAL REQUIRED)
 #find_package(geotrans REQUIRED)
 #find_package(geotiff REQUIRED)
@@ -384,6 +395,7 @@ message(STATUS "CERES_INCLUDE_DIRS: ${CERES_INCLUDE_DIRS}")
 message(STATUS "CGAL_INCLUDE_DIRS: ${CGAL_INCLUDE_DIRS}")
 message(STATUS "CUDA_INCLUDE_DIR: ${CUDA_INCLUDE_DIR}")
 message(STATUS "EIGEN3_INCLUDE_DIR: ${EIGEN3_INCLUDE_DIR}")
+message(STATUS "exiv2_INCLUDE_DIR: ${exiv2_INCLUDE_DIR}")
 message(STATUS "GDAL_INCLUDE_DIR: ${GDAL_INCLUDE_DIR}")
 message(STATUS "geotiff_INCLUDE_DIR: ${geotiff_INCLUDE_DIR}")
 message(STATUS "geotrans_INCLUDE_DIR: ${geotrans_INCLUDE_DIR}")
@@ -420,6 +432,7 @@ include_directories(${CERES_INCLUDE_DIRS})
 include_directories(${CGAL_INCLUDE_DIRS})
 include_directories(${CUDA_INCLUDE_DIR})
 include_directories(${EIGEN3_INCLUDE_DIR})
+include_directories(${exiv2_INCLUDE_DIR})
 include_directories(${GDAL_INCLUDE_DIR})
 include_directories(${geotiff_INCLUDE_DIR})
 include_directories(${geotrans_INCLUDE_DIR})
@@ -452,8 +465,9 @@ include_directories(${vld_INCLUDE_DIR})
 include_directories("include")
 
 # section link
+link_directories(${exiv2_LIBRARY_DIR}/${CDEGREL})
+link_directories(${gsl_LIBRARY_DIR}/${CDEGREL})
 link_directories(${OpenCL_LIBRARY_DIR})
-link_directories(${gsl_LIBRARY_DIR})
 
 # section source
 add_subdirectory(java)

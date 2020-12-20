@@ -2,6 +2,7 @@ project(ex3rdparty)
 
 message(STATUS "CERES_LIBRARY: ${CERES_LIBRARY}")
 message(STATUS "CGAL_LIBRARIES: ${CGAL_LIBRARIES}")
+message(STATUS "exiv2_LIBRARIES: ${exiv2_LIBRARIES}")
 message(STATUS "GDAL_LIBRARY: ${GDAL_LIBRARY}")
 message(STATUS "GETTEXT_LIBRARY: ${GETTEXT_LIBRARY}")
 message(STATUS "geotiff_LIBRARIES: ${geotiff_LIBRARIES}")
@@ -29,6 +30,7 @@ set(ex3rdparty_srcs "boost/exboost.cpp"
   "cgal/excgal.cpp"
   "cuda/excuda.cpp"
   "eigen/exeigen.cpp"
+  "exiv2/exexiv2.cpp"
   "gdal/exgdal.cpp"
   "geotiff/exgeotiff.cpp"
   "geotrans/exgeotrans.cpp"
@@ -63,7 +65,7 @@ set(ex3rdparty_srcs "boost/exboost.cpp"
   "xml/exxml.cpp"
   "xsimd/exxsimd.cpp")
 set(ex3rdparty_items Boost::boost Boost::filesystem Boost::locale 
-  ${CERES_LIBRARY} ${CGAL_LIBRARIES} ${CUDA_LIBRARIES}
+  ${CERES_LIBRARY} ${CGAL_LIBRARIES} ${CUDA_LIBRARIES} ${exiv2_LIBRARIES}
   ${GDAL_LIBRARY} ${geotiff_LIBRARIES} ${geotrans_LIBRARIES} ${GETTEXT_LIBRARY} glog::glog 
   ${gsl_LIBRARIES} ${GTEST_BOTH_LIBRARIES} ${LASLIB_LIBRARY} 
   libInterpolate::Interpolate libxml2 

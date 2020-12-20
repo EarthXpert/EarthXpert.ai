@@ -21,53 +21,6 @@ constexpr double kStep = 0.01;
 constexpr double kTol = 1.0e-8;
 
 /**
- *  \brief Barycentric rational interpolation is a high-accuracy interpolation method for non-uniformly spaced samples.
- *
- *  \url https://www.boost.org/doc/libs/master/libs/math/doc/html/math_toolkit/barycentric.html
- */
-TEST(boost, bmi_barycentric_rational) {
-  // equally use an unordered_map, a list of tuples or pairs, or a 2D array.
-  std::map<double, double> xy{
-    {0.02, 5.727}, {0.04, 5.544}, {0.06, 5.450}, {0.08, 5.351},
-    {0.10, 5.253}, {0.12, 5.157}, {0.14, 5.058}, {0.16, 4.960},
-    {0.18, 4.862}, {0.20, 4.762}, {0.24, 4.563}, {0.28, 4.360},
-    {0.32, 4.1584}, {0.36, 3.9463}, {0.40, 3.7360}, {0.44, 3.5429},
-    {0.48, 3.3797}, {0.52, 3.2417}, {0.56, 3.1209}, {0.60, 3.0138},
-    {0.68, 2.8342}, {0.76, 2.6881}, {0.84, 2.5662}, {0.92, 2.4242},
-    {1.00, 2.3766}, {1.08, 2.3058}, {1.16, 2.2458}, {1.24, 2.2035},
-    {1.32, 2.1661}, {1.40, 2.1350}, {1.48, 2.1090}, {1.64, 2.0697},
-    {1.80, 2.0466}, {1.96, 2.0325}, {2.12, 2.0288}, {2.28, 2.0292},
-    {2.44, 2.0228}, {2.60, 2.0124}, {2.76, 2.0065}, {2.92, 2.0031},
-    {3.08, 2.0015}, {3.24, 2.0008}, {3.40, 2.0004}, {3.56, 2.0002},
-    {3.72, 2.0001} };
-
-  // the abscissa that will generate a potential of exactly 3.0,
-  auto x_range = boost::adaptors::keys(xy);
-  auto y_range = boost::adaptors::values(xy);
-  bm::barycentric_rational<double> br(x_range.begin(), x_range.end(), y_range.begin());
-
-  // extrapolated values are not reliable
-  ASSERT_NEAR(5.9021148470477067, br(0.01), kTol) << "extrapolated value";
-  ASSERT_NEAR(-21.429414212206055, br.prime(0.01), kTol) << "extrapolated prime";
-  ASSERT_NEAR(2.1613367112861273, br(3.73), kTol) << "extrapolated value";
-  ASSERT_NEAR(18.051802894316154, br.prime(3.73), kTol) << "extrapolated prime";
-
-  // simple bisection to find the root:
-  boost::uintmax_t numIters = (std::numeric_limits<boost::uintmax_t>::max)();
-  double abscissa_3 = bmt::bisect([=](double x) { return br(x) - 3; }, 
-    0.44, 1.24, bmt::eps_tolerance<double>(), numIters).first;
-  std::cout << "Abscissa value that yields a potential of 3 = " << abscissa_3 << std::endl;
-  std::cout << "Root was found in " << numIters << " iterations." << std::endl;
-  
-  // a more efficient root finding algorithm than simple bisection:
-  numIters = (std::numeric_limits<boost::uintmax_t>::max)();
-  abscissa_3 = bmt::bracket_and_solve_root([=](double x) { return br(x) - 3; },
-    0.6, 1.2, false, bmt::eps_tolerance<double>(), numIters).first;
-  std::cout << "Abscissa value that yields a potential of 3 = " << abscissa_3 << std::endl;
-  std::cout << "Root was found in " << numIters << " iterations." << std::endl;
-}
-
-/**
  *  \brief The cardinal cubic B-spline class provided by Boost allows fast and accurate interpolation of a function which is known at equally spaced points.
  *
  *  \url https://www.boost.org/doc/libs/master/libs/math/doc/html/math_toolkit/cardinal_cubic_b.html
@@ -142,4 +95,51 @@ TEST(boost, bmi_cardinal_cubic_b_spline) {
   std::cout << "The population of the United States surpassed 100 million on the "
     << month << "th month of " << year << std::endl;
   std::cout << "Found in " << numIters << " iterations" << std::endl;
+}
+
+/**
+ *  \brief Barycentric rational interpolation is a high-accuracy interpolation method for non-uniformly spaced samples.
+ *
+ *  \url https://www.boost.org/doc/libs/master/libs/math/doc/html/math_toolkit/barycentric.html
+ */
+TEST(boost, bmi_barycentric_rational) {
+  // equally use an unordered_map, a list of tuples or pairs, or a 2D array.
+  std::map<double, double> xy{
+    {0.02, 5.727}, {0.04, 5.544}, {0.06, 5.450}, {0.08, 5.351},
+    {0.10, 5.253}, {0.12, 5.157}, {0.14, 5.058}, {0.16, 4.960},
+    {0.18, 4.862}, {0.20, 4.762}, {0.24, 4.563}, {0.28, 4.360},
+    {0.32, 4.1584}, {0.36, 3.9463}, {0.40, 3.7360}, {0.44, 3.5429},
+    {0.48, 3.3797}, {0.52, 3.2417}, {0.56, 3.1209}, {0.60, 3.0138},
+    {0.68, 2.8342}, {0.76, 2.6881}, {0.84, 2.5662}, {0.92, 2.4242},
+    {1.00, 2.3766}, {1.08, 2.3058}, {1.16, 2.2458}, {1.24, 2.2035},
+    {1.32, 2.1661}, {1.40, 2.1350}, {1.48, 2.1090}, {1.64, 2.0697},
+    {1.80, 2.0466}, {1.96, 2.0325}, {2.12, 2.0288}, {2.28, 2.0292},
+    {2.44, 2.0228}, {2.60, 2.0124}, {2.76, 2.0065}, {2.92, 2.0031},
+    {3.08, 2.0015}, {3.24, 2.0008}, {3.40, 2.0004}, {3.56, 2.0002},
+    {3.72, 2.0001} };
+
+  // the abscissa that will generate a potential of exactly 3.0,
+  auto x_range = boost::adaptors::keys(xy);
+  auto y_range = boost::adaptors::values(xy);
+  bm::barycentric_rational<double> br(x_range.begin(), x_range.end(), y_range.begin());
+
+  // extrapolated values are not reliable
+  ASSERT_NEAR(5.9021148470477067, br(0.01), kTol) << "extrapolated value";
+  ASSERT_NEAR(-21.429414212206055, br.prime(0.01), kTol) << "extrapolated prime";
+  ASSERT_NEAR(2.1613367112861273, br(3.73), kTol) << "extrapolated value";
+  ASSERT_NEAR(18.051802894316154, br.prime(3.73), kTol) << "extrapolated prime";
+
+  // simple bisection to find the root:
+  boost::uintmax_t numIters = (std::numeric_limits<boost::uintmax_t>::max)();
+  double abscissa_3 = bmt::bisect([=](double x) { return br(x) - 3; }, 
+    0.44, 1.24, bmt::eps_tolerance<double>(), numIters).first;
+  std::cout << "Abscissa value that yields a potential of 3 = " << abscissa_3 << std::endl;
+  std::cout << "Root was found in " << numIters << " iterations." << std::endl;
+  
+  // a more efficient root finding algorithm than simple bisection:
+  numIters = (std::numeric_limits<boost::uintmax_t>::max)();
+  abscissa_3 = bmt::bracket_and_solve_root([=](double x) { return br(x) - 3; },
+    0.6, 1.2, false, bmt::eps_tolerance<double>(), numIters).first;
+  std::cout << "Abscissa value that yields a potential of 3 = " << abscissa_3 << std::endl;
+  std::cout << "Root was found in " << numIters << " iterations." << std::endl;
 }
