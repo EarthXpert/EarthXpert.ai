@@ -1,8 +1,5 @@
 project(expyext CXX)
 
-include_directories(${pybind11_INCLUDE_DIRS}) 
-include_directories(${PYTHON_INCLUDE_DIRS}) 
-
 # Build a Python extension API module:
 function(earthxpert_add_py_library name libs_dir)
   earthxpert_add_library(${name} ${libs_dir} ${ARGN})

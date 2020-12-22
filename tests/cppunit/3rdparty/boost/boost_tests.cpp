@@ -10,6 +10,8 @@
 #include "hana.hpp"
 #include "math.hpp"
 //#include "multiprecision.hpp"
+#include "numpy.hpp"
+#include "python.hpp"
 
 #include <boost/pool/object_pool.hpp>
 

@@ -18,13 +18,13 @@ namespace schrono = std::chrono;
 
 namespace earthxpert {
 // print a 1D array
-template<typename Ty>
+template<typename Ty, char delim = ' '>
 std::ostream& operator<<(std::ostream& s, const std::vector<Ty>& v) {
   s.put('[');
-  char comma[3] = { '\0', ' ', '\0' };
+  char comma[2] = { '\0', '\0' };
   for (const auto& e : v) {
     s << comma << e;
-    comma[0] = ',';
+    comma[0] = delim;
   }
   return s << ']';
 }
