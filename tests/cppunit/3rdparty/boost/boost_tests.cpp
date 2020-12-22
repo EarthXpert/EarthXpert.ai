@@ -9,6 +9,7 @@
 #include "geometry.hpp"
 #include "hana.hpp"
 #include "math.hpp"
+#include "multiarray.hpp"
 //#include "multiprecision.hpp"
 #include "numpy.hpp"
 #include "python.hpp"
