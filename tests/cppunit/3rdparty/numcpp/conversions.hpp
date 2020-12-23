@@ -6,6 +6,10 @@
 using EigenIntMatrix = Eigen::Matrix<int, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor>;
 using EigenIntMatrixMap = Eigen::Map<EigenIntMatrix>;
 
+TEST(numcpp, boost_ndarray) {
+
+}
+
 TEST(numcpp, Eigen3) {
   // construct some NumCpp arrays
   auto ncA = nc::random::randInt<int>({ 5, 5 }, 0, 10);
@@ -59,5 +63,5 @@ TEST(numcpp, OpenCV) {
   ASSERT_TRUE(nc::array_equal(transposedNcArray, ncArray.transpose()));
 }
 
-TEST(numcpp, NumPy) {
+TEST(numcpp, pybind11_array_t) {
 }

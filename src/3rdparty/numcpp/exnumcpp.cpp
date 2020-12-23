@@ -4,3 +4,4 @@
  */
 #include "3rdparty/numcpp/exnumcpp.h"
 
+#include "3rdparty/numcpp/ndarray_numpy.hh"
