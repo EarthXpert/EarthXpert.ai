@@ -3,8 +3,10 @@
  * -----------------------------------------------------------------------------
  */
 #include "3rdparty/gdal/exgdal.h"
+#include "blockadjust/adjustrational.h"
 #include "core/spatialref/earthellipsoid.h"
 #include "marshaller/sensormodel/rationalmodelmarshaller.h"
+#include "project/rationalprj.h"
 #include "rectification/epipolar/epipolar.h"
 #include "sensormodel/rationalmodel.h"
 
@@ -15,11 +17,15 @@ namespace pb = pybind11;
 using namespace earthxpert;
 
 // wrapper definitions
+#include "blockadjust.hpp"
 #include "core.hpp"
 #include "epipolar.hpp"
+#include "imageproc.hpp"
 #include "io.hpp"
 #include "marshaller.hpp"
+#include "pcproc.hpp"
 #include "sensormodel.hpp"
+#include "sfm.hpp"
 
 PYBIND11_MODULE(expyext, m) {
   m.doc() = R"pbdoc(
@@ -40,11 +46,15 @@ PYBIND11_MODULE(expyext, m) {
     )pbdoc";
 
   // module definitions
+  #include "blockadjust_m.hpp"
   #include "core_m.hpp"
   #include "epipolar_m.hpp"
+  #include "imageproc_m.hpp"
   #include "io_m.hpp"
   #include "marshaller_m.hpp"
+  #include "pcproc_m.hpp"
   #include "sensormodel_m.hpp"
+  #include "sfm_m.hpp"
 
   // module attributes
   m.attr("__version__") = "1.0.0";
