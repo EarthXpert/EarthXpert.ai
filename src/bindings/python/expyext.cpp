@@ -4,6 +4,7 @@
  */
 #include "3rdparty/gdal/exgdal.h"
 #include "core/spatialref/earthellipsoid.h"
+#include "marshaller/sensormodel/rationalmodelmarshaller.h"
 #include "rectification/epipolar/epipolar.h"
 #include "sensormodel/rationalmodel.h"
 
@@ -17,6 +18,7 @@ using namespace earthxpert;
 #include "core.hpp"
 #include "epipolar.hpp"
 #include "io.hpp"
+#include "marshaller.hpp"
 #include "sensormodel.hpp"
 
 PYBIND11_MODULE(expyext, m) {
@@ -41,6 +43,7 @@ PYBIND11_MODULE(expyext, m) {
   #include "core_m.hpp"
   #include "epipolar_m.hpp"
   #include "io_m.hpp"
+  #include "marshaller_m.hpp"
   #include "sensormodel_m.hpp"
 
   // module attributes

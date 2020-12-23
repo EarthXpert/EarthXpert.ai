@@ -100,4 +100,17 @@ private:
 using RMFormat = RationalModelMarshaller::RMFormat;
 using UPRationalModelMarshaller = std::unique_ptr<RationalModelMarshaller>;
 using SPRationalModelMarshaller = std::shared_ptr<RationalModelMarshaller>;
+
+// helper free functions
+void inline SaveRationalModel(const std::string& modelFile,
+  const RationalModel* rationalModel) {
+  RationalModelMarshaller marshaller;
+  marshaller.Serialize(modelFile, rationalModel);
+}
+
+std::unique_ptr<RationalModel> inline 
+LoadRationalModel(const std::string& modelFile) {
+  RationalModelMarshaller marshaller;
+  return marshaller.Deserialize(modelFile);
+}
 } // namespace earthxpert
