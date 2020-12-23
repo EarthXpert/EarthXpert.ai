@@ -19,14 +19,17 @@ function(earthxpert_add_py_library name libs_dir)
       SUFFIX "${PYTHON_MODULE_EXTENSION}")
 endfunction()
 
+set(expyext_srcs
+  "expyext.cpp"
+  "utils.cpp")
 set(expyext_items ex3rdparty blockadjust colorbal core dataio 
   epipolar epipolarmodel exproject exutils frameworks imageproc 
   marshaller ortho pcproc sensormodel sfm tortho
   Boost::boost Boost::numpy Boost::python 
   ${GDAL_LIBRARY} ${geotrans_LIBRARIES} ${GETTEXT_LIBRARY} 
-  ${OpenCV_LIBS} ${proj_LIBRARIES} ${PYTHON_LIBRARIES})
+  ${OpenCV_LIBS} ${proj_LIBRARIES} ${PYTHON_LIBRARIES} ${PYTHON_NUMPY_LIBRARIES})
 earthxpert_add_py_library(expyext "bindings/python"
-  SRCS "expyext.cpp"
+  SRCS ${expyext_srcs}
   ITEMS ${expyext_items})
 
 earthxpert_install_target(expyext)

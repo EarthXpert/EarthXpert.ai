@@ -2,6 +2,7 @@
  *  Copyright (c) 2019.  All rights reserved.
  * -----------------------------------------------------------------------------
  */
+// EXAI APIs
 #include "3rdparty/gdal/exgdal.h"
 #include "blockadjust/adjustrational.h"
 #include "core/spatialref/earthellipsoid.h"
@@ -10,22 +11,30 @@
 #include "rectification/epipolar/epipolar.h"
 #include "sensormodel/rationalmodel.h"
 
-#include "pybind11/pybind11.h"
-#include "pybind11/stl.h"
+// python glue
+//#include <boost/python.hpp>
+#include <boost/python/numpy/ndarray.hpp>
+#include <pybind11/pybind11.h>
+#include <pybind11/eigen.h>
+#include <pybind11/numpy.h>
+#include <pybind11/stl.h>
+#include <xtensor-python/pyarray.hpp>
+#include <xtensor-python/pytensor.hpp>
+#include <xtensor-python/pyvectorize.hpp>
 
 namespace pb = pybind11;
 using namespace earthxpert;
 
-// wrapper definitions
-#include "blockadjust.hpp"
-#include "core.hpp"
-#include "epipolar.hpp"
-#include "imageproc.hpp"
-#include "io.hpp"
-#include "marshaller.hpp"
-#include "pcproc.hpp"
-#include "sensormodel.hpp"
-#include "sfm.hpp"
+// python wrapper definitions
+#include "detail/blockadjust.hpp"
+#include "detail/core.hpp"
+#include "detail/epipolar.hpp"
+#include "detail/imageproc.hpp"
+#include "detail/io.hpp"
+#include "detail/marshaller.hpp"
+#include "detail/pcproc.hpp"
+#include "detail/sensormodel.hpp"
+#include "detail/sfm.hpp"
 
 PYBIND11_MODULE(expyext, m) {
   m.doc() = R"pbdoc(
@@ -45,18 +54,18 @@ PYBIND11_MODULE(expyext, m) {
        generateRationalEpipolar
     )pbdoc";
 
-  // module definitions
-  #include "blockadjust_m.hpp"
-  #include "core_m.hpp"
-  #include "epipolar_m.hpp"
-  #include "imageproc_m.hpp"
-  #include "io_m.hpp"
-  #include "marshaller_m.hpp"
-  #include "pcproc_m.hpp"
-  #include "sensormodel_m.hpp"
-  #include "sfm_m.hpp"
+  // python module definitions
+    #include "detail/blockadjust_m.hpp"
+    #include "detail/core_m.hpp"
+    #include "detail/epipolar_m.hpp"
+    #include "detail/imageproc_m.hpp"
+    #include "detail/io_m.hpp"
+    #include "detail/marshaller_m.hpp"
+    #include "detail/pcproc_m.hpp"
+    #include "detail/sensormodel_m.hpp"
+    #include "detail/sfm_m.hpp"
 
-  // module attributes
+  // python module attributes
   m.attr("__version__") = "1.0.0";
 
   GDALInitialize();   // register GDAL drivers

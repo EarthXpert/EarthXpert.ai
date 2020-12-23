@@ -302,7 +302,7 @@ if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
 
   set(xsimd_DIR "${EX_THIRD_PARTY}/xsimd_7.4.6/share/xsimd")
 
-  #set(Python_ROOT_DIR "python37")
+  #set(PYTHON_ROOT_DIR "python37")
 
   set(vld_ROOT "${EX_THIRD_PARTY}/vld_2.5.1")
   #set(vld_DIR "${vld_ROOT}/lib/cmake")
@@ -313,6 +313,9 @@ if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
   
   set(xtensor_ROOT "${EX_THIRD_PARTY}/xtensor_0.21.3")
   set(xtensor_DIR "${xtensor_ROOT}/share/xtensor")
+
+  set(xtensor-python_ROOT "${EX_THIRD_PARTY}/xtensor-python_0.24.1")
+  set(xtensor-python_DIR "${xtensor_ROOT}/lib/cmake/xtensor-python")
 
   set(xtl_ROOT "${EX_THIRD_PARTY}/xtl_0.6.11")
   set(xtl_DIR "${xtl_ROOT}/share/xtl")
@@ -405,10 +408,16 @@ find_package(Sltbench REQUIRED)
 find_package(xsimd REQUIRED)
 #find_package(vld)
 find_package(xtensor REQUIRED)
+find_package(xtensor-python REQUIRED)
 find_package(xtl REQUIRED)
 
-find_package(Java 1.8 REQUIRED Runtime Development)
-find_package(Python3 REQUIRED COMPONENTS Interpreter Development)
+# remark: BOOST_BIN_DIR is empty in subdirectory!
+if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
+  set(BOOST_BIN_DIR "${Boost_DIR}/../..")
+  message(STATUS "BOOST_BIN_DIR: ${BOOST_BIN_DIR}")
+else()
+
+endif()
 
 #earthxpert_get_INCLUDE_DIRS(libInterpolate libInterpolate::Interpolate)
 #earthxpert_get_INCLUDE_DIRS(SLTBENCH sltbench)
@@ -423,13 +432,27 @@ get_target_property(SLTBENCH_LIBRARY_RELEASE sltbench IMPORTED_LOCATION_RELEASE)
 set(SLTBENCH_LIBRARIES debug ${SLTBENCH_LIBRARY_DEBUG}
                        optimized ${SLTBENCH_LIBRARY_RELEASE})
 
-# remark: BOOST_BIN_DIR is empty in subdirectory!
-if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
-  set(BOOST_BIN_DIR "${Boost_DIR}/../..")
-  message(STATUS "BOOST_BIN_DIR: ${BOOST_BIN_DIR}")
-else()
+# section java & packages
+find_package(Java 1.8 REQUIRED Runtime Development)
 
-endif()
+# section python & packages
+find_package(Python3 REQUIRED COMPONENTS Interpreter Development)
+message(STATUS "Python3_EXECUTABLE: ${Python3_EXECUTABLE}")
+
+set(PYTHON_ROOT "${Python3_STDLIB}/..")
+set(PYTHON_SITELIB_DIR "${Python3_SITELIB}")
+set(PYTHON_CUPY_ROOT "${PYTHON_SITELIB_DIR}/cupy")
+set(PYTHON_LXML_ROOT "${PYTHON_SITELIB_DIR}/lxml")
+
+set(PYTHON_NUMPY_ROOT "${PYTHON_SITELIB_DIR}/numpy")
+set(PYTHON_NUMPY_INCLUDE_DIRS "${PYTHON_NUMPY_ROOT}/core/include")
+set(PYTHON_NUMPY_LIBRARY_DIR "${PYTHON_NUMPY_ROOT}/core/lib")
+set(PYTHON_NUMPY_LIBRARIES "${PYTHON_NUMPY_LIBRARY_DIR}/npymath.lib")
+
+set(PYTHON_OSGEO_ROOT "${PYTHON_SITELIB_DIR}/osgeo")
+#set(PYTHON_SCIPY_ROOT "")
+set(PYTHON_TENSORFLOW_ROOT "${PYTHON_SITELIB_DIR}/tensorflow_core")
+set(PYTHON_TORCH_ROOT "${PYTHON_SITELIB_DIR}/torch")
 
 # section include
 message(STATUS "Boost_INCLUDE_DIRS: ${Boost_INCLUDE_DIRS}")
@@ -466,6 +489,7 @@ message(STATUS "PDAL_INCLUDE_DIRS: ${PDAL_INCLUDE_DIRS}")
 message(STATUS "proj_INCLUDE_DIR: ${proj_INCLUDE_DIR}")
 message(STATUS "Protobuf_INCLUDE_DIRS: ${Protobuf_INCLUDE_DIRS}")
 message(STATUS "PYTHON_INCLUDE_DIRS: ${PYTHON_INCLUDE_DIRS}")
+message(STATUS "PYTHON_NUMPY_INCLUDE_DIRS: ${PYTHON_NUMPY_INCLUDE_DIRS}")
 message(STATUS "range-v3_INCLUDE_DIRS: ${range-v3_INCLUDE_DIRS}")
 message(STATUS "Simd_INCLUDE_DIR: ${Simd_INCLUDE_DIR}")
 message(STATUS "SLTBENCH_INCLUDE_DIRS: ${SLTBENCH_INCLUDE_DIRS}")
@@ -474,6 +498,7 @@ message(STATUS "tiff_INCLUDE_DIR: ${tiff_INCLUDE_DIR}")
 message(STATUS "xsimd_INCLUDE_DIRS: ${xsimd_INCLUDE_DIRS}")
 message(STATUS "vld_INCLUDE_DIR: ${vld_INCLUDE_DIR}")
 message(STATUS "xtensor_INCLUDE_DIRS: ${xtensor_INCLUDE_DIRS}")
+message(STATUS "xtensor-python_INCLUDE_DIRS: ${xtensor-python_INCLUDE_DIRS}")
 message(STATUS "xtl_INCLUDE_DIRS: ${xtensor_INCLUDE_DIRS}")
 
 include_directories(${Boost_INCLUDE_DIRS}) 
@@ -512,6 +537,7 @@ include_directories(${proj_INCLUDE_DIR})
 include_directories(${Protobuf_INCLUDE_DIRS})
 include_directories(${pybind11_INCLUDE_DIRS}) 
 include_directories(${PYTHON_INCLUDE_DIRS}) 
+include_directories(${PYTHON_NUMPY_INCLUDE_DIRS}) 
 include_directories(${range-v3_INCLUDE_DIRS}) 
 include_directories(${Simd_INCLUDE_DIR})
 include_directories(${SLTBENCH_INCLUDE_DIRS})
@@ -520,6 +546,7 @@ include_directories(${tiff_INCLUDE_DIR})
 include_directories(${xsimd_INCLUDE_DIRS})
 include_directories(${vld_INCLUDE_DIR})
 include_directories(${xtensor_INCLUDE_DIRS})
+include_directories(${xtensor-python_INCLUDE_DIRS})
 include_directories(${xtl_INCLUDE_DIRS})
 
 include_directories("include")

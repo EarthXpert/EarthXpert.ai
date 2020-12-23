@@ -3,8 +3,8 @@
  * -----------------------------------------------------------------------------
  */
 //#include "core/spatialref/earthellipsoid.h"
-#include "detail/core_datasource_m.hpp"
-#include "detail/core_exceptions_m.hpp"
+#include "core_datasource_m.hpp"
+#include "core_exceptions_m.hpp"
 
   // data types
 

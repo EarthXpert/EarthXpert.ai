@@ -2,8 +2,8 @@
  *  Copyright (c) 2019.  All rights reserved.
  * -----------------------------------------------------------------------------
  */
-#include "detail/datasource.hpp"
-#include "detail/exceptions.hpp"
+#include "datasource.hpp"
+#include "exceptions.hpp"
 
   // data types
 
