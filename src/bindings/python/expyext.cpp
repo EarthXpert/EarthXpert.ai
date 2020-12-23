@@ -25,16 +25,19 @@
 namespace pb = pybind11;
 using namespace earthxpert;
 
+// expyext python APIs
+#include "utils.h"
+
 // python wrapper definitions
-#include "detail/blockadjust.hpp"
-#include "detail/core.hpp"
-#include "detail/epipolar.hpp"
-#include "detail/imageproc.hpp"
-#include "detail/io.hpp"
-#include "detail/marshaller.hpp"
-#include "detail/pcproc.hpp"
-#include "detail/sensormodel.hpp"
-#include "detail/sfm.hpp"
+#include "blockadjust.h"
+#include "core.h"
+#include "epipolar.h"
+#include "imageproc.h"
+#include "io.h"
+#include "marshaller.h"
+#include "pcproc.h"
+#include "sensormodel.h"
+#include "sfm.h"
 
 PYBIND11_MODULE(expyext, m) {
   m.doc() = R"pbdoc(
@@ -52,18 +55,20 @@ PYBIND11_MODULE(expyext, m) {
        //free functions
        generateFrameEpipolar
        generateRationalEpipolar
-    )pbdoc";
+  )pbdoc";
+
+  #include "detail/utils_m.hpp"
 
   // python module definitions
-    #include "detail/blockadjust_m.hpp"
-    #include "detail/core_m.hpp"
-    #include "detail/epipolar_m.hpp"
-    #include "detail/imageproc_m.hpp"
-    #include "detail/io_m.hpp"
-    #include "detail/marshaller_m.hpp"
-    #include "detail/pcproc_m.hpp"
-    #include "detail/sensormodel_m.hpp"
-    #include "detail/sfm_m.hpp"
+  #include "detail/blockadjust_m.hpp"
+  #include "detail/core_m.hpp"
+  #include "detail/epipolar_m.hpp"
+  #include "detail/imageproc_m.hpp"
+  #include "detail/io_m.hpp"
+  #include "detail/marshaller_m.hpp"
+  #include "detail/pcproc_m.hpp"
+  #include "detail/sensormodel_m.hpp"
+  #include "detail/sfm_m.hpp"
 
   // python module attributes
   m.attr("__version__") = "1.0.0";

@@ -1,4 +1,4 @@
-perhaps one package exai.pyd that wraps all C++ modules.
+perhaps one extension package exai.pyd that wraps all C++ modules.
 
 1) *.hpp to be included before statement PYBIND11_MODULE(expyext, m)
 

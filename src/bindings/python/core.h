@@ -2,8 +2,8 @@
  *  Copyright (c) 2019.  All rights reserved.
  * -----------------------------------------------------------------------------
  */
-#include "core_datasource.hpp"
-#include "core_exceptions.hpp"
+#include "core_datasource.h"
+#include "core_exceptions.h"
 
 // data types
 

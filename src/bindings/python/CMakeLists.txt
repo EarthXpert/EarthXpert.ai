@@ -21,6 +21,7 @@ endfunction()
 
 set(expyext_srcs
   "expyext.cpp"
+  "sensormodel.cpp"
   "utils.cpp")
 set(expyext_items ex3rdparty blockadjust colorbal core dataio 
   epipolar epipolarmodel exproject exutils frameworks imageproc 
