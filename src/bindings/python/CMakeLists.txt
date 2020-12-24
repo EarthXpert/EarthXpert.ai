@@ -19,6 +19,7 @@ function(earthxpert_add_py_library name libs_dir)
       SUFFIX "${PYTHON_MODULE_EXTENSION}")
 endfunction()
 
+add_definitions(-DEXPYEXT_API)
 set(expyext_srcs
   "blockadjust.cpp"
   "core.cpp"

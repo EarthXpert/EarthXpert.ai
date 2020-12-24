@@ -4,7 +4,20 @@
  */
 #pragma once
 
-//#include <boost/python.hpp>
+#ifdef EXPYEXT_API
+#if (defined _WIN32 || defined WINCE || defined __CYGWIN__)
+#define EXPYEXT_EXPORTS __declspec(dllexport)
+#elif defined __GNUC__ && __GNUC__ >= 4
+#define EXPYEXT_EXPORTS __attribute__((visibility("default")))
+#endif
+#endif
+
+#ifndef EXPYEXT_EXPORTS
+#define EXPYEXT_EXPORTS
+#endif
+
+// python extension
+#include <boost/python.hpp>
 #include <boost/python/numpy.hpp>
 #include <boost/python/numpy/ndarray.hpp>
 
@@ -24,6 +37,12 @@
 #include <functional>
 #include <list>
 
+namespace bp = boost::python;
+namespace bpn = boost::python::numpy;
+
+/**
+ *  \brief macro adds submodels to package expyext
+ */
 using InitFunctor = std::function<void(pybind11::module&)>;
 using PyModuleList = std::list<InitFunctor>;
 

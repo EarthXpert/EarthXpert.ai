@@ -5,9 +5,6 @@
 #include "bindings/python/expyext.h"  // python glue
 #include "3rdparty/gdal/exgdal.h"
 
-namespace bp = boost::python;
-namespace bpn = boost::python::numpy;
-
 /**
  *  PyInit_expyext: entry point of python interpreter
  */
