@@ -5,6 +5,7 @@
 #pragma once
 
 //#include <boost/python.hpp>
+#include <boost/python/numpy.hpp>
 #include <boost/python/numpy/ndarray.hpp>
 
 #include <pybind11/pybind11.h>
@@ -12,6 +13,10 @@
 #include <pybind11/numpy.h>
 #include <pybind11/stl.h>
 
+#include <xtensor/xmath.hpp>
+#include <xtensor/xarray.hpp>
+
+//#define FORCE_IMPORT_ARRAY
 #include <xtensor-python/pyarray.hpp>
 #include <xtensor-python/pytensor.hpp>
 #include <xtensor-python/pyvectorize.hpp>
