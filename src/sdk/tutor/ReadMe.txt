@@ -1,1 +1,1 @@
-sample code showing the usage of WatXtract.ai APIs.
+sample code showing the usage of EarthXpert.ai APIs.
