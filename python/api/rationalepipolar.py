@@ -3,7 +3,7 @@
 #  -----------------------------------------------------------------------------
 
 import argparse
-import expyext as epy
+from expyext import expy as epy
 
 def genRationalEpi(leftimg, leftmdl, rightimg, rightmdl, bands, sample, outdir, resample, memsize):
   epy.generateRationalEpipolar(leftimg, leftmdl, rightimg, rightmdl, bands, sample, outdir, resample, memsize)

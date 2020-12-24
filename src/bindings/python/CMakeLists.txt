@@ -20,8 +20,16 @@ function(earthxpert_add_py_library name libs_dir)
 endfunction()
 
 set(expyext_srcs
-  "expyext.cpp"
+  "blockadjust.cpp"
+  "core.cpp"
+  "epipolar.cpp"
+  "expy.cpp"
+  "imageproc.cpp"
+  "io.cpp"
+  "marshaller.cpp"
+  "pcproc.cpp"
   "sensormodel.cpp"
+  "sfm.cpp"
   "utils.cpp")
 set(expyext_items ex3rdparty blockadjust colorbal core dataio 
   epipolar epipolarmodel exproject exutils frameworks imageproc 

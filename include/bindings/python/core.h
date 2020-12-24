@@ -2,12 +2,15 @@
  *  Copyright (c) 2019.  All rights reserved.
  * -----------------------------------------------------------------------------
  */
-//#include "rectification/epipolar/epipolar.h"
+#include "bindings/python/core_datasource.h"
+#include "bindings/python/core_exceptions.h"
 
-  // data types
+#include "core/spatialref/earthellipsoid.h"
 
-  //structures
+// data types
 
-  // classes
+//structures
 
-  // free functions
+// classes
+
+// free functions

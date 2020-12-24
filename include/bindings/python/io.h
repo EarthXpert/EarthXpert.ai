@@ -2,12 +2,13 @@
  *  Copyright (c) 2019.  All rights reserved.
  * -----------------------------------------------------------------------------
  */
-//#include "blockadjust/adjustrational.h"
+#include "bindings/python/io_raster.h"
+#include "bindings/python/io_pointcloud.h"
 
-  // data types
+// data types
 
-  //structures
+//structures
 
-  // classes
+// classes
 
-  // free functions
+// free functions

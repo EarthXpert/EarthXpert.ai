@@ -102,6 +102,7 @@ inline cv::Vec2f LinearInterp(const cv::Vec2f v1, const cv::Vec2f v2,
  *  \brief  make a number being a multiple of a stride, and extend away from 0
  */
 inline int Stride(const int n, const int stride) {
-  return copysign(((abs(n) - 1) / stride + 1) * stride, n);
+  return ((n - 1) / stride + 1) * stride;
+  //return std::copysign(((abs(n) - 1) / stride + 1) * stride, n);
 }
 }

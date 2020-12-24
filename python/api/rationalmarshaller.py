@@ -3,7 +3,7 @@
 #  -----------------------------------------------------------------------------
 
 import argparse
-import expyext as epy
+from expyext import expy as epy
 
 def saveRationalModel(modelFile, ratModel):
   epy.saveRationalModel(modelFile, ratModel)
