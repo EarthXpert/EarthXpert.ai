@@ -4,9 +4,7 @@
  */
 #include "sensormodel/networkmodel.h"
 
-using earthxpert::ISensorModel;
-using earthxpert::NetworkModel;
-using earthxpert::SpatialReferenceSystem;
+using namespace earthxpert;
 
 /**
  *  \brief Construct a multi-layer ANN model.
@@ -16,10 +14,10 @@ using earthxpert::SpatialReferenceSystem;
  *  \param [in] normalFators normalization factors including offsets & scales
  *  \param [in] groundSRS ground coordinate system
  */
-NetworkModel::NetworkModel(std::unique_ptr<cv::ANN_MLP> &&networkI2G,
-                           std::unique_ptr<cv::ANN_MLP> &&networkG2I,
+NetworkModel::NetworkModel(std::unique_ptr<cv::ml::ANN_MLP> &&networkI2G,
+                           std::unique_ptr<cv::ml::ANN_MLP> &&networkG2I,
                            const std::array<double, 10> &normalFators,
-                           std::shared_ptr<SpatialReferenceSystem> groundSRS) {}
+                           std::shared_ptr<OGRSpatialRef> groundSRS) {}
 
 NetworkModel::NetworkModel(const NetworkModel &rhs) {}
 
@@ -66,12 +64,12 @@ bool NetworkModel::ImageToGround(const Point2d &image, Point3d &ground) const {
  *
  *  \details More details
  */
-bool NetworkModel::GroundToImage(const Ponint3d &ground, Point2d &image) const {
+bool NetworkModel::GroundToImage(const Point3d &ground, Point2d &image) const {
   return true;
 }
 
 bool NetworkModel::EqualTo(const ISensorModel &rhs) const {
-  if (ISensorModel::ModelType::eNETWORK != rhs.GetModelType())
+  if (ISensorModel::ModelType::eMT_NETWORK != rhs.GetModelType())
     return false;
 
   auto netModel = dynamic_cast<const NetworkModel *>(&rhs);

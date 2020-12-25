@@ -18,7 +18,8 @@ public:
   enum PrjType {
     ePT_ADS,
     ePT_FRAME,
-    ePT_RATIONAL
+    ePT_RATIONAL,
+    ePT_SAR
   };
 
   virtual ~IProject() = default;

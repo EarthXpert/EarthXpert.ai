@@ -9,5 +9,5 @@
 namespace earthxpert {
 class RationalProject;
 
-int EXBBA_EXPORTS AdjustRational(RationalProject* framePrj);
+int EXBBA_EXPORTS AdjustRational(RationalProject* ratPrj);
 }

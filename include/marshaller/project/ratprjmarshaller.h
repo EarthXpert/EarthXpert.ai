@@ -17,6 +17,5 @@ public:
 
 private:
   friend class RationalProject;
-
 };
 }

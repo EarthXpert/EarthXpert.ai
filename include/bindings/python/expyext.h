@@ -55,13 +55,13 @@ public:
   ExpyModule(InitFunc init) { ExpyModules().push_back(init); }
 
   ExpyModule(const char* submodule_name, InitFunc init) {
-    ExpyModules().push_back([=](pybind11::module& parent) {
-      auto m = parent.def_submodule(submodule_name);
-      init(m); });
+    ExpyModules().push_back([=](pybind11::module& m) {
+      auto sm = m.def_submodule(submodule_name);
+      init(sm); });
   }
 };
 
-#define EXPY_SUBMODULE(name, m) \
+#define EXPY_SUBMODULE(name, sm) \
   void ExpyInit##name(pybind11::module &); \
   ExpyModule name(#name, ExpyInit##name);  \
-  void ExpyInit##name(pybind11::module& m)
+  void ExpyInit##name(pybind11::module& sm)

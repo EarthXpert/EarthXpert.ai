@@ -6,12 +6,10 @@
 
 #include "sensormodel/sensormodel.h"
 
-#include "opencv2/ml.hpp"
+#include <opencv2/ml.hpp>
 #include <array>
 
 namespace earthxpert {
-// class cv::ml::ANN_MLP;
-
 /**
  *  The class NetworkModel implements the multi-layer ANN
  *  model for various physical sensors.
@@ -28,10 +26,10 @@ public:
    *  \param [in] normalFators normalization factors including offsets & scales
    *  \param [in] groundSRS ground coordinate system
    */
-  NetworkModel(std::unique_ptr<ANN_MLP> &&networkI2G,
-               std::unique_ptr<ANN_MLP> &&networkG2I,
+  NetworkModel(std::unique_ptr<cv::ml::ANN_MLP> &&networkI2G,
+               std::unique_ptr<cv::ml::ANN_MLP> &&networkG2I,
                const std::array<double, 10> &normalFators,
-               std::shared_ptr<SpatialReferenceSystem> groundSRS);
+               std::shared_ptr<OGRSpatialRef> groundSRS);
 
   NetworkModel(const NetworkModel &rhs);
   NetworkModel(NetworkModel &&rhs) noexcept;
@@ -69,25 +67,28 @@ public:
    *
    *  \details More details
    */
-  bool GroundToImage(const Ponint3d &ground, Point2d &image) const override;
+  bool GroundToImage(const Point3d &ground, Point2d &image) const override;
 
   // access
   /**
    * @return type of sensor model
    */
   ModelType GetModelType() const noexcept override {
-    return ModelType::eNETWORK;
+    return ModelType::eMT_NETWORK;
   }
 
   // ?block adjustment support?
 
 private:
-  std::unique_ptr<ANN_MLP>
+  std::unique_ptr<cv::ml::ANN_MLP>
       mNetworkS2G{}; // multi-layer ANN for sensor-to-ground
-  std::unique_ptr<ANN_MLP> mNetworkG2S{}; // multi-layer ANN for Ground-to-image
+  std::unique_ptr<cv::ml::ANN_MLP> mNetworkG2S{}; // multi-layer ANN for Ground-to-image
   std::array<double, 10>
       mNormalFators{}; // normalization factors including offsets & scales
 
   bool EqualTo(const ISensorModel &rhs) const override;
 };
+
+using UPNetworkModel = std::unique_ptr<NetworkModel>;
+using SPNetworkModel = std::shared_ptr<NetworkModel>;
 } // namespace earthxpert
