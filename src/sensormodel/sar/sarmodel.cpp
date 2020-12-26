@@ -38,11 +38,10 @@ bool SarModel::operator!=(const SarModel& rhs) const {
  *
  *  \param [in] image 2d position (x, y) in imagery raster coordinate system
  *  \param [in/out] ground 3d ground position (X, Y, Z) in ground coordinate
- * system \return Returns true if the operation succeeds
- *
- *  \details More details
+ *  system \return Returns true if the operation succeeds
  */
 bool SarModel::ImageToGround(const Point2d& image, Point3d& ground) const {
+
   return true;
 }
 

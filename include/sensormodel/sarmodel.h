@@ -9,6 +9,44 @@
 namespace earthxpert {
 /**
  *  The class SarModel implements the synthetic aperture radar geometry.
+ *
+ *  \details range doppler model
+ *
+ *  1. range equation:
+ *
+ *    Rs^2  = (X - Xs)^2 + (Y - Ys)^2 + (Z - Zs)^2 = (R0 + Ms * col)^2
+ *
+ *  2. doppler equation
+ *
+ *    Vx * (X - Xs) + Vy * (Y - Ys) + Vz * (Z - Zs) = -lambda * Rs * f / 2
+ *
+ *  where
+ *
+ *    R0 - near slant range
+ *    Rs - slant range from phase center to ground point
+ *    Ms - slant range sampling distance
+ *    X, Y, Z - position of ground point
+ *    row - row poistion of image pixel
+ *    col - column poistion of image pixel
+ *    lambda - wavelength
+ *    f - doppler central freaquency
+ *
+ *    Xs, Ys, Zs - position of antena phase center
+ *    Xs = Xs0 + Vx0 * t + Ax0 * t^2 + ...
+ *    Ys = Ys0 + Vy0 * t + Ay0 * t^2 + ...
+ *    Zs = Zs0 + Vz0 * t + Az0 * t^2 + ...
+
+ *    Vx, Vy, Vz - velocity of antena phase center
+ *    Vx  = Vx0 + 2 * Ax0 * t + ...
+ *    Vy  = Vy0 + 2 * Ay0 * t + ...
+ *    Vz  = Vz0 + 2 * Az0 * t + ...
+ *
+ *  where
+ *
+ *     t = t0 + dt * row - imaging time of line/row
+ *     t0 - start base time of the first line/row
+ *     dt - time interval between two contigeous lines
+ *     row - row position of image pixel
  */
 class EXSENSORMODEL_EXPORTS SarModel final : public SensorModel{
 public:
