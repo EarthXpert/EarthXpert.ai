@@ -366,7 +366,7 @@ endif()
 set(Boost_USE_STATIC_LIBS OFF) 
 set(Boost_USE_MULTITHREADED ON)  
 set(Boost_USE_STATIC_RUNTIME OFF) 
-find_package(Boost 1.71.0 COMPONENTS filesystem iostreams locale math numpy37 program_options python37 system) 
+find_package(Boost 1.71.0 COMPONENTS date_time filesystem fusion hana iostreams locale math mpl numpy37 program_options python37 system timer) 
 
 find_package(Ceres REQUIRED)
 find_package(CGAL REQUIRED)

@@ -2,7 +2,8 @@ project(tests_cppunit_3rdparty_boost CXX)
 
 add_3rdparty_cppunit_test(boost_tests
   ex3rdparty
-  Boost::boost Boost::filesystem Boost::iostreams Boost::numpy Boost::python)
+  Boost::boost Boost::date_time Boost::filesystem Boost::iostreams 
+  Boost::locale Boost::numpy Boost::program_options Boost::python Boost::timer)
 
 if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
   get_filename_component(BOOST_BIN_DIR "${Boost_DIR}/../.." ABSOLUTE)

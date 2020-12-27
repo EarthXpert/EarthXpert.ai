@@ -7,6 +7,7 @@
 
 //#include "algo.hpp"
 #include "fusion.hpp"
+#include "datetime.hpp"
 #include "geometry.hpp"
 #include "hana.hpp"
 #include "math.hpp"
@@ -17,6 +18,7 @@
 #include "numpy.hpp"
 #include "python.hpp"
 #include "spirit.hpp"
+#include "timer.hpp"
 
 #include <boost/pool/object_pool.hpp>
 
