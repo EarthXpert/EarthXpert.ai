@@ -6,17 +6,21 @@
 #include "3rdparty/boost/exboost.h"
 
 //#include "algo.hpp"
+#include "fusion.hpp"
 #include "geometry.hpp"
 #include "hana.hpp"
 #include "math.hpp"
+#include "mp11.hpp"
+#include "mpl.hpp"
 #include "multiarray.hpp"
 //#include "multiprecision.hpp"
 #include "numpy.hpp"
 #include "python.hpp"
+#include "spirit.hpp"
 
 #include <boost/pool/object_pool.hpp>
 
-TEST(boost, filesystem) {
+TEST(bfs, path) {
   bfs::path filePath("D:/Workspace/Results/output.txt");
 
   ASSERT_FALSE(filePath.filename_is_dot());
