@@ -11,10 +11,16 @@
 
 using namespace earthxpert;
 
+TiledSensorModel::TiledSensorModel(const int numCols, const int numRows,
+  std::vector<RasterWindow>&& tiles, std::vector<UPISensorModel>&& models)
+  : mNumCols(numCols), mNumRows(numRows), 
+    mTiles(std::move(tiles)), mModels(std::move(models)) {
+  Initialize();
+}
+
 TiledSensorModel::TiledSensorModel(std::vector<RasterWindow>&& tiles,
   std::vector<UPISensorModel>&& models)
-  : mTiles(std::move(tiles)), mModels(std::move(models)) {
-  Initialize();
+  : TiledSensorModel(0, 0, std::move(tiles), std::move(models)) {
 }
 
 void TiledSensorModel::Initialize() {
