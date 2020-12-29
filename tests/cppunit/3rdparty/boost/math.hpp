@@ -25,7 +25,7 @@ constexpr double kTol = 1.0e-8;
  *
  *  \url https://www.boost.org/doc/libs/master/libs/math/doc/html/math_toolkit/cardinal_cubic_b.html
  */
-TEST(boost, bmi_cardinal_cubic_b_spline) {
+TEST(bmi, cardinal_cubic_b_spline) {
   std::vector<double> y(500);
   for (size_t i = 0; i < y.size(); ++i) {
     y[i] = sin(kStep * i);
@@ -87,7 +87,7 @@ TEST(boost, bmi_cardinal_cubic_b_spline) {
 
   // the cubic B spline offers the first derivative, or equally Newton iterations,
   // this takes "number of bits correct" as a termination condition - 20 should be plenty for what we need,
-  auto f_n = [=](double t) { return std::make_pair(p(t) - 100000000, p.prime(t)); };
+  auto f_n = [=](const double t) { return std::make_pair(f(t), p.prime(t)); };
   numIters = 1000;
   time = bmt::newton_raphson_iterate(f_n, 1910.0, 1900.0, 2000.0, 20, numIters);
   month = std::round((time - std::floor(time)) * 12 + 1);
@@ -102,7 +102,7 @@ TEST(boost, bmi_cardinal_cubic_b_spline) {
  *
  *  \url https://www.boost.org/doc/libs/master/libs/math/doc/html/math_toolkit/barycentric.html
  */
-TEST(boost, bmi_barycentric_rational) {
+TEST(bmi, barycentric_rational) {
   // equally use an unordered_map, a list of tuples or pairs, or a 2D array.
   std::map<double, double> xy{
     {0.02, 5.727}, {0.04, 5.544}, {0.06, 5.450}, {0.08, 5.351},
@@ -142,4 +142,57 @@ TEST(boost, bmi_barycentric_rational) {
     0.6, 1.2, false, bmt::eps_tolerance<double>(), numIters).first;
   std::cout << "Abscissa value that yields a potential of 3 = " << abscissa_3 << std::endl;
   std::cout << "Root was found in " << numIters << " iterations." << std::endl;
+}
+
+/**
+ *  \brief numpy.roots & scipy.optimize.root_scalar give in-accurate results
+ *
+ *  The 4th-degree polynomial is defined as
+ *
+ *    p = [-111771096449024.0, 217294897152.0, -158545696.0, 90966.953125, -224.7299041748047]
+ *    
+ *  numpy.roots(p) gives
+ *    
+ *    array([ 0.00130425+0.0007497j ,  0.00130425-0.0007497j ,
+ *      -0.0003322 +0.00088209j, -0.0003322 -0.00088209j])
+ *
+ *  sol = optimize.root_scalar(f, x0=0.0, fprime=fp, method='newton') gives
+ *  numpy.polyval(b, -0.0014738052049961723) -> -1926.1301751412711
+ *
+ *  sol = optimize.root_scalar(f, x0=0.0, fprime=fp, fprime2=fp2, method='halley') gives
+ *  numpy.polyval(p, 0.005389882777731355) -> -64645.486852989656
+ *
+ *               x,                     y
+ *    (0.0008800000000000001, -186.40499217782912)
+ *    (0.0009200000000000002, -186.10048214826992)
+ *    (0.0009600000000000003, -186.20112075813955)
+ */
+TEST(bmt, roots) {
+  const std::vector<double> p{ -111771096449024.0, +217294897152.0, -158545696.0, +90966.953125, -224.7299041748047 };
+
+  auto f = [&p](const double x) {
+    const double x2 = x * x;
+    const double x3 = x2 * x;
+    const double x4 = x3 * x;
+    return p[0] * x4 + p[1] * x3 + p[2] * x2 + p[3] * x + p[4];
+  };
+  auto fp = [&p](const double x) {
+    const double x2 = x * x;
+    const double x3 = x2 * x;
+    return p[0] * 4 * x3 + p[1] * 3 * x2 + p[2] * 2 * x + p[3];
+  };
+
+  // bisect
+  boost::uintmax_t numIters = (std::numeric_limits<boost::uintmax_t>::max)();
+  auto r1 = bmt::bisect(f, 0.0, 0.01, bmt::eps_tolerance<double>(), numIters);
+  std::cout << "bisect: root " << r1.first << " in " << numIters << " iterations." << std::endl;
+
+  // newton_raphson_iterate
+  auto f_n = [=](const double x) { return std::make_pair(f(x), fp(x)); };
+  numIters = (std::numeric_limits<boost::uintmax_t>::max)();
+  auto r2 = bmt::newton_raphson_iterate(f_n, 0.0, 0.0, 0.01, 20, numIters);
+
+  // halley_iterate
+  // schroder_iterate
+  // complex_newton
 }
