@@ -16,7 +16,9 @@ namespace earthxpert {
  */
 class EXSENSORMODEL_EXPORTS TiledSensorModel final : public SensorModel {
 public:
-  TiledSensorModel(std::vector<RasterWindow>&& tiles, 
+  TiledSensorModel(const int numCols, const int numRows, 
+    std::vector<RasterWindow>&& tiles, std::vector<UPISensorModel>&& models);
+  TiledSensorModel(std::vector<RasterWindow>&& tiles,
     std::vector<UPISensorModel>&& models);
 
   TiledSensorModel(const TiledSensorModel& rhs);
@@ -108,6 +110,8 @@ public:
   }
 
 private:
+  int mNumCols{}; // number of columns of the image product
+  int mNumRows{}; // number of rows of the image product
   std::vector<RasterWindow> mTiles;   // layout of the entire scene
   std::vector<UPISensorModel> mModels; // one model per tile
 

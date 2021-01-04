@@ -41,10 +41,11 @@ public:
     eMT_FRAME,     ///< Indicates a frame based pin-hole camera
     eMT_PUSHBROOM, ///< Indicates a push-broom sensor
     eMT_ROLLING,   ///< Indicates an aerial push-broom sensor
+    eMT_SAR,       ///< Indicates a synthetic aperture radar
     // replacement sensor models
-    eMT_AFFINE,   ///< Indicates an affine model
+    eMT_AFFINE,    ///< Indicates an affine model
     eMT_NETWORK,   ///< Indicates a neural network model
-    eMT_RATIONAL, ///< Indicates a rational polynomial model
+    eMT_RATIONAL,  ///< Indicates a rational polynomial model
     NumSensorTypes
   };
 

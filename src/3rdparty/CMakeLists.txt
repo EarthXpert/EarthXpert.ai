@@ -71,7 +71,8 @@ set(ex3rdparty_srcs "blas/exblas.cpp"
   "xsimd/exxsimd.cpp"
   "xtensor/exxtensor.cpp"
   "xtl/exxtl.cpp")
-set(ex3rdparty_items Boost::boost Boost::filesystem Boost::locale 
+set(ex3rdparty_items Boost::boost Boost::date_time Boost::filesystem Boost::iostreams 
+  Boost::locale Boost::numpy Boost::program_options Boost::python Boost::timer 
   ${CERES_LIBRARY} ${CGAL_LIBRARIES} ${CUDA_LIBRARIES} ${exiv2_LIBRARIES}
   ${GDAL_LIBRARY} ${geotiff_LIBRARIES} ${geotrans_LIBRARIES} ${GETTEXT_LIBRARY} glog::glog 
   ${gsl_LIBRARIES} ${GTEST_BOTH_LIBRARIES} ${lapack_LIBRARIES} ${LASLIB_LIBRARY} 

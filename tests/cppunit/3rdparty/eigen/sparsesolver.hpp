@@ -11,18 +11,18 @@ using namespace::Eigen;
 using SpMatDR = SparseMatrix<double, RowMajor>;
 
 static constexpr auto kScale = 1.0 / static_cast<double>(std::mt19937::max());
-static constexpr int64_t kN10k = 10000;
-static constexpr int64_t kN30M = 30'000'000;
+static constexpr int64_t kNk1 = 10000;      // small
+static constexpr int64_t kNk2 = 30'000'000;  // huge 10
 
 /**
  *  Test case 1: A * x = b
  */
 TEST(eigen, SparseSolver) {
-  SpMatDR A(kN10k, kN10k);
-  VectorXd b(kN10k);
+  SpMatDR A(kNk1, kNk1);
+  VectorXd b(kNk1);
 
   // fill A and b
-  for (int i = 0; i < kN10k; ++i) {
+  for (int i = 0; i < kNk1; ++i) {
     A.insert(i, i) = double(i + 1);
     b[i] = i;
   }
@@ -59,10 +59,10 @@ TEST(eigen, SparseSolver) {
  */
 TEST(eigen, LSCG_Diagonal) {
   std::mt19937 rng;
-  SpMatDR A(kN30M, kN30M);
-  VectorXd b(kN30M);
+  SpMatDR A(kNk2, kNk2);
+  VectorXd b(kNk2);
 
-  std::vector<int> reserveSizes(kN30M, 3);
+  std::vector<int> reserveSizes(kNk2, 3);
   A.reserve(reserveSizes);
 
   // fill A and b
@@ -72,7 +72,7 @@ TEST(eigen, LSCG_Diagonal) {
   A.insert(0, 2) = rng() * kScale - 0.5;
   b[0] = (rng() * kScale - 0.5) * 0.1;  // [-0.05, 0.05]
 
-  for (int i = 1; i < kN30M - 1; ++i) {
+  for (int i = 1; i < kNk2 - 1; ++i) {
     A.insert(i, i) = double(i) + rng() * kScale;
     b[i] = double(i) + (rng() * kScale - 0.5) * 0.1;  // [-0.05, 0.05]
 
@@ -81,10 +81,10 @@ TEST(eigen, LSCG_Diagonal) {
     A.insert(i, i + 1) = rng() * kScale - 0.5;
   }
   // last row
-  A.insert(kN30M - 1, kN30M - 3) = rng() * kScale - 0.5;
-  A.insert(kN30M - 1, kN30M - 2) = rng() * kScale - 0.5;
-  A.insert(kN30M - 1, kN30M - 1) = double(kN30M - 1) + rng() * kScale;
-  b[kN30M - 1] = double(kN30M - 1) + (rng() * kScale - 0.5) * 0.1;  // [-0.05, 0.05]
+  A.insert(kNk2 - 1, kNk2 - 3) = rng() * kScale - 0.5;
+  A.insert(kNk2 - 1, kNk2 - 2) = rng() * kScale - 0.5;
+  A.insert(kNk2 - 1, kNk2 - 1) = double(kNk2 - 1) + rng() * kScale;
+  b[kNk2 - 1] = double(kNk2 - 1) + (rng() * kScale - 0.5) * 0.1;  // [-0.05, 0.05]
 
   //std::cout << "Condition number: " << ConditionNumber(A) << std::endl;
 
@@ -95,8 +95,8 @@ TEST(eigen, LSCG_Diagonal) {
   ASSERT_EQ(4, lscg.iterations()) << "converge";
   ASSERT_NEAR(0, lscg.error(), DBL_EPSILON) << "full rank";
   ASSERT_NEAR(0.090088967211201298,  x[0], DBL_EPSILON) << "x[0]";
-  ASSERT_NEAR(0.99999995778632444, x[kN30M/2], DBL_EPSILON) << "x[kN30M/2]";
-  ASSERT_NEAR(1.0000000072469144, x[kN30M-1], DBL_EPSILON) << "x[kN30M-1]";
+  ASSERT_NEAR(0.99999995778632444, x[kNk2/2], DBL_EPSILON) << "x[kNk2/2]";
+  ASSERT_NEAR(1.0000000072469144, x[kNk2-1], DBL_EPSILON) << "x[kNk2-1]";
 
   double err = (A * x - b).norm() / b.norm();
   std::cout << "relative error: " << err << std::endl;
@@ -109,20 +109,20 @@ TEST(eigen, LSCG_Diagonal) {
  */
 TEST(eigen, LSCG_NonDiagonal) {
   std::mt19937 rng;
-  SpMatDR A(kN30M, kN30M);
-  VectorXd b(kN30M);
+  SpMatDR A(kNk2, kNk2);
+  VectorXd b(kNk2);
 
-  std::vector<int> reserveSizes(kN30M, 3);
+  std::vector<int> reserveSizes(kNk2, 3);
   A.reserve(reserveSizes);
 
   // fill A and b
-  for (int i = 0; i < kN30M; ++i) {
+  for (int i = 0; i < kNk2; ++i) {
     A.insert(i, i) = double(i) + rng() * kScale;  // [0, 1]
     b[i] = double(i) + (rng() * kScale - 0.5) * 0.1;  // [-0.05, 0.05]
 
     // add two elements [-0.5, 0.5] to each row
-    A.insert(i, rng() % kN30M) += rng() * kScale - 0.5;
-    A.insert(i, rng() % kN30M) += rng() * kScale - 0.5;
+    A.insert(i, rng() % kNk2) += rng() * kScale - 0.5;
+    A.insert(i, rng() % kNk2) += rng() * kScale - 0.5;
   }
 
   //std::cout << "Condition number: " << ConditionNumber(A) << std::endl;
@@ -134,8 +134,8 @@ TEST(eigen, LSCG_NonDiagonal) {
   //ASSERT_EQ(6, lscg.iterations()) << "converge";
   //ASSERT_NEAR(0, lscg.error(), DBL_EPSILON) << "full rank";
   ASSERT_NEAR(-0.084974989099441012, x[0], DBL_EPSILON) << "x[0]";
-  ASSERT_NEAR(0.99999991487069606, x[kN30M/2], DBL_EPSILON) << "x[kN30M/2]";
-  ASSERT_NEAR(0.99999999529972705, x[kN30M-1], DBL_EPSILON) << "x[kN30M-1]";
+  ASSERT_NEAR(0.99999991487069606, x[kNk2/2], DBL_EPSILON) << "x[kNk2/2]";
+  ASSERT_NEAR(0.99999999529972705, x[kNk2-1], DBL_EPSILON) << "x[kNk2-1]";
 
   double err = (A * x - b).norm() / b.norm();
   std::cout << "relative error: " << err << std::endl;

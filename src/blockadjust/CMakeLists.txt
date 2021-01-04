@@ -7,7 +7,9 @@ set(blockadjust_srcs "./blockadjust.cpp"
   "frame/adjustframe.cpp"
   "frame/framebba.cpp"
   "rational/adjustrational.cpp"
-  "rational/rationalbba.cpp")
+  "rational/rationalbba.cpp"
+  "sar/adjustsar.cpp"
+  "sar/sarbba.cpp")
 set(blockadjust_items ex3rdparty core exproject sensormodel
   Boost::boost Boost::filesystem Boost::iostreams
   ${CERES_LIBRARY} ${CGAL_LIBRARIES} ${GDAL_LIBRARY} ${geotrans_LIBRARIES} 

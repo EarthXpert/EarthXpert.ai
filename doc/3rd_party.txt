@@ -1,0 +1,33 @@
+Build 3rd-party libraries preferring as follows:
+
+0) header-only libraries
+
+boost 1.71.0
+eigen 3.3.90
+xsimd 7.4.6
+
+1) static libraries (prefer static against dynamic except prohibited)
+
+ceres 1.12.0
+eigen_blas 3.3.90
+eigen_lapack 3.3.90
+lastools 19.07.10
+mathgl 2.4.3
+suitesparse 5.4.0
+suitesparse_metis 5.1.0
+zlib 1.2.11
+
+
+2) dynamic/shared libraries
+
+boost 1.71.0 components all
+ceres 1.12.0
+ceres 2.0.0
+eigen_blas 3.3.90
+eigen_lapack 3.3.90
+gdal 2.4.1
+geotrans 3.8.0
+mathgl 2.4.3
+tbb 20.0.0
+zlib 1.2.11
+zlib 1.4.4

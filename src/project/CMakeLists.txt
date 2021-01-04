@@ -4,7 +4,8 @@ add_definitions(-DEXPROJECT_API)
 set(exproject_srcs "./project.cpp"
   "ads/adsprj.cpp"
   "frame/frameprj.cpp"
-  "rational/rationalprj.cpp")
+  "rational/rationalprj.cpp"
+  "sar/sarprj.cpp")
 set(exproject_items ex3rdparty core sensormodel
   Boost::boost Boost::filesystem Boost::iostreams
   ${CERES_LIBRARY} ${CGAL_LIBRARIES} ${GDAL_LIBRARY} ${geotrans_LIBRARIES} 

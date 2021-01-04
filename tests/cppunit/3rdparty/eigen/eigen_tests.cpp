@@ -6,8 +6,17 @@
 #include "3rdparty/eigen/exeigen.h"
 
 //#include "densesolver.hpp"
-#include "sparsesolver.hpp"
+//#include "sparsesolver.hpp"
 
-TEST(eigen, DUMMY) {
-  std::cout << "[   EXAI   ]" << std::endl;
+#include <iostream>
+
+TEST(eigen, alias) {
+  Eigen::MatrixXf A(3, 2), B(2, 2), C(2, 2);
+  A << 2, 0, 0, 3, 1, 1;
+  B << 2, 0, 0, -2;
+  C << 2, 0, 0, -2;
+
+  B = (A * B).cwiseAbs();
+  C = (A * C).eval().cwiseAbs();
+  ASSERT_EQ(B, C);
 }

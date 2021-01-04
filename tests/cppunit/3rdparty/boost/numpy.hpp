@@ -8,7 +8,7 @@ using namespace earthxpert;
 namespace bp = boost::python;
 namespace bpn = boost::python::numpy;
 
-TEST(boost, numpy) {
+TEST(bpn, ndarray) {
   Py_Initialize();
   bpn::initialize();
 
