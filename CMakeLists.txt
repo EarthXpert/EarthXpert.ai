@@ -132,6 +132,9 @@ if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
   set(glog_DIR "${GLOG_ROOT}/lib/cmake/glog")
   set(GLOG_INCLUDE_DIR "${GLOG_ROOT}/include")
 
+  #GMT_DIR
+  #GMTSAR_DIR
+
   set(gsl_ROOT "${EX_THIRD_PARTY}/gsl_2.4.0")
   set(gsl_BIN_DIR "${gsl_ROOT}/bin/${CDEGREL}")
   set(gsl_INCLUDE_DIR "${gsl_ROOT}/include")
@@ -275,6 +278,8 @@ if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
   set(Simd_LIBRARIES "${Simd_LIBRARY_DIR}/${CDEGREL}/Simd.lib")
 
   set(Sltbench_DIR "${EX_THIRD_PARTY}/sltbench_20.01.15/cmake")
+
+  #SNAPHU_DIR
 
   set(sqlite3_ROOT "${EX_THIRD_PARTY}/sqlite_3.31.1")
   set(sqlite3_DIR "${EX_THIRD_PARTY}/share/sqlite3")
