@@ -145,7 +145,7 @@ TEST(bmi, barycentric_rational) {
 }
 
 /**
- *  \brief numpy.roots & scipy.optimize.root_scalar give in-accurate results
+ *  \brief numpy.roots & scipy.optimize.root_scalar give ?in-accurate? results
  *
  *  The 4th-degree polynomial is defined as
  *
@@ -157,7 +157,7 @@ TEST(bmi, barycentric_rational) {
  *      -0.0003322 +0.00088209j, -0.0003322 -0.00088209j])
  *
  *  sol = optimize.root_scalar(f, x0=0.0, fprime=fp, method='newton') gives
- *  numpy.polyval(b, -0.0014738052049961723) -> -1926.1301751412711
+ *  numpy.polyval(p, -0.0014738052049961723) -> -1926.1301751412711
  *
  *  sol = optimize.root_scalar(f, x0=0.0, fprime=fp, fprime2=fp2, method='halley') gives
  *  numpy.polyval(p, 0.005389882777731355) -> -64645.486852989656
@@ -191,6 +191,7 @@ TEST(bmt, roots) {
   auto f_n = [=](const double x) { return std::make_pair(f(x), fp(x)); };
   numIters = (std::numeric_limits<boost::uintmax_t>::max)();
   auto r2 = bmt::newton_raphson_iterate(f_n, 0.0, 0.0, 0.01, 20, numIters);
+  std::cout << "newton_raphson_iterate: root " << r2 << " in " << numIters << " iterations." << std::endl;
 
   // halley_iterate
   // schroder_iterate
