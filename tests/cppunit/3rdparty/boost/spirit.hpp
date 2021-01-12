@@ -9,15 +9,14 @@
 #include <boost/spirit/include/lex.hpp>
 #include <boost/spirit/include/qi.hpp>
 
-namespace bsp = boost::spirit;
-namespace bsq = bsp::qi;
-
-#include <boost/spirit/include/qi.hpp>
-
+#include <cassert>
 #include <iostream>
+#include <string>
+#include <vector>
 
 namespace bfu = boost::fusion;
-namespace bsq = boost::spirit::qi;
+namespace bsp = boost::spirit;
+namespace bsq = bsp::qi;
 
 struct Sample {                        //creation of struct Sample
   double one;
@@ -29,7 +28,8 @@ struct Sample {                        //creation of struct Sample
 BOOST_FUSION_ADAPT_STRUCT(Sample, one, two, three, four);
 
 // use parser iterator to access the elements sequentially in random access Sequence
-template <typename Iterator> struct SampleParser : bsq::grammar<Iterator, Sample()> {
+template <typename Iterator> 
+struct SampleParser : bsq::grammar<Iterator, Sample()> {
   SampleParser() : SampleParser::base_type(start) {
     using namespace bsq;
 
