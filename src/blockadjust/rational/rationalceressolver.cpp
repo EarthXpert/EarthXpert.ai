@@ -75,10 +75,10 @@ namespace detail {
     }
 
   private:
-    const Point2d* image; // image observation
-    int64_t grdIdx;   // index of correspoding ground point scaled by 3
-    const RationalModel* ratModel;  // non-owing pointer to sensor model
-    int64_t mdlIdx;   // index of bba image model scaled by number of model parameters
+    const Point2d* image{}; // image observation
+    int64_t grdIdx{};   // index of correspoding ground point scaled by 3
+    const RationalModel* ratModel{};  // non-owing pointer to sensor model
+    int64_t mdlIdx{};   // index of bba image model scaled by number of model parameters
   };
 }
 }
