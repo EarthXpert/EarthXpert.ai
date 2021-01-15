@@ -14,7 +14,7 @@ namespace earthxpert {
 class EXPROJECT_EXPORTS RationalProject final : public Project {
 public:
   enum {
-    ProjectType = ePT_RATIONAL
+    eProjectType = ePT_RATIONAL
   };
 
   ~RationalProject() = default;

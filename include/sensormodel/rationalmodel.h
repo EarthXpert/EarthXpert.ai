@@ -47,6 +47,10 @@ namespace earthxpert {
  */
 class EXSENSORMODEL_EXPORTS RationalModel /*final*/ : public SensorModel {
 public:
+  enum {
+    eModelType = ModelType::eMT_RATIONAL
+  };
+
   // index of normalization factors
   using NormalizationFactor = NormalizationFactor;
 
@@ -420,6 +424,7 @@ private:
 using rnf = NormalizationFactor;
 using risf = RationalModel::InvScaleFactor;
 using rpc = RationalModel::PolyCoeff3rd;
+using rcc = RationalModel::CorrCoeff;
 using UPRationalModel = std::unique_ptr<RationalModel>;
 using SPRationalModel = std::shared_ptr<RationalModel>;
 

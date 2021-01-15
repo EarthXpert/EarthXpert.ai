@@ -3,7 +3,7 @@
  * ----------------------------------------------------------------------
  */
 #include "blockadjust/rationalceressolver.h"
-#include "sensormodel/rationalmodel.h"
+#include "blockadjust/rationalbbaimage.h"
 
 #include <cassert>
 #include <cmath>
@@ -35,21 +35,21 @@ namespace detail {
    */
   struct RationalNumericG2IResidual final : IResidual {
     /**
-     *  \param [in] image
-     *  \param [in] ratModel.
+     *  \param [in] image image observation
+     *  \param [in] bbaImg pointer to image model
      */
     RationalNumericG2IResidual() {}
     RationalNumericG2IResidual(const Point2d* const image, const int64_t grdIdx,
-      const RationalModel* const ratModel, const int64_t mdlIdx)
-      : image(image), grdIdx(grdIdx), ratModel(ratModel), mdlIdx(mdlIdx) {}
+      const RationalBbaImage* const bbaImg, const int64_t bbaIdx)
+      : image(image), grdIdx(grdIdx), bbaImg(bbaImg), bbaIdx(bbaIdx) {}
     ~RationalNumericG2IResidual() = default;
 
     void SetArgs(const Point2d* const image, const int64_t grdIdx,
-      const RationalModel* const ratModel, const int64_t mdlIdx) {
+      const RationalBbaImage* const bbaImg, const int64_t bbaIdx) {
       this->image = image;
       this->grdIdx = grdIdx;
-      this->ratModel = ratModel;
-      this->mdlIdx = mdlIdx;
+      this->bbaImg = bbaImg;
+      this->bbaIdx = bbaIdx;
     }
 
     /**
@@ -62,11 +62,11 @@ namespace detail {
      */
     bool operator()(const double* const pbi, 
       const double* const pbp, double* residual) const {
-      // update ratModel
+      // update bbaImg?
 
       auto ground = reinterpret_cast<const Point3d* const>(pbp + grdIdx);
       Point2d ip;
-      const auto ret = ratModel->GroundToImage(*ground, ip);
+      const auto ret = bbaImg->GroundToImage(*ground, ip);
       if (!ret) return false;
 
       residual[0] = ip.x - image->x;
@@ -77,8 +77,8 @@ namespace detail {
   private:
     const Point2d* image{}; // image observation
     int64_t grdIdx{};   // index of correspoding ground point scaled by 3
-    const RationalModel* ratModel{};  // non-owing pointer to sensor model
-    int64_t mdlIdx{};   // index of bba image model scaled by number of model parameters
+    const RationalBbaImage* bbaImg{};  // non-owing pointer to image model
+    int64_t bbaIdx{};   // index of bba image model scaled by number of model parameters
   };
 }
 }
