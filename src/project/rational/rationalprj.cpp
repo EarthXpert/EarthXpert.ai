@@ -5,6 +5,5 @@
 #include "project/rationalprj.h"
 
 #include <cassert>
-#include <cmath>
 
 using namespace earthxpert;
