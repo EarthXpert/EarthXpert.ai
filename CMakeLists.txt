@@ -131,6 +131,9 @@ if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
   set(GLOG_ROOT "${EX_THIRD_PARTY}/glog_0.4.0")
   set(glog_DIR "${GLOG_ROOT}/lib/cmake/glog")
   set(GLOG_INCLUDE_DIR "${GLOG_ROOT}/include")
+  set(GLOG_LIBRARY_DIR "${GLOG_ROOT}/lib")
+  set(GLOG_LIBRARY debug "${GLOG_LIBRARY_DIR}/glogd.lib"
+                   optimized "${GLOG_LIBRARY_DIR}/glog.lib")
 
   #GMT_DIR
   #GMTSAR_DIR
@@ -265,7 +268,9 @@ if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
 
   set(pybind11_DIR "${EX_THIRD_PARTY}/pybind11_2.5.0/share/cmake/pybind11")
 
-  set(Qt5_DIR "${EX_THIRD_PARTY}/qt_5.11.2/lib/cmake/Qt5")
+  set(Qt5_ROOT "${EX_THIRD_PARTY}/qt_5.11.2")
+  set(Qt5_DIR "${Qt5_ROOT}/lib/cmake/Qt5")
+  set(Qt5LinguistTools_DIR "${Qt5_ROOT}/lib/cmake/Qt5LinguistTools")
 
   set(range-v3_ROOT "${EX_THIRD_PARTY}/range-v3_0.9.0")
   set(range-v3_DIR "${range-v3_ROOT}/lib/cmake/range-v3")
