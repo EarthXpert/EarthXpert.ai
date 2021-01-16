@@ -32,6 +32,11 @@ namespace detail {
 
   /**
    *  \brief NumericDiff cost functors implements IResidual
+   *
+   *  \question how to calculate the partial derivatives?
+   *    for each parameter, pass both p & p+delta, 
+   *    get two residuals r(p) & r(p+delta), then 
+   *    pd = (r(p+delta) - r(p)) / delta?
    */
   struct RationalNumericG2IResidual final : IResidual {
     /**
