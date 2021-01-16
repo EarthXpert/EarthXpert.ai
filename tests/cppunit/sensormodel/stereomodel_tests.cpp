@@ -23,6 +23,7 @@ static constexpr int kNum = 5;
 static constexpr double kFactor = 0.75;
 
 static void TestImageToGround_Cube(const RationalModel* leftModel, const RationalModel* rightModel);
+static void TestImageToGround_Cube(const std::string& leftModelFile, const std::string& rightModelFile);
 
 static std::unique_ptr<RationalModel> CreateRationalModelALeft();
 static std::unique_ptr<RationalModel> CreateRationalModelARight();
@@ -132,13 +133,23 @@ TEST(stereomodel, ImageToGround_Cube) {
   //const auto rightModelB = CreateRationalModelBRight();
   //TestImageToGround_Cube(leftModelB.get(), rightModelB.get());
 
-  std::string leftMdlFileC = 
+  std::string leftMdlFileC =
     TestConfig::DataPath("Imagery/Satellite/zy302a_006911_258169_20170827/zy302a_fwd_006911_258169_20170827181359_01_sec_0001_1709018015_rpc.txt");
-  std::string rightMdlFileC = 
+  std::string rightMdlFileC =
     TestConfig::DataPath("Imagery/Satellite/zy302a_006911_258169_20170827/zy302a_bwd_006911_258169_20170827181359_01_sec_0001_1709011888_rpc.txt");
+  TestImageToGround_Cube(leftMdlFileC, rightMdlFileC);
+
+  std::string leftMdlFileD =
+    TestConfig::DataPath("Imagery/Satellite/Kompsat/K3A/K3A_20190926202806_24873_00025513_L1O_Bundle/K3A_20190926202806_24873_00025513_L1O_P_rpc.txt");
+  std::string rightMdlFileD =
+    TestConfig::DataPath("Imagery/Satellite/Kompsat/K3A/K3A_20190926202934_24873_00025357_L1O_Bundle/K3A_20190926202934_24873_00025357_L1O_P_rpc.txt");
+  TestImageToGround_Cube(leftMdlFileD, rightMdlFileD);
+}
+
+void TestImageToGround_Cube(const std::string& leftMdlFile, const std::string& rightMdlFile) {
   RationalModelMarshaller rmMarshaller;
-  auto leftModelC = rmMarshaller.Deserialize(leftMdlFileC);
-  auto rightModelC = rmMarshaller.Deserialize(rightMdlFileC);
+  auto leftModelC = rmMarshaller.Deserialize(leftMdlFile);
+  auto rightModelC = rmMarshaller.Deserialize(rightMdlFile);
   TestImageToGround_Cube(leftModelC.get(), rightModelC.get());
 }
 
@@ -187,7 +198,7 @@ void TestImageToGround_Cube(const RationalModel* leftModel,
   smI.SetEarthEllipsoid(ee);
   smI.SetForwardAlgorithm(IStereoModel::eFA_INTERSECT);
 
-  StereoModel smE(leftModel, rightModel);    // EXAI 
+  RationalStereoModel smE(leftModel, rightModel);    // EXAI 
 
   StereoModel smL(leftModel, rightModel);    // LS 
   smL.SetForwardAlgorithm(IStereoModel::eFA_LS);
