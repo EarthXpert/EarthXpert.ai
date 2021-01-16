@@ -34,8 +34,8 @@ std::string GenerateEpipolar(const std::string& imgFile, EpipolarGenerator* epiG
   //std::cout << "rawNumCols: " << rawNumCols << ", rawNumRows: " << rawNumRows << std::endl;
 
   std::stringstream ss;
-  ss << boost::format("epi%1%_") % stride;
-  auto epiFn = PathPrefixFilename(imgFile, ss.str());
+  ss << boost::format("_epi%1%") % stride;
+  auto epiFn = PathSuffixFilename(imgFile, ss.str());
   fs::path epiPath(outPath + epiFn);
   RemoveFile(epiPath);
   std::cout << "epiPath: " << epiPath << std::endl;
