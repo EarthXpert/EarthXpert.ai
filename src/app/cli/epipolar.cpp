@@ -25,6 +25,8 @@
  *      --stride      [stride interval]             // 1
  *      --grey        [convert_color]               // false
  *      --outdir      [path_of_output_directory]    // "d:/out/"
+ *      --height      [height_of_rectification]
+ *      --rotangle    [angle_of_rotation]
  *      --resample    [linear|cubic|gaussian|sinc]  // "cubic"
  *      --memsize     [memory_size_in_MB]           // 4000
  *

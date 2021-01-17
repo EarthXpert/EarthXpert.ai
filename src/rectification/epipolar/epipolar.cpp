@@ -95,7 +95,8 @@ void GenerateRationalEpipolar(const EpipolarOptions& epiOpt) {
 
   EpipolarStereoFactory epiModelFac(epiOpt.outOpt);
   auto [leftEpiModel, rightEpiModel] = 
-    epiModelFac.CreateRationalEpiStereo(leftModel, rightModel, epiOpt.sample);
+    epiModelFac.CreateRationalEpiStereo(leftModel, rightModel, 
+      epiOpt.sample, epiOpt.epiHgt, epiOpt.rotAngle);
   assert(IEpipolarModel::ePLANERECT == leftEpiModel->GetEpipolarAlgorithm());
 
   auto rasResample = std::make_unique<RasterResampleCV>(epiOpt.resample);

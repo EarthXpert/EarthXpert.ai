@@ -59,7 +59,8 @@ EpiModelPair EpipolarStereoFactory::CreateFrameEpiStereo(
  */
 EpiModelPair EpipolarStereoFactory::CreateRationalEpiStereo(
   std::shared_ptr<RationalModel> leftModel,
-  std::shared_ptr<RationalModel> rightModel, const int sample) {
+  std::shared_ptr<RationalModel> rightModel, const int sample,
+  const float epiHgt, const float rotAngle) {
   if (leftModel->GetModelType() != rightModel->GetModelType())
     throw std::exception(_("The stereo pair should be of the same sensor type."));
   auto lnfc = leftModel->GetNormalFactors();
@@ -82,7 +83,8 @@ EpiModelPair EpipolarStereoFactory::CreateRationalEpiStereo(
 
   // \todo determine the rectification height so that the average
   // resolution of epipolar is 1:1 before considering the sample
-  double height{ (lnfc[rnf::eOHGT] + rnfc[rnf::eOHGT]) / 2 };
+  const double height = 
+    (0 != epiHgt) ? epiHgt : (lnfc[rnf::eOHGT] + rnfc[rnf::eOHGT]) / 2;
 
   const double invScale = EpiGsd(leftModel.get(), rightModel.get(), height) * sample;
   const double scale{ 1.0 / invScale };
@@ -91,8 +93,8 @@ EpiModelPair EpipolarStereoFactory::CreateRationalEpiStereo(
   auto leftFp = CalcFootprint(leftModel.get(), earthEllip.get(), height);
   auto rightFp = CalcFootprint(rightModel.get(), earthEllip.get(), height);
 
-  const double rotation = CalcEpiRotation(leftModel.get(), rightModel.get(),
-    earthEllip.get(), height, leftFp, rightFp);
+  const double rotation = (0 != rotAngle) ? rotAngle : CalcEpiRotation(
+    leftModel.get(), rightModel.get(), earthEllip.get(), height, leftFp, rightFp);
   const double cosRot{ cos(rotation) };
   const double sinRot{ sin(rotation) };
 

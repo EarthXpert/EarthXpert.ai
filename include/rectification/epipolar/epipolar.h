@@ -32,6 +32,8 @@ struct EpipolarOptions {
   int outBkgd{ 0 };
   std::string outOpt;
   std::string outPath;
+  float epiHgt{};
+  float rotAngle{};
   std::string resample;
   size_t memSize;  // [unit: bytes]
 };
