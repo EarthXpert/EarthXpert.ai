@@ -28,15 +28,18 @@ public:
   }
 
   void UpdateModel() override {
-    mRatModel->SetCorrection(mLineCorr, mSampCorr);
+    mRatModel->SetCorrection(mLineCorr, mSampCorr, mCorrOrder);
   }
 
 private:
+  friend class RationalCeresSolver;
+
   RationalModel* mRatModel{};
 
+  int64_t mIndex{};   // index to the vector of unknowns
+  double* mLineCorr{}; // polynomial for line correction
+  double* mSampCorr{}; // polynomial for sample correction
   int mCorrOrder{};   // order of correction polynomial
-  std::array<double, rcc::NumCorr> mLineCorr{}; // polynomial for line correction
-  std::array<double, rcc::NumCorr> mSampCorr{}; // polynomial for sample correction
 };
 
 using UPRationalBbaImage = std::unique_ptr<RationalBbaImage>;
