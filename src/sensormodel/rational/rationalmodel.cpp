@@ -252,6 +252,10 @@ void RationalModel::SetCorrection(const std::array<double, NumCorr> &lineCorr,
     std::any_of(std::cbegin(mSampCorr), std::cend(mSampCorr), NotZero<>());
 }
 
+void RationalModel::SetCorrection(const double* lineCorr, const double* sampCorr,
+  const int order, const CorrAlgo corrAlgo) {
+}
+
 /**
  *  \brief Get 2d correction polynomials in image/sensor space.
  *

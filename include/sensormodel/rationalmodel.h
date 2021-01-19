@@ -250,9 +250,11 @@ public:
    *  \param [in] sampCorr 2nd-order polynomial for sample correction
    *  \param [in] corrAlgo correction algoirthm
    */
-  void SetCorrection(const std::array<double, NumCorr> &lineCorr,
-                           const std::array<double, NumCorr> &sampCorr,
-                           CorrAlgo corrAlgo = eCA_IMAGE);
+  void SetCorrection(const std::array<double, NumCorr>& lineCorr,
+    const std::array<double, NumCorr>& sampCorr,
+    CorrAlgo corrAlgo = eCA_IMAGE);
+  void SetCorrection(const double* lineCorr, const double* sampCorr,
+    int order = 2, CorrAlgo corrAlgo = eCA_IMAGE);
 
   /**
    *  \brief Get 2d correction polynomials in image/sensor space.
