@@ -5,7 +5,7 @@
 #pragma once
 
 #include "blockadjust/blockadjust.h"
-#include "sensormodel/rationalmodel.h"
+#include "blockadjust/rationalbbaimageset.h"
 
 namespace earthxpert {
 /**
@@ -14,7 +14,15 @@ namespace earthxpert {
  */
 class EXBBA_EXPORTS RationalBBA final : public BlockAdjust {
 public:
+  RationalBBA(const RationalBBA&) = delete;
+  RationalBBA(RationalBBA&&) = delete;
   ~RationalBBA() = default;
+
+  RationalBBA& operator=(const RationalBBA&) = delete;
+  RationalBBA& operator=(RationalBBA&&) = delete;
+
+private:
+  std::vector<std::unique_ptr<RationalBbaImageSet>> mImgSet;
 };
 
 using UPRationalBBA = std::unique_ptr<RationalBBA>;

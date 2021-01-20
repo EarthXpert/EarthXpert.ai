@@ -17,9 +17,6 @@ class EXBBA_EXPORTS IBbaImage {
 public:
   virtual ~IBbaImage() = default;
 
-  bool operator==(const IBbaImage& rhs) const = delete;
-  bool operator!=(const IBbaImage& rhs) const = delete;
-
   virtual bool ImageToGround(const Point2d& image, Point3d& ground) const = 0;
   virtual bool GroundToImage(const Point3d& ground, Point2d& image) const = 0;
 

@@ -45,31 +45,31 @@ namespace detail {
      */
     RationalNumericG2IResidual() {}
     RationalNumericG2IResidual(const Point2d* const image, const int64_t grdIdx,
-      const RationalBbaImage* const bbaImg, const int64_t bbaIdx)
-      : image(image), grdIdx(grdIdx), bbaImg(bbaImg), bbaIdx(bbaIdx) {}
+      const RationalBbaImage* const bbaImg, const int64_t imgIdx)
+      : image(image), grdIdx(grdIdx), bbaImg(bbaImg), imgIdx(imgIdx) {}
     ~RationalNumericG2IResidual() = default;
 
     void SetArgs(const Point2d* const image, const int64_t grdIdx,
-      const RationalBbaImage* const bbaImg, const int64_t bbaIdx) {
+      const RationalBbaImage* const bbaImg, const int64_t imgIdx) {
       this->image = image;
       this->grdIdx = grdIdx;
       this->bbaImg = bbaImg;
-      this->bbaIdx = bbaIdx;
+      this->imgIdx = imgIdx;
     }
 
     /**
      *  \brief calculate residual from the given parameters
      *
      *  \param [in] pbi block of image parameters
-     *  \param [in] pbp block of ground points
+     *  \param [in] pbg block of ground points
      *  \param [out] residual reprojection errors of ground point at image location
      *  \return Return true if valid.
      */
     bool operator()(const double* const pbi, 
-      const double* const pbp, double* residual) const {
+      const double* const pbg, double* residual) const {
       // update bbaImg?
 
-      auto ground = reinterpret_cast<const Point3d* const>(pbp + grdIdx);
+      auto ground = reinterpret_cast<const Point3d* const>(pbg + grdIdx);
       Point2d ip;
       const auto ret = bbaImg->GroundToImage(*ground, ip);
       if (!ret) return false;
@@ -83,7 +83,8 @@ namespace detail {
     const Point2d* image{}; // image observation
     int64_t grdIdx{};   // index of correspoding ground point scaled by 3
     const RationalBbaImage* bbaImg{};  // non-owing pointer to image model
-    int64_t bbaIdx{};   // index of bba image model scaled by number of model parameters
+    int64_t imgIdx{};   // index of bba image model scaled by number of model parameters
   };
 }
+
 }

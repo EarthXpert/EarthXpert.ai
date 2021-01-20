@@ -13,7 +13,7 @@ namespace earthxpert {
  */
 class EXBBA_EXPORTS RationalCeresSolver final : public CeresSolver {
 public:
-  virtual ~RationalCeresSolver() = default;
+  ~RationalCeresSolver() = default;
 };
 
 using UPRationalCeresSolver = std::unique_ptr<RationalCeresSolver>;
