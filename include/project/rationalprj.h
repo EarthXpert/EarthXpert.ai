@@ -28,6 +28,9 @@ private:
   friend class RatPrjMarshaller;
 
   std::vector<std::unique_ptr<RationalPrjImage>> mImages;
+
+  // adjust configuration
+  int mAdjOrder{ 2 };   // order of 2d correction polynomial
 };
 
 using UPRationalProject = std::unique_ptr<RationalProject>;

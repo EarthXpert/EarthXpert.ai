@@ -44,6 +44,23 @@ namespace earthxpert {
  *      ldc 20 line denominator coefficients given in lineDenCoef
  *      snc 20 sample numerator coefficients given in sampNumCoef
  *      sdc 20 sample denominator coefficients given in sampDenCoef
+ *
+ *  The formula with correction polynomials becomes
+ *
+ *  r' = r + lcc[eCO] + lcc[eCS] * S + lcc[eCL] * L +
+ *       lcc[eCS2] * S^2 + lcc[eCSL] * S * L + lcc[eCL2] * L^2
+ *
+ *  c' = c + scc[eCO] + scc[eCS] * S + scc[eCL] * L +
+ *       scc[eCS2] * S^2 + scc[eCSL] * S * L + scc[eCL2] * L^2
+ *
+ *  where
+ *
+ *      r' the corrected normalized line position
+ *      c' the corrected normalized sample position
+ *      L  the raw line position
+ *      S  the raw sample position
+ *      lcc 6 line correction coefficients given lineCorr
+ *      scc 6 sample correction coefficients given sampCorr
  */
 class EXSENSORMODEL_EXPORTS RationalModel /*final*/ : public SensorModel {
 public:
@@ -272,6 +289,7 @@ public:
 private:
   friend class RationalModelMarshaller;
   friend class RationalStereoModel;
+  friend class RationalCeresSolver;
 
   static constexpr int kMaxIterS2G = 10; // max. number of iterations allowed for SensorToGround
   static constexpr int kMaxIterIAA = 5; // max. number of iterations allowed for ImageActualToApparant

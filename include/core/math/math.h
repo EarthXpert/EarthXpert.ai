@@ -28,6 +28,14 @@ constexpr inline size_t exp2(const size_t n) {
 }
 
 /**
+ *  \param [in] order the 0-based degree of polynomial
+ *  \return number of coefficents of 2d polynomial
+ */
+constexpr int NumCoeffPoly2d(const int order) {
+  return (order + 1) * (order + 2) / 2;
+}
+
+/**
  *  \param [in] angle the rotation angle [radian]
  */
 inline std::pair<double, double> sincos(const double angle) {
