@@ -35,6 +35,7 @@ struct TiePoint : GroundPoint {
 struct ImagePoint {
   Point2f ip;        //  image position: col, row
   GroundPoint* gp;    // GroundPoint
+  bool enabled{ true };   // flag indicating if used
 };
 
 // camera infomation

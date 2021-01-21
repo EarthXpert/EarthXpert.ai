@@ -5,6 +5,7 @@
 #pragma once
 
 #include "project/project.h"
+#include "project/rationalprjimage.h"
 
 namespace earthxpert {
 /**
@@ -17,12 +18,16 @@ public:
     eProjectType = ePT_RATIONAL
   };
 
+  RationalProject(const RationalProject&) = delete;
+  RationalProject(RationalProject&&) = delete;
   ~RationalProject() = default;
 
   PrjType GetProjectType() const noexcept override { return ePT_RATIONAL; }
 
 private: 
   friend class RatPrjMarshaller;
+
+  std::vector<std::unique_ptr<RationalPrjImage>> mImages;
 };
 
 using UPRationalProject = std::unique_ptr<RationalProject>;
