@@ -19,6 +19,8 @@ static std::unique_ptr<RationalModel> CreateRationalModelA();
 static std::unique_ptr<RationalModel> CreateRationalModelB();
 static std::unique_ptr<RationalModel> CreateRationalModelC();
 static std::unique_ptr<RationalModel> CreateRationalModelD();
+static std::unique_ptr<RationalModel> CreateRationalModelE();
+
 static void TestCubeI2G(const RationalModel* rationalModel);
 static void TestCubeI2G_Functor(const RationalModel* rationalModel);
 
@@ -93,31 +95,21 @@ TEST(rationalmodel, CornerI2G_Functor) {
  * Test consistency between G2I & I2G projections in dense cube.
  */
 TEST(rationalmodel, CubeI2G) {
-  const auto rationalModelA = CreateRationalModelA();
-  TestCubeI2G(rationalModelA.get());
+  std::vector<SPRationalModel> ratModels{ CreateRationalModelA(), CreateRationalModelB(),
+    CreateRationalModelC(), CreateRationalModelD(), CreateRationalModelE() };
 
-  const auto rationalModelB = CreateRationalModelB();
-  TestCubeI2G(rationalModelB.get());
-
-  const auto rationalModelC = CreateRationalModelC();
-  TestCubeI2G(rationalModelC.get());
-
-  const auto rationalModelD = CreateRationalModelD();
-  TestCubeI2G(rationalModelD.get());
+  for (auto& ratModel : ratModels) {
+    TestCubeI2G(ratModel.get());
+  }
 }
 
 TEST(rationalmodel, CubeI2G_Functor) {
-  const auto rationalModelA = CreateRationalModelA();
-  TestCubeI2G_Functor(rationalModelA.get());
+  std::vector<SPRationalModel> ratModels{ CreateRationalModelA(), CreateRationalModelB(),
+    CreateRationalModelC(), CreateRationalModelD(), CreateRationalModelE() };
 
-  const auto rationalModelB = CreateRationalModelB();
-  TestCubeI2G_Functor(rationalModelB.get());
-
-  const auto rationalModelC = CreateRationalModelC();
-  TestCubeI2G_Functor(rationalModelC.get());
-
-  const auto rationalModelD = CreateRationalModelD();
-  TestCubeI2G_Functor(rationalModelD.get());
+  for (auto& ratModel : ratModels) {
+    TestCubeI2G_Functor(ratModel.get());
+  }
 }
 
 /**
@@ -238,6 +230,13 @@ std::unique_ptr<RationalModel> CreateRationalModelC() {
 std::unique_ptr<RationalModel> CreateRationalModelD() {
   //std::string mdlFile = TestConfig::DataPath("Imagery/Satellite/zy302a_006911_258169_20170827/zy302a_fwd_006911_258169_20170827181359_01_sec_0001_1709018015_rpc.txt");
   std::string mdlFile = TestConfig::DataPath("Imagery/Satellite/zy302a_006911_258169_20170827/zy302a_bwd_006911_258169_20170827181359_01_sec_0001_1709011888_rpc.txt");
+  RationalModelMarshaller rmMarshaller;
+  return rmMarshaller.Deserialize(mdlFile);
+}
+
+std::unique_ptr<RationalModel> CreateRationalModelE() {
+  std::string mdlFile = TestConfig::DataPath("Imagery/Satellite/Khalifasat/20190704093357_03703_UAE 15_11121_Radio_P_rpc.txt");
+  //std::string mdlFile = TestConfig::DataPath("Imagery/Satellite/Khalifasat/20190704093359_03703_UAE 15_11121_Radio_P_rpc.txt");
   RationalModelMarshaller rmMarshaller;
   return rmMarshaller.Deserialize(mdlFile);
 }
