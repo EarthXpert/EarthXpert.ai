@@ -239,6 +239,10 @@ public:
    */
   auto GetNormalFactors() const noexcept { return mNormalFactors.data(); }
 
+  Point3d GetGroundCenter() const noexcept { 
+    return { nfc[eOLON], nfc[eOLAT], nfc[eOHGT] };
+  }
+
   /**
    *  \brief Set bias and random errors in sensor space.
    *

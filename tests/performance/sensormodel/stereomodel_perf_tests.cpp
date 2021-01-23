@@ -69,10 +69,8 @@ void StereoModel_I2G_Intersect() {
   const auto rightModel = CreateRationalModelRight();
   auto cube = CreateCube(leftModel.get(), rightModel.get());
 
-  auto nfcL = leftModel->GetNormalFactors();
-  Point3d origin(nfcL[rnf::eOLON], nfcL[rnf::eOLAT], nfcL[rnf::eOHGT]);
   auto ee = std::make_shared<EarthEllipsoid>();
-  ee->SetLsrOrigin(Deg2Rad(origin));
+  ee->SetLsrOrigin(Deg2Rad(leftModel->GetGroundCenter()));
 
   StereoModel smI(leftModel.get(), rightModel.get());    // intersect
   smI.SetEarthEllipsoid(std::move(ee));
