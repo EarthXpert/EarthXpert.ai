@@ -304,6 +304,7 @@ void TestCurveI2G(const RationalModel* leftModel, const RationalModel* rightMode
     }
   }
 
+  ASSERT_EQ(curves.size(), 2 * num * (kNH + 1));
   SaveCurves(curves, num * 2, txtFile);
 }
 

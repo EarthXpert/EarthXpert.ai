@@ -95,6 +95,8 @@ TEST(rationalmodel, I2G_Curve) {
   RemoveFile(crvPath);
 
   constexpr int nls = (kNI + 1) * (kNI + 1);  // number of lines
+  ASSERT_EQ(curves.size(), nls * (kNH + 1));
+
   SaveCurves(curves, nls, crvPath.string());
 }
 
