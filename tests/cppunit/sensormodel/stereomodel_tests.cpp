@@ -5,6 +5,7 @@
 #include "3rdparty/gtest/gtest_main.h"
 #include "3rdparty/utils/constants.h"
 #include "testconfig.h"
+#include "testutils.h"
 
 #include "core/math/mutils.h"
 #include "core/utils/fsutils.h"
@@ -17,11 +18,11 @@
 
 #include <boost/format.hpp>
 #include <filesystem>
-#include <fstream>
 #include <iostream>
 
 using namespace earthxpert;
 using namespace earthxpert::utils;
+using namespace earthxpert::testutils;
 using rfm = earthxpert::RationalModel;
 namespace fs = std::filesystem;
 
@@ -291,6 +292,8 @@ void TestCurveI2G(const RationalModel* leftModel, const RationalModel* rightMode
   const Point2d* imgPts[2]{ leftImg, rightImg };
   
   std::vector<Point3d> curves;
+  curves.reserve(2 * num * (kNH + 1));
+
   for (int j = 0; j < 2; ++j) {
     for (int i = 0; i < num; ++i) {
       for (auto hgt = minHgt; hgt <= maxHgt; hgt += stepHgt) {
@@ -301,12 +304,7 @@ void TestCurveI2G(const RationalModel* leftModel, const RationalModel* rightMode
     }
   }
 
-  std::ofstream ofs(txtFile.c_str());
-  ofs << boost::format("%1% %2% %3%") % curves.size() % (num*2) % (kNH + 1);
-
-  for (auto& grd : curves) {
-    ofs << boost::format("\n%.6f %.6f %.6f") % grd.x % grd.y % grd.z;
-  }
+  SaveCurves(curves, num * 2, txtFile);
 }
 
 /**

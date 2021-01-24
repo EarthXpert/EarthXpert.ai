@@ -5,6 +5,7 @@
 #include "3rdparty/gtest/gtest_main.h"
 #include "3rdparty/utils/constants.h"
 #include "testconfig.h"
+#include "testutils.h"
 
 #include "core/math/mutils.h"
 #include "core/spatialref/earthellipsoid.h"
@@ -13,12 +14,11 @@
 #include "marshaller/sensormodel/rationalmodelmarshaller.h"
 #include "sensormodel/rationalmodel.h"
 
-#include <boost/format.hpp>
 #include <filesystem>
-#include <fstream>
 
 using namespace earthxpert;
 using namespace earthxpert::utils;
+using namespace earthxpert::testutils;
 using rfm = earthxpert::RationalModel;
 namespace fs = std::filesystem;
 
@@ -28,7 +28,6 @@ static constexpr int kNum{ 10 };
 
 static void TestCurveI2G(const RationalModel* ratModel, 
   const EarthEllipsoid& ee, std::vector<Point3d>& curves);
-static void SaveCurves(const std::vector<Point3d>& curves, std::string& txtFile);
 
 static void TestCubeI2G(const RationalModel* ratModel);
 static void TestCubeI2G_Functor(const RationalModel* ratModel);
@@ -94,7 +93,9 @@ TEST(rationalmodel, I2G_Curve) {
 
   fs::path crvPath(TestConfig::OutputPath("curves_rational.txt"));
   RemoveFile(crvPath);
-  SaveCurves(curves, crvPath.string());
+
+  constexpr int nls = (kNI + 1) * (kNI + 1);  // number of lines
+  SaveCurves(curves, nls, crvPath.string());
 }
 
 TEST(rationalmodel, CornerI2G_Functor) {
@@ -145,7 +146,7 @@ TEST(rationalmodel, CubeI2G_Functor) {
 
 void TestCurveI2G(const RationalModel* ratModel, 
   const EarthEllipsoid& ee, std::vector<Point3d>& curves) {
-  const int total = (kNI + 1) * (kNI + 1) * kNH;
+  const int total = (kNI+1) * (kNI+1) * (kNH+1);
   curves.reserve(total);
 
   auto [numCols, numRows] = ratModel->GetImageSize();
@@ -167,17 +168,6 @@ void TestCurveI2G(const RationalModel* ratModel,
         curves.push_back(ee.LPHToLSR(Deg2Rad(ground)));
       }
     }
-  }
-}
-
-void SaveCurves(const std::vector<Point3d>& curves, std::string& txtFile) {
-  constexpr int nls = (kNI + 1) * (kNI + 1);  // number of lines
-
-  std::ofstream ofs(txtFile.c_str());
-  ofs << boost::format("%1% %2% %3%") % curves.size() % nls % (kNH+1);
-
-  for (auto& grd : curves) {
-    ofs << boost::format("\n%.6f %.6f %.6f") % grd.x % grd.y % grd.z;
   }
 }
 

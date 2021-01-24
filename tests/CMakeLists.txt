@@ -6,6 +6,7 @@ configure_file(testconfig.h.in ${CMAKE_BINARY_DIR}/tests/testconfig.h)
 file(MAKE_DIRECTORY ${EARTHXPERT_TEST_OUTPUT_DIR})
 
 include_directories(${CMAKE_BINARY_DIR}/tests/)
+include_directories("include")
 
 function(earthxpert_add_test name tests_dir)
   add_executable(${name} ${name}.cpp)
@@ -40,9 +41,13 @@ add_definitions(-DMPFR_USE_FILE -DMPFR_USE_INTMAX_T -DMPFR_USE_VA_LIST)
 
 set(TESTS_BIN_DIR ${CMAKE_INSTALL_PREFIX}/${EARTHXPERT_BIN_DIR})
 set(BOOST_BIN_DIR "${Boost_LIBRARY_DIRS}")
+add_subdirectory(utils)
+#add_subdirectory(acceptance)
 add_subdirectory(cppunit)
+#add_subdirectory(integration)
 add_subdirectory(performance)
 #add_subdirectory(pyunit)
+#add_subdirectory(regression)
 
 # section install
 if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
