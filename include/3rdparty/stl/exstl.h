@@ -65,7 +65,7 @@ inline MakeVecOfPairs(const std::vector<Ty1>& v1, const std::vector<Ty1>& v2) {
   std::vector<std::pair<Ty1, Ty2>> vp(v1.size());
 
   std::transform(v1.begin(), v1.end(), v2.begin(), vp.begin(),
-    [](int a, int b) { return std::make_pair(a, b); });
+    [](Ty1 a, Ty2 b) { return std::make_pair(a, b); });
 
   return vp;
 }
