@@ -110,8 +110,8 @@ bool RationalStereoModel::ImagesToGround(const Point2d& leftImage,
  *
  *  \param [in] sensorModels an array of sensor models.
  *  \param [in] images the corresponding 2d positions (x, y) in
- * imagery raster coordinate systems, interleaved by sensor models. \param
- * [in/out] ground 3d ground position (X, Y, Z) in ground coordinate system
+ * imagery raster coordinate systems, interleaved by sensor models.
+ *  \param [in/out] ground 3d ground position (X, Y, Z) in ground coordinate system
  *  \return Returns true if the operation succeeds
  */
 bool RationalStereoModel::ImagesToGround(
@@ -154,9 +154,11 @@ bool RationalStereoModel::ImagesToGround(
       b[i2 + 1] = (imgp.y - imgs[i].y) * nfc[eSLINE];
     }
 
+    // \remark bdcSvd, colPivHouseholderQr, fullPivHouseholderQr are not stable
     // A.bdcSvd(ComputeThinU | ComputeThinV).solve(b)
     // A.colPivHouseholderQr().solve(b)
-    const auto& x = (A.transpose() * A).inverse() * (A.transpose() * b);
+    // (A.transpose() * A).inverse() * (A.transpose() * b)
+    const auto& x = (A.transpose() * A).ldlt().solve(A.transpose() * b);
     //if () return false;
 
     ground -= Point3d(x[0], x[1], x[2]);
