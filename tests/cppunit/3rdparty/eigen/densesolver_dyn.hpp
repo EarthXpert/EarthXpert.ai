@@ -42,7 +42,7 @@ DenseFill(MatTy<Ty>& A, VecTy<Ty>& b, const int n) {
 TEST(eigen, DenseSolve_dyn) {
   MatTy<double> A;
   VecTy<double> b;
-  DenseFill<double>(A, b, 10);
+  DenseFill<double>(A, b, 100);
 
   // singular value decomposition
   VecTy<double> x_svd = A.bdcSvd(ComputeThinU | ComputeThinV).solve(b);  // not stable?
@@ -52,6 +52,11 @@ TEST(eigen, DenseSolve_dyn) {
   std::cout << "SVD relative error: " << err_svd << std::endl;
 
   // QR factorization
+  VecTy<double> x_qr = A.colPivHouseholderQr().solve(b);  // not stable?
+  //std::cout << "QR solution:\n" << x_svd << std::endl;
+
+  const double err_qr = (A * x_qr - b).norm() / b.norm(); // relative error
+  std::cout << "QR relative error: " << err_qr << std::endl;
 
   // leaset squares
   VecTy<double> x_ls = (A.transpose() * A).ldlt().solve(A.transpose() * b);
