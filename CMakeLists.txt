@@ -268,6 +268,8 @@ if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
 
   set(pybind11_DIR "${EX_THIRD_PARTY}/pybind11_2.5.0/share/cmake/pybind11")
 
+  #set(PYTHON_ROOT_DIR "python37")
+
   set(Qt5_ROOT "${EX_THIRD_PARTY}/qt_5.11.2")
   set(Qt5_DIR "${Qt5_ROOT}/lib/cmake/Qt5")
   set(Qt5LinguistTools_DIR "${Qt5_ROOT}/lib/cmake/Qt5LinguistTools")
@@ -313,10 +315,6 @@ if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
                      optimized "${tiff_LIBRARY_DIR}/release/tiff.lib"
                      optimized "${tiff_LIBRARY_DIR}/release/tiffxx.lib")
 
-  set(xsimd_DIR "${EX_THIRD_PARTY}/xsimd_7.4.6/share/xsimd")
-
-  #set(PYTHON_ROOT_DIR "python37")
-
   set(vld_ROOT "${EX_THIRD_PARTY}/vld_2.5.1")
   #set(vld_DIR "${vld_ROOT}/lib/cmake")
   set(vld_BIN_DIR "${vld_ROOT}/bin")
@@ -324,6 +322,17 @@ if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
   set(vld_LIBRARY_DIR "${vld_ROOT}/lib")
   set(vld_LIBRARIES debug "${vld_LIBRARY_DIR}/vld.lib")
   
+  set(wxwidgets_ROOT "${EX_THIRD_PARTY}/wxwidgets_3.1.4")
+  set(wxwidgets_INCLUDE_DIRS "${wxwidgets_ROOT}/include"
+                             "${wxwidgets_ROOT}/include/msvc")
+  set(wxwidgets_LIBRARY_DIR "${wxwidgets_ROOT}/lib")
+  set(wxwidgets_LIBRARIES debug "${wxwidgets_LIBRARY_DIR}/debug/wxbase31ud.lib"
+                          debug "${wxwidgets_LIBRARY_DIR}/debug/wxmsw31u_cored.lib"
+                          optimized "${wxwidgets_LIBRARY_DIR}/release/wxbase31u.lib"
+                          optimized "${wxwidgets_LIBRARY_DIR}/release/wxmsw31u_core.lib")
+
+  set(xsimd_DIR "${EX_THIRD_PARTY}/xsimd_7.4.6/share/xsimd")
+
   set(xtensor_ROOT "${EX_THIRD_PARTY}/xtensor_0.21.3")
   set(xtensor_DIR "${xtensor_ROOT}/share/xtensor")
 
@@ -419,8 +428,9 @@ find_package(Sltbench REQUIRED)
 find_package(Taskflow REQUIRED)
 #find_package(TBB REQUIRED)
 #find_package(tiff REQUIRED)
-find_package(xsimd REQUIRED)
+#find_package(wxwidgets REQUIRED)
 #find_package(vld)
+find_package(xsimd REQUIRED)
 find_package(xtensor REQUIRED)
 find_package(xtensor-python REQUIRED)
 find_package(xtl REQUIRED)
@@ -510,8 +520,9 @@ message(STATUS "SLTBENCH_INCLUDE_DIRS: ${SLTBENCH_INCLUDE_DIRS}")
 message(STATUS "TBB_INCLUDE_DIRS: ${Taskflow_INCLUDE_DIR}")
 message(STATUS "TBB_INCLUDE_DIRS: ${TBB_INCLUDE_DIRS}")
 message(STATUS "tiff_INCLUDE_DIR: ${tiff_INCLUDE_DIR}")
-message(STATUS "xsimd_INCLUDE_DIRS: ${xsimd_INCLUDE_DIRS}")
+message(STATUS "wxwidgets_INCLUDE_DIRS: ${wxwidgets_INCLUDE_DIRS}")
 message(STATUS "vld_INCLUDE_DIR: ${vld_INCLUDE_DIR}")
+message(STATUS "xsimd_INCLUDE_DIRS: ${xsimd_INCLUDE_DIRS}")
 message(STATUS "xtensor_INCLUDE_DIRS: ${xtensor_INCLUDE_DIRS}")
 message(STATUS "xtensor-python_INCLUDE_DIRS: ${xtensor-python_INCLUDE_DIRS}")
 message(STATUS "xtl_INCLUDE_DIRS: ${xtensor_INCLUDE_DIRS}")
@@ -559,8 +570,9 @@ include_directories(${SLTBENCH_INCLUDE_DIRS})
 include_directories(${Taskflow_INCLUDE_DIR})
 include_directories(${TBB_INCLUDE_DIRS})
 include_directories(${tiff_INCLUDE_DIR})
-include_directories(${xsimd_INCLUDE_DIRS})
+include_directories(${wxwidgets_INCLUDE_DIRS})
 include_directories(${vld_INCLUDE_DIR})
+include_directories(${xsimd_INCLUDE_DIRS})
 include_directories(${xtensor_INCLUDE_DIRS})
 include_directories(${xtensor-python_INCLUDE_DIRS})
 include_directories(${xtl_INCLUDE_DIRS})
