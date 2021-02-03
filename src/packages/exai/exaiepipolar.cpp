@@ -57,6 +57,8 @@ int ExaiEpipolar::Execute() {
   epiOpt.outBkgd = vm["outbkgd"].as<int>();
   epiOpt.outOpt = vm["outopt"].as<std::string>();
   epiOpt.outPath = vm["outdir"].as<std::string>();
+  epiOpt.epiHgt = vm["epihgt"].as<float>();
+  epiOpt.rotAngle = vm["rotangle"].as<float>();
   epiOpt.resample = vm["resample"].as<std::string>();
   epiOpt.memSize = size_t(vm["memsize"].as<int>()) * 1024 * 1024;  // [unit: bytes]
 
@@ -104,6 +106,8 @@ void ExaiEpipolar::AddRationalOptions(bpo::options_description & optDesc) {
     ("outbkgd", bpo::value<int>()->default_value(0), "output pixel background value")
     ("outopt", bpo::value<std::string>()->default_value("full"), "output option: compact|full|intersect")
     ("outdir,o", bpo::value<std::string>()->required(), "output directory")
+    ("epihgt,h", bpo::value<float>()->default_value(0), "height of rectification plane")
+    ("rotangle", bpo::value<float>()->default_value(0), "rotation angle of epipolar direction")
     ("resample,r", bpo::value<std::string>()->default_value("cubic"), "resample algorithm: bilinear|cubic|gausian")
     ("memsize,m", bpo::value<int>()->default_value(4000), "memory size in MB")
     ("help,h", "Usage help");

@@ -18,7 +18,7 @@ template <typename PointTy> struct FitResidual : IResidual {
   virtual ~FitResidual() = default;
 
 protected:
-  const PointTy* const pt; // observation
+  const PointTy* const pt{}; // observation
 };
 
 /**
@@ -27,7 +27,8 @@ protected:
  *  \param PointTy type of point: Point2f, Point2d, Point3f, Point3d, Vector2f, Vector3d, etc
  */
  // 2d line equation: y - m * x - c; 3d plane equation: z - m * x - n * y -c
-template <typename PointTy> struct LinearFitResidual final : FitResidual<PointTy> {
+template <typename PointTy> 
+struct LinearFitResidual final : FitResidual<PointTy> {
   static constexpr int kDim = sizeof(PointTy) / sizeof(PointTy::value_type);
   static constexpr int kNumUnknowns = kDim;
   /**
@@ -61,7 +62,8 @@ template <typename PointTy> struct LinearFitResidual final : FitResidual<PointTy
 // 3d line equation: p(x, y, z) = p0(x0, y0, z0) + t * v(a, b, c), where v = p1 - p0
 
 // 2d curve equation: y - exp(m * x + c); 3d surface equation: z - exp(m * x + n * y + c)
-template <typename PointTy> struct ExponentialFitResidual final : FitResidual<PointTy> {
+template <typename PointTy> 
+struct ExponentialFitResidual final : FitResidual<PointTy> {
   static constexpr int kDim = sizeof(PointTy) / sizeof(PointTy::value_type);
   static constexpr int kNumUnknowns = kDim;
   /**

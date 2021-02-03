@@ -31,8 +31,8 @@ template <typename GeomTy> struct IntersectResidual : IResidual {
   }
 
 protected:
-  const GeomTy* segs;  // pointer to an array of geometries
-  const int numSegs;
+  const GeomTy* segs{};  // pointer to an array of geometries
+  const int numSegs{};
 };
 
 /**

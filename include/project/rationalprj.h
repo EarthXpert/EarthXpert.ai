@@ -5,6 +5,7 @@
 #pragma once
 
 #include "project/project.h"
+#include "project/rationalprjimage.h"
 
 namespace earthxpert {
 /**
@@ -14,15 +15,22 @@ namespace earthxpert {
 class EXPROJECT_EXPORTS RationalProject final : public Project {
 public:
   enum {
-    ProjectType = ePT_RATIONAL
+    eProjectType = ePT_RATIONAL
   };
 
+  RationalProject(const RationalProject&) = delete;
+  RationalProject(RationalProject&&) = delete;
   ~RationalProject() = default;
 
   PrjType GetProjectType() const noexcept override { return ePT_RATIONAL; }
 
 private: 
   friend class RatPrjMarshaller;
+
+  std::vector<std::unique_ptr<RationalPrjImage>> mImages;
+
+  // adjust configuration
+  int mAdjOrder{ 2 };   // order of 2d correction polynomial
 };
 
 using UPRationalProject = std::unique_ptr<RationalProject>;

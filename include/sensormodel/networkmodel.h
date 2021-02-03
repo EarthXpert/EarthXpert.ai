@@ -16,6 +16,10 @@ namespace earthxpert {
  */
 class EXSENSORMODEL_EXPORTS NetworkModel final : public SensorModel {
 public:
+  enum {
+    eModelType = ModelType::eMT_NETWORK
+  };
+
   ~NetworkModel() {}
 
   /**

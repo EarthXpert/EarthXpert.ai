@@ -27,10 +27,9 @@ void Insert(const int64_t count) {
 
   int r, c;
   for (int64_t i = 0; i < count; ++i) {
+    std::tie(c, r) = IndexToRowCol(i);
     if constexpr (FillOrder::eFO_ByRow == fillOrder)
-      std::tie(r, c) = IndexToRowCol(i);
-    else
-      std::tie(c, r) = IndexToRowCol(i);
+      std::swap(r, c);
     A.insert(r, c) = 0.1;
   }
 }
@@ -43,10 +42,9 @@ void SetTriplets(const int64_t count) {
 
   int r, c;
   for (int64_t i = 0; i < count; ++i) {
+    std::tie(c, r) = IndexToRowCol(i);
     if constexpr (FillOrder::eFO_ByRow == fillOrder)
-      std::tie(r, c) = IndexToRowCol(i);
-    else
-      std::tie(c, r) = IndexToRowCol(i);
+      std::swap(r, c);
     egTri.emplace_back(r, c, 0.1);
   }
 

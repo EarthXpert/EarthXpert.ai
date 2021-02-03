@@ -87,7 +87,7 @@ PathPrefixFilename(const std::string& fileName, const std::string& prefix) {
 std::string
 PathSuffixFilename(const std::string& fileName, const std::string& suffix) {
   fs::path filePath(fileName);
-  auto fn = filePath.filename().string() + suffix;
+  auto fn = filePath.stem().string() + suffix + filePath.extension().string();
   return fn;
 }
 

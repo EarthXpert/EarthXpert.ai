@@ -58,8 +58,8 @@ template<typename Ty> void Dense_Solve(const int n) {
   VecTy<Ty> b;
   DenseFill<Ty>(A, b, n);
 
-  // A.fullPivHouseholderQr().solve(b)
-  VecTy<Ty> x = (A.transpose() * A).inverse() * (A.transpose() * b);
+  // A.fullPivHouseholderQr().solve(b)  // not stable
+  VecTy<Ty> x = (A.transpose() * A).ldlt().solve(A.transpose() * b);
 
   //const Ty err = (A * x - b).norm() / b.norm(); // relative error
   //std::cout << "relative error: " << err << std::endl;

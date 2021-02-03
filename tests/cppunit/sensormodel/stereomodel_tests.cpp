@@ -5,8 +5,10 @@
 #include "3rdparty/gtest/gtest_main.h"
 #include "3rdparty/utils/constants.h"
 #include "testconfig.h"
+#include "testutils.h"
 
 #include "core/math/mutils.h"
+#include "core/utils/fsutils.h"
 #include "core/utils/unitutils.h"
 #include "marshaller/sensormodel/rationalmodelmarshaller.h"
 #include "sensormodel/rationalmodel.h"
@@ -14,15 +16,28 @@
 #include "sensormodel/utils/nullstereomodel.h"
 #include "sensormodel/utils/stereomodel.h"
 
-//#include <iostream>
+#include <boost/format.hpp>
+#include <filesystem>
+#include <iostream>
 
 using namespace earthxpert;
+using namespace earthxpert::utils;
+using namespace earthxpert::testutils;
 using rfm = earthxpert::RationalModel;
+namespace fs = std::filesystem;
 
-static constexpr int kNum = 5;
-static constexpr double kFactor = 0.75;
+static constexpr int kNum = 10;
+static constexpr int kNH = 100;  // number of points on each line
+static constexpr double kFactor = 1.0;  // 0.75
 
-static void TestImageToGround_Cube(const RationalModel* leftModel, const RationalModel* rightModel);
+static void TestI2G_Cube(const RationalModel* leftModel, const RationalModel* rightModel,
+  const int num=0, const Point2d* leftImg=nullptr, const Point2d* rightImg=nullptr);
+static void TestI2G_Cube(const std::string& leftModelFile, const std::string& rightModelFile,
+  const int num = 0, const Point2d* leftImg = nullptr, const Point2d* rightImg = nullptr);
+static void TestCurveI2G(const RationalModel* leftModel, const RationalModel* rightModel,
+  const int num, const Point2d* leftImg, const Point2d* rightImg, const std::string& txtFile);
+static void TestCurveI2G(const std::string& leftModelFile, const std::string& rightModelFile,
+  const int num, const Point2d* leftImg, const Point2d* rightImg, const std::string& txtFile);
 
 static std::unique_ptr<RationalModel> CreateRationalModelALeft();
 static std::unique_ptr<RationalModel> CreateRationalModelARight();
@@ -55,95 +70,98 @@ TEST(stereomodel, ImageToGround) {
   StereoModel smN(leftModel.get(), rightModel.get());    // NR 
   smN.SetForwardAlgorithm(IStereoModel::eFA_NR);
 
-  Point2d imageL, imageR;
-  Point3d grdC, grdI, grdE, grdL, grdN;
-  std::vector<Point2d> imgC, imgI, imgE, imgL, imgN;
+  std::vector<StereoModel*> stereoModels{ &smC, &smI, &smE, &smL, &smN};
 
   // low and high positions
   std::array<Point3d, 2> grd{Point3d(109.2114, 34.6557, 396.0 - 375.0), 
                              Point3d(109.2114, 34.6557, 396.0 + 375.0) };
   
   for (int i = 0; i < 2; ++i) {
+    Point2d imageL, imageR;
     leftModel->GroundToImage(grd[i], imageL);
     rightModel->GroundToImage(grd[i], imageR);
 
-    // forward intersection
-    smC.ImagesToGround(imageL, imageR, grdC);
-    smI.ImagesToGround(imageL, imageR, grdI);
-    smE.ImagesToGround(imageL, imageR, grdE);
-    smL.ImagesToGround(imageL, imageR, grdL);
-    smN.ImagesToGround(imageL, imageR, grdN);
+    for (auto sm : stereoModels) {
+      // forward intersection
+      Point3d grdN;
+      smC.ImagesToGround(imageL, imageR, grdN);
 
-    ASSERT_LE(fabs(grdC.x - grd[i].x), kTolDEG) << "Max. longitude difference > 1 mm";
-    ASSERT_LE(fabs(grdC.y - grd[i].y), kTolDEG) << "Max.  latitude difference > 1 mm";
-    ASSERT_LE(fabs(grdC.z - grd[i].z), kTolMM) << "Max.    height difference > 1 mm";
-    ASSERT_LE(fabs(grdI.x - grd[i].x), kTolDEG) << "Max. longitude difference > 1 mm";
-    ASSERT_LE(fabs(grdI.y - grd[i].y), kTolDEG) << "Max.  latitude difference > 1 mm";
-    ASSERT_LE(fabs(grdI.z - grd[i].z), kTolMM) << "Max.    height difference > 1 mm";
-    ASSERT_LE(fabs(grdE.x - grd[i].x), kTolDEG) << "Max. longitude difference > 1 mm";
-    ASSERT_LE(fabs(grdE.y - grd[i].y), kTolDEG) << "Max.  latitude difference > 1 mm";
-    ASSERT_LE(fabs(grdE.z - grd[i].z), kTolMM) << "Max.    height difference > 1 mm";
-    ASSERT_LE(fabs(grdL.x - grd[i].x), kTolDEG) << "Max. longitude difference > 1 mm";
-    ASSERT_LE(fabs(grdL.y - grd[i].y), kTolDEG) << "Max.  latitude difference > 1 mm";
-    ASSERT_LE(fabs(grdL.z - grd[i].z), kTolMM) << "Max.    height difference > 1 mm";
-    ASSERT_LE(fabs(grdN.x - grd[i].x), kTolDEG) << "Max. longitude difference > 1 mm";
-    ASSERT_LE(fabs(grdN.y - grd[i].y), kTolDEG) << "Max.  latitude difference > 1 mm";
-    ASSERT_LE(fabs(grdN.z - grd[i].z), kTolMM) << "Max.    height difference > 1 mm";
+      ASSERT_LE(fabs(grdN.x - grd[i].x), kTolDEG) << "Max. longitude difference > 1 mm";
+      ASSERT_LE(fabs(grdN.y - grd[i].y), kTolDEG) << "Max.  latitude difference > 1 mm";
+      ASSERT_LE(fabs(grdN.z - grd[i].z), kTolMM) << "Max.    height difference > 1 mm";
 
-    // reprojection for consistency check
-    smC.GroundToImages(grdC, imgC);
-    smI.GroundToImages(grdI, imgI);
-    smE.GroundToImages(grdE, imgE);
-    smL.GroundToImages(grdL, imgL);
-    smN.GroundToImages(grdN, imgN);
+      // reprojection for consistency check
+      std::vector<Point2d> imgN;
+      sm->GroundToImages(grdN, imgN);
 
-    ASSERT_NEAR(imageL.x, imgC[0].x, kTolPIX);
-    ASSERT_NEAR(imageL.y, imgC[0].y, kTolPIX);
-    ASSERT_NEAR(imageR.x, imgC[1].x, kTolPIX);
-    ASSERT_NEAR(imageR.y, imgC[1].y, kTolPIX);
-    ASSERT_NEAR(imageL.x, imgI[0].x, kTolPIX);
-    ASSERT_NEAR(imageL.y, imgI[0].y, kTolPIX);
-    ASSERT_NEAR(imageR.x, imgI[1].x, kTolPIX);
-    ASSERT_NEAR(imageR.y, imgI[1].y, kTolPIX);
-    ASSERT_NEAR(imageL.x, imgE[0].x, kTolPIX);
-    ASSERT_NEAR(imageL.y, imgE[0].y, kTolPIX);
-    ASSERT_NEAR(imageR.x, imgE[1].x, kTolPIX);
-    ASSERT_NEAR(imageR.y, imgE[1].y, kTolPIX);
-    ASSERT_NEAR(imageL.x, imgL[0].x, kTolPIX);
-    ASSERT_NEAR(imageL.y, imgL[0].y, kTolPIX);
-    ASSERT_NEAR(imageR.x, imgL[1].x, kTolPIX);
-    ASSERT_NEAR(imageR.y, imgL[1].y, kTolPIX);
-    ASSERT_NEAR(imageL.x, imgN[0].x, kTolPIX);
-    ASSERT_NEAR(imageL.y, imgN[0].y, kTolPIX);
-    ASSERT_NEAR(imageR.x, imgN[1].x, kTolPIX);
-    ASSERT_NEAR(imageR.y, imgN[1].y, kTolPIX);
+      ASSERT_NEAR(imageL.x, imgN[0].x, kTolPIX);
+      ASSERT_NEAR(imageL.y, imgN[0].y, kTolPIX);
+      ASSERT_NEAR(imageR.x, imgN[1].x, kTolPIX);
+      ASSERT_NEAR(imageR.y, imgN[1].y, kTolPIX);
+    }
   }
 }
 
 /**
  * Test 2: cube
  */
-TEST(stereomodel, ImageToGround_Cube) {
-  const auto leftModelA = CreateRationalModelALeft();
-  const auto rightModelA = CreateRationalModelARight();
-  TestImageToGround_Cube(leftModelA.get(), rightModelA.get());
+TEST(stereomodel, I2G_Cube) {
+  //const auto leftModelA = CreateRationalModelALeft();
+  //const auto rightModelA = CreateRationalModelARight();
+  //TestI2G_Cube(leftModelA.get(), rightModelA.get());
 
   //const auto leftModelB = CreateRationalModelBLeft();
   //const auto rightModelB = CreateRationalModelBRight();
-  //TestImageToGround_Cube(leftModelB.get(), rightModelB.get());
+  //TestI2G_Cube(leftModelB.get(), rightModelB.get());
 
-  std::string leftMdlFileC = 
-    TestConfig::DataPath("Imagery/Satellite/zy302a_006911_258169_20170827/zy302a_fwd_006911_258169_20170827181359_01_sec_0001_1709018015_rpc.txt");
-  std::string rightMdlFileC = 
-    TestConfig::DataPath("Imagery/Satellite/zy302a_006911_258169_20170827/zy302a_bwd_006911_258169_20170827181359_01_sec_0001_1709011888_rpc.txt");
-  RationalModelMarshaller rmMarshaller;
-  auto leftModelC = rmMarshaller.Deserialize(leftMdlFileC);
-  auto rightModelC = rmMarshaller.Deserialize(rightMdlFileC);
-  TestImageToGround_Cube(leftModelC.get(), rightModelC.get());
+  //std::string leftMdlFileC =
+  //  TestConfig::DataPath("Imagery/Satellite/zy302a_006911_258169_20170827/zy302a_fwd_006911_258169_20170827181359_01_sec_0001_1709018015_rpc.txt");
+  //std::string rightMdlFileC =
+  //  TestConfig::DataPath("Imagery/Satellite/zy302a_006911_258169_20170827/zy302a_bwd_006911_258169_20170827181359_01_sec_0001_1709011888_rpc.txt");
+  //TestI2G_Cube(leftMdlFileC, rightMdlFileC);
+
+  //std::string leftMdlFileD =
+  //  TestConfig::DataPath("Imagery/Satellite/Kompsat/K3A/K3A_20190926202806_24873_00025513_L1O_Bundle/K3A_20190926202806_24873_00025513_L1O_P_rpc.txt");
+  //std::string rightMdlFileD =
+  //  TestConfig::DataPath("Imagery/Satellite/Kompsat/K3A/K3A_20190926202934_24873_00025357_L1O_Bundle/K3A_20190926202934_24873_00025357_L1O_P_rpc.txt");
+  //TestI2G_Cube(leftMdlFileD, rightMdlFileD);
+
+  //std::string leftMdlFileE =
+  //  TestConfig::DataPath("Imagery/Satellite/Khalifasat/20190704093357_03703_UAE 15_11121_Radio_P_rpc.txt");
+  //std::string rightMdlFileE =
+  //  TestConfig::DataPath("Imagery/Satellite/Khalifasat/20190704093359_03703_UAE 15_11121_Radio_P_rpc.txt");
+  
+  //std::vector<Point2d> leftImg{ {16373.7, 15802.1}, {12182.3,	16139.1}, {11130.3,	16139.5}, {13760.3,	16139.6}, {14812.3,	16139.1} };
+  //std::vector<Point2d> rightImg{ {16373,	422}, {12182,	759}, {11130,	759}, {13760,	759}, {14812,	759} };
+  //std::vector<Point2d> leftImg{ {5515, 15802}, {1897.1,	1594}, {1314.8,	15487.9}, {1662,	15464}, {610.1,	15464.1} };
+  //std::vector<Point2d> rightImg{ {5515,	422}, {1897,	113.5}, {1314.8,	108}, {1662,	84}, {610,	84} };
+
+  std::string leftMdlFileE =
+    TestConfig::DataPath("Imagery/Satellite/Khalifasat/20190729093737_04076_UAE 16_Dubai_expo2020_11263_Radio_P_rpc.txt");
+  std::string rightMdlFileE =
+    TestConfig::DataPath("Imagery/Satellite/Khalifasat/20190704093357_03703_UAE 15_11121_Radio_P_rpc.txt");
+  std::vector<Point2d> leftImg{ {15077, 12564}, {15705,	12564}, {14449,	13650}, {15705,	14193}, {16330,	14736} };
+  std::vector<Point2d> rightImg{ {1348,	2756}, {1951.2,	2760.9}, {738.7,	3814}, {1940.9,	4355.2}, {2538.1,	4892} };
+
+  TestI2G_Cube(leftMdlFileE, rightMdlFileE,
+    int(leftImg.size()), leftImg.data(), rightImg.data());
+
+  fs::path crvPath(TestConfig::OutputPath("curves_rational.txt"));
+  RemoveFile(crvPath);
+  TestCurveI2G(leftMdlFileE, rightMdlFileE,
+    int(leftImg.size()), leftImg.data(), rightImg.data(), crvPath.string());
 }
 
-void TestImageToGround_Cube(const RationalModel* leftModel, 
-  const RationalModel* rightModel) {
+void TestI2G_Cube(const std::string& leftMdlFile, const std::string& rightMdlFile,
+  const int num, const Point2d* leftImg, const Point2d* rightImg) {
+  RationalModelMarshaller rmMarshaller;
+  auto leftModel = rmMarshaller.Deserialize(leftMdlFile);
+  auto rightModel = rmMarshaller.Deserialize(rightMdlFile);
+  TestI2G_Cube(leftModel.get(), rightModel.get(), num, leftImg, rightImg);
+}
+
+void TestI2G_Cube(const RationalModel* leftModel, const RationalModel* rightModel, 
+  const int num, const Point2d* leftImg, const Point2d* rightImg) {
   auto nfcL = leftModel->GetNormalFactors();
   const auto minLonL = nfcL[rnf::eOLON] - nfcL[rnf::eSLON] * kFactor;
   const auto maxLonL = nfcL[rnf::eOLON] + nfcL[rnf::eSLON] * kFactor;
@@ -171,12 +189,6 @@ void TestImageToGround_Cube(const RationalModel* leftModel,
   const auto stepLat = (maxLat - minLat) / kNum;
   const auto stepHgt = (maxHgt - minHgt) / kNum;
 
-  Point3d maxDiffC(-1.0, -1.0, -1.0);
-  Point3d maxDiffI(-1.0, -1.0, -1.0);
-  Point3d maxDiffE(-1.0, -1.0, -1.0);
-  Point3d maxDiffL(-1.0, -1.0, -1.0);
-  Point3d maxDiffN(-1.0, -1.0, -1.0);
-
   StereoModel smC(leftModel, rightModel);    // Ceres 
   smC.SetForwardAlgorithm(IStereoModel::eFA_CERES);
 
@@ -187,7 +199,7 @@ void TestImageToGround_Cube(const RationalModel* leftModel,
   smI.SetEarthEllipsoid(ee);
   smI.SetForwardAlgorithm(IStereoModel::eFA_INTERSECT);
 
-  StereoModel smE(leftModel, rightModel);    // EXAI 
+  RationalStereoModel smE(leftModel, rightModel);    // EXAI 
 
   StereoModel smL(leftModel, rightModel);    // LS 
   smL.SetForwardAlgorithm(IStereoModel::eFA_LS);
@@ -198,15 +210,11 @@ void TestImageToGround_Cube(const RationalModel* leftModel,
   auto [leftNumCols, leftNumRows] = leftModel->GetImageSize();
   auto [rightNumCols, rightNumRows] = rightModel->GetImageSize();
 
-  int n{};  // # of test points
-  int nC{}; // # of successful Ceres
-  int nI{}; // # of successful interactions
-  int nE{}; // # of successful EXAI
-  int nL{}; // # of LS.
-  int nN{}; // # of NR.
+  std::vector<StereoModel*> stereoModels{ &smC, &smI, &smE, &smL, &smN };
 
-  bool ret;
-  double diffLon{}, diffLat{}, diffHgt{};
+  int n{};  // # of test points
+  std::vector<int> nS(5, 0); // # of successful points
+  std::vector<Point3d> maxDiff(5, Point3d(-1.0, -1.0, -1.0));
 
   for (auto lon = minLon; lon <= maxLon; lon += stepLon) {
     for (auto lat = minLat; lat <= maxLat; lat += stepLat) {
@@ -216,48 +224,24 @@ void TestImageToGround_Cube(const RationalModel* leftModel,
         Point2d imageL;
         leftModel->GroundToImage(ground, imageL);
         if (0 > imageL.x || imageL.x > leftNumCols || 
-          0 > imageL.y || imageL.y > leftNumRows)
+            0 > imageL.y || imageL.y > leftNumRows)
           continue;
 
         Point2d imageR;
         rightModel->GroundToImage(ground, imageR);
         if (0 > imageR.x || imageR.x > rightNumCols || 
-          0 > imageR.y || imageR.y > rightNumRows)
+            0 > imageR.y || imageR.y > rightNumRows)
           continue;
 
-        Point3d grdC{ ground };
-        ret = smC.ImagesToGround(imageL, imageR, grdC);
-        if (ret) {
-          Larger(maxDiffC, xabs(grdC - ground));
-          ++nC;
-        }
-
-        Point3d grdI{ ground };
-        ret = smI.ImagesToGround(imageL, imageR, grdI);
-        if (ret) {
-          Larger(maxDiffI, xabs(grdI - ground));
-          ++nI;
-        }
-
-        Point3d grdE{ ground };
-        ret = smE.ImagesToGround(imageL, imageR, grdE);
-        if (ret) {
-          Larger(maxDiffE, xabs(grdE - ground));
-          ++nE;
-        }
-
-        Point3d grdL{ ground };
-        ret = smL.ImagesToGround(imageL, imageR, grdL);
-        if (ret) {
-          Larger(maxDiffL, xabs(grdL - ground));
-          ++nL;
-        }
-
-        Point3d grdN{ ground };
-        ret = smN.ImagesToGround(imageL, imageR, grdN);
-        if (ret) {
-          Larger(maxDiffN, xabs(grdN - ground));
-          ++nN;
+        int i{};
+        for (auto sm : stereoModels) {
+          Point3d grdN{ ground };
+          const auto ret = sm->ImagesToGround(imageL, imageR, grdN);
+          if (ret) {
+            Larger(maxDiff[i], xabs(grdN - ground));
+            nS[i]++;
+          }
+          ++i;
         }
         ++n;
       }
@@ -265,27 +249,73 @@ void TestImageToGround_Cube(const RationalModel* leftModel,
   }
 
   ASSERT_LT(0, n)  << "Number of test points: " << n;
-  ASSERT_EQ(nC, n) << "Number of Ceres points: " << nC;
-  ASSERT_EQ(nI, n) << "Number of interaction points: " << nI;
-  ASSERT_EQ(nE, n) << "Number of Ceres points: " << nE;
-  ASSERT_EQ(nL, n) << "Number of NR points: " << nL;
-  ASSERT_EQ(nN, n) << "Number of NR points: " << nN;
+  for (size_t i = 0; i < stereoModels.size(); ++i) {
+    std::cout << "Number of successful points: " << nS[i] << std::endl;
+    std::cout << "Max. longitude difference: " << maxDiff[i].x << std::endl;
+    std::cout << "Max. latitude difference: " << maxDiff[i].y << std::endl;
+    std::cout << "Max. height difference: " << maxDiff[i].z << std::endl;
 
-  ASSERT_LE(maxDiffC.x, kTolDEG) << "Max. longitude difference > 1 mm: " << maxDiffC.x;
-  ASSERT_LE(maxDiffC.y, kTolDEG) << "Max.  latitude difference > 1 mm: " << maxDiffC.y;
-  ASSERT_LE(maxDiffC.z, kTolMM) << "Max.    height difference > 1 mm: " << maxDiffC.z;
-  ASSERT_LE(maxDiffI.x, kTolDEG) << "Max. longitude difference > 1 mm: " << maxDiffI.x;
-  ASSERT_LE(maxDiffI.y, kTolDEG) << "Max.  latitude difference > 1 mm: " << maxDiffI.y;
-  ASSERT_LE(maxDiffI.z, kTolMM) << "Max.    height difference > 1 mm: " << maxDiffI.z;
-  ASSERT_LE(maxDiffE.x, kTolDEG) << "Max. longitude difference > 1 mm: " << maxDiffE.x;
-  ASSERT_LE(maxDiffE.y, kTolDEG) << "Max.  latitude difference > 1 mm: " << maxDiffE.y;
-  ASSERT_LE(maxDiffE.z, kTolMM) << "Max.    height difference > 1 mm: " << maxDiffE.z;
-  ASSERT_LE(maxDiffL.x, kTolDEG) << "Max. longitude difference > 1 mm: " << maxDiffL.x;
-  ASSERT_LE(maxDiffL.y, kTolDEG) << "Max.  latitude difference > 1 mm: " << maxDiffL.y;
-  ASSERT_LE(maxDiffL.z, kTolMM) << "Max.    height difference > 1 mm: " << maxDiffL.z;
-  ASSERT_LE(maxDiffN.x, kTolDEG) << "Max. longitude difference > 1 mm: " << maxDiffN.x;
-  ASSERT_LE(maxDiffN.y, kTolDEG) << "Max.  latitude difference > 1 mm: " << maxDiffN.y;
-  ASSERT_LE(maxDiffN.z, kTolMM) << "Max.    height difference > 1 mm: " << maxDiffN.z;
+    //ASSERT_EQ(nS[i], n) << "Number of successful points";
+    //ASSERT_LE(maxDiff[i].x, kTolDEG) << "Max. longitude difference > 1 mm";
+    //ASSERT_LE(maxDiff[i].y, kTolDEG) << "Max.  latitude difference > 1 mm";
+    //ASSERT_LE(maxDiff[i].z, kTolMM) << "Max.    height difference > 1 mm";
+  }
+
+  if (0 == num) return;
+  for (int i = 0; i < num; ++i) {
+    for (auto sm : stereoModels) {
+      Point3d grd;
+      sm->ImagesToGround(leftImg[i], rightImg[i], grd);
+      std::cout << boost::format("%.3f %.3f %.3f; ") % grd.x % grd.y % grd.z;
+    }
+    std::cout << std::endl;
+  }
+}
+
+static void TestCurveI2G(const std::string& leftMdlFile, const std::string& rightMdlFile,
+  const int num, const Point2d* leftImg, const Point2d* rightImg, const std::string& txtFile) {
+  RationalModelMarshaller rmMarshaller;
+  auto leftModel = rmMarshaller.Deserialize(leftMdlFile);
+  auto rightModel = rmMarshaller.Deserialize(rightMdlFile);
+  TestCurveI2G(leftModel.get(), rightModel.get(), num, leftImg, rightImg, txtFile);
+}
+
+void TestCurveI2G(const RationalModel* leftModel, const RationalModel* rightModel,
+  const int num, const Point2d* leftImg, const Point2d* rightImg, const std::string& txtFile) {
+  auto nfcL = leftModel->GetNormalFactors();
+  const auto minHgtL = nfcL[rnf::eOHGT] - nfcL[rnf::eSHGT] * kFactor;
+  const auto maxHgtL = nfcL[rnf::eOHGT] + nfcL[rnf::eSHGT] * kFactor;
+
+  auto nfcR = rightModel->GetNormalFactors();
+  const auto minHgtR = nfcR[rnf::eOHGT] - nfcR[rnf::eSHGT] * kFactor;
+  const auto maxHgtR = nfcR[rnf::eOHGT] + nfcR[rnf::eSHGT] * kFactor;
+
+  const auto minHgt = std::min(minHgtL, minHgtR);
+  const auto maxHgt = std::max(maxHgtL, maxHgtR);
+  const auto stepHgt = (maxHgt - minHgt) / kNH - DBL_EPSILON;
+
+  Point3d origin((nfcL[rnf::eOLON] + nfcR[rnf::eOLON]) / 2, (nfcL[rnf::eOLAT] + nfcR[rnf::eOLAT]) / 2, (minHgt + maxHgt) / 2);
+  EarthEllipsoid ee;
+  ee.SetLsrOrigin(Deg2Rad(origin));
+
+  const RationalModel* ratModels[2]{ leftModel, rightModel };
+  const Point2d* imgPts[2]{ leftImg, rightImg };
+  
+  std::vector<Point3d> curves;
+  curves.reserve(2 * num * (kNH + 1));
+
+  for (int j = 0; j < 2; ++j) {
+    for (int i = 0; i < num; ++i) {
+      for (auto hgt = minHgt; hgt <= maxHgt; hgt += stepHgt) {
+        Point3d ground{ 0.0, 0.0, hgt };
+        ratModels[j]->ImageToGround(imgPts[j][i], ground);
+        curves.push_back(ee.LPHToLSR(Deg2Rad(ground)));
+      }
+    }
+  }
+
+  //ASSERT_EQ(curves.size(), 2 * num * (kNH + 1));
+  SaveCurves(curves, num * 2, txtFile);
 }
 
 /**

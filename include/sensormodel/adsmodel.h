@@ -22,6 +22,10 @@ class PushBroomModel;
  */
 class EXSENSORMODEL_EXPORTS AdsModel final : public SensorModel {
 public:
+  enum {
+    eModelType = ModelType::eMT_PUSHBROOM
+  };
+
   ~AdsModel() {}
 
   /**

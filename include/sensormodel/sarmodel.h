@@ -50,6 +50,10 @@ namespace earthxpert {
  */
 class EXSENSORMODEL_EXPORTS SarModel final : public SensorModel{
 public:
+  enum {
+    eModelType = ModelType::eMT_SAR
+  };
+
   ~SarModel() {}
 
   /**

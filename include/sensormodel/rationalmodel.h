@@ -44,9 +44,30 @@ namespace earthxpert {
  *      ldc 20 line denominator coefficients given in lineDenCoef
  *      snc 20 sample numerator coefficients given in sampNumCoef
  *      sdc 20 sample denominator coefficients given in sampDenCoef
+ *
+ *  The formula with correction polynomials becomes
+ *
+ *  r' = r + lcc[eCO] + lcc[eCS] * S + lcc[eCL] * L +
+ *       lcc[eCS2] * S^2 + lcc[eCSL] * S * L + lcc[eCL2] * L^2
+ *
+ *  c' = c + scc[eCO] + scc[eCS] * S + scc[eCL] * L +
+ *       scc[eCS2] * S^2 + scc[eCSL] * S * L + scc[eCL2] * L^2
+ *
+ *  where
+ *
+ *      r' the corrected normalized line position
+ *      c' the corrected normalized sample position
+ *      L  the raw line position
+ *      S  the raw sample position
+ *      lcc 6 line correction coefficients given lineCorr
+ *      scc 6 sample correction coefficients given sampCorr
  */
 class EXSENSORMODEL_EXPORTS RationalModel /*final*/ : public SensorModel {
 public:
+  enum {
+    eModelType = ModelType::eMT_RATIONAL
+  };
+
   // index of normalization factors
   using NormalizationFactor = NormalizationFactor;
 
@@ -218,6 +239,10 @@ public:
    */
   auto GetNormalFactors() const noexcept { return mNormalFactors.data(); }
 
+  Point3d GetGroundCenter() const noexcept { 
+    return { nfc[eOLON], nfc[eOLAT], nfc[eOHGT] };
+  }
+
   /**
    *  \brief Set bias and random errors in sensor space.
    *
@@ -246,9 +271,11 @@ public:
    *  \param [in] sampCorr 2nd-order polynomial for sample correction
    *  \param [in] corrAlgo correction algoirthm
    */
-  void SetCorrection(const std::array<double, NumCorr> &lineCorr,
-                           const std::array<double, NumCorr> &sampCorr,
-                           CorrAlgo corrAlgo = eCA_IMAGE);
+  void SetCorrection(const std::array<double, NumCorr>& lineCorr,
+    const std::array<double, NumCorr>& sampCorr,
+    CorrAlgo corrAlgo = eCA_IMAGE);
+  void SetCorrection(const double* lineCorr, const double* sampCorr,
+    int order = 2, CorrAlgo corrAlgo = eCA_IMAGE);
 
   /**
    *  \brief Get 2d correction polynomials in image/sensor space.
@@ -266,6 +293,7 @@ public:
 private:
   friend class RationalModelMarshaller;
   friend class RationalStereoModel;
+  friend class RationalCeresSolver;
 
   static constexpr int kMaxIterS2G = 10; // max. number of iterations allowed for SensorToGround
   static constexpr int kMaxIterIAA = 5; // max. number of iterations allowed for ImageActualToApparant
@@ -420,6 +448,7 @@ private:
 using rnf = NormalizationFactor;
 using risf = RationalModel::InvScaleFactor;
 using rpc = RationalModel::PolyCoeff3rd;
+using rcc = RationalModel::CorrCoeff;
 using UPRationalModel = std::unique_ptr<RationalModel>;
 using SPRationalModel = std::shared_ptr<RationalModel>;
 

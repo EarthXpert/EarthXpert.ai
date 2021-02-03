@@ -26,6 +26,9 @@ template <class ImageModelPolicy>
 class EXSENSORMODEL_EXPORTS FrameModel final : public SensorModel {
 public:
   using PolicyType = ImageModelPolicy;
+  enum {
+    eModelType = ModelType::eMT_FRAME
+  };
 
   // Optical axis direction
   enum OpticalDir {

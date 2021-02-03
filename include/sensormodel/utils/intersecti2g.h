@@ -116,20 +116,18 @@ bool IntersectI2G(const Point2d* images, const ISensorModel* const* sensorModels
   std::vector<CostFunctor> costFunctors(num);
   //std::vector<NumericDiffCostFunc> costFuncs;   // no default constructor!
   std::unique_ptr<uchar[]> costFuncs(new uchar[sizeof(NumericDiffCostFunc) * num]);
+  auto ptrCostFuncs = std::launder(reinterpret_cast<NumericDiffCostFunc*>(costFuncs.get()));
 
   for (int i = 0; i < num; ++i) {
     costFunctors[i].SetArgs(images + i, sensorModels[i]);
-    auto costFunc = new (costFuncs.get() + sizeof(NumericDiffCostFunc) * i) 
+    auto costFunc = new (ptrCostFuncs + i)
       NumericDiffCostFunc(&costFunctors[i], DO_NOT_TAKE_OWNERSHIP);
 
     problem.AddResidualBlock(costFunc, lossF, reinterpret_cast<double*>(&ground));
   }
   ceres::Solve(options, &problem, &summary);
 
-  for (int i = 0; i < num; ++i) {
-    auto costFunc = reinterpret_cast<NumericDiffCostFunc*>(costFuncs.get() + sizeof(NumericDiffCostFunc) * i);
-    costFunc->~NumericDiffCostFunc();
-  }
+  std::destroy_n(ptrCostFuncs, num);
   return summary.IsSolutionUsable();
 }
 }// namespace earthxpert

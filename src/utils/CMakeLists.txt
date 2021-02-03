@@ -1,4 +1,4 @@
-project(exutils)
+project(exutils CXX)
 
 add_definitions(-DEXUTILS_API)
 set(exutils_srcs "pointcloud/pointcloudrasterize.cpp")

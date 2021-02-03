@@ -21,6 +21,8 @@ namespace earthxpert {
  *  An example _rpc.txt file is given below:
  *
  *  \codeblock
+ *
+ *  \todo append correction polynomials to .RPB & _rpc.txt
  */
 class EXMARSHALLER_EXPORTS RationalModelMarshaller {
 public:

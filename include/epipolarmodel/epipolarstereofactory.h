@@ -53,7 +53,8 @@ public:
       std::shared_ptr<ISensorModel> rightModel, int sample, double height);
 
   EpiModelPair CreateRationalEpiStereo(std::shared_ptr<RationalModel> leftModel,
-    std::shared_ptr<RationalModel> rightModel, int sample = 1);
+    std::shared_ptr<RationalModel> rightModel, 
+    int sample = 1, float epiHgt = 0, float rotAngle = 0);
 
   EpiModelPair CreateSensorEpiStereo(std::shared_ptr<ISensorModel> leftModel,
     std::shared_ptr<ISensorModel> rightModel, int sample = 1);

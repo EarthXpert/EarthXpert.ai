@@ -5,7 +5,6 @@
 #include "project/project.h"
 
 #include <cassert>
-#include <cmath>
 
 using namespace earthxpert;
 

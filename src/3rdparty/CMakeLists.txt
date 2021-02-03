@@ -24,6 +24,7 @@ message(STATUS "SLTBENCH_LIBRARIES: ${SLTBENCH_LIBRARIES}")
 message(STATUS "TBB_LIBRARIES: ${TBB_LIBRARIES}")
 message(STATUS "tiff_LIBRARIES: ${tiff_LIBRARIES}")
 message(STATUS "vld_LIBRARIES: ${vld_LIBRARIES}")
+message(STATUS "wxwidgets_LIBRARIES: ${wxwidgets_LIBRARIES}")
 
 add_definitions(-DEX3RDPARTY_API)
 set(ex3rdparty_srcs "blas/exblas.cpp"
@@ -62,6 +63,7 @@ set(ex3rdparty_srcs "blas/exblas.cpp"
   "sqlite3/exsqlite3.cpp"
   "thrust/exthrust.cpp"
   "stl/exstl.cpp"
+  "taskflow/extaskflow.cpp"
   "tbb/extbb.cpp"
   "utils/utils.cpp"
   "vld/exvld.cpp"
@@ -81,7 +83,8 @@ set(ex3rdparty_items Boost::boost Boost::date_time Boost::filesystem Boost::iost
   OpenImageIO::OpenImageIO OpenImageIO::OpenImageIO_Util 
   ${nsimd_LIBRARIES} ${PDAL_LIBRARIES} ${proj_LIBRARIES} ${Protobuf_LIBRARIES} 
   ${PYTHON_LIBRARIES} Qt5::Widgets 
-  ${Simd_LIBRARIES} ${SLTBENCH_LIBRARIES} ${TBB_LIBRARIES} ${tiff_LIBRARIES})
+  ${Simd_LIBRARIES} ${SLTBENCH_LIBRARIES} ${TBB_LIBRARIES} ${tiff_LIBRARIES}
+  ${wxwidgets_LIBRARIES})
 earthxpert_add_library(ex3rdparty "api"
   SRCS ${ex3rdparty_srcs}
   ITEMS ${ex3rdparty_items})
