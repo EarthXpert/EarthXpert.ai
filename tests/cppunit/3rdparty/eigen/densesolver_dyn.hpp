@@ -21,8 +21,6 @@ constexpr int kC = 18;
 using MatTyS = Matrix<double, kR, kC, RowMajor>;
 using VecTyS = Matrix<double, kR, 1>;
 
-constexpr int kS = 60;
-
 /**
  *  \brief fill A and b
  *
@@ -31,9 +29,11 @@ constexpr int kS = 60;
 template<typename Ty> void
 DenseFill_Rnd(MatTy<Ty>& A, VecTy<Ty>& b) {
   const int n = A.rows();
+  const int m = A.cols();
 
   for (int i = 0; i < n; ++i) {
-    A(i, i) += Ty(1 + i%3);
+    const int j = i % m;
+    A(i, j) += Ty(i%3);
     b[i] += Ty(sqrt(i + 1));
   }
 
@@ -116,7 +116,7 @@ void DenseFill(MatTy& A, VecTy& b) {
     -0.0070407, -0.0110185, -0.0136558, -0.00927987, -0.00890581,    \
     -0.00167668, 0.000557027, -0.0148066, -0.0074599, 0.000214905,   \
     -0.0126418, 0.00151756, -0.0070521, -0.00240879, -0.00616893,    \
-    0.00189825, -0.00220487, -0.00305063, 0.000596517 - 0.00568016,  \
+    0.00189825, -0.00220487, -0.00305063, 0.000596517, - 0.00568016, \
     0.00150859, -0.00124478, 0.00195122, -0.0026374, 0.010139,       \
     0.00290875, 0.00297966, -0.00414365, -0.00234431, -0.000410536;
 }
@@ -140,25 +140,25 @@ void CondNums(const MatTy& A) {
 template<typename MatTy, typename VecTy>
 void DenseSolve(const MatTy& A, const VecTy& b) {
   // singular value decomposition
-  const auto& x_svd = A.bdcSvd(ComputeThinU | ComputeThinV).solve(b);  // not stable?
-  std::cout << "SVD solution:\n" << x_svd << std::endl;
+  //const auto& xSvd = A.bdcSvd(ComputeFullU | ComputeFullV).solve(b);  // not stable?
+  //std::cout << "SVD solution:\n" << xSvd << std::endl;
 
-  const double err_svd = RelativeErr(A, x_svd, b);
-  std::cout << "SVD relative error: " << err_svd << std::endl;
+  //const double errSvd = RelativeErr(A, xSvd, b);
+  //std::cout << "SVD relative error: " << errSvd << std::endl;
 
   // QR factorization
-  const auto& x_qr = A.colPivHouseholderQr().solve(b);  // not stable?
-  std::cout << "QR solution:\n" << x_qr << std::endl;
+  //const auto& xQr = A.colPivHouseholderQr().solve(b);  // not stable?
+  //std::cout << "QR solution:\n" << xQr << std::endl;
 
-  const double err_qr = RelativeErr(A, x_qr, b);
-  std::cout << "QR relative error: " << err_qr << std::endl;
+  //const double errQr = RelativeErr(A, xQr, b);
+  //std::cout << "QR relative error: " << errQr << std::endl;
 
   // normal equation
-  const auto& x_ne = (A.transpose() * A).ldlt().solve(A.transpose() * b);
-  std::cout << "LS solution:\n" << x_ne << std::endl;
+  const auto& xNe = (A.transpose() * A).ldlt().solve(A.transpose() * b);
+  //std::cout << "LS solution:\n" << xNe << std::endl;
 
-  const double err_ne = RelativeErr(A, x_ne, b);
-  std::cout << "LS relative error: " << err_ne << std::endl;
+  const double errNe = RelativeErr(A, xNe, b);
+  std::cout << "LS relative error: " << errNe << std::endl;
 }
 
 /**
@@ -167,20 +167,20 @@ void DenseSolve(const MatTy& A, const VecTy& b) {
  *  \tparam Ty number type
  */
 TEST(eigen, DenseSolve_Rnd_dynamic) {
-  MatTy<double> A = MatTy<double>::Random(kS, kS);
-  VecTy<double> b = VecTy<double>::Random(kS);
+  MatTy<double> A = MatTy<double>::Random(kR, kC);
+  VecTy<double> b = VecTy<double>::Random(kR);
   DenseFill_Rnd<double>(A, b);
 
-  //CondNums(A);
+  CondNums(A);
   //DenseSolve(A, b);
 }
 
 TEST(eigen, DenseSolve_dynamic) {
   MatTy<double> A = MatTy<double>::Zero(kR, kC);
   VecTy<double> b = VecTy<double>::Zero(kR);
-  //DenseFill(A, b);
+  DenseFill(A, b);
 
-  //CondNums(A);
+  CondNums(A);
   //DenseSolve(A, b);
 }
 
