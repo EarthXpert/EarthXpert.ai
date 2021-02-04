@@ -98,7 +98,7 @@ TEST(eigen, LSCG_Diagonal) {
   ASSERT_NEAR(0.99999995778632444, x[kNk2/2], DBL_EPSILON) << "x[kNk2/2]";
   ASSERT_NEAR(1.0000000072469144, x[kNk2-1], DBL_EPSILON) << "x[kNk2-1]";
 
-  double err = (A * x - b).norm() / b.norm();
+  const double err = RelativeErr(A, x, b);
   std::cout << "relative error: " << err << std::endl;
 }
 
@@ -137,6 +137,6 @@ TEST(eigen, LSCG_NonDiagonal) {
   ASSERT_NEAR(0.99999991487069606, x[kNk2/2], DBL_EPSILON) << "x[kNk2/2]";
   ASSERT_NEAR(0.99999999529972705, x[kNk2-1], DBL_EPSILON) << "x[kNk2-1]";
 
-  double err = (A * x - b).norm() / b.norm();
+  const double err = RelativeErr(A, x, b);
   std::cout << "relative error: " << err << std::endl;
 }

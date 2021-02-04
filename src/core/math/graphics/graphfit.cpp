@@ -139,7 +139,7 @@ bool GraphFit::FitLineEigen(const std::vector<Point2d>& points, std::vector<doub
 
   //const auto& x = A.colPivHouseholderQr().solve(b);
   const auto& x = A.bdcSvd(ComputeThinU | ComputeThinV).solve(b);
-  //const double err = (A * x - b).norm() / b.norm(); // relative error
+  //const double err = RelativeErr(A, x, b);
   // if (kTol < err) return false;
 
   pb[0] = x[0];
