@@ -327,7 +327,7 @@ if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
                              "${wxwidgets_ROOT}/include/msvc")
   set(wxwidgets_LIBRARY_DIR "${wxwidgets_ROOT}/lib")
   set(wxwidgets_LIBRARIES debug "${wxwidgets_LIBRARY_DIR}/debug/wxbase31ud.lib"
-                          debug "${wxwidgets_LIBRARY_DIR}/debug/wxmsw31u_cored.lib"
+                          debug "${wxwidgets_LIBRARY_DIR}/debug/wxmsw31ud_core.lib"
                           optimized "${wxwidgets_LIBRARY_DIR}/release/wxbase31u.lib"
                           optimized "${wxwidgets_LIBRARY_DIR}/release/wxmsw31u_core.lib")
 
