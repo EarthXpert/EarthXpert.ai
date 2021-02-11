@@ -48,10 +48,14 @@ int RasterResample<algoBackend>::GetWinDim() const noexcept {
  *  \brief Call cv::remap() to wrap the source raster into the target raster
  *  using the specified 2D position transformation raster.
  *
+ *  \param [out] tgt target to populate resampled values. 
+ *               tgt mask: the tfm value (-1, -1).
  *  \param [in] tfm Resampling transformation of target raster in 
  *              source raster. if source raster has margins, the 2D positions
  *              should have been tanslated accordingly to be relative to the
- *              upper-left corner of the source buffer.
+ *              upper-left corner of the source buffer. 
+ *
+ *  \todo src mask.
  */
 template <int algoBackend>
 void RasterResample<algoBackend>::ResampleCV(CvRaster& src,

@@ -391,6 +391,9 @@ void EpipolarGenerator::DensifyCells(const int tileId, cv::Mat& tfmMat,
     if (MaskAllZero(mMaskBuf.get(), i1, i2, i3, i4)) 
       continue;
     
+    const int numCellCols = std::min<int>(mStride, tileColR - tileColL + 1);
+    const int numCellRows = std::min<int>(mStride, tileRowL - tileRowU + 1);
+
     if (MaskAllOne(mMaskBuf.get(), i1, i2, i3, i4)) {
       const auto invTileCols = 1.0 / (tileColR - tileColL);
       const auto invTileRows = 1.0 / (tileRowL - tileRowU);
@@ -398,11 +401,11 @@ void EpipolarGenerator::DensifyCells(const int tileId, cv::Mat& tfmMat,
         tileColL, tileRowU, tileColR, tileRowL);
 
       double xf{};
-      for (int c = 0; c < mStride; ++c, xf+= invTileCols) {
+      for (int c = 0; c < numCellCols; ++c, xf+= invTileCols) {
         const int tileCol = tileColL + c;
 
         double yf{};
-        for (int r = 0; r < mStride; ++r, yf+=invTileRows) {
+        for (int r = 0; r < numCellRows; ++r, yf+=invTileRows) {
           const int tileRow = tileRowU + r;
           const int64_t k = CRToIndex(tileCol, tileRow, numCols);
           if (eMK_NORM == mMaskBuf[k]) continue;
@@ -418,10 +421,10 @@ void EpipolarGenerator::DensifyCells(const int tileId, cv::Mat& tfmMat,
       }
     }
     else {
-      for (int c = 0; c < mStride; ++c) {
+      for (int c = 0; c < numCellCols; ++c) {
         const int tileCol = tileColL + c;
 
-        for (int r = 0; r < mStride; ++r) {
+        for (int r = 0; r < numCellRows; ++r) {
           const int tileRow = tileRowU + r;
           const int64_t k = CRToIndex(tileCol, tileRow, numCols);
           if (eMK_NORM == mMaskBuf[k]) continue;
