@@ -8,6 +8,7 @@
 
 #include <opencv2/opencv.hpp>
 #include <opencv2/xfeatures2d.hpp>
+#include <opencv2/core/mat.hpp>
 #include <cmath>
 #include <type_traits>
 
@@ -61,5 +62,9 @@ template<typename PointTy> inline double normL2Sqr(const PointTy& pt) {
   // requires ddot()
   return pt.ddot(pt);
 }
+
+EX3RDPARTY_EXPORTS void remap(cv::InputArray src, cv::InputArray mask, cv::OutputArray dst,
+  cv::InputArray map1, cv::InputArray map2, int interpolation,
+  int borderMode = cv::BORDER_CONSTANT, const cv::Scalar& borderValue = cv::Scalar());
 }
 } // namespace earthxpert::thirdparty
