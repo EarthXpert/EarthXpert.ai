@@ -31,7 +31,8 @@ template<typename MatTy> double CondNumSvd(const MatTy& A) {
 }
 
 template<typename MatTy, typename VecTy1, typename VecTy2> 
-auto RelativeErr(const MatTy& A, const VecTy1& x, const VecTy2& b) {
+auto RelativeErr(const MatTy& A, const VecTy1& x, 
+  const VecTy2& b) -> typename MatTy::Scalar {
   return (A * x - b).norm() / b.norm();
 }
 
