@@ -30,8 +30,8 @@ template<typename MatTy> double CondNumSvd(const MatTy& A) {
   return cn;
 }
 
-template<typename MatTy, typename VecTy1, typename VecTy2> double
-RelativeErr(const MatTy& A, const VecTy1& x, const VecTy2& b) {
+template<typename MatTy, typename VecTy1, typename VecTy2> 
+auto RelativeErr(const MatTy& A, const VecTy1& x, const VecTy2& b) {
   return (A * x - b).norm() / b.norm();
 }
 
