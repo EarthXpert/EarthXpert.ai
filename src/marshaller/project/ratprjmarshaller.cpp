@@ -16,10 +16,10 @@ void RatPrjMarshaller::Serialize(const std::string& ratFile,
 
 std::unique_ptr<RationalProject>
 RatPrjMarshaller::Deserialize(const std::string& ratFile) {
-  UPxmlTextReader reader(
-    xmlReaderForFile(ratFile.c_str(), nullptr, 0), &xmlFreeTextReader);
-  if (!reader) 
-    throw std::invalid_argument(_("RatPrjMarshaller: not a valid .xml"));
+  //UPxmlTextReader reader(
+  //  xmlReaderForFile(ratFile.c_str(), nullptr, 0), &xmlFreeTextReader);
+  //if (!reader) 
+  //  throw std::invalid_argument(_("RatPrjMarshaller: not a valid .xml"));
 
   return {};
 }

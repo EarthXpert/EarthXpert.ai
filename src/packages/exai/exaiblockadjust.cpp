@@ -15,12 +15,12 @@
 using namespace earthxpert;
 
 ExaiBlockAdjust::ExaiBlockAdjust() {
-  LIBXML_TEST_VERSION;
-  xmlInitParser();
+  //LIBXML_TEST_VERSION;
+  //xmlInitParser();
 }
 
 ExaiBlockAdjust::~ExaiBlockAdjust() {
-  xmlCleanupParser();
+  //xmlCleanupParser();
 }
 
 /**

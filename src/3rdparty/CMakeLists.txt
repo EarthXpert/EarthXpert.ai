@@ -1,4 +1,4 @@
-project(ex3rdparty)
+project(ex3rdparty CXX)
 
 message(STATUS "CERES_LIBRARY: ${CERES_LIBRARY}")
 message(STATUS "CGAL_LIBRARIES: ${CGAL_LIBRARIES}")
@@ -8,8 +8,9 @@ message(STATUS "GETTEXT_LIBRARY: ${GETTEXT_LIBRARY}")
 message(STATUS "geotiff_LIBRARIES: ${geotiff_LIBRARIES}")
 message(STATUS "gsl_LIBRARIES: ${gsl_LIBRARIES}")
 message(STATUS "GTEST_BOTH_LIBRARIES: ${GTEST_BOTH_LIBRARIES}")
+message(STATUS "ICONV_LIBRARIES: ${ICONV_LIBRARIES}")
 message(STATUS "LASLIB_LIBRARY: ${LASLIB_LIBRARY}")
-message(STATUS "LIBXML2_LIBRARY: ${LIBXML2_LIBRARY}")
+message(STATUS "LIBXML2_LIBRARIES: ${LIBXML2_LIBRARIES}")
 message(STATUS "MPFR4_LIBRARIES: ${MPFR4_LIBRARIES}")
 message(STATUS "MPIR_LIBRARIES: ${MPIR_LIBRARIES}")
 message(STATUS "nsimd_LIBRARIES: ${nsimd_LIBRARIES}")
@@ -44,6 +45,7 @@ set(ex3rdparty_srcs "blas/exblas.cpp"
   "glog/exglog.cpp"
   "gsl/exgsl.cpp"
   "gtest/exgtest.cpp"
+  "iconv/exiconv.cpp"
   "interpolate/exinterpolate.cpp"
   "lapack/exlapack.cpp"
   "laslib/exlaslib.cpp"
@@ -77,8 +79,8 @@ set(ex3rdparty_items Boost::boost Boost::date_time Boost::filesystem Boost::iost
   Boost::locale Boost::numpy Boost::program_options Boost::python Boost::timer 
   ${CERES_LIBRARY} ${CGAL_LIBRARIES} ${CUDA_LIBRARIES} ${exiv2_LIBRARIES}
   ${GDAL_LIBRARY} ${geotiff_LIBRARIES} ${geotrans_LIBRARIES} ${GETTEXT_LIBRARY} glog::glog 
-  ${gsl_LIBRARIES} ${GTEST_BOTH_LIBRARIES} ${lapack_LIBRARIES} ${LASLIB_LIBRARY} 
-  libInterpolate::Interpolate libxml2 ${MPFR4_LIBRARIES} ${MPIR_LIBRARIES} 
+  ${gsl_LIBRARIES} ${GTEST_BOTH_LIBRARIES} ${ICONV_LIBRARIES} ${lapack_LIBRARIES} ${LASLIB_LIBRARY} 
+  libInterpolate::Interpolate ${LIBXML2_LIBRARIES} ${MPFR4_LIBRARIES} ${MPIR_LIBRARIES} 
   ${OpenBLAS_LIBRARIES} ${OpenCL_LIBRARIES} ${OpenCV_LIBS} ${OpenEXR_LIBS} 
   OpenImageIO::OpenImageIO OpenImageIO::OpenImageIO_Util 
   ${nsimd_LIBRARIES} ${PDAL_LIBRARIES} ${proj_LIBRARIES} ${Protobuf_LIBRARIES} 

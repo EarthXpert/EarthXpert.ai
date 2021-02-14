@@ -30,7 +30,8 @@ set(blockadjust_srcs "./blockadjust.cpp"
 set(blockadjust_items ex3rdparty core exproject sensormodel
   Boost::boost Boost::filesystem Boost::iostreams
   ${CERES_LIBRARY} ${CGAL_LIBRARIES} ${GDAL_LIBRARY} ${geotrans_LIBRARIES} 
-  ${GETTEXT_LIBRARY} ${MPFR4_LIBRARIES} ${MPIR_LIBRARIES} ${OpenCV_LIBS})
+  ${GETTEXT_LIBRARY} ${ICONV_LIBRARIES} ${LIBXML2_LIBRARIES} 
+  ${MPFR4_LIBRARIES} ${MPIR_LIBRARIES} ${OpenCV_LIBS})
 earthxpert_add_library(blockadjust "api"
   SRCS ${blockadjust_srcs}
   ITEMS ${blockadjust_items})
