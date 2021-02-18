@@ -3,6 +3,7 @@
  * -----------------------------------------------------------------------------
  */
 #include "rectification/epipolar/epipolargenerator.h"
+#include "3rdparty/taskflow/extaskflow.h"
 #include "core/exceptions/exexcept.h"
 #include "core/utils/irasterresample.h"
 #include "core/utils/geomutils.h"
@@ -11,6 +12,7 @@
 #include "io/raster/irasterreader.h"
 #include "io/raster/rasterwriter.h"
 
+#include <iostream>
 #include <omp.h>
 
 using namespace earthxpert;
@@ -52,7 +54,7 @@ bool EpipolarGenerator::Process(IRasterReader *const img,
     LayoutTiles();
     mPerf.tmInitial = mClock.TimeSinceStart() - start;
 
-    ProcessTiles<ePL3>();
+    ProcessTiles<eTF>();
   }
   catch (...) {
     throw EpipolarError(_("Process failed"));
@@ -228,6 +230,48 @@ void EpipolarGenerator::ProcessTilesSQ() {
 
     SwapBuffers();
   }
+}
+
+/**
+ *  \brief pipelined overlapping of read, computation, write tasks by TaskFlow
+ */
+void EpipolarGenerator::ProcessTilesTF() {
+  tf::Executor executor;
+  tf::Taskflow taskflow;
+
+  int t{ -1 };
+
+  auto [ii, cd, rb, rt, pt, wt, sb, lt, dn] = taskflow.emplace(
+    [&t]() { t = -1; },
+    [this, &t]() { return t <= mNumTiles ? 0 : 1; },
+    [this, &t]() { ResetBuffers(t); },
+    [this, &t]() { ReadTile(t + 1); },
+    [this, &t]() { ProcessTile(t); },
+    [this, &t]() { WriteTile(t - 1); },
+    [this, &t]() { SwapBuffers(); },
+    [&t]() { ++t; return 0; },
+    []() {});
+
+  ii.name("init");
+  cd.name("t <= mNumTiles");
+  rb.name("ResetBuffers(t)");
+  rt.name("ReadTile(t + 1)");
+  pt.name("ProcessTile(t)");
+  wt.name("WriteTile(t - 1)");
+  sb.name("SwapBuffers()");
+  lt.name("loop over tiles");
+  dn.name("done");
+
+  ii.precede(cd);
+  cd.precede(rb, dn);
+  rb.precede(rt, pt, wt);
+  sb.succeed(rt, pt, wt);
+  lt.succeed(sb);
+  cd.succeed(lt);
+
+  //taskflow.dump(std::cout);
+  //assert(8 == taskflow.num_tasks());
+  executor.run(taskflow).wait();
 }
 
 /**

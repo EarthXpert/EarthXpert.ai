@@ -1,7 +1,9 @@
 project(frameworks CXX)
 
 add_definitions(-DEXFRAMEWORKS_API)
-set(frameworks_srcs "pipeline/task.cpp"
+set(frameworks_srcs 
+  "pipeline/pipeline.cpp"
+  "pipeline/task.cpp"
   "pipeline/tasksschedular.cpp"
   "pipeline/tileslayout.cpp"
   "utils/utils.cpp")
