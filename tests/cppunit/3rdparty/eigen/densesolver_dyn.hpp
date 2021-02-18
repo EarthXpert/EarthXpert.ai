@@ -12,15 +12,15 @@ using namespace earthxpert;
 using namespace Eigen;
 
 template<typename Ty>
-using MatTy = Matrix<Ty, Dynamic, Dynamic, RowMajor>;
+using EigMatX = Matrix<Ty, Dynamic, Dynamic, RowMajor>;
 
 template<typename Ty>
-using VecTy = Matrix<Ty, Dynamic, 1>;
+using EigVecX = Matrix<Ty, Dynamic, 1>;
 
 constexpr int kR = 60;
 constexpr int kC = 18;
-using MatTyS = Matrix<double, kR, kC, RowMajor>;
-using VecTyS = Matrix<double, kR, 1>;
+using EigMatS = Matrix<double, kR, kC, RowMajor>;
+using EigVecS = Matrix<double, kR, 1>;
 
 /**
  *  \brief fill A and b
@@ -28,7 +28,7 @@ using VecTyS = Matrix<double, kR, 1>;
  *  \param [in] n the dimension of square matrix
  */
 template<typename Ty> void
-DenseFill_Rnd(MatTy<Ty>& A, VecTy<Ty>& b) {
+DenseFill_Rnd(EigMatX<Ty>& A, EigVecX<Ty>& b) {
   const int n = A.rows();
   const int m = A.cols();
 
@@ -42,8 +42,8 @@ DenseFill_Rnd(MatTy<Ty>& A, VecTy<Ty>& b) {
   //std::cout << "rhs b:\n" << b << std::endl;
 }
 
-template<typename MatTy, typename VecTy>
-void DenseFill(MatTy& A, VecTy& b) {
+template<typename EigMatX, typename EigVecX>
+void DenseFill(EigMatX& A, EigVecX& b) {
   A << 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0.55525,\
     1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0.31049,   \
     1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0.214481,  \
@@ -122,8 +122,8 @@ void DenseFill(MatTy& A, VecTy& b) {
     0.00290875, 0.00297966, -0.00414365, -0.00234431, -0.000410536;
 }
 
-template<typename MatTy>
-void CondNums(const MatTy& A) {
+template<typename EigMatX>
+void CondNums(const EigMatX& A) {
   // design matrix
   const double cnSvd = CondNumSvd(A);
   std::cout << "Condition number SVD: " << cnSvd << std::endl;
@@ -138,8 +138,8 @@ void CondNums(const MatTy& A) {
   std::cout << "Condition number NE: " << cnNm << " " << ldlt.info() << std::endl;
 }
 
-template<typename MatTy, typename VecTy>
-void DenseSolve_Direct(const MatTy& A, const VecTy& b) {
+template<typename EigMatX, typename EigVecX>
+void DenseSolve_Direct(const EigMatX& A, const EigVecX& b) {
   // singular value decomposition
   //const auto& xSvd = A.bdcSvd(ComputeFullU | ComputeFullV).solve(b);  // not stable?
   //std::cout << "SVD solution:\n" << xSvd << std::endl;
@@ -162,10 +162,10 @@ void DenseSolve_Direct(const MatTy& A, const VecTy& b) {
   std::cout << "LS relative error: " << errNe << std::endl;
 }
 
-template<typename MatTy, typename VecTy>
-void DenseSolve_Iterative(const MatTy& A, const VecTy& b) {
+template<typename EigMatX, typename EigVecX>
+void DenseSolve_Iterative(const EigMatX& A, const EigVecX& b) {
   // LSCG
-  LeastSquaresConjugateGradient<MatTy> lscg;
+  LeastSquaresConjugateGradient<EigMatX> lscg;
   lscg.compute(A);
   VectorXd xLscg = lscg.solve(b);
   //std::cout << "LS solution:\n" << xNe << std::endl;
@@ -180,8 +180,8 @@ void DenseSolve_Iterative(const MatTy& A, const VecTy& b) {
  *  \tparam Ty number type
  */
 TEST(eigen, DenseSolve_Rnd_dynamic) {
-  MatTy<double> A = MatTy<double>::Random(kR, kC);
-  VecTy<double> b = VecTy<double>::Random(kR);
+  EigMatX<double> A = EigMatX<double>::Random(kR, kC);
+  EigVecX<double> b = EigVecX<double>::Random(kR);
   DenseFill_Rnd<double>(A, b);
 
   CondNums(A);
@@ -190,8 +190,8 @@ TEST(eigen, DenseSolve_Rnd_dynamic) {
 }
 
 TEST(eigen, DenseSolve_dynamic) {
-  MatTy<double> A = MatTy<double>::Zero(kR, kC);
-  VecTy<double> b = VecTy<double>::Zero(kR);
+  EigMatX<double> A = EigMatX<double>::Zero(kR, kC);
+  EigVecX<double> b = EigVecX<double>::Zero(kR);
   DenseFill(A, b);
 
   CondNums(A);
@@ -200,8 +200,8 @@ TEST(eigen, DenseSolve_dynamic) {
 }
 
 TEST(eigen, DenseSolve_sized) {
-  MatTyS A;
-  VecTyS b;
+  EigMatS A;
+  EigVecS b;
   DenseFill(A, b);
 
   CondNums(A);

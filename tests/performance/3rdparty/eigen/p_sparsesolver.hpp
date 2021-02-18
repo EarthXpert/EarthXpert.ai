@@ -14,10 +14,10 @@ using namespace::Eigen;
 
 //  \tparam bmp::number<backend>
 template<typename Ty>
-using SpMatR = SparseMatrix<Ty, RowMajor>;
+using EigSpMatR = SparseMatrix<Ty, RowMajor>;
 
 template<typename Ty>
-using DenseVec = Matrix<Ty, Dynamic, 1>;
+using EigVecX = Matrix<Ty, Dynamic, 1>;
 
 static constexpr auto kScale = 1.0 / static_cast<double>(std::mt19937::max());
 static constexpr int64_t kNs = 10'000'000;
@@ -28,7 +28,7 @@ static constexpr int64_t kNs = 10'000'000;
  *  \param [in] count the number of fill-ins on each row of sparse matrix
  */
 template<typename Ty = double>
-void LSCG_NonDiagonalFill(SpMatR<Ty>& A, DenseVec<Ty>& b, const int count) {
+void LSCG_NonDiagonalFill(EigSpMatR<Ty>& A, EigVecX<Ty>& b, const int count) {
   std::mt19937 rng;
   A.resize(kNs, kNs);
   b.resize(kNs);
@@ -49,20 +49,20 @@ void LSCG_NonDiagonalFill(SpMatR<Ty>& A, DenseVec<Ty>& b, const int count) {
 
 template<typename Ty = double>
 void LSCG_NonDiagonal_Fill(const int count) {
-  SpMatR<Ty> A;
-  DenseVec<Ty> b;
+  EigSpMatR<Ty> A;
+  EigVecX<Ty> b;
   LSCG_NonDiagonalFill<Ty>(A, b, count);
 }
 
 template<typename Ty = double>
 void LSCG_NonDiagonal_Solve(const int& count) {
-  SpMatR<Ty> A;
-  DenseVec<Ty> b;
+  EigSpMatR<Ty> A;
+  EigVecX<Ty> b;
   LSCG_NonDiagonalFill<Ty>(A, b, count);
 
-  LeastSquaresConjugateGradient<SpMatR<Ty>> lscg;
+  LeastSquaresConjugateGradient<EigSpMatR<Ty>> lscg;
   lscg.compute(A);
-  DenseVec<Ty> x = lscg.solve(b);
+  EigVecX<Ty> x = lscg.solve(b);
 
   //std::cout << "LSCG error: " << lscg.error() << std::endl;
 
