@@ -121,8 +121,8 @@ TEST(eigen, LSCG_NonDiagonal) {
     b[i] = double(i) + (rng() * kScale - 0.5) * 0.1;  // [-0.05, 0.05]
 
     // add two elements [-0.5, 0.5] to each row
-    A.insert(i, rng() % kNk2) += rng() * kScale - 0.5;
-    A.insert(i, rng() % kNk2) += rng() * kScale - 0.5;
+    A.coeffRef(i, rng() % kNk2) += rng() * kScale - 0.5;
+    A.coeffRef(i, rng() % kNk2) += rng() * kScale - 0.5;
   }
 
   //std::cout << "Condition number: " << ConditionNumber(A) << std::endl;
@@ -133,7 +133,7 @@ TEST(eigen, LSCG_NonDiagonal) {
 
   //ASSERT_EQ(6, lscg.iterations()) << "converge";
   //ASSERT_NEAR(0, lscg.error(), DBL_EPSILON) << "full rank";
-  ASSERT_NEAR(-0.084974948937628428, x[0], DBL_EPSILON) << "x[0]";
+  ASSERT_NEAR(-0.084974949705658748, x[0], DBL_EPSILON) << "x[0]";
   //ASSERT_NEAR(0.99999991487069606, x[kNk2/2], DBL_EPSILON) << "x[kNk2/2]";
   //ASSERT_NEAR(0.99999999529972705, x[kNk2-1], DBL_EPSILON) << "x[kNk2-1]";
 
