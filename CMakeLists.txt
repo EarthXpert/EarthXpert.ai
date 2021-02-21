@@ -90,7 +90,7 @@ if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
   set(Eigen3BLAS_LIBRARIES "${Eigen3_LIBRARY_DIR}/${CDEGREL}/eigen_blas.lib")
   set(Eigen3LAPACK_LIBRARIES "${Eigen3_LIBRARY_DIR}/${CDEGREL}/eigen_lapack.lib")
 
-  set(exiv2_ROOT "${EX_THIRD_PARTY}/exiv2_0.27.2")
+  set(exiv2_ROOT "${EX_THIRD_PARTY}/exiv2_0.27.3")
   set(exiv2_BIN_DIR "${exiv2_ROOT}/bin/${CDEGREL}")
   set(exiv2_DIR "${exiv2_ROOT}/share/exiv2")
   set(exiv2_INCLUDE_DIR "${exiv2_ROOT}/include")
