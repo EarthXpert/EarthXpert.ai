@@ -3,7 +3,7 @@ project(tests_performance_sensormodel CXX)
 function(add_sensormodel_perf_test name) 
   add_performance_test(${name}
     ex3rdparty core sensormodel
-    ${CERES_LIBRARY} ${GDAL_LIBRARY} ${geotrans_LIBRARIES} ${OpenCV_LIBS})
+    ${CERES_LIBRARY} ${GDAL_LIBRARIES} ${geotrans_LIBRARIES} ${OpenCV_LIBS})
 endfunction()
 
 add_sensormodel_perf_test(rationalmodel_perf_tests)

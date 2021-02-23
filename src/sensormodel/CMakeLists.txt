@@ -46,7 +46,7 @@ set(sensormodel_srcs "ads/adsmodel.cpp"
   "./sensormodel.cpp"
   "./sensormodelfactory.cpp")
 set(sensormodel_items ex3rdparty core
-  ${GDAL_LIBRARY} ${geotrans_LIBRARIES} ${GETTEXT_LIBRARY} ${OpenCV_LIBS})
+  ${GDAL_LIBRARIES} ${geotrans_LIBRARIES} ${GETTEXT_LIBRARY} ${OpenCV_LIBS})
 earthxpert_add_library(sensormodel "api"
   SRCS ${sensormodel_srcs}
   ITEMS ${sensormodel_items})

@@ -3,7 +3,7 @@ project(tests_performance_io CXX)
 function(add_dataio_perf_test name)
   add_performance_test(${name} 
     ex3rdparty core dataio 
-    ${GDAL_LIBRARY} ${OpenCV_LIBS})
+    ${GDAL_LIBRARIES} ${OpenCV_LIBS})
 endfunction()
 
 add_dataio_perf_test(rasterreader_perf_tests)

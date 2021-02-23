@@ -3,7 +3,7 @@ project(ex3rdparty CXX)
 message(STATUS "CERES_LIBRARY: ${CERES_LIBRARY}")
 message(STATUS "CGAL_LIBRARIES: ${CGAL_LIBRARIES}")
 message(STATUS "exiv2_LIBRARIES: ${exiv2_LIBRARIES}")
-message(STATUS "GDAL_LIBRARY: ${GDAL_LIBRARY}")
+message(STATUS "GDAL_LIBRARIES: ${GDAL_LIBRARIES}")
 message(STATUS "GETTEXT_LIBRARY: ${GETTEXT_LIBRARY}")
 message(STATUS "geotiff_LIBRARIES: ${geotiff_LIBRARIES}")
 message(STATUS "gsl_LIBRARIES: ${gsl_LIBRARIES}")
@@ -26,6 +26,7 @@ message(STATUS "TBB_LIBRARIES: ${TBB_LIBRARIES}")
 message(STATUS "tiff_LIBRARIES: ${tiff_LIBRARIES}")
 message(STATUS "vld_LIBRARIES: ${vld_LIBRARIES}")
 message(STATUS "wxwidgets_LIBRARIES: ${wxwidgets_LIBRARIES}")
+message(STATUS "zlib_LIBRARIES: ${zlib_LIBRARIES}")
 
 add_definitions(-DEX3RDPARTY_API)
 set(ex3rdparty_srcs "blas/exblas.cpp"
@@ -78,7 +79,7 @@ set(ex3rdparty_srcs "blas/exblas.cpp"
 set(ex3rdparty_items Boost::boost Boost::date_time Boost::filesystem Boost::iostreams 
   Boost::locale Boost::numpy Boost::program_options Boost::python Boost::timer 
   ${CERES_LIBRARY} ${CGAL_LIBRARIES} ${CUDA_LIBRARIES} ${exiv2_LIBRARIES}
-  ${GDAL_LIBRARY} ${geotiff_LIBRARIES} ${geotrans_LIBRARIES} ${GETTEXT_LIBRARY} glog::glog 
+  ${GDAL_LIBRARIES} ${geotiff_LIBRARIES} ${geotrans_LIBRARIES} ${GETTEXT_LIBRARY} glog::glog 
   ${gsl_LIBRARIES} ${GTEST_BOTH_LIBRARIES} ${ICONV_LIBRARIES} ${lapack_LIBRARIES} ${LASLIB_LIBRARY} 
   libInterpolate::Interpolate ${LIBXML2_LIBRARIES} ${MPFR4_LIBRARIES} ${MPIR_LIBRARIES} 
   ${OpenBLAS_LIBRARIES} ${OpenCL_LIBRARIES} ${OpenCV_LIBS} ${OpenEXR_LIBS} 
@@ -86,7 +87,7 @@ set(ex3rdparty_items Boost::boost Boost::date_time Boost::filesystem Boost::iost
   ${nsimd_LIBRARIES} ${PDAL_LIBRARIES} ${proj_LIBRARIES} ${Protobuf_LIBRARIES} 
   ${PYTHON_LIBRARIES} Qt5::Widgets 
   ${Simd_LIBRARIES} ${SLTBENCH_LIBRARIES} ${TBB_LIBRARIES} ${tiff_LIBRARIES}
-  ${wxwidgets_LIBRARIES})
+  ${wxwidgets_LIBRARIES} ${zlib_LIBRARIES})
 earthxpert_add_library(ex3rdparty "3rdparty"
   SRCS ${ex3rdparty_srcs}
   ITEMS ${ex3rdparty_items})

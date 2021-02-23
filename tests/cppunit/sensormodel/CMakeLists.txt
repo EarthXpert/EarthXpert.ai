@@ -3,7 +3,7 @@ project(tests_cppunit_sensormodel CXX)
 function(add_sensormodel_cppunit_test name)
   add_cppunit_test(${name} 
     core marshaller sensormodel testutils
-    ${GDAL_LIBRARY} ${OpenCV_LIBS})
+    ${GDAL_LIBRARIES} ${OpenCV_LIBS})
 endfunction()
 
 add_sensormodel_cppunit_test(framemodel_tests)

@@ -16,7 +16,7 @@ set(marshaller_srcs "epipolarmodel/epipolarstereomarshaller.cpp"
   "support/adssupportmarshaller.cpp"
   "support/supportmarshaller.cpp")
 set(marshaller_items ex3rdparty core epipolarmodel exproject sensormodel
-  ${GDAL_LIBRARY} ${GETTEXT_LIBRARY} ${ICONV_LIBRARIES} ${LIBXML2_LIBRARIES})
+  ${GDAL_LIBRARIES} ${GETTEXT_LIBRARY} ${ICONV_LIBRARIES} ${LIBXML2_LIBRARIES})
 earthxpert_add_library(marshaller "api"
   SRCS ${marshaller_srcs}
   ITEMS ${marshaller_items})

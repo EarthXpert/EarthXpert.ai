@@ -3,7 +3,7 @@ project(tests_cppunit_bba CXX)
 function(add_bba_cppunit_test name)
   add_cppunit_test(${name} 
     blockadjust core sensormodel
-    ${GDAL_LIBRARY} ${OpenCV_LIBS})
+    ${GDAL_LIBRARIES} ${OpenCV_LIBS})
 endfunction()
 
 add_bba_cppunit_test(adsbba_tests)

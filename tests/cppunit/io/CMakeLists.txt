@@ -3,19 +3,19 @@ project(tests_cppunit_io CXX)
 function(add_pcio_cppunit_test name)
   add_cppunit_test(${name} 
     ex3rdparty core dataio 
-    ${GDAL_LIBRARY} ${LASLIB_LIBRARY})
+    ${GDAL_LIBRARIES} ${LASLIB_LIBRARY})
 endfunction()
 
 function(add_rasterio_cppunit_test name)
   add_cppunit_test(${name} 
     ex3rdparty core dataio 
-    ${GDAL_LIBRARY} ${OpenCV_LIBS})
+    ${GDAL_LIBRARIES} ${OpenCV_LIBS})
 endfunction()
 
 function(add_vectorio_cppunit_test name)
   add_cppunit_test(${name} 
     ex3rdparty core dataio 
-    ${GDAL_LIBRARY})
+    ${GDAL_LIBRARIES})
 endfunction()
 
 add_pcio_cppunit_test(pointcloudreader_tests)

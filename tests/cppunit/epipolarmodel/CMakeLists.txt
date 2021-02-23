@@ -3,7 +3,7 @@ project(tests_cppunit_epimodel CXX)
 function(add_epimodel_cppunit_test name)
   add_cppunit_test(${name} 
     ex3rdparty core dataio epipolarmodel marshaller sensormodel
-    ${GDAL_LIBRARY} ${OpenCV_LIBS})
+    ${GDAL_LIBRARIES} ${OpenCV_LIBS})
 endfunction()
 
 add_epimodel_cppunit_test(epipolarmodel_tests) 
