@@ -87,7 +87,7 @@ set(ex3rdparty_items Boost::boost Boost::date_time Boost::filesystem Boost::iost
   ${PYTHON_LIBRARIES} Qt5::Widgets 
   ${Simd_LIBRARIES} ${SLTBENCH_LIBRARIES} ${TBB_LIBRARIES} ${tiff_LIBRARIES}
   ${wxwidgets_LIBRARIES})
-earthxpert_add_library(ex3rdparty "api"
+earthxpert_add_library(ex3rdparty "3rdparty"
   SRCS ${ex3rdparty_srcs}
   ITEMS ${ex3rdparty_items})
 
