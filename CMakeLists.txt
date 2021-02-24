@@ -25,6 +25,8 @@ set(EX_THIRD_PARTY "$ENV{EX_Third_Party}")
 set(CUDA_ROOT "$ENV{CUDA_PATH}")
 set(OpenCL_ROOT "$ENV{CUDA_PATH}")
 
+option(EARTHXPERT_PACKAGES_3RDPARTY_DYNAMIC "link dynamic 3rdparty packages" ON)
+
 #set(GFLAGS_USE_TARGET_NAMESPACE TRUE)
 
 # configuration & utils
@@ -44,318 +46,347 @@ if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
   set(EARTHXPERT_BIN_ROOT "bin")
   set(EARTHXPERT_BIN_DIR "${EARTHXPERT_BIN_ROOT}/${CDEGREL}")
 
-  set(Boost_ROOT "${EX_THIRD_PARTY}/boost_1.71.0")
-  set(Boost_DIR "${Boost_ROOT}/lib/cmake/Boost-1.71.0")
-  set(Boost_INCLUDE_DIRS "${Boost_ROOT}/include")
+  if (EARTHXPERT_PACKAGES_3RDPARTY_DYNAMIC)
+    set(Boost_ROOT "${EX_THIRD_PARTY}/boost_1.71.0")
+    set(Boost_DIR "${Boost_ROOT}/lib/cmake/Boost-1.71.0")
+    set(Boost_INCLUDE_DIRS "${Boost_ROOT}/include")
+    
+    set(CEREAL_INCLUDE_DIR "${EX_THIRD_PARTY}/cereal_1.3.0/include")
+    
+    set(Ceres_ROOT "${EX_THIRD_PARTY}/ceres_2.0.0")
+    set(Ceres_DIR "${Ceres_ROOT}/CMake")
+    set(CERES_INCLUDE_DIRS "${Ceres_ROOT}/include")
+    set(CERES_LIBRARY_DIR "${Ceres_ROOT}/lib")
+    set(CERES_LIBRARY debug "${CERES_LIBRARY_DIR}/ceres-debug.lib"
+                      optimized "${CERES_LIBRARY_DIR}/ceres.lib")
+    
+    set(CGAL_ROOT "${EX_THIRD_PARTY}/cgal_5.0.900")
+    set(CGAL_DIR "${CGAL_ROOT}/lib/cmake/CGAL")
+    set(CGAL_LIBRARIES_DIR "${CGAL_ROOT}/lib")
+    set(CGAL_LIBRARIES debug "${CGAL_LIBRARIES_DIR}/CGAL_Core-vc140-mt-gd-5.0-I-900.lib"
+                       debug "${CGAL_LIBRARIES_DIR}/CGAL_ImageIO-vc140-mt-gd-5.0-I-900.lib"
+                       debug "${CGAL_LIBRARIES_DIR}/CGAL_Qt5-vc140-mt-gd-5.0-I-900.lib"
+                       debug "${CGAL_LIBRARIES_DIR}/CGAL-vc140-mt-gd-5.0-I-900.lib"
+                       optimized "${CGAL_LIBRARIES_DIR}/CGAL_Core-vc140-mt-5.0-I-900.lib"
+                       optimized "${CGAL_LIBRARIES_DIR}/CGAL_ImageIO-vc140-mt-5.0-I-900.lib"
+                       optimized "${CGAL_LIBRARIES_DIR}/CGAL_Qt5-vc140-mt-5.0-I-900.lib"
+                       optimized "${CGAL_LIBRARIES_DIR}/CGAL-vc140-mt-5.0-I-900.lib")
+    
+    set(CUDA_INCLUDE_DIR "${CUDA_ROOT}/include")
+    set(CUDA_BIN_DIR "${CUDA_ROOT}/bin")
+    set(CUDA_LIBRARIES_DIR "${CUDA_ROOT}/lib/x64")
+    set(CUDA_LIBRARIES "${CUDA_LIBRARIES_DIR}/cublas.lib"
+                       "${CUDA_LIBRARIES_DIR}/cuda.lib"
+                       "${CUDA_LIBRARIES_DIR}/cudart.lib"
+                       "${CUDA_LIBRARIES_DIR}/cufft.lib"
+                       "${CUDA_LIBRARIES_DIR}/cufftw.lib"
+                       "${CUDA_LIBRARIES_DIR}/cusolver.lib"
+                       "${CUDA_LIBRARIES_DIR}/cusparse.lib"
+                       "${CUDA_LIBRARIES_DIR}/nvml.lib"
+                       "${CUDA_LIBRARIES_DIR}/nrtc.lib")
+    
+    set(Eigen3_ROOT "${EX_THIRD_PARTY}/eigen_3.3.90")
+    set(Eigen3_DIR "${Eigen3_ROOT}/share/eigen3/cmake")
+    set(Eigen3BLAS_INCLUDE_DIR "${Eigen3_ROOT}/include")
+    set(Eigen3LAPACK_INCLUDE_DIR "${Eigen3_ROOT}/include")
+    set(Eigen3_LIBRARY_DIR "${Eigen3_ROOT}/lib")
+    set(Eigen3BLAS_LIBRARIES "${Eigen3_LIBRARY_DIR}/${CDEGREL}/eigen_blas.lib")
+    set(Eigen3LAPACK_LIBRARIES "${Eigen3_LIBRARY_DIR}/${CDEGREL}/eigen_lapack.lib")
+    
+    set(exiv2_ROOT "${EX_THIRD_PARTY}/exiv2_0.27.3")
+    set(exiv2_BIN_DIR "${exiv2_ROOT}/bin/${CDEGREL}")
+    set(exiv2_DIR "${exiv2_ROOT}/share/exiv2")
+    set(exiv2_INCLUDE_DIR "${exiv2_ROOT}/include")
+    set(exiv2_LIBRARY_DIR "${exiv2_ROOT}/lib")
+    set(exiv2_LIBRARIES debug "${exiv2_LIBRARY_DIR}/debug/exiv2.lib"
+                        debug "${exiv2_LIBRARY_DIR}/debug/exiv2-xmp.lib"
+                        optimized "${exiv2_LIBRARY_DIR}/release/exiv2.lib"
+                        optimized "${exiv2_LIBRARY_DIR}/release/exiv2-xmp.lib")
+    
+    set(GDAL_ROOT "${EX_THIRD_PARTY}/gdal_2.4.1")
+    set(GDAL_BIN_DIR "${GDAL_ROOT}/bin/${CDEGREL}")
+    set(GDAL_INCLUDE_DIRS "${GDAL_ROOT}/include")
+    set(GDAL_LIBRARIES "${GDAL_ROOT}/lib/${CDEGREL}/gdal_i.lib")
+    
+    set(geotiff_ROOT "${EX_THIRD_PARTY}/libgeotiff_1.4.2")
+    set(geotiff_BIN_DIR "${geotiff_ROOT}/bin/${CDEGREL}")
+    set(geotiff_DIR "${geotiff_ROOT}/share/libgeotiff")
+    set(geotiff_INCLUDE_DIR "${geotiff_ROOT}/include")
+    set(geotiff_LIBRARY_DIR "${geotiff_ROOT}/lib")
+    set(geotiff_LIBRARIES debug "${geotiff_LIBRARY_DIR}/debug/geotiff_d_i.lib"
+                          optimized "${geotiff_LIBRARY_DIR}/release/geotiff_i.lib")
+    
+    set(geotrans_ROOT "${EX_THIRD_PARTY}/geotrans_3.8.0")
+    set(geotrans_BIN_DIR "${geotrans_ROOT}/bin/${CDEGREL}")
+    set(geotrans_INCLUDE_DIR "${geotrans_ROOT}/include")
+    set(geotrans_LIBRARIES "${geotrans_ROOT}/lib/${CDEGREL}/MSPCoordinateConversionService.lib"
+                           "${geotrans_ROOT}/lib/${CDEGREL}/MSPdtcc.lib")
+    
+    set(GETTEXT_ROOT "${EX_THIRD_PARTY}/gettext_0.19.0")
+    set(GETTEXT_BIN_DIR "${GETTEXT_ROOT}/bin/${CDEGREL}")
+    set(GETTEXT_INCLUDE_DIR "${GETTEXT_ROOT}/include")
+    set(GETTEXT_LIBRARY "${GETTEXT_ROOT}/lib/${CDEGREL}/libintl.lib")
+    
+    #set(GFLAGS_ROOT "${EX_THIRD_PARTY}/gflags_2.2.2")
+    #set(gflags_DIR "${GFLAGS_ROOT}/lib/cmake/gflags")
+    #set(GFLAGS_INCLUDE_DIR "${GFLAGS_ROOT}/include")
+    
+    set(GLOG_ROOT "${EX_THIRD_PARTY}/glog_0.4.0")
+    set(glog_DIR "${GLOG_ROOT}/lib/cmake/glog")
+    set(GLOG_INCLUDE_DIR "${GLOG_ROOT}/include")
+    set(GLOG_LIBRARY_DIR "${GLOG_ROOT}/lib")
+    set(GLOG_LIBRARY debug "${GLOG_LIBRARY_DIR}/glogd.lib"
+                     optimized "${GLOG_LIBRARY_DIR}/glog.lib")
+    
+    #GMT_DIR
+    #GMTSAR_DIR
+    
+    set(gsl_ROOT "${EX_THIRD_PARTY}/gsl_2.4.0")
+    set(gsl_BIN_DIR "${gsl_ROOT}/bin/${CDEGREL}")
+    set(gsl_INCLUDE_DIR "${gsl_ROOT}/include")
+    set(gsl_LIBRARY_DIR "${gsl_ROOT}/lib")
+    set(gsl_LIBRARIES debug "${gsl_LIBRARY_DIR}/debug/gslcblasd.lib"
+                      debug "${gsl_LIBRARY_DIR}/debug/gsld.lib"
+                      optimized "${gsl_LIBRARY_DIR}/release/gslcblas.lib"
+                      optimized "${gsl_LIBRARY_DIR}/release/gsl.lib")
+    
+    set(GTEST_ROOT "${EX_THIRD_PARTY}/gtest_1.8.1")
+    set(GTEST_BIN_DIR "${GTEST_ROOT}/bin")
+    set(GTEST_INCLUDE_DIR "${GTEST_ROOT}/include")
+    
+    set(HDF5_ROOT "${EX_THIRD_PARTY}/hdf5_1.10.5")
+    set(HDF5_BIN_DIR "${HDF5_ROOT}/bin")
+    
+    set(ICONV_ROOT "${EX_THIRD_PARTY}/iconv_1.16.0")
+    set(ICONV_DIR "${ICONV_ROOT}/share/iconv/CMake")
+    set(ICONV_INCLUDE_DIRS "${ICONV_ROOT}/include")
+    set(ICONV_LIBRARY_DIR "${ICONV_ROOT}/lib")
+    set(ICONV_LIBRARIES "${ICONV_LIBRARY_DIR}/${CDEGREL}/iconv.lib")
+    
+    set(lapack_ROOT "${EX_THIRD_PARTY}/lapack_3.9.0")
+    set(lapack_DIR "${lapack_ROOT}/lib/cmake")
+    set(lapack_BIN_DIR "${lapck_ROOT}/bin/${CDEGREL}")
+    set(lapack_INCLUDE_DIR "${lapack_ROOT}/include")
+    set(lapack_LIBRARY_DIR "${lapack_ROOT}/lib")
+    set(lapack_LIBRARIES "${lapack_LIBRARY_DIR}/${CDEGREL}/libblas.lib"
+                         "${lapack_LIBRARY_DIR}/${CDEGREL}/libcblas.lib"
+                         "${lapack_LIBRARY_DIR}/${CDEGREL}/liblapack.lib"
+                         "${lapack_LIBRARY_DIR}/${CDEGREL}/liblapacke.lib"
+                         "${lapack_LIBRARY_DIR}/${CDEGREL}/libtmglib.lib")
+    
+    set(LASLIB_ROOT "${EX_THIRD_PARTY}/lastools_19.05.07")
+    #set(LASLIB_BIN_DIR "${LASLIB_ROOT}/bin")
+    set(LASLIB_INCLUDE_DIR "${LASLIB_ROOT}/include/LASlib")
+    set(LASLIB_LIBRARY "${LASLIB_ROOT}/lib/${CDEGREL}/LASlib/LASlib.lib")
+    
+    set(libInterpolate_DIR "${EX_THIRD_PARTY}/libInterpolate_2.3.2/cmake")
+    
+    set(LIBXML2_ROOT "${EX_THIRD_PARTY}/xml2_2.9.9")
+    set(LIBXML2_DIR "${LIBXML2_ROOT}/share/libxml2/CMake")
+    set(LIBXML2_INCLUDE_DIRS "${LIBXML2_ROOT}/include")
+    set(LIBXML2_LIBRARY_DIR "${LIBXML2_ROOT}/lib")
+    set(LIBXML2_LIBRARIES "${LIBXML2_LIBRARY_DIR}/${CDEGREL}/libxml2.lib")
+    
+    set(MPFR4_ROOT "${EX_THIRD_PARTY}/mpfr_4.0.2")
+    #set(MPFR4_DIR "${MPFR4_ROOT}/share/mpfr")
+    set(MPFR4_INCLUDE_DIR "${MPFR4_ROOT}/include")
+    set(MPFR4_LIBRARY_DIR "${MPFR4_ROOT}/lib")
+    set(MPFR4_LIBRARIES "${MPFR4_LIBRARY_DIR}/${CDEGREL}/mpfr.lib")
+    
+    set(MPIR_ROOT "${EX_THIRD_PARTY}/mpir_3.0.0")
+    #set(MPIR_DIR "${MPIR_ROOT}/share/mpir")
+    set(MPIR_INCLUDE_DIR "${MPIR_ROOT}/include")
+    set(MPIR_LIBRARY_DIR "${MPIR_ROOT}/lib")
+    set(MPIR_LIBRARIES "${MPIR_LIBRARY_DIR}/${CDEGREL}/mpir.lib")
+    
+    set(nlohmann_json_ROOT "${EX_THIRD_PARTY}/nlohmann-json_3.7.3")
+    set(nlohmann_json_DIR "${nlohmann_json_ROOT}/share/nlohmann_json")
+    set(nlohmann_json_INCLUDE_DIR "${nlohmann_json_ROOT}/include")
+    
+    set(nsimd_ROOT "${EX_THIRD_PARTY}/nsimd_20.11.01")
+    #set(nsimd_DIR "${nsimd_ROOT}/lib/cmake")
+    set(nsimd_BIN_DIR "${nsimd_ROOT}/bin/${CDEGREL}")
+    set(nsimd_INCLUDE_DIR "${nsimd_ROOT}/include")
+    set(nsimd_LIBRARY_DIR "${nsimd_ROOT}/lib")
+    set(nsimd_LIBRARIES "${nsimd_LIBRARY_DIR}/${CDEGREL}/libnsimd_x86_64.lib")
+    
+    set(NumCpp_ROOT "${EX_THIRD_PARTY}/numcpp_2.3.1")
+    set(NumCpp_DIR "${NumCpp_ROOT}/share\/NumCpp/cmake")
+    
+    set(OpenBLAS_ROOT "${EX_THIRD_PARTY}/openblas_0.3.7")
+    set(OpenBLAS_DIR "${OpenBLAS_ROOT}/share/openblas")
+    set(OpenBLAS_BIN_DIR "${OpenBLAS_ROOT}/bin/${CDEGREL}")
+    set(OpenBLAS_INCLUDE_DIR "${OpenBLAS_ROOT}/include")
+    set(OpenBLAS_LIBRARY_DIR "${OpenBLAS_ROOT}/lib")
+    set(OpenBLAS_LIBRARIES "${OpenBLAS_LIBRARY_DIR}/${CDEGREL}/openblas.lib")
+    
+    set(OpenCL_INCLUDE_DIRS "${OpenCL_ROOT}/include")
+    set(OpenCL_BIN_DIR "${OpenCL_ROOT}/bin")
+    set(OpenCL_LIBRARY_DIR "${OpenCL_ROOT}/lib/x64")
+    set(OpenCL_LIBRARIES "${OpenCL_LIBRARY_DIR}/OpenCL.lib")
+    
+    set(OpenCV_ROOT "${EX_THIRD_PARTY}/opencv_4.1.0")
+    set(OpenCV_DIR "${OpenCV_ROOT}/x64/vc15/lib")
+    set(OpenCV_BIN_DIR "${OpenCV_ROOT}/x64/vc15/bin")
+    set(OpenCV_INCLUDE_DIR "${OpenCV_ROOT}/include")
+    set(OpenCV_LIBRARY_DIR "${OpenCV_ROOT}/x64/vc15/lib")
+    set(OpenCV_LIBS debug "${OpenCV_LIBRARY_DIR}/opencv_img_hash410d.lib"
+                    debug "${OpenCV_LIBRARY_DIR}/opencv_world410d.lib"
+                    optimized "${OpenCV_LIBRARY_DIR}/opencv_img_hash410.lib"
+                    optimized "${OpenCV_LIBRARY_DIR}/opencv_world410.lib")
+    
+    set(OpenEXR_ROOT "${EX_THIRD_PARTY}/openexr_2.3.0")
+    set(OpenEXR_DIR "${OpenEXR_ROOT}/share/openexr")
+    set(OpenEXR_INCLUDE_DIR "${OpenEXR_ROOT}/include")
+    set(OpenEXR_LIBRARY_DIR "${OpenEXR_ROOT}/lib/${CDEGREL}")
+    set(OpenEXR_LIBS debug "${OpenEXR_LIBRARY_DIR}/Half-2_3_d.lib"
+                     debug "${OpenEXR_LIBRARY_DIR}/Iex-2_3_d.lib"
+                     debug "${OpenEXR_LIBRARY_DIR}/IexMath-2_3_d.lib"
+                     debug "${OpenEXR_LIBRARY_DIR}/IlmImf-2_3_d.lib"
+                     debug "${OpenEXR_LIBRARY_DIR}/IlmImfUtil-2_3_d.lib"
+                     debug "${OpenEXR_LIBRARY_DIR}/IlmThread-2_3_d.lib"
+                     debug "${OpenEXR_LIBRARY_DIR}/Imath-2_3_d.lib"
+                     optimized "${OpenEXR_LIBRARY_DIR}/Half-2_3.lib"
+                     optimized "${OpenEXR_LIBRARY_DIR}/Iex-2_3.lib"
+                     optimized "${OpenEXR_LIBRARY_DIR}/IexMath-2_3.lib"
+                     optimized "${OpenEXR_LIBRARY_DIR}/IlmImf-2_3.lib"
+                     optimized "${OpenEXR_LIBRARY_DIR}/IlmImfUtil-2_3.lib"
+                     optimized "${OpenEXR_LIBRARY_DIR}/IlmThread-2_3.lib"
+                     optimized "${OpenEXR_LIBRARY_DIR}/Imath-2_3.lib")
+    
+    set(OpenImageIO_ROOT "${EX_THIRD_PARTY}/openimageio_2.1.9")
+    set(OpenImageIO_DIR "${OpenImageIO_ROOT}/share/openimageio")
+    set(OpenImageIO_INCLUDE_DIR "${OpenImageIO_ROOT}/include")
+    
+    set(OPENNI_ROOT "${EX_THIRD_PARTY}/openni_2.2.0")
+    set(OPENNI_BIN_DIR "${OPENNI_ROOT}/Redist")
+    
+    set(PDAL_ROOT "${EX_THIRD_PARTY}/pdal_1.9.1")
+    set(PDAL_DIR "${PDAL_ROOT}/lib/cmake/PDAL")
+    
+    set(proj_ROOT "${EX_THIRD_PARTY}/proj_8.0.0")
+    #set(proj_DIR "${proj_ROOT}/lib/cmake/proj")
+    set(proj_BIN_DIR "${proj_ROOT}/bin/${CDEGREL}")
+    set(proj_INCLUDE_DIR "${proj_ROOT}/include")
+    set(proj_LIBRARY_DIR "${proj_ROOT}/lib")
+    set(proj_LIBRARIES debug "${proj_LIBRARY_DIR}/debug/proj_d.lib"
+                       optimized "${proj_LIBRARY_DIR}/release/proj.lib")
+    
+    set(Protobuf_ROOT "${EX_THIRD_PARTY}/protobuf_3.11.3")
+    set(Protobuf_DIR "${Protobuf_ROOT}/share/protobuf")
+    
+    set(pybind11_DIR "${EX_THIRD_PARTY}/pybind11_2.5.0/share/cmake/pybind11")
+    
+    #set(PYTHON_ROOT_DIR "python37")
+    
+    set(Qt5_ROOT "${EX_THIRD_PARTY}/qt_5.11.2")
+    set(Qt5_DIR "${Qt5_ROOT}/lib/cmake/Qt5")
+    set(Qt5LinguistTools_DIR "${Qt5_ROOT}/lib/cmake/Qt5LinguistTools")
+    
+    set(range-v3_ROOT "${EX_THIRD_PARTY}/range-v3_0.9.0")
+    set(range-v3_DIR "${range-v3_ROOT}/lib/cmake/range-v3")
+    
+    set(Simd_ROOT "${EX_THIRD_PARTY}/Simd_4.6.94")
+    #set(Simd_DIR "${Simd_ROOT}/lib/cmake")
+    set(Simd_BIN_DIR "${Simd_ROOT}/bin/${CDEGREL}")
+    set(Simd_INCLUDE_DIR "${Simd_ROOT}/include")
+    set(Simd_LIBRARY_DIR "${Simd_ROOT}/lib")
+    set(Simd_LIBRARIES "${Simd_LIBRARY_DIR}/${CDEGREL}/Simd.lib")
+    
+    set(Sltbench_DIR "${EX_THIRD_PARTY}/sltbench_20.01.15/cmake")
+    
+    #SNAPHU_DIR
+    
+    set(sqlite3_ROOT "${EX_THIRD_PARTY}/sqlite_3.31.1")
+    set(sqlite3_DIR "${EX_THIRD_PARTY}/share/sqlite3")
+    
+    set(Taskflow_ROOT "${EX_THIRD_PARTY}/taskflow_3.1.0")
+    set(Taskflow_DIR "${Taskflow_ROOT}/lib/cmake/Taskflow")
+    
+    set(TBB_ROOT "${EX_THIRD_PARTY}/tbb_20.0.0")
+    set(TBB_DIR "${TBB_ROOT}/share/tbb")
+    set(TBB_INCLUDE_DIRS "${TBB_ROOT}/include")
+    set(TBB_LIBRARY_DIR "${TBB_ROOT}/lib")
+    set(TBB_LIBRARIES debug "${TBB_LIBRARY_DIR}/debug/tbb_debug.lib"
+                      debug "${TBB_LIBRARY_DIR}/debug/tbbmalloc_debug.lib"
+                      debug "${TBB_LIBRARY_DIR}/debug/tbbmalloc_proxy_debug.lib"
+                      optimized "${TBB_LIBRARY_DIR}/release/tbb.lib"
+                      optimized "${TBB_LIBRARY_DIR}/release/tbbmalloc.lib"
+                      optimized "${TBB_LIBRARY_DIR}/release/tbbmalloc_proxy.lib")
+    
+    set(tiff_ROOT "${EX_THIRD_PARTY}/tiff_4.0.10")
+    set(tiff_BIN_DIR "${tiff_ROOT}/bin/${CDEGREL}")
+    #set(tiff_DIR "${tiff_ROOT}/share/tiff")
+    set(tiff_INCLUDE_DIR "${tiff_ROOT}/include")
+    set(tiff_LIBRARY_DIR "${tiff_ROOT}/lib")
+    set(tiff_LIBRARIES debug "${tiff_LIBRARY_DIR}/debug/tiffd.lib"
+                       debug "${tiff_LIBRARY_DIR}/debug/tiffxxd.lib"
+                       optimized "${tiff_LIBRARY_DIR}/release/tiff.lib"
+                       optimized "${tiff_LIBRARY_DIR}/release/tiffxx.lib")
+    
+    set(vld_ROOT "${EX_THIRD_PARTY}/vld_2.5.1")
+    #set(vld_DIR "${vld_ROOT}/lib/cmake")
+    set(vld_BIN_DIR "${vld_ROOT}/bin")
+    set(vld_INCLUDE_DIR "${vld_ROOT}/include")
+    set(vld_LIBRARY_DIR "${vld_ROOT}/lib")
+    set(vld_LIBRARIES debug "${vld_LIBRARY_DIR}/vld.lib")
+    
+    set(wxwidgets_ROOT "${EX_THIRD_PARTY}/wxwidgets_3.1.4")
+    set(wxwidgets_INCLUDE_DIRS "${wxwidgets_ROOT}/include"
+                               "${wxwidgets_ROOT}/include/msvc")
+    set(wxwidgets_LIBRARY_DIR "${wxwidgets_ROOT}/lib")
+    set(wxwidgets_LIBRARIES debug "${wxwidgets_LIBRARY_DIR}/debug/wxbase31ud.lib"
+                            debug "${wxwidgets_LIBRARY_DIR}/debug/wxmsw31ud_core.lib"
+                            optimized "${wxwidgets_LIBRARY_DIR}/release/wxbase31u.lib"
+                            optimized "${wxwidgets_LIBRARY_DIR}/release/wxmsw31u_core.lib")
+    
+    set(xsimd_DIR "${EX_THIRD_PARTY}/xsimd_7.4.6/share/xsimd")
+    
+    set(xtensor_ROOT "${EX_THIRD_PARTY}/xtensor_0.21.3")
+    set(xtensor_DIR "${xtensor_ROOT}/share/xtensor")
+    
+    set(xtensor-python_ROOT "${EX_THIRD_PARTY}/xtensor-python_0.24.1")
+    set(xtensor-python_DIR "${xtensor_ROOT}/lib/cmake/xtensor-python")
+    
+    set(xtl_ROOT "${EX_THIRD_PARTY}/xtl_0.6.11")
+    set(xtl_DIR "${xtl_ROOT}/share/xtl")
+    
+    set(zlib_ROOT "${EX_THIRD_PARTY}/zlib_1.2.11")
+    set(zlib_INCLUDE_DIR "${zlib_ROOT}/include")
+    set(zlib_LIBRARY_DIR "${zlib_ROOT}/lib")
+    set(zlib_LIBRARIES debug "${zlib_LIBRARY_DIR}/debug/zlib.lib"
+                       debug "${zlib_LIBRARY_DIR}/debug/zlibd.lib"
+                       optimized "${zlib_LIBRARY_DIR}/release/zlib.lib")
+  else()
 
-  set(CEREAL_INCLUDE_DIR "${EX_THIRD_PARTY}/cereal_1.3.0/include")
+    set(Ceres_ROOT "${EX_THIRD_PARTY}/ceres_2.0.0s")
+    set(Ceres_DIR "${Ceres_ROOT}/CMake")
+    set(CERES_INCLUDE_DIRS "${Ceres_ROOT}/include")
+    set(CERES_LIBRARY_DIR "${Ceres_ROOT}/lib")
+    set(CERES_LIBRARY debug "${CERES_LIBRARY_DIR}/ceres-debug.lib"
+                      optimized "${CERES_LIBRARY_DIR}/ceres.lib")
 
-  set(Ceres_ROOT "${EX_THIRD_PARTY}/ceres_2.0.0")
-  set(Ceres_DIR "${Ceres_ROOT}/CMake")
-  set(CERES_INCLUDE_DIRS "${Ceres_ROOT}/include")
-  set(CERES_LIBRARY_DIR "${Ceres_ROOT}/lib")
-  set(CERES_LIBRARY debug "${CERES_LIBRARY_DIR}/ceres-debug.lib"
-                    optimized "${CERES_LIBRARY_DIR}/ceres.lib")
+    set(Eigen3_ROOT "${EX_THIRD_PARTY}/eigen_3.3.9")
+    set(Eigen3_DIR "${Eigen3_ROOT}/share/eigen3/cmake")
 
-  set(CGAL_ROOT "${EX_THIRD_PARTY}/cgal_5.0.900")
-  set(CGAL_DIR "${CGAL_ROOT}/lib/cmake/CGAL")
-  set(CGAL_LIBRARIES_DIR "${CGAL_ROOT}/lib")
-  set(CGAL_LIBRARIES debug "${CGAL_LIBRARIES_DIR}/CGAL_Core-vc140-mt-gd-5.0-I-900.lib"
-                     debug "${CGAL_LIBRARIES_DIR}/CGAL_ImageIO-vc140-mt-gd-5.0-I-900.lib"
-                     debug "${CGAL_LIBRARIES_DIR}/CGAL_Qt5-vc140-mt-gd-5.0-I-900.lib"
-                     debug "${CGAL_LIBRARIES_DIR}/CGAL-vc140-mt-gd-5.0-I-900.lib"
-                     optimized "${CGAL_LIBRARIES_DIR}/CGAL_Core-vc140-mt-5.0-I-900.lib"
-                     optimized "${CGAL_LIBRARIES_DIR}/CGAL_ImageIO-vc140-mt-5.0-I-900.lib"
-                     optimized "${CGAL_LIBRARIES_DIR}/CGAL_Qt5-vc140-mt-5.0-I-900.lib"
-                     optimized "${CGAL_LIBRARIES_DIR}/CGAL-vc140-mt-5.0-I-900.lib")
+    set(GDAL_ROOT "${EX_THIRD_PARTY}/gdal_3.1.3s")
+    set(GDAL_INCLUDE_DIRS "${GDAL_ROOT}/include")
+    set(GDAL_LIBRARIES debug "${GDAL_ROOT}/lib/gdal_d.lib"
+                       optimized "${GDAL_ROOT}/lib/gdal.lib")
+    
+    set(OpenCV_ROOT "${EX_THIRD_PARTY}/opencv_4.5.1s")
+    set(OpenCV_DIR "${OpenCV_ROOT}/share/opencv")
+    set(OpenCV_INCLUDE_DIR "${OpenCV_ROOT}/include")
+    set(OpenCV_LIBRARY_DIR "${OpenCV_ROOT}/lib")
+    set(OpenCV_LIBS debug "${OpenCV_LIBRARY_DIR}/opencv_cored.lib"
+                    debug "${OpenCV_LIBRARY_DIR}/opencv_imgprocd.lib"
+                    optimized "${OpenCV_LIBRARY_DIR}/opencv_core.lib"
+                    optimized "${OpenCV_LIBRARY_DIR}/opencv_imgproc.lib")
 
-  set(CUDA_INCLUDE_DIR "${CUDA_ROOT}/include")
-  set(CUDA_BIN_DIR "${CUDA_ROOT}/bin")
-  set(CUDA_LIBRARIES_DIR "${CUDA_ROOT}/lib/x64")
-  set(CUDA_LIBRARIES "${CUDA_LIBRARIES_DIR}/cublas.lib"
-                     "${CUDA_LIBRARIES_DIR}/cuda.lib"
-                     "${CUDA_LIBRARIES_DIR}/cudart.lib"
-                     "${CUDA_LIBRARIES_DIR}/cufft.lib"
-                     "${CUDA_LIBRARIES_DIR}/cufftw.lib"
-                     "${CUDA_LIBRARIES_DIR}/cusolver.lib"
-                     "${CUDA_LIBRARIES_DIR}/cusparse.lib"
-                     "${CUDA_LIBRARIES_DIR}/nvml.lib"
-                     "${CUDA_LIBRARIES_DIR}/nrtc.lib")
-
-  set(Eigen3_ROOT "${EX_THIRD_PARTY}/eigen_3.3.90")
-  set(Eigen3_DIR "${Eigen3_ROOT}/share/eigen3/cmake")
-  set(Eigen3BLAS_INCLUDE_DIR "${Eigen3_ROOT}/include")
-  set(Eigen3LAPACK_INCLUDE_DIR "${Eigen3_ROOT}/include")
-  set(Eigen3_LIBRARY_DIR "${Eigen3_ROOT}/lib")
-  set(Eigen3BLAS_LIBRARIES "${Eigen3_LIBRARY_DIR}/${CDEGREL}/eigen_blas.lib")
-  set(Eigen3LAPACK_LIBRARIES "${Eigen3_LIBRARY_DIR}/${CDEGREL}/eigen_lapack.lib")
-
-  set(exiv2_ROOT "${EX_THIRD_PARTY}/exiv2_0.27.3")
-  set(exiv2_BIN_DIR "${exiv2_ROOT}/bin/${CDEGREL}")
-  set(exiv2_DIR "${exiv2_ROOT}/share/exiv2")
-  set(exiv2_INCLUDE_DIR "${exiv2_ROOT}/include")
-  set(exiv2_LIBRARY_DIR "${exiv2_ROOT}/lib")
-  set(exiv2_LIBRARIES debug "${exiv2_LIBRARY_DIR}/debug/exiv2.lib"
-                      debug "${exiv2_LIBRARY_DIR}/debug/exiv2-xmp.lib"
-                      optimized "${exiv2_LIBRARY_DIR}/release/exiv2.lib"
-                      optimized "${exiv2_LIBRARY_DIR}/release/exiv2-xmp.lib")
-
-  set(GDAL_ROOT "${EX_THIRD_PARTY}/gdal_2.4.1")
-  set(GDAL_BIN_DIR "${GDAL_ROOT}/bin/${CDEGREL}")
-  set(GDAL_INCLUDE_DIRS "${GDAL_ROOT}/include")
-  set(GDAL_LIBRARIES "${GDAL_ROOT}/lib/${CDEGREL}/gdal_i.lib")
-
-  set(geotiff_ROOT "${EX_THIRD_PARTY}/libgeotiff_1.4.2")
-  set(geotiff_BIN_DIR "${geotiff_ROOT}/bin/${CDEGREL}")
-  set(geotiff_DIR "${geotiff_ROOT}/share/libgeotiff")
-  set(geotiff_INCLUDE_DIR "${geotiff_ROOT}/include")
-  set(geotiff_LIBRARY_DIR "${geotiff_ROOT}/lib")
-  set(geotiff_LIBRARIES debug "${geotiff_LIBRARY_DIR}/debug/geotiff_d_i.lib"
-                        optimized "${geotiff_LIBRARY_DIR}/release/geotiff_i.lib")
-
-  set(geotrans_ROOT "${EX_THIRD_PARTY}/geotrans_3.8.0")
-  set(geotrans_BIN_DIR "${geotrans_ROOT}/bin/${CDEGREL}")
-  set(geotrans_INCLUDE_DIR "${geotrans_ROOT}/include")
-  set(geotrans_LIBRARIES "${geotrans_ROOT}/lib/${CDEGREL}/MSPCoordinateConversionService.lib"
-                         "${geotrans_ROOT}/lib/${CDEGREL}/MSPdtcc.lib")
-
-  set(GETTEXT_ROOT "${EX_THIRD_PARTY}/gettext_0.19.0")
-  set(GETTEXT_BIN_DIR "${GETTEXT_ROOT}/bin/${CDEGREL}")
-  set(GETTEXT_INCLUDE_DIR "${GETTEXT_ROOT}/include")
-  set(GETTEXT_LIBRARY "${GETTEXT_ROOT}/lib/${CDEGREL}/libintl.lib")
-
-  #set(GFLAGS_ROOT "${EX_THIRD_PARTY}/gflags_2.2.2")
-  #set(gflags_DIR "${GFLAGS_ROOT}/lib/cmake/gflags")
-  #set(GFLAGS_INCLUDE_DIR "${GFLAGS_ROOT}/include")
-
-  set(GLOG_ROOT "${EX_THIRD_PARTY}/glog_0.4.0")
-  set(glog_DIR "${GLOG_ROOT}/lib/cmake/glog")
-  set(GLOG_INCLUDE_DIR "${GLOG_ROOT}/include")
-  set(GLOG_LIBRARY_DIR "${GLOG_ROOT}/lib")
-  set(GLOG_LIBRARY debug "${GLOG_LIBRARY_DIR}/glogd.lib"
-                   optimized "${GLOG_LIBRARY_DIR}/glog.lib")
-
-  #GMT_DIR
-  #GMTSAR_DIR
-
-  set(gsl_ROOT "${EX_THIRD_PARTY}/gsl_2.4.0")
-  set(gsl_BIN_DIR "${gsl_ROOT}/bin/${CDEGREL}")
-  set(gsl_INCLUDE_DIR "${gsl_ROOT}/include")
-  set(gsl_LIBRARY_DIR "${gsl_ROOT}/lib")
-  set(gsl_LIBRARIES debug "${gsl_LIBRARY_DIR}/debug/gslcblasd.lib"
-                    debug "${gsl_LIBRARY_DIR}/debug/gsld.lib"
-                    optimized "${gsl_LIBRARY_DIR}/release/gslcblas.lib"
-                    optimized "${gsl_LIBRARY_DIR}/release/gsl.lib")
-
-  set(GTEST_ROOT "${EX_THIRD_PARTY}/gtest_1.8.1")
-  set(GTEST_BIN_DIR "${GTEST_ROOT}/bin")
-  set(GTEST_INCLUDE_DIR "${GTEST_ROOT}/include")
-  
-  set(HDF5_ROOT "${EX_THIRD_PARTY}/hdf5_1.10.5")
-  set(HDF5_BIN_DIR "${HDF5_ROOT}/bin")
-
-  set(ICONV_ROOT "${EX_THIRD_PARTY}/iconv_1.16.0")
-  set(ICONV_DIR "${ICONV_ROOT}/share/iconv/CMake")
-  set(ICONV_INCLUDE_DIRS "${ICONV_ROOT}/include")
-  set(ICONV_LIBRARY_DIR "${ICONV_ROOT}/lib")
-  set(ICONV_LIBRARIES "${ICONV_LIBRARY_DIR}/${CDEGREL}/iconv.lib")
-
-  set(lapack_ROOT "${EX_THIRD_PARTY}/lapack_3.9.0")
-  set(lapack_DIR "${lapack_ROOT}/lib/cmake")
-  set(lapack_BIN_DIR "${lapck_ROOT}/bin/${CDEGREL}")
-  set(lapack_INCLUDE_DIR "${lapack_ROOT}/include")
-  set(lapack_LIBRARY_DIR "${lapack_ROOT}/lib")
-  set(lapack_LIBRARIES "${lapack_LIBRARY_DIR}/${CDEGREL}/libblas.lib"
-                       "${lapack_LIBRARY_DIR}/${CDEGREL}/libcblas.lib"
-                       "${lapack_LIBRARY_DIR}/${CDEGREL}/liblapack.lib"
-                       "${lapack_LIBRARY_DIR}/${CDEGREL}/liblapacke.lib"
-                       "${lapack_LIBRARY_DIR}/${CDEGREL}/libtmglib.lib")
-  
-  set(LASLIB_ROOT "${EX_THIRD_PARTY}/lastools_19.05.07")
-  #set(LASLIB_BIN_DIR "${LASLIB_ROOT}/bin")
-  set(LASLIB_INCLUDE_DIR "${LASLIB_ROOT}/include/LASlib")
-  set(LASLIB_LIBRARY "${LASLIB_ROOT}/lib/${CDEGREL}/LASlib/LASlib.lib")
-
-  set(libInterpolate_DIR "${EX_THIRD_PARTY}/libInterpolate_2.3.2/cmake")
-
-  set(LIBXML2_ROOT "${EX_THIRD_PARTY}/xml2_2.9.9")
-  set(LIBXML2_DIR "${LIBXML2_ROOT}/share/libxml2/CMake")
-  set(LIBXML2_INCLUDE_DIRS "${LIBXML2_ROOT}/include")
-  set(LIBXML2_LIBRARY_DIR "${LIBXML2_ROOT}/lib")
-  set(LIBXML2_LIBRARIES "${LIBXML2_LIBRARY_DIR}/${CDEGREL}/libxml2.lib")
-
-  set(MPFR4_ROOT "${EX_THIRD_PARTY}/mpfr_4.0.2")
-  #set(MPFR4_DIR "${MPFR4_ROOT}/share/mpfr")
-  set(MPFR4_INCLUDE_DIR "${MPFR4_ROOT}/include")
-  set(MPFR4_LIBRARY_DIR "${MPFR4_ROOT}/lib")
-  set(MPFR4_LIBRARIES "${MPFR4_LIBRARY_DIR}/${CDEGREL}/mpfr.lib")
-
-  set(MPIR_ROOT "${EX_THIRD_PARTY}/mpir_3.0.0")
-  #set(MPIR_DIR "${MPIR_ROOT}/share/mpir")
-  set(MPIR_INCLUDE_DIR "${MPIR_ROOT}/include")
-  set(MPIR_LIBRARY_DIR "${MPIR_ROOT}/lib")
-  set(MPIR_LIBRARIES "${MPIR_LIBRARY_DIR}/${CDEGREL}/mpir.lib")
-
-  set(nlohmann_json_ROOT "${EX_THIRD_PARTY}/nlohmann-json_3.7.3")
-  set(nlohmann_json_DIR "${nlohmann_json_ROOT}/share/nlohmann_json")
-  set(nlohmann_json_INCLUDE_DIR "${nlohmann_json_ROOT}/include")
-
-  set(nsimd_ROOT "${EX_THIRD_PARTY}/nsimd_20.11.01")
-  #set(nsimd_DIR "${nsimd_ROOT}/lib/cmake")
-  set(nsimd_BIN_DIR "${nsimd_ROOT}/bin/${CDEGREL}")
-  set(nsimd_INCLUDE_DIR "${nsimd_ROOT}/include")
-  set(nsimd_LIBRARY_DIR "${nsimd_ROOT}/lib")
-  set(nsimd_LIBRARIES "${nsimd_LIBRARY_DIR}/${CDEGREL}/libnsimd_x86_64.lib")
-
-  set(NumCpp_ROOT "${EX_THIRD_PARTY}/numcpp_2.3.1")
-  set(NumCpp_DIR "${NumCpp_ROOT}/share\/NumCpp/cmake")
-
-  set(OpenBLAS_ROOT "${EX_THIRD_PARTY}/openblas_0.3.7")
-  set(OpenBLAS_DIR "${OpenBLAS_ROOT}/share/openblas")
-  set(OpenBLAS_BIN_DIR "${OpenBLAS_ROOT}/bin/${CDEGREL}")
-  set(OpenBLAS_INCLUDE_DIR "${OpenBLAS_ROOT}/include")
-  set(OpenBLAS_LIBRARY_DIR "${OpenBLAS_ROOT}/lib")
-  set(OpenBLAS_LIBRARIES "${OpenBLAS_LIBRARY_DIR}/${CDEGREL}/openblas.lib")
-
-  set(OpenCL_INCLUDE_DIRS "${OpenCL_ROOT}/include")
-  set(OpenCL_BIN_DIR "${OpenCL_ROOT}/bin")
-  set(OpenCL_LIBRARY_DIR "${OpenCL_ROOT}/lib/x64")
-  set(OpenCL_LIBRARIES "${OpenCL_LIBRARY_DIR}/OpenCL.lib")
-
-  set(OpenCV_ROOT "${EX_THIRD_PARTY}/opencv_4.1.0")
-  set(OpenCV_DIR "${OpenCV_ROOT}/x64/vc15/lib")
-  set(OpenCV_BIN_DIR "${OpenCV_ROOT}/x64/vc15/bin")
-  set(OpenCV_INCLUDE_DIR "${OpenCV_ROOT}/include")
-  set(OpenCV_LIBRARY_DIR "${OpenCV_ROOT}/x64/vc15/lib")
-  set(OpenCV_LIBS debug "${OpenCV_LIBRARY_DIR}/opencv_img_hash410d.lib"
-                  debug "${OpenCV_LIBRARY_DIR}/opencv_world410d.lib"
-                  optimized "${OpenCV_LIBRARY_DIR}/opencv_img_hash410.lib"
-                  optimized "${OpenCV_LIBRARY_DIR}/opencv_world410.lib")
-
-  set(OpenEXR_ROOT "${EX_THIRD_PARTY}/openexr_2.3.0")
-  set(OpenEXR_DIR "${OpenEXR_ROOT}/share/openexr")
-  set(OpenEXR_INCLUDE_DIR "${OpenEXR_ROOT}/include")
-  set(OpenEXR_LIBRARY_DIR "${OpenEXR_ROOT}/lib/${CDEGREL}")
-  set(OpenEXR_LIBS debug "${OpenEXR_LIBRARY_DIR}/Half-2_3_d.lib"
-                   debug "${OpenEXR_LIBRARY_DIR}/Iex-2_3_d.lib"
-                   debug "${OpenEXR_LIBRARY_DIR}/IexMath-2_3_d.lib"
-                   debug "${OpenEXR_LIBRARY_DIR}/IlmImf-2_3_d.lib"
-                   debug "${OpenEXR_LIBRARY_DIR}/IlmImfUtil-2_3_d.lib"
-                   debug "${OpenEXR_LIBRARY_DIR}/IlmThread-2_3_d.lib"
-                   debug "${OpenEXR_LIBRARY_DIR}/Imath-2_3_d.lib"
-                   optimized "${OpenEXR_LIBRARY_DIR}/Half-2_3.lib"
-                   optimized "${OpenEXR_LIBRARY_DIR}/Iex-2_3.lib"
-                   optimized "${OpenEXR_LIBRARY_DIR}/IexMath-2_3.lib"
-                   optimized "${OpenEXR_LIBRARY_DIR}/IlmImf-2_3.lib"
-                   optimized "${OpenEXR_LIBRARY_DIR}/IlmImfUtil-2_3.lib"
-                   optimized "${OpenEXR_LIBRARY_DIR}/IlmThread-2_3.lib"
-                   optimized "${OpenEXR_LIBRARY_DIR}/Imath-2_3.lib")
-
-  set(OpenImageIO_ROOT "${EX_THIRD_PARTY}/openimageio_2.1.9")
-  set(OpenImageIO_DIR "${OpenImageIO_ROOT}/share/openimageio")
-  set(OpenImageIO_INCLUDE_DIR "${OpenImageIO_ROOT}/include")
-
-  set(OPENNI_ROOT "${EX_THIRD_PARTY}/openni_2.2.0")
-  set(OPENNI_BIN_DIR "${OPENNI_ROOT}/Redist")
-
-  set(PDAL_ROOT "${EX_THIRD_PARTY}/pdal_1.9.1")
-  set(PDAL_DIR "${PDAL_ROOT}/lib/cmake/PDAL")
-
-  set(proj_ROOT "${EX_THIRD_PARTY}/proj_8.0.0")
-  #set(proj_DIR "${proj_ROOT}/lib/cmake/proj")
-  set(proj_BIN_DIR "${proj_ROOT}/bin/${CDEGREL}")
-  set(proj_INCLUDE_DIR "${proj_ROOT}/include")
-  set(proj_LIBRARY_DIR "${proj_ROOT}/lib")
-  set(proj_LIBRARIES debug "${proj_LIBRARY_DIR}/debug/proj_d.lib"
-                     optimized "${proj_LIBRARY_DIR}/release/proj.lib")
-
-  set(Protobuf_ROOT "${EX_THIRD_PARTY}/protobuf_3.11.3")
-  set(Protobuf_DIR "${Protobuf_ROOT}/share/protobuf")
-
-  set(pybind11_DIR "${EX_THIRD_PARTY}/pybind11_2.5.0/share/cmake/pybind11")
-
-  #set(PYTHON_ROOT_DIR "python37")
-
-  set(Qt5_ROOT "${EX_THIRD_PARTY}/qt_5.11.2")
-  set(Qt5_DIR "${Qt5_ROOT}/lib/cmake/Qt5")
-  set(Qt5LinguistTools_DIR "${Qt5_ROOT}/lib/cmake/Qt5LinguistTools")
-
-  set(range-v3_ROOT "${EX_THIRD_PARTY}/range-v3_0.9.0")
-  set(range-v3_DIR "${range-v3_ROOT}/lib/cmake/range-v3")
-
-  set(Simd_ROOT "${EX_THIRD_PARTY}/Simd_4.6.94")
-  #set(Simd_DIR "${Simd_ROOT}/lib/cmake")
-  set(Simd_BIN_DIR "${Simd_ROOT}/bin/${CDEGREL}")
-  set(Simd_INCLUDE_DIR "${Simd_ROOT}/include")
-  set(Simd_LIBRARY_DIR "${Simd_ROOT}/lib")
-  set(Simd_LIBRARIES "${Simd_LIBRARY_DIR}/${CDEGREL}/Simd.lib")
-
-  set(Sltbench_DIR "${EX_THIRD_PARTY}/sltbench_20.01.15/cmake")
-
-  #SNAPHU_DIR
-
-  set(sqlite3_ROOT "${EX_THIRD_PARTY}/sqlite_3.31.1")
-  set(sqlite3_DIR "${EX_THIRD_PARTY}/share/sqlite3")
-
-  set(Taskflow_ROOT "${EX_THIRD_PARTY}/taskflow_3.1.0")
-  set(Taskflow_DIR "${Taskflow_ROOT}/lib/cmake/Taskflow")
-
-  set(TBB_ROOT "${EX_THIRD_PARTY}/tbb_20.0.0")
-  set(TBB_DIR "${TBB_ROOT}/share/tbb")
-  set(TBB_INCLUDE_DIRS "${TBB_ROOT}/include")
-  set(TBB_LIBRARY_DIR "${TBB_ROOT}/lib")
-  set(TBB_LIBRARIES debug "${TBB_LIBRARY_DIR}/debug/tbb_debug.lib"
-                    debug "${TBB_LIBRARY_DIR}/debug/tbbmalloc_debug.lib"
-                    debug "${TBB_LIBRARY_DIR}/debug/tbbmalloc_proxy_debug.lib"
-                    optimized "${TBB_LIBRARY_DIR}/release/tbb.lib"
-                    optimized "${TBB_LIBRARY_DIR}/release/tbbmalloc.lib"
-                    optimized "${TBB_LIBRARY_DIR}/release/tbbmalloc_proxy.lib")
-
-  set(tiff_ROOT "${EX_THIRD_PARTY}/tiff_4.0.10")
-  set(tiff_BIN_DIR "${tiff_ROOT}/bin/${CDEGREL}")
-  #set(tiff_DIR "${tiff_ROOT}/share/tiff")
-  set(tiff_INCLUDE_DIR "${tiff_ROOT}/include")
-  set(tiff_LIBRARY_DIR "${tiff_ROOT}/lib")
-  set(tiff_LIBRARIES debug "${tiff_LIBRARY_DIR}/debug/tiffd.lib"
-                     debug "${tiff_LIBRARY_DIR}/debug/tiffxxd.lib"
-                     optimized "${tiff_LIBRARY_DIR}/release/tiff.lib"
-                     optimized "${tiff_LIBRARY_DIR}/release/tiffxx.lib")
-
-  set(vld_ROOT "${EX_THIRD_PARTY}/vld_2.5.1")
-  #set(vld_DIR "${vld_ROOT}/lib/cmake")
-  set(vld_BIN_DIR "${vld_ROOT}/bin")
-  set(vld_INCLUDE_DIR "${vld_ROOT}/include")
-  set(vld_LIBRARY_DIR "${vld_ROOT}/lib")
-  set(vld_LIBRARIES debug "${vld_LIBRARY_DIR}/vld.lib")
-  
-  set(wxwidgets_ROOT "${EX_THIRD_PARTY}/wxwidgets_3.1.4")
-  set(wxwidgets_INCLUDE_DIRS "${wxwidgets_ROOT}/include"
-                             "${wxwidgets_ROOT}/include/msvc")
-  set(wxwidgets_LIBRARY_DIR "${wxwidgets_ROOT}/lib")
-  set(wxwidgets_LIBRARIES debug "${wxwidgets_LIBRARY_DIR}/debug/wxbase31ud.lib"
-                          debug "${wxwidgets_LIBRARY_DIR}/debug/wxmsw31ud_core.lib"
-                          optimized "${wxwidgets_LIBRARY_DIR}/release/wxbase31u.lib"
-                          optimized "${wxwidgets_LIBRARY_DIR}/release/wxmsw31u_core.lib")
-
-  set(xsimd_DIR "${EX_THIRD_PARTY}/xsimd_7.4.6/share/xsimd")
-
-  set(xtensor_ROOT "${EX_THIRD_PARTY}/xtensor_0.21.3")
-  set(xtensor_DIR "${xtensor_ROOT}/share/xtensor")
-
-  set(xtensor-python_ROOT "${EX_THIRD_PARTY}/xtensor-python_0.24.1")
-  set(xtensor-python_DIR "${xtensor_ROOT}/lib/cmake/xtensor-python")
-
-  set(xtl_ROOT "${EX_THIRD_PARTY}/xtl_0.6.11")
-  set(xtl_DIR "${xtl_ROOT}/share/xtl")
-
-  set(zlib_ROOT "${EX_THIRD_PARTY}/zlib_1.2.11")
-  set(zlib_INCLUDE_DIR "${zlib_ROOT}/include")
-  set(zlib_LIBRARY_DIR "${zlib_ROOT}/lib")
-  set(zlib_LIBRARIES debug "${zlib_LIBRARY_DIR}/debug/zlib.lib"
-                     debug "${zlib_LIBRARY_DIR}/debug/zlibd.lib"
-                     optimized "${zlib_LIBRARY_DIR}/release/zlib.lib")
+  endif()
 
 elseif(CMAKE_SYSTEM_NAME STREQUAL "Linux")
+
   set(EARTHXPERT_BIN_ROOT "bin")
   set(EARTHXPERT_BIN_DIR "bin")
   set(EARTHXPERT_DEBUG_POSTFIX "")
@@ -407,7 +438,7 @@ find_package(Ceres CONFIG REQUIRED)  # ceres Ceres::ceres
 find_package(CGAL CONFIG REQUIRED)   # CGAL::CGAL
 #find_package(CUDA CONFIG REQUIRED)
 find_package(Eigen3 CONFIG REQUIRED)
-find_package(exiv2 CONFIG REQUIRED)
+find_package(exiv2 CONFIG REQUIRED) # exiv2lib exiv2-xmp
 #find_package(GDAL REQUIRED)
 #find_package(geotrans CONFIG REQUIRED)
 #find_package(geotiff CONFIG REQUIRED)
