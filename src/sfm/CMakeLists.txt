@@ -12,7 +12,7 @@ set(sfm_srcs "densematch/circleneighbor.cpp"
   "sparsematch/featuredetect_layout.cpp"
   "sparsematch/sparsematch.cpp")
 set(sfm_items ex3rdparty core dataio epipolarmodel frameworks sensormodel
-  ${GDAL_LIBRARY} ${geotrans_LIBRARIES} ${GETTEXT_LIBRARY} ${OpenCV_LIBS})
+  ${GDAL_LIBRARIES} ${geotrans_LIBRARIES} ${GETTEXT_LIBRARY} ${OpenCV_LIBS})
 earthxpert_add_library(sfm "api"
   SRCS ${sfm_srcs}
   ITEMS ${sfm_items})

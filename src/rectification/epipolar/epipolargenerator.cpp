@@ -3,6 +3,7 @@
  * -----------------------------------------------------------------------------
  */
 #include "rectification/epipolar/epipolargenerator.h"
+#include "3rdparty/taskflow/extaskflow.h"
 #include "core/exceptions/exexcept.h"
 #include "core/utils/irasterresample.h"
 #include "core/utils/geomutils.h"
@@ -11,6 +12,7 @@
 #include "io/raster/irasterreader.h"
 #include "io/raster/rasterwriter.h"
 
+#include <iostream>
 #include <omp.h>
 
 using namespace earthxpert;
@@ -52,7 +54,7 @@ bool EpipolarGenerator::Process(IRasterReader *const img,
     LayoutTiles();
     mPerf.tmInitial = mClock.TimeSinceStart() - start;
 
-    ProcessTiles<ePL3>();
+    ProcessTiles<eTF>();
   }
   catch (...) {
     throw EpipolarError(_("Process failed"));
@@ -231,6 +233,48 @@ void EpipolarGenerator::ProcessTilesSQ() {
 }
 
 /**
+ *  \brief pipelined overlapping of read, computation, write tasks by TaskFlow
+ */
+void EpipolarGenerator::ProcessTilesTF() {
+  tf::Executor executor;
+  tf::Taskflow taskflow;
+
+  int t{ -1 };
+
+  auto [ii, cd, rb, rt, pt, wt, sb, lt, dn] = taskflow.emplace(
+    [&t]() { t = -1; },
+    [this, &t]() { return t <= mNumTiles ? 0 : 1; },
+    [this, &t]() { ResetBuffers(t); },
+    [this, &t]() { ReadTile(t + 1); },
+    [this, &t]() { ProcessTile(t); },
+    [this, &t]() { WriteTile(t - 1); },
+    [this, &t]() { SwapBuffers(); },
+    [&t]() { ++t; return 0; },
+    []() {});
+
+  ii.name("init");
+  cd.name("t <= mNumTiles");
+  rb.name("ResetBuffers(t)");
+  rt.name("ReadTile(t + 1)");
+  pt.name("ProcessTile(t)");
+  wt.name("WriteTile(t - 1)");
+  sb.name("SwapBuffers()");
+  lt.name("loop over tiles");
+  dn.name("done");
+
+  ii.precede(cd);
+  cd.precede(rb, dn);
+  rb.precede(rt, pt, wt);
+  sb.succeed(rt, pt, wt);
+  lt.succeed(sb);
+  cd.succeed(lt);
+
+  //taskflow.dump(std::cout);
+  //assert(8 == taskflow.num_tasks());
+  executor.run(taskflow).wait();
+}
+
+/**
  *  \brief read a tile from raw image
  *
  *  \param [in] tileId the index of tile to read
@@ -391,6 +435,9 @@ void EpipolarGenerator::DensifyCells(const int tileId, cv::Mat& tfmMat,
     if (MaskAllZero(mMaskBuf.get(), i1, i2, i3, i4)) 
       continue;
     
+    const int numCellCols = std::min<int>(mStride, tileColR - tileColL + 1);
+    const int numCellRows = std::min<int>(mStride, tileRowL - tileRowU + 1);
+
     if (MaskAllOne(mMaskBuf.get(), i1, i2, i3, i4)) {
       const auto invTileCols = 1.0 / (tileColR - tileColL);
       const auto invTileRows = 1.0 / (tileRowL - tileRowU);
@@ -398,11 +445,11 @@ void EpipolarGenerator::DensifyCells(const int tileId, cv::Mat& tfmMat,
         tileColL, tileRowU, tileColR, tileRowL);
 
       double xf{};
-      for (int c = 0; c < mStride; ++c, xf+= invTileCols) {
+      for (int c = 0; c < numCellCols; ++c, xf+= invTileCols) {
         const int tileCol = tileColL + c;
 
         double yf{};
-        for (int r = 0; r < mStride; ++r, yf+=invTileRows) {
+        for (int r = 0; r < numCellRows; ++r, yf+=invTileRows) {
           const int tileRow = tileRowU + r;
           const int64_t k = CRToIndex(tileCol, tileRow, numCols);
           if (eMK_NORM == mMaskBuf[k]) continue;
@@ -418,10 +465,10 @@ void EpipolarGenerator::DensifyCells(const int tileId, cv::Mat& tfmMat,
       }
     }
     else {
-      for (int c = 0; c < mStride; ++c) {
+      for (int c = 0; c < numCellCols; ++c) {
         const int tileCol = tileColL + c;
 
-        for (int r = 0; r < mStride; ++r) {
+        for (int r = 0; r < numCellRows; ++r) {
           const int tileRow = tileRowU + r;
           const int64_t k = CRToIndex(tileCol, tileRow, numCols);
           if (eMK_NORM == mMaskBuf[k]) continue;

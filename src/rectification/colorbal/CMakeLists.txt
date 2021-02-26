@@ -4,7 +4,7 @@ add_definitions(-DEXCOLORBAL_API)
 set(colorbal_srcs "./cbperf.cpp"
   "./colorbal.cpp")
 set(colorbal_items ex3rdparty dataio marshaller 
-  ${GDAL_LIBRARY} ${GETTEXT_LIBRARY} ${OpenCL_LIBS} ${OpenCV_LIBS})
+  ${GDAL_LIBRARIES} ${GETTEXT_LIBRARY} ${OpenCL_LIBS} ${OpenCV_LIBS})
 earthxpert_add_library(colorbal "api"
   SRCS ${colorbal_srcs}
   ITEMS ${colorbal_items})

@@ -36,7 +36,7 @@ set(expyext_items ex3rdparty blockadjust colorbal core dataio
   epipolar epipolarmodel exproject exutils frameworks imageproc 
   marshaller ortho pcproc sensormodel sfm tortho
   Boost::boost Boost::numpy Boost::python 
-  ${GDAL_LIBRARY} ${geotrans_LIBRARIES} ${GETTEXT_LIBRARY} 
+  ${GDAL_LIBRARIES} ${geotrans_LIBRARIES} ${GETTEXT_LIBRARY} 
   ${OpenCV_LIBS} ${proj_LIBRARIES} ${PYTHON_LIBRARIES} ${PYTHON_NUMPY_LIBRARIES})
 earthxpert_add_py_library(expyext "bindings/python"
   SRCS ${expyext_srcs}

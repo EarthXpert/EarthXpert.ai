@@ -1,4 +1,4 @@
-project(marshaller)
+project(marshaller CXX)
 
 add_definitions(-DEXMARSHALLER_API -D_SILENCE_CXX17_ITERATOR_BASE_CLASS_DEPRECATION_WARNING)
 set(marshaller_srcs "epipolarmodel/epipolarstereomarshaller.cpp"
@@ -16,7 +16,7 @@ set(marshaller_srcs "epipolarmodel/epipolarstereomarshaller.cpp"
   "support/adssupportmarshaller.cpp"
   "support/supportmarshaller.cpp")
 set(marshaller_items ex3rdparty core epipolarmodel exproject sensormodel
-  ${GDAL_LIBRARY} ${GETTEXT_LIBRARY} libxml2)
+  ${GDAL_LIBRARIES} ${GETTEXT_LIBRARY} ${ICONV_LIBRARIES} ${LIBXML2_LIBRARIES})
 earthxpert_add_library(marshaller "api"
   SRCS ${marshaller_srcs}
   ITEMS ${marshaller_items})

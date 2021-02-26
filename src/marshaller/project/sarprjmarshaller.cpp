@@ -16,10 +16,10 @@ void SarPrjMarshaller::Serialize(const std::string& sarFile,
 
 std::unique_ptr<SarProject>
 SarPrjMarshaller::Deserialize(const std::string& sarFile) {
-  UPxmlTextReader reader(
-    xmlReaderForFile(sarFile.c_str(), nullptr, 0), &xmlFreeTextReader);
-  if (!reader) 
-    throw std::invalid_argument(_("SarPrjMarshaller: not a valid .xml"));
+  //UPxmlTextReader reader(
+  //  xmlReaderForFile(sarFile.c_str(), nullptr, 0), &xmlFreeTextReader);
+  //if (!reader) 
+  //  throw std::invalid_argument(_("SarPrjMarshaller: not a valid .xml"));
 
   return {};
 }

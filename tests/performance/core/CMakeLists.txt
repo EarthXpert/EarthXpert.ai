@@ -3,7 +3,7 @@ project(tests_performance_core CXX)
 function(add_core_perf_test name)
   add_performance_test(${name} 
     ex3rdparty core 
-    ${CERES_LIBRARY} ${GDAL_LIBRARY} ${OpenCV_LIBS})
+    ${CERES_LIBRARY} ${GDAL_LIBRARIES} ${OpenCV_LIBS})
 endfunction()
 
 add_core_perf_test(graphfit_perf_tests)

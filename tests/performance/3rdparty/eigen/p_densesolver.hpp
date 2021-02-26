@@ -12,13 +12,11 @@
 namespace bmp = boost::multiprecision;
 using namespace Eigen;
 
-static constexpr int kNumIters = 100;
+template<typename Ty>
+using EigMatX = Matrix<Ty, Dynamic, Dynamic, RowMajor>;
 
 template<typename Ty>
-using MatTy = Matrix<Ty, Dynamic, Dynamic, RowMajor>;
-
-template<typename Ty>
-using VecTy = Matrix<Ty, Dynamic, 1>;
+using EigVecX = Matrix<Ty, Dynamic, 1>;
 
 /**
  *  \brief fill A and b
@@ -26,9 +24,9 @@ using VecTy = Matrix<Ty, Dynamic, 1>;
  *  \param [in] n the dimension of square matrix
  */
 template<typename Ty> void 
-DenseFill(MatTy<Ty>& A, VecTy<Ty>& b, const int n) {
-  A = MatTy<Ty>::Random(n, n);
-  b = VecTy<Ty>::Random(n);
+DenseFill(EigMatX<Ty>& A, EigVecX<Ty>& b, const int n) {
+  A = EigMatX<Ty>::Random(n, n);
+  b = EigVecX<Ty>::Random(n);
 
   for (int i = 0; i < n; ++i) {
     A(i, i) += Ty(i + 1);
@@ -42,9 +40,9 @@ DenseFill(MatTy<Ty>& A, VecTy<Ty>& b, const int n) {
 /**
  *  \tparam Ty bmp::number with a backend
  */
-template<typename Ty> void Dense_Fill(const int& n) {
-  MatTy<Ty> A;
-  VecTy<Ty> b;
+template<typename Ty> void Dense_Fill(const int n) {
+  EigMatX<Ty> A;
+  EigVecX<Ty> b;
   DenseFill<Ty>(A, b, n);
 }
 
@@ -54,14 +52,14 @@ template<typename Ty> void Dense_Fill(const int& n) {
  *  \tparam Ty number type
  */
 template<typename Ty> void Dense_Solve(const int n) {
-  MatTy<Ty> A;
-  VecTy<Ty> b;
+  EigMatX<Ty> A;
+  EigVecX<Ty> b;
   DenseFill<Ty>(A, b, n);
 
   // A.fullPivHouseholderQr().solve(b)  // not stable
-  VecTy<Ty> x = (A.transpose() * A).ldlt().solve(A.transpose() * b);
+  EigVecX<Ty> x = (A.transpose() * A).ldlt().solve(A.transpose() * b);
 
-  //const Ty err = (A * x - b).norm() / b.norm(); // relative error
+  //const Ty err = RelativeErr(A, x, b);
   //std::cout << "relative error: " << err << std::endl;
 }
 
@@ -127,10 +125,10 @@ SLTBENCH_FUNCTION_WITH_ARGS(DenseMatF16_Solve, args_ds);
 
 SLTBENCH_FUNCTION_WITH_ARGS(DenseMatF50_Fill, args_ds);
 SLTBENCH_FUNCTION_WITH_ARGS(DenseMatF50_Solve, args_ds);
-SLTBENCH_FUNCTION_WITH_ARGS(DenseMatF100_Fill, args_ds);
-SLTBENCH_FUNCTION_WITH_ARGS(DenseMatF100_Solve, args_ds);
+//SLTBENCH_FUNCTION_WITH_ARGS(DenseMatF100_Fill, args_ds);
+//SLTBENCH_FUNCTION_WITH_ARGS(DenseMatF100_Solve, args_ds);
 
 SLTBENCH_FUNCTION_WITH_ARGS(DenseMatF50_Fill_GMP, args_ds);
 SLTBENCH_FUNCTION_WITH_ARGS(DenseMatF50_Solve_GMP, args_ds);
-SLTBENCH_FUNCTION_WITH_ARGS(DenseMatF100_Fill_GMP, args_ds);
-SLTBENCH_FUNCTION_WITH_ARGS(DenseMatF100_Solve_GMP, args_ds);
+//SLTBENCH_FUNCTION_WITH_ARGS(DenseMatF100_Fill_GMP, args_ds);
+//SLTBENCH_FUNCTION_WITH_ARGS(DenseMatF100_Solve_GMP, args_ds);

@@ -23,11 +23,17 @@ using VecView = MatView<_Scalar, _Rows, 1, _Options, _MaxRows, _MaxCols>;
  *
  *  \except bad_allocate if the matrix size is large.
  */
-template<typename MatTy> double ConditionNumber(const MatTy& A) {
+template<typename MatTy> double CondNumSvd(const MatTy& A) {
   Eigen::JacobiSVD<Eigen::MatrixXd> svd(A);
   const auto& sv = svd.singularValues();
   const double cn = sv(0) / sv(sv.size() - 1);
   return cn;
+}
+
+template<typename MatTy, typename VecTy1, typename VecTy2> 
+auto RelativeErr(const MatTy& A, const VecTy1& x, 
+  const VecTy2& b) -> typename MatTy::Scalar {
+  return (A * x - b).norm() / b.norm();
 }
 
 /**

@@ -8,7 +8,7 @@ set(pfgdal_srcs "gdalinfo.cpp"
   "gdaltranslate.cpp"
   "ogrinfo.cpp")
 set(pfgdal_items ex3rdparty core pfutils 
-  Boost::boost Boost::filesystem Boost::program_options ${GDAL_LIBRARY} 
+  Boost::boost Boost::filesystem Boost::program_options ${GDAL_LIBRARIES} 
   ${GETTEXT_LIBRARY} glog::glog)
 earthxpert_add_library(pfgdal "platform"
   SRCS ${pfgdal_srcs}

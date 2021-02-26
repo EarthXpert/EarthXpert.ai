@@ -10,7 +10,7 @@ set(imageproc_srcs "./opencvutils.cpp"
   "filter/atcomp.cpp"
   "filter/imagefilter.cpp")
 set(imageproc_items ex3rdparty core  
-        ${GDAL_LIBRARY} ${GETTEXT_LIBRARY} ${OpenCL_LIBS} ${OpenCV_LIBS})
+        ${GDAL_LIBRARIES} ${GETTEXT_LIBRARY} ${OpenCL_LIBS} ${OpenCV_LIBS})
 earthxpert_add_library(imageproc "api"
   SRCS ${imageproc_srcs}
   ITEMS ${imageproc_items})

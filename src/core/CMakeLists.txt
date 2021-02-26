@@ -62,7 +62,7 @@ set(core_srcs "datasource/cvraster.cpp"
   "utils/resample/rasterresample.cpp")
 set(core_items ex3rdparty
   Boost::boost Boost::filesystem Boost::iostreams
-  ${CERES_LIBRARY} ${CGAL_LIBRARIES} ${CUDA_LIBRARIES} ${GDAL_LIBRARY} 
+  ${CERES_LIBRARY} ${CGAL_LIBRARIES} ${CUDA_LIBRARIES} ${GDAL_LIBRARIES} 
   ${geotrans_LIBRARIES} ${GETTEXT_LIBRARY} glog::glog ${LASLIB_LIBRARY} 
   libInterpolate::Interpolate
   ${MPFR4_LIBRARIES} ${MPIR_LIBRARIES} ${nsimd_LIBRARIES} ${OpenCL_LIBRARIES} 

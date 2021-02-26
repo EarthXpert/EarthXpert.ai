@@ -4,7 +4,7 @@ include_directories(${OpenCV_INCLUDE_DIR})
 
 add_3rdparty_cppunit_test(opencv_tests 
   ex3rdparty 
-  ${GDAL_LIBRARY} ${OpenCV_LIBS})
+  ${GDAL_LIBRARIES} ${OpenCV_LIBS})
   
 if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
   set(TESTS_OPENCV_PATH "PATH=$<TARGET_FILE_DIR:ex3rdparty>;\

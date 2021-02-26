@@ -12,7 +12,7 @@ set(epipolarmodel_srcs "./epipolarmodel.cpp"
 earthxpert_add_library(epipolarmodel "api"
   SRCS ${epipolarmodel_srcs}
   ITEMS ex3rdparty core sensormodel 
-        Boost::boost ${GDAL_LIBRARY} ${geotrans_LIBRARIES} ${GETTEXT_LIBRARY} 
+        Boost::boost ${GDAL_LIBRARIES} ${geotrans_LIBRARIES} ${GETTEXT_LIBRARY} 
         ${OpenCV_LIBS})
 
 earthxpert_source_group(${epipolarmodel_srcs})

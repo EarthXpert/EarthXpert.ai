@@ -5,7 +5,7 @@ set(tortho_srcs
   "./torthorectifier.cpp"
   "./torthotask.cpp")
 set(tortho_items ex3rdparty core dataio ortho frameworks sensormodel 
-  ${GDAL_LIBRARY} ${geotrans_LIBRARIES} ${GETTEXT_LIBRARY} ${OpenCL_LIBS})
+  ${GDAL_LIBRARIES} ${geotrans_LIBRARIES} ${GETTEXT_LIBRARY} ${OpenCL_LIBS})
 earthxpert_add_library(tortho "api"
   SRCS ${tortho_srcs}
   ITEMS ${tortho_items})

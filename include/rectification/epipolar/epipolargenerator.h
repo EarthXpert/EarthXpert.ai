@@ -67,7 +67,8 @@ private:
   enum ExecPolicy {
     ePL2,   // two tasks pipelined
     ePL3,   // three tasks pipelined
-    eSQ     // sequential
+    eSQ,    // sequential
+    eTF     // TaskFlow
   };
 
   enum GeotransformAlgo {
@@ -126,15 +127,18 @@ private:
   void ProcessTilesPL2();
   void ProcessTilesPL3();
   void ProcessTilesSQ();
+  void ProcessTilesTF();
 
   template <int execPolicy>
   void ProcessTiles() {
-    if constexpr(ePL2 == execPolicy)
+    if constexpr (ePL2 == execPolicy)
       ProcessTilesPL2();
-    else if constexpr(ePL3 == execPolicy)
+    else if constexpr (ePL3 == execPolicy)
       ProcessTilesPL3();
-    else
+    else if constexpr (eSQ == execPolicy)
       ProcessTilesSQ();
+    else
+      ProcessTilesTF();
   }
 
   inline bool TileId(const int tileId) {

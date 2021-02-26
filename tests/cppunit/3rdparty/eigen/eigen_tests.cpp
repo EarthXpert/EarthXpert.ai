@@ -7,7 +7,7 @@
 
 //#include "densesolver_bmp.hpp"
 #include "densesolver_dyn.hpp"
-//#include "sparsesolver.hpp"
+#include "sparsesolver.hpp"
 
 #include <iostream>
 

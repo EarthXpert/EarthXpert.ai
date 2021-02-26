@@ -168,7 +168,7 @@ FillNodesByStride(const int dim, const int stride, std::vector<int>& nodes) {
 }
 
 /**
- *  \brief 
+ *  \brief add origin to the relative tile to obtain the absolute tile
  */
 inline SpatialTileD 
 OffsetSpatialTile(const Point2d& origin, const SpatialTileF& tile) {
@@ -176,7 +176,10 @@ OffsetSpatialTile(const Point2d& origin, const SpatialTileF& tile) {
     double(tile.width), double(tile.height) };
 }
 
-inline SpatialTileF 
+/**
+ *  \brief subtract the orign from the absolute tile to obtain the relative tile
+ */
+inline SpatialTileF
 OffsetSpatialTile(const Point2d& origin, const SpatialTileD& tile) {
   return { float(tile.minX - origin.x), float(tile.minY - origin.x),
     float(tile.width), float(tile.height) };
