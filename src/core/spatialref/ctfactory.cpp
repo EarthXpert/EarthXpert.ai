@@ -9,9 +9,11 @@
 
 using namespace earthxpert;
 
-static std::map<CtInfo, std::weak_ptr<ICt>> gCCsCTs;
-static std::map<CtInfo, std::weak_ptr<ICt>> gOgrCTs;
-static std::map<CtInfo, std::weak_ptr<ICt>> gProjCTs;
+namespace {
+  std::map<CtInfo, std::weak_ptr<ICt>> gCCsCTs;
+  std::map<CtInfo, std::weak_ptr<ICt>> gOgrCTs;
+  std::map<CtInfo, std::weak_ptr<ICt>> gProjCTs;
+}
 
 std::shared_ptr<ICt> CtFactory::CreateCt(const CtInfo* ctInfo) {
   const auto backend = ctInfo->srcSrs.backend;

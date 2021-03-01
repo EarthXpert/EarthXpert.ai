@@ -49,9 +49,12 @@ struct LayerInfo {
 };
 
 namespace thirdparty {
-EX3RDPARTY_EXPORTS GDALDataset* CreateRasterDataset(const std::string& imgFile,
-  const std::string format, int numCols, int numRows, GDALDataType dataType, int numBands);
-EX3RDPARTY_EXPORTS GDALDataset* CreateVectorDataset(const std::string& vecFile,
+EX3RDPARTY_EXPORTS GDALDataset* 
+CreateRasterDataset(const std::string& imgFile,
+  const std::string format, int numCols, int numRows, 
+  GDALDataType dataType, int numBands);
+EX3RDPARTY_EXPORTS GDALDataset* 
+CreateVectorDataset(const std::string& vecFile,
   const std::string format, const std::vector<LayerInfo>& layersInfo);
 }
 

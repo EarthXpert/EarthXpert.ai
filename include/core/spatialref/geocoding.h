@@ -64,6 +64,9 @@ private:
   double mInvPixX{ 1.0 };
   double mInvPixY{ 1.0 };
 };
+
+using UPGeocoding = std::unique_ptr<Geocoding>;
+using SPGeocoding = std::shared_ptr<Geocoding>;
 } // namespace earthxpert
 
 // overload std::swap

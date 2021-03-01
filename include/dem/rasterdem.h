@@ -16,6 +16,18 @@ public:
   RasterDem(std::string demFile);
   ~RasterDem() = default;
 
+  /**
+   *  \brief Fetch the ground coordinate system where the DEM operates.
+   *
+   *  \return Returns pointer to a coordinate system
+   */
+  UPSpatialRefSys GetCoordinateSystem() const;
+
+  /**
+   *  \brief Fetch the geocoding information of the DEM.
+   */
+  UPGeocoding GetGeocoding() const;
+
 private:
   std::string mDemFile;
 

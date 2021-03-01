@@ -27,7 +27,7 @@ public:
   /**
    *  \return Returns metadata tags
    */
-  virtual std::unique_ptr<RasterMetadata> GetMetadata() const = 0;
+  virtual UPRasterMetadata GetMetadata() const = 0;
 
   /**
    *  \return Returns width and height of image file [unit: pixels]
@@ -73,7 +73,7 @@ public:
   /**
    *  \brief Fetch the geocoding information of the image file.
    */
-  virtual std::unique_ptr<Geocoding> GetGeocoding() const = 0;
+  virtual UPGeocoding GetGeocoding() const = 0;
 
   /**
    *  \brief Reads the entire image.
