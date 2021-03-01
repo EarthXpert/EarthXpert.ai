@@ -5,6 +5,7 @@
 #pragma once
 
 #include "dem/idem.h"
+#include <string>
 
 namespace earthxpert {
 /**
@@ -12,9 +13,12 @@ namespace earthxpert {
  */
 class EXDEM_EXPORTS RasterDem final : public IDem {
 public:
+  RasterDem(std::string demFile);
   ~RasterDem() = default;
 
 private:
+  std::string mDemFile;
+
   void Initialize();
 };
 

@@ -13,9 +13,13 @@ namespace earthxpert {
  */
 class EXDEM_EXPORTS ImageToDem {
 public:
+  ImageToDem(ISensorModel const* model, IDem const* dem);
   ~ImageToDem() = default;
 
 private:
+  const ISensorModel* mModel{};
+  const IDem* mDem{};
+
   void Initialize();
 };
 
