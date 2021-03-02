@@ -17,7 +17,7 @@ ${GTEST_BIN_DIR};${BOOST_BIN_DIR};${GDAL_BIN_DIR};${OpenCV_BIN_DIR};${OPENNI_BIN
 ${TESTS_BIN_DIR};$ENV{PATH}")
   string(REPLACE ";" "\\;" TESTS_DEM_PATH "${TESTS_DEM_PATH}")
   message(STATUS "Tests_Dem_Path: ${TESTS_DEM_PATH}")
-  set_tests_properties(adem_tests geoid_tests  
+  set_tests_properties(dem_tests geoid_tests  
     PROPERTIES ENVIRONMENT "${TESTS_DEM_PATH}")
 endif()
 
