@@ -18,6 +18,7 @@ class EXDEM_EXPORTS IDem {
 public:
   virtual ~IDem() = default;
 
+  virtual float GetElev(const Point2d& xy) const = 0;
   virtual float GetElev(double x, double y) const = 0;
 
   /**

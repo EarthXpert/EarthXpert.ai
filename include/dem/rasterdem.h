@@ -23,7 +23,10 @@ public:
    */
   //void SetSrsIF();
 
-  float GetElev(double x, double y) const override;
+  float GetElev(const Point2d& xy) const override;
+  float GetElev(double x, double y) const override {
+    return GetElev(Point2d(x, y));
+  }
 
   /**
    *  \brief Fetch the ground coordinate system where the DEM operates.

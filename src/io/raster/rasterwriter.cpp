@@ -119,8 +119,8 @@ void RasterWriter::SetGeocoding(const Geocoding* geocoding) {
   if (!geocoding) return;
   std::unique_lock<std::shared_mutex> lock(mMutex);
 
-  double geoTransform[6] = { geocoding->mOriginX, geocoding->mPixelSizeX, 0,
-                             geocoding->mOriginY, 0, geocoding->mPixelSizeY };
+  double geoTransform[6] = { geocoding->mOrigin.x, geocoding->mPixSize.x, 0,
+                             geocoding->mOrigin.y, 0, geocoding->mPixSize.y };
   mDataset->SetGeoTransform(geoTransform);
 }
 

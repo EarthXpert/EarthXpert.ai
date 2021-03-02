@@ -22,7 +22,7 @@ void RasterDem::Initialize() {
 
 }
 
-float RasterDem::GetElev(const double x, const double y) const {
+float RasterDem::GetElev(const Point2d& xy) const {
   return 0;
 }
 

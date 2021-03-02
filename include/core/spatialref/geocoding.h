@@ -11,12 +11,11 @@ namespace earthxpert {
 
 class EXCORE_EXPORTS Geocoding {
 public:
-  double mOriginX{};
-  double mOriginY{};
-  double mPixelSizeX{};
-  double mPixelSizeY{};
+  Point2d mOrigin{};    // coordinate at upper-left corner of the UL pixel
+  Point2d mPixSize{};   // pixel ground resolution
 
-  Geocoding(double originX, double originY, double pixelSizeX, double pixelSizeY);
+  Geocoding(const Point2d& origin, const Point2d& pixSize);
+  Geocoding(double originX, double originY, double pixSizeX, double pixSizeY);
   ~Geocoding() = default;
 
   std::unique_ptr<Geocoding> Clone() const {
