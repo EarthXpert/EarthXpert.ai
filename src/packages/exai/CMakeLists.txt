@@ -7,8 +7,8 @@ set(pfexai_srcs "exaiblockadjust.cpp"
   "exaiepipolar.cpp"
   "exaijob.cpp"
   "exaimanager.cpp")
-set(pfexai_items ex3rdparty blockadjust exutils colorbal core dataio epipolar 
-  epipolarmodel exproject imageproc pcproc pfutils sensormodel sfm
+set(pfexai_items ex3rdparty blockadjust colorbal core dataio epipolar 
+  epipolarmodel exdem exproject exutils imageproc pcproc pfutils sensormodel sfm
   Boost::boost Boost::filesystem Boost::program_options ${CERES_LIBRARY} 
   ${CGAL_LIBRARIES} ${GDAL_LIBRARIES} ${geotrans_LIBRARIES} ${GETTEXT_LIBRARY} 
   glog::glog ${ICONV_LIBRARIES} ${LASLIB_LIBRARY} ${LIBXML2_LIBRARIES}

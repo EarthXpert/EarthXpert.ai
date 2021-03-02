@@ -6,5 +6,6 @@ endfunction()
 
 add_subdirectory(3rdparty)
 add_subdirectory(core)
+add_subdirectory(dem)
 add_subdirectory(io)
 add_subdirectory(sensormodel)
