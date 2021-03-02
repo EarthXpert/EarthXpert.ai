@@ -2,10 +2,10 @@
  *  Copyright (c) 2019.  All rights reserved.
  * -----------------------------------------------------------------------------
  */
-#include "core/spatialref/localgeoid.h"
+#include "dem/geoid.h"
 
 using namespace earthxpert;
 
-LocalGeoid::LocalGeoid() {
+Geoid::Geoid() {
 
 }

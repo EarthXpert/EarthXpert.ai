@@ -2,6 +2,10 @@ project(exdem CXX)
 
 add_definitions(-DEXDEM_API)
 set(exdem_srcs "./dem.cpp"
+  "./demfactory.cpp"
+  "./geoidfactory.cpp"
+  "geoid/geoid.cpp"
+  "geoid/localgeoid.cpp"
   "rasterdem/rasterdem.cpp"
   "tindem/tindem.cpp"
   "utils/landscapemodel.cpp")

@@ -16,12 +16,23 @@ void LandscapeModel::Initialize() {
   mCtI2D = CtFactory::CreateOgrCt(nullptr);
 }
 
-bool LandscapeModel::ImageToDem(const Point2d& image, Point3d& dem) {
-  return true;
+/**
+ *  \brief find the intersection point between the LOS and the DEM surface.
+ * 
+ *  \details determine the LOS segment in ground from the elevation range;
+ *  transform the two ends of LOS segment from model SRS to DEM SRS; 
+ *  project the LOS segment from 3D to 2D and divide the Brehensen line 
+ *  using half DEM resolution; read DEM elevations at vertices to form 
+ *  a 2D profile; intersect between the LOS and the profile in Cartesian.
+ */
+I2DStatus LandscapeModel::ImageToDem(const Point2d& image, Point3d& dem) {
+  return eI2D_GOOD;
 }
 
-bool LandscapeModel::DemToImage(const Point3d& dem, Point2d& image) {
+I2DStatus LandscapeModel::DemToImage(const Point3d& dem, Point2d& image) {
   Point3d ground;
   mCtD2I->Transform(dem, ground);
-  return mModel->GroundToImage(ground, image);
+  auto ret = mModel->GroundToImage(ground, image);
+
+  return ret ? eI2D_GOOD : eI2D_FAIL;
 }

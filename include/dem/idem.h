@@ -18,6 +18,8 @@ class EXDEM_EXPORTS IDem {
 public:
   virtual ~IDem() = default;
 
+  virtual float GetElev(double x, double y) const = 0;
+
   /**
    *  \brief Fetch the ground coordinate system where the DEM operates.
    *
