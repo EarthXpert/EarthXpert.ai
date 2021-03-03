@@ -24,6 +24,11 @@ void LandscapeModel::Initialize() {
  *  project the LOS segment from 3D to 2D and divide the Brehensen line 
  *  using half DEM resolution; read DEM elevations at vertices to form 
  *  a 2D profile; intersect between the LOS and the profile in Cartesian.
+ *  
+ *  \optimize determine the search direction by comparing the average 
+ *  elevation the and read elevation; 1) read one vertex and do the 
+ *  intersectiontest until successful; 2) overlap the read of next vertice
+ *  and the intersection test between the LOS and the profile segment.
  */
 I2DStatus LandscapeModel::ImageToDem(const Point2d& image, Point3d& dem) {
   return eI2D_GOOD;
