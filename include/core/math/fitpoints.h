@@ -14,8 +14,11 @@ using thirdparty::IResidual;
 namespace math {
 // residual base for fitting points
 template <typename PointTy> struct FitResidual : IResidual {
+  FitResidual() = default;
   FitResidual(const PointTy* const point) : pt(point) {}
   virtual ~FitResidual() = default;
+
+  void SetArgs(const PointTy* const point) { this->pt = point; }
 
 protected:
   const PointTy* const pt{}; // observation
@@ -34,8 +37,13 @@ struct LinearFitResidual final : FitResidual<PointTy> {
   /**
    *  \param [in] point the observation data.
    */
+  LinearFitResidual() = default;
   LinearFitResidual(const PointTy* const point) : FitResidual<PointTy>(point) {}
   ~LinearFitResidual() = default;
+
+  void SetArgs(const PointTy* const point) {
+    FitResidual::SetArgs(point);
+  }
 
   /**
    *  \param [in] pb the two parameters m & c.
@@ -69,8 +77,13 @@ struct ExponentialFitResidual final : FitResidual<PointTy> {
   /**
    *  \param [in] point the observation data.
    */
+  ExponentialFitResidual() = default;
   ExponentialFitResidual(const PointTy* const point) : FitResidual<PointTy>(point) {}
   ~ExponentialFitResidual() = default;
+
+  void SetArgs(const PointTy* const point) { 
+    FitResidual::SetArgs(point);
+  }
 
   /**
    *  \param [in] pb the two parameters m & c.

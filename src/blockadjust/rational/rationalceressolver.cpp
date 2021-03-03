@@ -43,7 +43,7 @@ namespace detail {
      *  \param [in] image image observation
      *  \param [in] bbaImg pointer to image model
      */
-    RationalNumericG2IResidual() {}
+    RationalNumericG2IResidual() = default;
     RationalNumericG2IResidual(const Point2d* const image, const int64_t grdIdx,
       const RationalBbaImage* const bbaImg, const int64_t imgIdx)
       : image(image), grdIdx(grdIdx), bbaImg(bbaImg), imgIdx(imgIdx) {}
