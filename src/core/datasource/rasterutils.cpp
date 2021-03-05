@@ -14,7 +14,7 @@ namespace earthxpert {
 // local details
 namespace detail {
   // Pixel data types of GDAL & CV
-  static const std::map<GDALDataType, int> sDataTypesG2C = {
+  const std::map<GDALDataType, int> sDataTypesG2C = {
     {GDT_Byte, CV_8U},
     //{GDT_Int8, CV_8S},
     {GDT_UInt16, CV_16U},
@@ -24,7 +24,7 @@ namespace detail {
     {GDT_Float32, CV_32F},
     {GDT_Float64, CV_64F} };
 
-  static const std::map<int, GDALDataType> sDataTypesC2G = {
+  const std::map<int, GDALDataType> sDataTypesC2G = {
     {CV_8U, GDT_Byte},
     //{CV_8S, GDT_Byte},
     {CV_16U, GDT_UInt16},

@@ -18,11 +18,13 @@
 
 using namespace earthxpert;
 
-// output option
-static const std::map<std::string, FacEpiOpt> sOutOptMap = {
-  {"compact", FacEpiOpt::eCOMPACT},
-  {"full", FacEpiOpt::eFULL},
-  {"intersect", FacEpiOpt::eINTERSECT} };
+namespace {
+  // output option
+  static const std::map<std::string, FacEpiOpt> sOutOptMap = {
+    {"compact", FacEpiOpt::eCOMPACT},
+    {"full", FacEpiOpt::eFULL},
+    {"intersect", FacEpiOpt::eINTERSECT} };
+}
 
 /**
  *  \brief

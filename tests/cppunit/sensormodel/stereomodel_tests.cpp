@@ -26,23 +26,23 @@ using namespace earthxpert::testutils;
 using rfm = earthxpert::RationalModel;
 namespace fs = std::filesystem;
 
-static constexpr int kNum = 10;
-static constexpr int kNH = 100;  // number of points on each line
-static constexpr double kFactor = 1.0;  // 0.75
+constexpr int kNum = 10;
+constexpr int kNH = 100;  // number of points on each line
+constexpr double kFactor = 1.0;  // 0.75
 
-static void TestI2G_Cube(const RationalModel* leftModel, const RationalModel* rightModel,
+void TestI2G_Cube(const RationalModel* leftModel, const RationalModel* rightModel,
   const int num=0, const Point2d* leftImg=nullptr, const Point2d* rightImg=nullptr);
-static void TestI2G_Cube(const std::string& leftModelFile, const std::string& rightModelFile,
+void TestI2G_Cube(const std::string& leftModelFile, const std::string& rightModelFile,
   const int num = 0, const Point2d* leftImg = nullptr, const Point2d* rightImg = nullptr);
-static void TestCurveI2G(const RationalModel* leftModel, const RationalModel* rightModel,
+void TestCurveI2G(const RationalModel* leftModel, const RationalModel* rightModel,
   const int num, const Point2d* leftImg, const Point2d* rightImg, const std::string& txtFile);
-static void TestCurveI2G(const std::string& leftModelFile, const std::string& rightModelFile,
+void TestCurveI2G(const std::string& leftModelFile, const std::string& rightModelFile,
   const int num, const Point2d* leftImg, const Point2d* rightImg, const std::string& txtFile);
 
-static std::unique_ptr<RationalModel> CreateRationalModelALeft();
-static std::unique_ptr<RationalModel> CreateRationalModelARight();
-static std::unique_ptr<RationalModel> CreateRationalModelBLeft();
-static std::unique_ptr<RationalModel> CreateRationalModelBRight();
+std::unique_ptr<RationalModel> CreateRationalModelALeft();
+std::unique_ptr<RationalModel> CreateRationalModelARight();
+std::unique_ptr<RationalModel> CreateRationalModelBLeft();
+std::unique_ptr<RationalModel> CreateRationalModelBRight();
 
 /**
  * Test 1: center at top and bottom

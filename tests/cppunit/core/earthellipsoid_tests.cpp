@@ -10,8 +10,8 @@
 
 using namespace earthxpert;
 
-static constexpr double kTolD = 1.0e-10; // [10um]
-static constexpr double kTol = 1.0e-5; // [10um]
+constexpr double kTolD = 1.0e-10; // [10um]
+constexpr double kTol = 1.0e-5; // [10um]
 
 TEST(earthellipsoid, ECEF_LPH) {
   EarthEllipsoid ee;

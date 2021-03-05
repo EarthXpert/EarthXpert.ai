@@ -14,30 +14,30 @@
 
 namespace earthxpert {
 namespace detail {
-  static constexpr int kMaxIters = 5;
-  static constexpr int kNN = 5;  // #nodes
-  static constexpr size_t kNP = 9;  // #key points
+  constexpr int kMaxIters = 5;
+  constexpr int kNN = 5;  // #nodes
+  constexpr size_t kNP = 9;  // #key points
 
   // sensor names & types
-  static std::map<std::string, SensorType> sSensorN2T = {
-  {"undefined", SensorType::eUNDEFINED},
-  {"ads", SensorType::eMT_ADS},
-  {"frame", SensorType::eMT_FRAME},
-  {"pushbroom", SensorType::eMT_PUSHBROOM},
-  {"rolling", SensorType::eMT_ROLLING},
-  {"affine", SensorType::eMT_AFFINE},
-  {"network", SensorType::eMT_NETWORK},
-  {"rational", SensorType::eMT_RATIONAL} };
+  std::map<std::string, SensorType> sSensorN2T = {
+    {"undefined", SensorType::eUNDEFINED},
+    {"ads", SensorType::eMT_ADS},
+    {"frame", SensorType::eMT_FRAME},
+    {"pushbroom", SensorType::eMT_PUSHBROOM},
+    {"rolling", SensorType::eMT_ROLLING},
+    {"affine", SensorType::eMT_AFFINE},
+    {"network", SensorType::eMT_NETWORK},
+    {"rational", SensorType::eMT_RATIONAL} };
 
-  static std::map<SensorType, std::string> sSensorT2N = {
-  {SensorType::eUNDEFINED, "undefined"},
-  {SensorType::eMT_ADS, "ads"},
-  {SensorType::eMT_FRAME, "frame"},
-  {SensorType::eMT_PUSHBROOM, "pushbroom"},
-  {SensorType::eMT_ROLLING, "rolling"},
-  {SensorType::eMT_AFFINE, "affine"},
-  {SensorType::eMT_NETWORK, "network"},
-  {SensorType::eMT_RATIONAL, "rational"} };
+  std::map<SensorType, std::string> sSensorT2N = {
+    {SensorType::eUNDEFINED, "undefined"},
+    {SensorType::eMT_ADS, "ads"},
+    {SensorType::eMT_FRAME, "frame"},
+    {SensorType::eMT_PUSHBROOM, "pushbroom"},
+    {SensorType::eMT_ROLLING, "rolling"},
+    {SensorType::eMT_AFFINE, "affine"},
+    {SensorType::eMT_NETWORK, "network"},
+    {SensorType::eMT_RATIONAL, "rational"} };
 }
 
 /**

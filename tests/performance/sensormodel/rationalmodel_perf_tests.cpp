@@ -12,11 +12,11 @@
 using namespace earthxpert;
 using rfm = earthxpert::RationalModel;
 
-static constexpr int kNum = 15;
-static constexpr double kFactor = 0.75;
+constexpr int kNum = 15;
+constexpr double kFactor = 0.75;
 
-static std::unique_ptr<RationalModel> CreateRationalModelLeft();
-static std::unique_ptr<RationalModel> CreateRationalModelRight();
+std::unique_ptr<RationalModel> CreateRationalModelLeft();
+std::unique_ptr<RationalModel> CreateRationalModelRight();
 
 void RationalModel_I2G() {
 

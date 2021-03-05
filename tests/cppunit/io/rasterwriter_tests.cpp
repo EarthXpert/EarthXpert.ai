@@ -24,7 +24,7 @@ namespace fs = std::filesystem;
  *  \param [in] imgFileT the test image
  *  \return Returns true if the original and the test images are exactly same.
  */
-static bool IsImageEqual(const std::string& imgFile, const std::string& imgFileT) {
+bool IsImageEqual(const std::string& imgFile, const std::string& imgFileT) {
   RasterReader reader(imgFile);
   auto img = reader.ReadRaster(RasterType::eCVMAT);
 

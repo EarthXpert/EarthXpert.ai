@@ -15,52 +15,54 @@ using namespace earthxpert;
 using CvFS = cv::FileStorage;
 using CvFN = cv::FileNode;
 
-// ingested persistence
-struct EpiModelRecord { // EpipolarModel
-  EpiStereoPos epiPos{ EpiStereoPos::eIGNORE };
-  cv::Size2i rawSize;
-  std::string mdlFile;
-  std::string bound;
-  Point2d offset;
-  cv::Size2i epiSize;
-  std::string epiFile;
+namespace {
+  // ingested persistence
+  struct EpiModelRecord { // EpipolarModel
+    EpiStereoPos epiPos{ EpiStereoPos::eIGNORE };
+    cv::Size2i rawSize;
+    std::string mdlFile;
+    std::string bound;
+    Point2d offset;
+    cv::Size2i epiSize;
+    std::string epiFile;
 
-  void write(CvFS& fs) const {
-    fs << "{" << "epiPos" << epiPos << "rawSize" << rawSize 
-      << "mdlFile" << mdlFile << "bound" << bound << "offset" << offset
-      << "epiSize" << epiSize << "epiFile" << epiFile << "}";
+    void write(CvFS& fs) const {
+      fs << "{" << "epiPos" << epiPos << "rawSize" << rawSize
+        << "mdlFile" << mdlFile << "bound" << bound << "offset" << offset
+        << "epiSize" << epiSize << "epiFile" << epiFile << "}";
+    }
+
+    void read(const cv::FileNode& node) {
+      node["epiPos"] >> epiPos;
+      node["rawSize"] >> rawSize;
+      node["mdlFile"] >> mdlFile;
+      node["bound"] >> bound;
+      node["offset"] >> offset;
+      node["epiSize"] >> epiSize;
+      node["epiFile"] >> epiFile;
+    }
+  };
+
+  inline void write(CvFS& fs, const std::string&, const EpiModelRecord& r) {
+    r.write(fs);
   }
 
-  void read(const cv::FileNode& node) {
-    node["epiPos"] >> epiPos;
-    node["rawSize"] >> rawSize;
-    node["mdlFile"] >> mdlFile;
-    node["bound"] >> bound;
-    node["offset"] >> offset;
-    node["epiSize"] >> epiSize;
-    node["epiFile"] >> epiFile;
+  inline void read(const CvFN& node, EpiModelRecord& r,
+    const EpiModelRecord& default_value = EpiModelRecord()) {
+    if (node.empty())
+      r = default_value;
+    else
+      r.read(node);
   }
-};
 
-static inline void write(CvFS& fs, const std::string&, const EpiModelRecord& r) {
-  r.write(fs);
+  struct SensorEpiModelRecord { // SensorEpipolarModel
+    EpiStereoPos epiPos{ EpiStereoPos::eIGNORE };
+    std::string mdlFile;
+    std::string bound;
+    cv::Size2i size;   // epi/raw Size
+    std::string file;  // epi/raw File
+  };
 }
-
-static inline void read(const CvFN& node, EpiModelRecord& r,
-  const EpiModelRecord& default_value = EpiModelRecord()) {
-  if (node.empty())
-    r = default_value;
-  else
-    r.read(node);
-}
-
-struct SensorEpiModelRecord { // SensorEpipolarModel
-  EpiStereoPos epiPos{ EpiStereoPos::eIGNORE };
-  std::string mdlFile;
-  std::string bound;
-  cv::Size2i size;   // epi/raw Size
-  std::string file;  // epi/raw File
-};
 
 /**
  *  \brief serialize an epipolar model into a json file

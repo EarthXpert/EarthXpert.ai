@@ -14,11 +14,11 @@ using namespace earthxpert;
 using namespace earthxpert::math;
 using namespace ceres;
 
-static constexpr auto kScale = 1.0 / static_cast<double>(std::mt19937::max());
+constexpr auto kScale = 1.0 / static_cast<double>(std::mt19937::max());
 
-static std::vector<Point2d> ObtainLinePoints();
-static std::vector<Point2d> ObtainCurvePoints();
-static std::vector<Point3d> ObtainPlanePoints();
+std::vector<Point2d> ObtainLinePoints();
+std::vector<Point2d> ObtainCurvePoints();
+std::vector<Point3d> ObtainPlanePoints();
 
 /**
  *  TestCase 1: fit straight line

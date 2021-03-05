@@ -14,7 +14,7 @@
 
 using namespace earthxpert;
 
-static std::unique_ptr<DigitalFrameModel> CreateDigitalFrameModel();
+std::unique_ptr<DigitalFrameModel> CreateDigitalFrameModel();
 
 /**
  * Test issue: segmentation fault.

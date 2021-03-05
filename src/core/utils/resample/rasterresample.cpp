@@ -11,17 +11,19 @@
 
 using namespace earthxpert;
 
-// interpolation algorithms
-static const std::map<std::string, cv::InterpolationFlags> sInterpAlgoMap = {
-  {"nearest", cv::INTER_NEAREST},
-  {"linear", cv::INTER_LINEAR},
-  {"cubic", cv::INTER_CUBIC},
-  {"lanczos", cv::INTER_LANCZOS4} };
+namespace {
+  // interpolation algorithms
+  const std::map<std::string, cv::InterpolationFlags> sInterpAlgoMap = {
+    {"nearest", cv::INTER_NEAREST},
+    {"linear", cv::INTER_LINEAR},
+    {"cubic", cv::INTER_CUBIC},
+    {"lanczos", cv::INTER_LANCZOS4} };
 
-// dimension of interpolation window
-static const std::map<cv::InterpolationFlags, int> sInterpWinMap = {
-  {cv::INTER_NEAREST, 1}, {cv::INTER_LINEAR, 2}, 
-  {cv::INTER_CUBIC, 4}, {cv::INTER_LANCZOS4, 8} };
+  // dimension of interpolation window
+  const std::map<cv::InterpolationFlags, int> sInterpWinMap = {
+    {cv::INTER_NEAREST, 1}, {cv::INTER_LINEAR, 2},
+    {cv::INTER_CUBIC, 4}, {cv::INTER_LANCZOS4, 8} };
+}
 
 /**
  *  constructor

@@ -14,44 +14,46 @@
 using namespace earthxpert;
 using utils::CompareI;
 
-// rpb entries
-static std::map<std::string, int> sRpbEntryMap = {
-  {"lineOffset", 0}, 
-  {"sampOffset", 1},
-  {"latOffset", 2},
-  {"longOffset", 3},
-  {"heightOffset", 4},
-  {"lineScale", 5},
-  {"sampScale", 6},
-  {"latScale", 7},
-  {"longScale", 8},
-  {"heightScale", 9},
-  {"lineNumCoef", 10},
-  {"lineDenCoef", 11},
-  {"sampNumCoef", 12},
-  {"sampDenCoef", 13},
-  {"errBias", 14},
-  {"errRand", 15} };
+namespace {
+  // rpb entries
+  std::map<std::string, int> sRpbEntryMap = {
+    {"lineOffset", 0},
+    {"sampOffset", 1},
+    {"latOffset", 2},
+    {"longOffset", 3},
+    {"heightOffset", 4},
+    {"lineScale", 5},
+    {"sampScale", 6},
+    {"latScale", 7},
+    {"longScale", 8},
+    {"heightScale", 9},
+    {"lineNumCoef", 10},
+    {"lineDenCoef", 11},
+    {"sampNumCoef", 12},
+    {"sampDenCoef", 13},
+    {"errBias", 14},
+    {"errRand", 15} };
 
-// rpc entries
-static std::map<std::string, int> sRpcEntryMap = {
-  {"LINE_OFF", 0},
-  {"SAMP_OFF", 1},
-  {"LAT_OFF", 2},
-  {"LONG_OFF", 3},
-  {"HEIGHT_OFF", 4},
-  {"LINE_SCALE", 5},
-  {"SAMP_SCALE", 6},
-  {"LAT_SCALE", 7},
-  {"LONG_SCALE", 8},
-  {"HEIGHT_SCALE", 9},
-  {"LINE_NUM_COEFF", 10},
-  {"LINE_DEN_COEFF", 11},
-  {"SAMP_NUM_COEFF", 12},
-  {"SAMP_DEN_COEFF", 13} };
+  // rpc entries
+  std::map<std::string, int> sRpcEntryMap = {
+    {"LINE_OFF", 0},
+    {"SAMP_OFF", 1},
+    {"LAT_OFF", 2},
+    {"LONG_OFF", 3},
+    {"HEIGHT_OFF", 4},
+    {"LINE_SCALE", 5},
+    {"SAMP_SCALE", 6},
+    {"LAT_SCALE", 7},
+    {"LONG_SCALE", 8},
+    {"HEIGHT_SCALE", 9},
+    {"LINE_NUM_COEFF", 10},
+    {"LINE_DEN_COEFF", 11},
+    {"SAMP_NUM_COEFF", 12},
+    {"SAMP_DEN_COEFF", 13} };
 
-static constexpr size_t kRPC_COEFF_KEY_LEN = 14;  // lenght of coefficient key's string component
-static constexpr size_t kRPC_COEFF_KEY_IDX = 15;  // position of index component
+  constexpr size_t kRPC_COEFF_KEY_LEN = 14;  // lenght of coefficient key's string component
+  constexpr size_t kRPC_COEFF_KEY_IDX = 15;  // position of index component
+}
 
 /**
  *  \brief seralize a rational model to a .rpb file or a rpc.txt file

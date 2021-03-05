@@ -10,7 +10,7 @@
 
 namespace earthxpert {
 namespace detail {
-static std::string CombineTokensAll(const std::vector<std::string>& tokens1, 
+std::string CombineTokensAll(const std::vector<std::string>& tokens1, 
   const std::vector<std::string>& tokens2, const char delim='_') {
   const size_t len = tokens1.size();
   assert(len == tokens2.size());
@@ -29,7 +29,7 @@ static std::string CombineTokensAll(const std::vector<std::string>& tokens1,
   return s;
 }
 
-static std::string CombineTokensCommon(const std::vector<std::string>& tokens1,
+std::string CombineTokensCommon(const std::vector<std::string>& tokens1,
   const std::vector<std::string>& tokens2, const char delim = '_') {
   const size_t len = tokens1.size();
   assert(len == tokens2.size());
@@ -45,7 +45,7 @@ static std::string CombineTokensCommon(const std::vector<std::string>& tokens1,
   return s;
 }
 
-static std::string CombineTokensDiff(const std::vector<std::string>& tokens1,
+std::string CombineTokensDiff(const std::vector<std::string>& tokens1,
   const std::vector<std::string>& tokens2, const char delim = '_') {
   const size_t len = tokens1.size();
   assert(len == tokens2.size());

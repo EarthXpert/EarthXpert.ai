@@ -13,14 +13,14 @@ using namespace earthxpert;
 using fgt = FieldGroup;
 namespace fs = std::filesystem;
 
-static UPPointcloud ReadPointcloud(
+UPPointcloud ReadPointcloud(
   const std::string& pcFile, const fgt fieldGroup) {
   PointcloudReader reader(pcFile, fieldGroup);
 
   return reader.ReadPointcloud();
 }
 
-static UPPointcloud ReadPointcloud(const std::string& pcFile) {
+UPPointcloud ReadPointcloud(const std::string& pcFile) {
   return ReadPointcloud(pcFile, {});
 }
 
@@ -31,7 +31,7 @@ static UPPointcloud ReadPointcloud(const std::string& pcFile) {
  *  \param [in] lasFileT the test image
  *  \return Returns true if the original and the test point clouds are exactly same.
  */
-static bool IsPointcloudEqual(const std::string& lasFile, const std::string& lasFileT) {
+bool IsPointcloudEqual(const std::string& lasFile, const std::string& lasFileT) {
   PointcloudReader reader(lasFile);
   auto las = reader.ReadPointcloud();
 

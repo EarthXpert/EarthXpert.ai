@@ -11,14 +11,14 @@
 
 using namespace earthxpert;
 
-static constexpr float kTol{ 0.000001f };
-static constexpr auto kRngMax = static_cast<double>(std::mt19937::max());
-static constexpr auto kRngMid = kRngMax / 2;
-static constexpr auto kScaleX = 1000. / (kRngMax + 2.0);
-static constexpr auto kScaleY = 1000. / (kRngMax + 2.0);
-static constexpr auto kScaleZ = 100. / (kRngMax + 2.0);
+constexpr float kTol{ 0.000001f };
+constexpr auto kRngMax = static_cast<double>(std::mt19937::max());
+constexpr auto kRngMid = kRngMax / 2;
+constexpr auto kScaleX = 1000. / (kRngMax + 2.0);
+constexpr auto kScaleY = 1000. / (kRngMax + 2.0);
+constexpr auto kScaleZ = 100. / (kRngMax + 2.0);
 
-static void FillXYZ(std::vector<XYZF>& xyz, std::mt19937& rng) {
+void FillXYZ(std::vector<XYZF>& xyz, std::mt19937& rng) {
   std::generate_n(std::begin(xyz), xyz.size(), [&rng]() {
     return XYZF{ float((double(rng()) - kRngMid) * kScaleX),
                  float((double(rng()) - kRngMid) * kScaleY),
@@ -26,13 +26,13 @@ static void FillXYZ(std::vector<XYZF>& xyz, std::mt19937& rng) {
     });
 }
 
-static void FillCla(std::vector<Classification>& cla, std::mt19937& rng) {
+void FillCla(std::vector<Classification>& cla, std::mt19937& rng) {
   std::generate_n(std::begin(cla), cla.size(), [&rng]() {
     return Classification{ rng() % 128 };
     });
 }
 
-static void CheckPointcloud_PointF(const Pointcloud& pc) {
+void CheckPointcloud_PointF(const Pointcloud& pc) {
   for (size_t i = 0; i < pc.GetPointCount(); ++i) {
     auto point = pc.GetPoint<PointF>(i);
     ASSERT_GE(point.x, -500.0f);
@@ -49,7 +49,7 @@ static void CheckPointcloud_PointF(const Pointcloud& pc) {
   }
 }
 
-static void CheckPointcloud_PointF_Subscript(const Pointcloud& pc) {
+void CheckPointcloud_PointF_Subscript(const Pointcloud& pc) {
   for (size_t i = 0; i < pc.GetPointCount(); ++i) {
     auto point = static_cast<PointF>(pc[i]);
     ASSERT_GE(point.x, -500.0f);
@@ -71,7 +71,7 @@ static void CheckPointcloud_PointF_Subscript(const Pointcloud& pc) {
   }
 }
 
-static void CheckPointcloud_CPointF(const Pointcloud& pc) {
+void CheckPointcloud_CPointF(const Pointcloud& pc) {
   for (size_t i = 0; i < pc.GetPointCount(); ++i) {
     auto point = pc.GetPoint<CPointF>(i);
     ASSERT_GE(point.x, -500.0f);
@@ -92,7 +92,7 @@ static void CheckPointcloud_CPointF(const Pointcloud& pc) {
   }
 }
 
-static void CheckPointcloud_CPointF_Subscript(const Pointcloud& pc) {
+void CheckPointcloud_CPointF_Subscript(const Pointcloud& pc) {
   for (size_t i = 0; i < pc.GetPointCount(); ++i) {
     CPointF point = pc[i];
     ASSERT_GE(point.x, -500.0f);
