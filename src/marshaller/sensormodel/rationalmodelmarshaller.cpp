@@ -32,7 +32,9 @@ namespace {
     {"sampNumCoef", 12},
     {"sampDenCoef", 13},
     {"errBias", 14},
-    {"errRand", 15} };
+    {"errRand", 15},
+    {"lineCorCoef", 16},
+    {"sampCorCoef", 17} };
 
   // rpc entries
   std::map<std::string, int> sRpcEntryMap = {
@@ -49,7 +51,9 @@ namespace {
     {"LINE_NUM_COEFF", 10},
     {"LINE_DEN_COEFF", 11},
     {"SAMP_NUM_COEFF", 12},
-    {"SAMP_DEN_COEFF", 13} };
+    {"SAMP_DEN_COEFF", 13},
+    {"LINE_COR_COEFF", 14},
+    {"SAMP_COR_COEFF", 15} };
 
   constexpr size_t kRPC_COEFF_KEY_LEN = 14;  // lenght of coefficient key's string component
   constexpr size_t kRPC_COEFF_KEY_IDX = 15;  // position of index component
@@ -59,10 +63,10 @@ namespace {
  *  \brief seralize a rational model to a .rpb file or a rpc.txt file
  *
  *  \param[in] modelFile the file to insert model coefficients
- *  \param[in] rationalModel the rational model to be seralized
+ *  \param[in] ratModel the rational model to be seralized
  */
 void RationalModelMarshaller::Serialize(const std::string &modelFile,
-    RationalModel const *const rationalModel) {
+    RationalModel const *const ratModel) {
   const auto fmt = GetFormat(modelFile);
 
   std::ofstream ofs(modelFile.c_str());
@@ -70,10 +74,10 @@ void RationalModelMarshaller::Serialize(const std::string &modelFile,
     throw std::invalid_argument(_("Cannot create file."));
 
   if (eRPB == fmt) {
-    return SerializeRpb(ofs, rationalModel);
+    return SerializeRpb(ofs, ratModel);
   }
   else if (eRPC == fmt) {
-    return SerializeRpc(ofs, rationalModel);
+    return SerializeRpc(ofs, ratModel);
   }
   else {
     throw std::invalid_argument(_("Not a rational model file."));
@@ -128,21 +132,70 @@ RationalModelMarshaller::GetFormat(const std::string& modelFile) const {
  *  \brief seralize a rational model into a .rpb file
  *
  *  \param[in] outS output stream
- *  \param[in] rationalModel the rational model to be seralized
+ *  \param[in] ratModel the rational model to be seralized
  */
 void RationalModelMarshaller::SerializeRpb(std::ostream& outS,
-  const RationalModel* const rationalModel) {
+  const RationalModel* const ratModel) {
 
+  outS << "BEGIN_GROUP = IMAGE\n";
+
+  outS << "END_GROUP = IMAGE\n";
+  outS << "END;\n";
+
+  if (!ratModel->mCorrFlag) return;
+
+  outS << "BEGIN_GROUP = CORR\n";
+  outS << "END_GROUP = CORR";
 }
 
 /**
  *  \brief seralize a rational model into a rpc.txt file
  *
  *  \param[in] outS output stream
- *  \param[in] rationalModel the rational model to be seralized
+ *  \param[in] ratModel the rational model to be seralized
  */
 void RationalModelMarshaller::SerializeRpc(std::ostream& outS,
-  const RationalModel* const rationalModel) {
+  const RationalModel* const ratModel) {
+  outS << std::setprecision(11);
+
+  auto nfc = ratModel->nfc; // normalization factors
+  outS << "LINE_OFF: " << nfc[0] << " pixels\n";
+  outS << "SAMP_OFF: " << nfc[1] << " pixels\n";
+  outS << "LAT_OFF: " << nfc[2] << " degrees\n";
+  outS << "LONG_OFF: " << nfc[3] << " degrees\n";
+  outS << "HEIGHT_OFF: " << nfc[4] << " meters\n";
+  outS << "LINE_SCALE: " << nfc[5] << " pixels\n";
+  outS << "SAMP_SCALE: " << nfc[6] << " pixels\n";
+  outS << "LAT_SCALE: " << nfc[7] << " degrees\n";
+  outS << "LONG_SCALE: " << nfc[8] << " degrees\n";
+  outS << "HEIGHT_SCALE: " << nfc[9] << " meters\n";
+
+  outS << std::setprecision(15) 
+    << std::setiosflags(std::ios::scientific | std::ios::showpos);
+
+  // rpc coefficients
+  for (int i = 0; i < RationalModel::NumCoef; ++i) {
+    outS << "LINE_NUM_COEFF_" << i + 1 << ": " << ratModel->lnc[i] << "\n";
+  }
+  for (int i = 0; i < RationalModel::NumCoef; ++i) {
+    outS << "LINE_DEN_COEFF_" << i + 1 << ": " << ratModel->ldc[i] << "\n";
+  }
+  for (int i = 0; i < RationalModel::NumCoef; ++i) {
+    outS << "SAMP_NUM_COEFF_" << i + 1 << ": " << ratModel->snc[i] << "\n";
+  }
+  for (int i = 0; i < RationalModel::NumCoef; ++i) {
+    outS << "SAMP_DEN_COEFF_" << i + 1 << ": " << ratModel->sdc[i] << "\n";
+  }
+
+  if (!ratModel->mCorrFlag) return;
+
+  // correction coeffcients
+  for (int i = 0; i < RationalModel::NumCorr; ++i) {
+    outS << "LINE_COR_COEFF_" << i + 1 << ": " << ratModel->mLineCorr[i] << "\n";
+  }
+  for (int i = 0; i < RationalModel::NumCorr; ++i) {
+    outS << "SAMP_COR_COEFF_" << i + 1 << ": " << ratModel->mSampCorr[i] << "\n";
+  }
 }
 
 /**
@@ -154,7 +207,7 @@ void RationalModelMarshaller::SerializeRpc(std::ostream& outS,
 std::unique_ptr<RationalModel>
 RationalModelMarshaller::DeserializeRpb(std::istream& inS) {
   double errBias{}, errRand{};
-  std::array<double, rnf::NumFact> normalFators{};
+  std::array<double, rnf::NumFact> nfc{};
   std::array<double, RationalModel::NumCoef> lineNumCoef{};
   std::array<double, RationalModel::NumCoef> lineDenCoef{};
   std::array<double, RationalModel::NumCoef> sampNumCoef{};
@@ -189,7 +242,7 @@ RationalModelMarshaller::DeserializeRpb(std::istream& inS) {
     case 7:
     case 8:
     case 9:
-      normalFators.at(it->second) = std::stod(tokens[1]);
+      nfc.at(it->second) = std::stod(tokens[1]);
       break;
     case 10: // lineNumCoef
       ExtractCoefs(inS, lineNumCoef);
@@ -209,17 +262,23 @@ RationalModelMarshaller::DeserializeRpb(std::istream& inS) {
     case 15: // errRand
       errRand = std::stod(tokens[1]);
       break;
+    case 16: // lineCorCoef
+      //ExtractCorr(inS, lineCorCoef);
+      break;
+    case 17: // sampCorCoef
+      //ExtractCorr(inS, sampCorCoef);
+      break;
     default:
       assert(false && "wrong entry.");
     }
   }
 
   auto groundSRS = std::make_shared<OGRSpatialRef>("WGS84");
-  auto rationalModel = std::make_unique<RationalModel>(mNumCols, mNumRows,
-    normalFators, lineNumCoef, lineDenCoef, sampNumCoef, sampDenCoef, groundSRS);
-  rationalModel->SetErrors(errBias, errRand);
+  auto ratModel = std::make_unique<RationalModel>(mNumCols, mNumRows,
+    nfc, lineNumCoef, lineDenCoef, sampNumCoef, sampDenCoef, groundSRS);
+  ratModel->SetErrors(errBias, errRand);
 
-  return rationalModel;
+  return ratModel;
 }
 
 /**
@@ -229,7 +288,7 @@ RationalModelMarshaller::DeserializeRpb(std::istream& inS) {
  */
 std::unique_ptr<RationalModel>
 RationalModelMarshaller::DeserializeRpc(std::istream& inS) {
-  std::array<double, rnf::NumFact> normalFators{};
+  std::array<double, rnf::NumFact> nfc{};
   std::array<double, RationalModel::NumCoef> lineNumCoef{};
   std::array<double, RationalModel::NumCoef> lineDenCoef{};
   std::array<double, RationalModel::NumCoef> sampNumCoef{};
@@ -253,7 +312,7 @@ RationalModelMarshaller::DeserializeRpc(std::istream& inS) {
 
     auto it = sRpcEntryMap.find(key);
     if (sRpcEntryMap.end() != it) {
-      normalFators.at(it->second) = std::stod(value);
+      nfc.at(it->second) = std::stod(value);
       continue;
     }
 
@@ -278,13 +337,21 @@ RationalModelMarshaller::DeserializeRpc(std::istream& inS) {
       idx = std::stoi(key.substr(kRPC_COEFF_KEY_IDX)) - 1;
       sampDenCoef[idx] = std::stod(value);
       break;
+    case 14: // lineCorCoef
+      //idx = std::stoi(key.substr(kRPC_COEFF_KEY_IDX)) - 1;
+      //lineCorCoef[idx] = std::stod(value);
+      break;
+    case 15: // sampCorCoef
+      //idx = std::stoi(key.substr(kRPC_COEFF_KEY_IDX)) - 1;
+      //sampCorCoef[idx] = std::stod(value);
+      break;
     default:
       assert(false && "wrong entry.");
     }
   }
 
   auto groundSRS = std::make_shared<OGRSpatialRef>("WGS84");
-  return std::make_unique<RationalModel>(mNumCols, mNumRows, normalFators,
+  return std::make_unique<RationalModel>(mNumCols, mNumRows, nfc,
       lineNumCoef, lineDenCoef, sampNumCoef, sampDenCoef, groundSRS);
 }
 
