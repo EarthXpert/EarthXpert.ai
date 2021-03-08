@@ -449,6 +449,7 @@ using rnf = NormalizationFactor;
 using risf = RationalModel::InvScaleFactor;
 using rpc = RationalModel::PolyCoeff3rd;
 using rcc = RationalModel::CorrCoeff;
+using rca = RationalModel::CorrAlgo;
 using UPRationalModel = std::unique_ptr<RationalModel>;
 using SPRationalModel = std::shared_ptr<RationalModel>;
 

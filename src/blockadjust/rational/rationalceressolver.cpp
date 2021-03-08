@@ -45,12 +45,12 @@ namespace detail {
      */
     RationalNumericG2IResidual() = default;
     RationalNumericG2IResidual(const Point2d* const image, const int64_t grdIdx,
-      const RationalBbaImage* const bbaImg, const int64_t imgIdx)
+      RationalBbaImage* const bbaImg, const int64_t imgIdx)
       : image(image), grdIdx(grdIdx), bbaImg(bbaImg), imgIdx(imgIdx) {}
     ~RationalNumericG2IResidual() = default;
 
     void SetArgs(const Point2d* const image, const int64_t grdIdx,
-      const RationalBbaImage* const bbaImg, const int64_t imgIdx) {
+      RationalBbaImage* const bbaImg, const int64_t imgIdx) {
       this->image = image;
       this->grdIdx = grdIdx;
       this->bbaImg = bbaImg;
@@ -68,6 +68,7 @@ namespace detail {
     bool operator()(const double* const pbi, 
       const double* const pbg, double* residual) const {
       // update bbaImg?
+      bbaImg->SetCorrection(pbi, pbi);  // \todo
 
       auto ground = reinterpret_cast<const Point3d* const>(pbg + grdIdx);
       Point2d ip;
@@ -82,7 +83,7 @@ namespace detail {
   private:
     const Point2d* image{}; // image observation
     int64_t grdIdx{};   // index of correspoding ground point scaled by 3
-    const RationalBbaImage* bbaImg{};  // non-owing pointer to image model
+    RationalBbaImage* bbaImg{};  // non-owing pointer to image model
     int64_t imgIdx{};   // index of bba image model scaled by number of model parameters
   };
 }

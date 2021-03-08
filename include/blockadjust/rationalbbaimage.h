@@ -24,6 +24,13 @@ public:
     return mRatModel->GroundToImage(ground, image);
   }
 
+  void SetCorrection(const double* const lineCorr, const double* const sampCorr,
+    const int order = 2, const rca corrAlgo = rca::eCA_IMAGE) {
+    mLineCorr = lineCorr;
+    mSampCorr = sampCorr;
+    mCorrOrder = order;
+  }
+
   void UpdateModel() override {
     mRatModel->SetCorrection(mLineCorr, mSampCorr, mCorrOrder);
   }
@@ -34,8 +41,8 @@ private:
   RationalModel* mRatModel{};
 
   int64_t mIndex{};   // index to the vector of unknowns
-  double* mLineCorr{}; // polynomial for line correction
-  double* mSampCorr{}; // polynomial for sample correction
+  const double* mLineCorr{}; // polynomial for line correction
+  const double* mSampCorr{}; // polynomial for sample correction
   int mCorrOrder{};   // order of correction polynomial
 };
 
