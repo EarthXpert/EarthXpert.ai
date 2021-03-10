@@ -17,24 +17,27 @@ using utils::CompareI;
 namespace {
   // rpb entries
   std::map<std::string, int> sRpbEntryMap = {
-    {"lineOffset", 0},
-    {"sampOffset", 1},
-    {"latOffset", 2},
-    {"longOffset", 3},
-    {"heightOffset", 4},
-    {"lineScale", 5},
-    {"sampScale", 6},
-    {"latScale", 7},
-    {"longScale", 8},
-    {"heightScale", 9},
-    {"lineNumCoef", 10},
-    {"lineDenCoef", 11},
-    {"sampNumCoef", 12},
-    {"sampDenCoef", 13},
-    {"errBias", 14},
-    {"errRand", 15},
-    {"lineCorCoef", 16},
-    {"sampCorCoef", 17} };
+    {"satId", 0},
+    {"bandId", 1},
+    {"SpecId", 2},
+    {"errBias", 3},
+    {"errRand", 4},
+    {"lineOffset", 5},
+    {"sampOffset", 6},
+    {"latOffset", 7},
+    {"longOffset", 8},
+    {"heightOffset", 9},
+    {"lineScale", 10},
+    {"sampScale", 11},
+    {"latScale", 12},
+    {"longScale", 13},
+    {"heightScale", 14},
+    {"lineNumCoef", 15},
+    {"lineDenCoef", 16},
+    {"sampNumCoef", 17},
+    {"sampDenCoef", 18},
+    {"lineCorCoef", 19},
+    {"sampCorCoef", 20} };
 
   // rpc entries
   std::map<std::string, int> sRpcEntryMap = {
@@ -156,7 +159,7 @@ void RationalModelMarshaller::SerializeRpb(std::ostream& outS,
  */
 void RationalModelMarshaller::SerializeRpc(std::ostream& outS,
   const RationalModel* const ratModel) {
-  outS << std::setprecision(11);
+  outS << std::setprecision(9);
 
   auto nfc = ratModel->nfc; // normalization factors
   outS << "LINE_OFF: " << nfc[0] << " pixels\n";
@@ -232,40 +235,40 @@ RationalModelMarshaller::DeserializeRpb(std::istream& inS) {
     if (sRpbEntryMap.end() == it) continue;
     
     switch (it->second) {
-    case 0: // range 0 ... 8
-    case 1:
-    case 2:
-    case 3:
-    case 4:
-    case 5:
+    case 3: // errBias
+      errBias = std::stod(tokens[1]);
+      break;
+    case 4: // errRand
+      errRand = std::stod(tokens[1]);
+      break;
+    case 5: // range 5 ... 14
     case 6:
     case 7:
     case 8:
     case 9:
+    case 10:
+    case 11:
+    case 12:
+    case 13:
+    case 14:
       nfc.at(it->second) = std::stod(tokens[1]);
       break;
-    case 10: // lineNumCoef
+    case 15: // lineNumCoef
       ExtractCoefs(inS, lineNumCoef);
       break;
-    case 11: // lineDenCoef
+    case 16: // lineDenCoef
       ExtractCoefs(inS, lineDenCoef);
       break;
-    case 12: // sampNumCoef
+    case 17: // sampNumCoef
       ExtractCoefs(inS, sampNumCoef);
       break;
-    case 13: // sampDenCoef
+    case 18: // sampDenCoef
       ExtractCoefs(inS, sampDenCoef);
       break;
-    case 14: // errBias
-      errBias = std::stod(tokens[1]);
-      break;
-    case 15: // errRand
-      errRand = std::stod(tokens[1]);
-      break;
-    case 16: // lineCorCoef
+    case 19: // lineCorCoef
       //ExtractCorr(inS, lineCorCoef);
       break;
-    case 17: // sampCorCoef
+    case 20: // sampCorCoef
       //ExtractCorr(inS, sampCorCoef);
       break;
     default:
