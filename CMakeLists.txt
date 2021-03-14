@@ -637,6 +637,7 @@ link_directories(${gsl_LIBRARY_DIR}/${CDEGREL})
 link_directories(${OpenBLAS_LIBRARY_DIR}/${CDEGREL})
 link_directories(${OpenCL_LIBRARY_DIR})
 link_directories(${PYTHON_LIBRARY_DIRS})
+link_directories(${zlib_LIBRARY_DIR})
 
 # section source
 add_subdirectory(java)

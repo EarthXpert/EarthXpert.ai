@@ -155,7 +155,8 @@ void DenseSolve_Direct(const EigMatX& A, const EigVecX& b) {
   //std::cout << "QR relative error: " << errQr << std::endl;
 
   // normal equation
-  const auto& xNe = (A.transpose() * A).ldlt().solve(A.transpose() * b);
+  const auto& ldlt = (A.transpose() * A).ldlt();
+  const auto& xNe = ldlt.solve(A.transpose() * b);
   //std::cout << "LS solution:\n" << xNe << std::endl;
 
   const double errNe = RelativeErr(A, xNe, b);
@@ -205,6 +206,6 @@ TEST(eigen, DenseSolve_sized) {
   DenseFill(A, b);
 
   CondNums(A);
-  //DenseSolve_Direct(A, b);
+  DenseSolve_Direct(A, b);
   //DenseSolve_Iterative(A, b);
 }
