@@ -7,9 +7,11 @@
 
 using namespace earthxpert;
 
-static std::map<SrsInfo, std::weak_ptr<CcsSrs>> gCcsSrss;
-static std::map<SrsInfo, std::weak_ptr<OgrSrs>> gOgrSrss;
-static std::map<SrsInfo, std::weak_ptr<ProjSrs>> gProjSrss;
+namespace {
+  std::map<SrsInfo, std::weak_ptr<CcsSrs>> gCcsSrss;
+  std::map<SrsInfo, std::weak_ptr<OgrSrs>> gOgrSrss;
+  std::map<SrsInfo, std::weak_ptr<ProjSrs>> gProjSrss;
+}
 
 std::shared_ptr<ISrs> SrsFactory::CreateSrs(const SrsInfo* srsInfo) {
   if (eSB_CCS == srsInfo->backend)

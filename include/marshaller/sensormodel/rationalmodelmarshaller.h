@@ -41,9 +41,9 @@ public:
    *  \brief seralize a rational model into a .rpb file or a rpc.txt file
    *
    *  \param[in] modelFile the file to insert model coefficients
-   *  \param[in] rationalModel the rational model to be seralized
+   *  \param[in] ratModel the rational model to be seralized
    */
-  void Serialize(const std::string& modelFile, const RationalModel* rationalModel);
+  void Serialize(const std::string& modelFile, const RationalModel* ratModel);
 
   /**
    *  \brief deserialize rational model from a .RPB or rpc.txt file
@@ -67,17 +67,17 @@ private:
    *  \brief seralize a rational model into a .rpb file
    *
    *  \param[in] outStream output stream
-   *  \param[in] rationalModel the rational model to be seralized
+   *  \param[in] ratModel the rational model to be seralized
    */
-  void SerializeRpb(std::ostream& outStream, const RationalModel* rationalModel);
+  void SerializeRpb(std::ostream& outStream, const RationalModel* ratModel);
 
   /**
    *  \brief seralize a rational model into a rpc.txt file
    *
    *  \param[in] outStream output stream
-   *  \param[in] rationalModel the rational model to be seralized
+   *  \param[in] ratModel the rational model to be seralized
    */
-  void SerializeRpc(std::ostream& outStream, const RationalModel* rationalModel);
+  void SerializeRpc(std::ostream& outStream, const RationalModel* ratModel);
 
   /**
    *  \brief Deserialize .RPB file
@@ -105,9 +105,9 @@ using SPRationalModelMarshaller = std::shared_ptr<RationalModelMarshaller>;
 
 // helper free functions
 void inline SaveRationalModel(const std::string& modelFile,
-  const RationalModel* rationalModel) {
+  const RationalModel* ratModel) {
   RationalModelMarshaller marshaller;
-  marshaller.Serialize(modelFile, rationalModel);
+  marshaller.Serialize(modelFile, ratModel);
 }
 
 std::unique_ptr<RationalModel> inline 

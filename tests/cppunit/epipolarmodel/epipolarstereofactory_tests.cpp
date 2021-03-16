@@ -17,12 +17,12 @@
 
 using namespace earthxpert;
 
-static constexpr int kNum = 5;
-static constexpr double kFactor = 0.75;
+constexpr int kNum = 5;
+constexpr double kFactor = 0.75;
 
-static void CreateRationalEpipolarModel(const std::string& leftMdlFile,
+void CreateRationalEpipolarModel(const std::string& leftMdlFile,
   const std::string& rightMdlFile, EpiModelPair& epiModels);
-static void TestImageToGround_Cube(const IEpipolarModel* leftEpiModel, 
+void TestImageToGround_Cube(const IEpipolarModel* leftEpiModel, 
   const IEpipolarModel* rightEpiModel, const double tol = kTolDEG, 
   const double tolH = kTolMM);
 

@@ -9,6 +9,7 @@
 #include "fusion.hpp"
 #include "datetime.hpp"
 #include "geometry.hpp"
+#include "graph.hpp"
 #include "hana.hpp"
 #include "math.hpp"
 #include "mp11.hpp"

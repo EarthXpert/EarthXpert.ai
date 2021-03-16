@@ -15,16 +15,16 @@
 using namespace earthxpert;
 using rfm = earthxpert::RationalModel;
 
-static constexpr int kNum = 15;
-static constexpr double kFactor = 0.75;
+constexpr int kNum = 15;
+constexpr double kFactor = 0.75;
 
-static void G2I_Cube(const StereoModel& sm, const std::vector<Point3d>& cube);
-static void G2I_CubeOMP(const StereoModel& sm, const std::vector<Point3d>& cube);
-static void I2G_Cube(const StereoModel& sm, const std::vector<Point3d>& cube);
-static void I2G_CubeOMP(const StereoModel& sm, const std::vector<Point3d>& cube);
-static std::vector<Point3d> CreateCube(const RationalModel* leftModel, const RationalModel* rightModel);
-static std::unique_ptr<RationalModel> CreateRationalModelLeft();
-static std::unique_ptr<RationalModel> CreateRationalModelRight();
+void G2I_Cube(const StereoModel& sm, const std::vector<Point3d>& cube);
+void G2I_CubeOMP(const StereoModel& sm, const std::vector<Point3d>& cube);
+void I2G_Cube(const StereoModel& sm, const std::vector<Point3d>& cube);
+void I2G_CubeOMP(const StereoModel& sm, const std::vector<Point3d>& cube);
+std::vector<Point3d> CreateCube(const RationalModel* leftModel, const RationalModel* rightModel);
+std::unique_ptr<RationalModel> CreateRationalModelLeft();
+std::unique_ptr<RationalModel> CreateRationalModelRight();
 
 /**
  *  TestCase 0: timing cube creation

@@ -9,8 +9,8 @@
 #include <string>
 #include <vector>
 
-static constexpr int kNumIters = 100;
-static constexpr int kNumStrs = 1000;
+constexpr int kNumIters = 100;
+constexpr int kNumStrs = 1000;
 
 /**
  *  TestCase 0:

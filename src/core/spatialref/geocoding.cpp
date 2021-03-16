@@ -8,15 +8,18 @@
 using earthxpert::Geocoding;
 using earthxpert::Point2d;
 
-Geocoding::Geocoding(const double originX, const double originY, 
-  const double pixelSizeX, const double pixelSizeY)
-    : mOriginX(originX), mOriginY(originY), mPixelSizeX(pixelSizeX),
-  mPixelSizeY(pixelSizeY) {
-  if (mPixelSizeX == 0 || mPixelSizeY == 0) 
+Geocoding::Geocoding(const Point2d& origin, const Point2d& pixSize) 
+  : mOrigin(origin), mPixSize(pixSize) {
+  if (0 == mPixSize.x || 0 == mPixSize.y)
     throw std::invalid_argument(_("Pixel ground size must be positive."));
 
-  mInvPixX = 1.0 / mPixelSizeX;
-  mInvPixY = 1.0 / mPixelSizeY;
+  mInvPixX = 1.0 / mPixSize.x;
+  mInvPixY = 1.0 / mPixSize.y;
+}
+
+Geocoding::Geocoding(const double originX, const double originY, 
+  const double pixSizeX, const double pixSizeY)
+    : Geocoding(Point2d(originX, originY), Point2d(pixSizeX, pixSizeY)) {
 }
 
 /**
@@ -26,8 +29,8 @@ Geocoding::Geocoding(const double originX, const double originY,
  *  \return Returns map coordinates (Easting, Northing)
  */
 Point2d Geocoding::ImageToMap(const Point2d &image) {
-  return { mOriginX + image.x * mPixelSizeX,
-           mOriginY + image.y * mPixelSizeY };
+  return { mOrigin.x + image.x * mPixSize.x,
+           mOrigin.y + image.y * mPixSize.y };
 }
 
 /**
@@ -38,8 +41,8 @@ Point2d Geocoding::ImageToMap(const Point2d &image) {
  *  \return Returns image coordinates (col, row) [pixel]
  */
 Point2d Geocoding::MapToImage(const cv::Point2d &map) {
-  return { (map.x - mOriginX) * mInvPixX,
-           (map.y - mOriginY) * mInvPixY };
+  return { (map.x - mOrigin.x) * mInvPixX,
+           (map.y - mOrigin.y) * mInvPixY };
 }
 
 /**
@@ -52,9 +55,10 @@ void Geocoding::ImageToMap(const std::vector<Point2d> &images,
                               std::vector<Point2d> &maps) {
   if (images.size() != maps.size()) 
     throw std::invalid_argument(_("ImageToMap: vector size must be equal"));
+
   for (size_t i = 0; i < images.size(); ++i) {
-    maps[i].x = mOriginX + images[i].x * mPixelSizeX;
-    maps[i].y = mOriginY + images[i].y * mPixelSizeY;
+    maps[i].x = mOrigin.x + images[i].x * mPixSize.x;
+    maps[i].y = mOrigin.y + images[i].y * mPixSize.y;
   }
 }
 
@@ -68,17 +72,16 @@ void Geocoding::MapToImage(const std::vector<Point2d> &maps,
                               std::vector<Point2d> &images) {
   if (images.size() != maps.size()) 
     throw std::invalid_argument(_("MapToImage: vector size must be equal"));
+
   for (size_t i = 0; i < images.size(); ++i) {
-    images[i].x = (maps[i].x - mOriginX) * mInvPixX;
-    images[i].y = (maps[i].y - mOriginY) * mInvPixY;
+    images[i].x = (maps[i].x - mOrigin.x) * mInvPixX;
+    images[i].y = (maps[i].y - mOrigin.y) * mInvPixY;
   }
 }
 
 void Geocoding::Swap(Geocoding& rhs) noexcept {
-  std::swap(mOriginX, rhs.mOriginX);
-  std::swap(mOriginY, rhs.mOriginY);
-  std::swap(mPixelSizeX, rhs.mPixelSizeX);
-  std::swap(mPixelSizeY, rhs.mPixelSizeY);
+  std::swap(mOrigin, rhs.mOrigin);
+  std::swap(mPixSize, rhs.mPixSize);
   std::swap(mInvPixX, rhs.mInvPixX);
   std::swap(mInvPixY, rhs.mInvPixY);
 }

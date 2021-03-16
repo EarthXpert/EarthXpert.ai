@@ -17,7 +17,7 @@ using fgt = FieldGroup;
 // local details
 namespace detail {
   // // \todo lidar related fields, wave
-  static const std::map<int, FieldGroup> kPDFFG = {
+  const std::map<int, FieldGroup> kPDFFG = {
     {pdt::kPDF0, {fgt::kBITXCI}},
     {pdt::kPDF1, {fgt::kBITXCI | fgt::kBITTIM}},
     {pdt::kPDF2, {fgt::kBITXCI | fgt::kBITRGB}},

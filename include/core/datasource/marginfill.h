@@ -15,6 +15,8 @@ namespace earthxpert {
  */
 template <class KindFillPolicy>
 class MarginFill {
+  static_assert(std::is_base_of_v<IKindFillPolicy, KindFillPolicy>, "IKindFillPolicy");
+
 public:
   using PolicyType = KindFillPolicy;
 
@@ -43,15 +45,25 @@ public:
    *  \brief fill all margins
    */
   void Run() {
-    FillTop();
-    FillBottom();
-    FillLeft();
-    FillRight();
+    FillTopBottom();
+    FillLeftRight();
 
-    FillTL();
-    FillTR();
-    FillBL();
-    FillBR();
+    FillTLTR();
+    FillBLBR();
+  }
+
+  /**
+   *  \brief fill the top & bottom side margins
+   */
+  void FillTopBottom() {
+    for (int c = mReadLeft; c < mReadRight; ++c) {
+      for (int r = -mMarginRows; r < mReadTop; ++r) {
+        mKindFill->FillTopPixel(c, r);
+      }
+      for (int r = mReadBottom; r < mRowMax; ++r) {
+        mKindFill->FillBottomPixel(c, r);
+      }
+    }
   }
 
   /**
@@ -72,6 +84,20 @@ public:
     for (int r = mReadBottom; r < mRowMax; ++r) {
       for (int c = mReadLeft; c < mReadRight; ++c) {
         mKindFill->FillBottomPixel(c, r);
+      }
+    }
+  }
+
+  /**
+   *  \brief fill the left & right side margins
+   */
+  void FillLeftRight() {
+    for (int r = mReadTop; r < mReadBottom; ++r) {
+      for (int c = -mMarginCols; c < mReadLeft; ++c) {
+        mKindFill->FillLeftPixel(c, r);
+      }
+      for (int c = mReadRight; c < mColMax; ++c) {
+        mKindFill->FillRightPixel(c, r);
       }
     }
   }
@@ -99,6 +125,21 @@ public:
   }
 
   /**
+   *  \brief fill the top-left & top-right corner margins
+   */
+  void FillTLTR()
+  {
+    for (int r = -mMarginRows; r < mReadTop; ++r) {
+      for (int c = -mMarginCols; c < mReadLeft; ++c) {
+        mKindFill->FillTLPixel(c, r);
+      }
+      for (int c = mReadRight; c < mColMax; ++c) {
+        mKindFill->FillTRPixel(c, r);
+      }
+    }
+  }
+
+  /**
    *  \brief fill the top-left corner margin
    */
   void FillTL()
@@ -118,6 +159,20 @@ public:
     for (int r = -mMarginRows; r < mReadTop; ++r) {
       for (int c = mReadRight; c < mColMax; ++c) {
         mKindFill->FillTRPixel(c, r);
+      }
+    }
+  }
+
+  /**
+   *  \brief fill the bottom-left & bottom-right side margins
+   */
+  void FillBLBR() {
+    for (int r = mReadBottom; r < mRowMax; ++r) {
+      for (int c = -mMarginCols; c < mReadLeft; ++c) {
+        mKindFill->FillBLPixel(c, r);
+      }
+      for (int c = mReadRight; c < mColMax; ++c) {
+        mKindFill->FillBRPixel(c, r);
       }
     }
   }

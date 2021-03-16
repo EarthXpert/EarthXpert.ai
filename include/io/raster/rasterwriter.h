@@ -101,7 +101,7 @@ public:
   /**
    *  \return Returns metadata tags
    */
-  std::unique_ptr<RasterMetadata> GetMetadata() const override {
+  UPRasterMetadata GetMetadata() const override {
     std::shared_lock<std::shared_mutex> lock(mMutex);
     return mReader->GetMetadata();
   }
@@ -173,7 +173,7 @@ public:
   /**
    *  \brief Fetch the geocoding information of the image file.
    */
-  std::unique_ptr<Geocoding> GetGeocoding() const override {
+  UPGeocoding GetGeocoding() const override {
     std::shared_lock<std::shared_mutex> lock(mMutex);
     return mReader->GetGeocoding();
   }
@@ -184,7 +184,7 @@ public:
    *  \param [in] rasterType type of data structure
    *  \return Returns pointer to raster object holding the entire image
    */
-  std::unique_ptr<IRaster> ReadRaster(RasterType rasterType) override {
+  UPIRaster ReadRaster(RasterType rasterType) override {
     std::shared_lock<std::shared_mutex> lock(mMutex);
     return mReader->ReadRaster(rasterType);
   }
@@ -200,7 +200,7 @@ public:
    *  \param [in] numRows vertical height
    *  \return Returns pointer to raster object holding a pixel block
    */
-  std::unique_ptr<IRaster> ReadRaster(const int colOffset, const int rowOffset,
+  UPIRaster ReadRaster(const int colOffset, const int rowOffset,
     const int numCols, const int numRows, const RasterType rasterType) override {
     std::shared_lock<std::shared_mutex> lock(mMutex);
     return mReader->ReadRaster(colOffset, rowOffset, numCols, numRows, rasterType);
@@ -213,7 +213,7 @@ public:
    *  \param [in] rasterType type of data structure
    *  \return Returns pointer to raster object holding a pixel block
    */
-  std::unique_ptr<IRaster> ReadRaster(const RasterWindow& win,
+  UPIRaster ReadRaster(const RasterWindow& win,
     RasterType rasterType) override {
     return mReader->ReadRaster(win, rasterType);
   }

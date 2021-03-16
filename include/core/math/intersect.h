@@ -21,7 +21,7 @@ namespace math {
  *  \tparam GeomTy Type of geometry: point, circle, etc.
  */
 template <typename GeomTy> struct IntersectResidual : IResidual {
-  IntersectResidual() {}
+  IntersectResidual() = default;
   IntersectResidual(const GeomTy* segms, const int numSegms) : segs(segms), numSegs(numSegms) {}
   virtual ~IntersectResidual() = default;
 
@@ -55,7 +55,7 @@ template <typename PointTy>
 struct AutoLineIntersectResidual final : IntersectResidual<PointTy> {
   enum { eDiffAlg = ct::kAutoDiff };
 
-  AutoLineIntersectResidual() {}
+  AutoLineIntersectResidual() = default;
   /**
    *  \param [in] segs the packed observation data, containing (numSegs * 2) points.
    *  \param [in] numSegs number of observations
@@ -204,7 +204,7 @@ template <typename PointTy>
 struct NumericLineIntersectResidual final : IntersectResidual<PointTy> {
   enum { eDiffAlg = ct::kNumericDiff };
 
-  NumericLineIntersectResidual() {}
+  NumericLineIntersectResidual() = default;
   /**
    *  \param [in] segs the packed observation data, containing (numSegs * 2) points.
    *  \param [in] numSegs number of observations

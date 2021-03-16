@@ -38,7 +38,7 @@ void AutoDiff_Alloc_(const int64_t& count) {
 void NumericDiff_Alloc_(const int64_t& count) {
 }
 
-static const std::vector<int64_t> args{ 1 };
+const std::vector<int64_t> args{ 1 };
 
 SLTBENCH_FUNCTION_WITH_ARGS(AnalyticDiff_, args);
 SLTBENCH_FUNCTION_WITH_ARGS(AutoDiff_, args);

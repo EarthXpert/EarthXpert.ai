@@ -8,7 +8,9 @@
 
 using namespace earthxpert;
 
-static constexpr int kNUMINT = 10;  // number of intervals
+namespace {
+  constexpr int kNUMINT = 10;  // number of intervals
+}
 
 /**
  *  \brief

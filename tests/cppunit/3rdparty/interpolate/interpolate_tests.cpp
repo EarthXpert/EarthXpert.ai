@@ -9,7 +9,7 @@ using namespace earthxpert;
 constexpr double kStep = 0.01;
 constexpr double kTol = 2.0e-11;
 
-static void FillData(size_t count, std::vector<double>& x, std::vector<double>& y);
+void FillData(size_t count, std::vector<double>& x, std::vector<double>& y);
 
 TEST(interpolate, Interpolator1D) {
   std::vector<double> x, y;

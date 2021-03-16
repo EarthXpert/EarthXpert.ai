@@ -431,7 +431,7 @@ endif()
 set(Boost_USE_STATIC_LIBS OFF) 
 set(Boost_USE_MULTITHREADED ON)  
 set(Boost_USE_STATIC_RUNTIME OFF) 
-find_package(Boost 1.71.0 COMPONENTS date_time filesystem fusion hana iostreams locale math mpl numpy37 program_options python37 system timer) 
+find_package(Boost 1.71.0 COMPONENTS date_time filesystem fusion graph hana iostreams locale math mpl numpy37 program_options python37 system timer) 
 
 find_package(Ceres CONFIG REQUIRED)  # ceres Ceres::ceres
 find_package(CGAL CONFIG REQUIRED)   # CGAL::CGAL
@@ -637,6 +637,7 @@ link_directories(${gsl_LIBRARY_DIR}/${CDEGREL})
 link_directories(${OpenBLAS_LIBRARY_DIR}/${CDEGREL})
 link_directories(${OpenCL_LIBRARY_DIR})
 link_directories(${PYTHON_LIBRARY_DIRS})
+link_directories(${zlib_LIBRARY_DIR})
 
 # section source
 add_subdirectory(java)

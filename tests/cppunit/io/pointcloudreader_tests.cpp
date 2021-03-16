@@ -15,7 +15,7 @@
 using namespace earthxpert;
 using fgt = FieldGroup;
 
-static constexpr double kTol = 1.0e-6; // [um]
+constexpr double kTol = 1.0e-6; // [um]
 
 /**
  *  \brief PointcloudReader test cases, zero offsets in .las

@@ -22,21 +22,21 @@ using namespace earthxpert::testutils;
 using rfm = earthxpert::RationalModel;
 namespace fs = std::filesystem;
 
-static constexpr int kNI{ 4 };
-static constexpr int kNH{ 100 };  // number of points on each line
-static constexpr int kNum{ 10 };
+constexpr int kNI{ 4 };
+constexpr int kNH{ 100 };  // number of points on each line
+constexpr int kNum{ 10 };
 
-static void TestCurveI2G(const RationalModel* ratModel, 
+void TestCurveI2G(const RationalModel* ratModel, 
   const EarthEllipsoid& ee, std::vector<Point3d>& curves);
 
-static void TestCubeI2G(const RationalModel* ratModel);
-static void TestCubeI2G_Functor(const RationalModel* ratModel);
+void TestCubeI2G(const RationalModel* ratModel);
+void TestCubeI2G_Functor(const RationalModel* ratModel);
 
-static std::unique_ptr<RationalModel> CreateRationalModelA();
-static std::unique_ptr<RationalModel> CreateRationalModelB();
-static std::unique_ptr<RationalModel> CreateRationalModelC();
-static std::unique_ptr<RationalModel> CreateRationalModelD();
-static std::unique_ptr<RationalModel> CreateRationalModelE();
+std::unique_ptr<RationalModel> CreateRationalModelA();
+std::unique_ptr<RationalModel> CreateRationalModelB();
+std::unique_ptr<RationalModel> CreateRationalModelC();
+std::unique_ptr<RationalModel> CreateRationalModelD();
+std::unique_ptr<RationalModel> CreateRationalModelE();
 
 /**
  * Test creation of rational model.

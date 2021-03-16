@@ -4,12 +4,12 @@
  */
 #pragma once
 
-#include "core/excore.h"
+#include "dem/igeoid.h"
 
 namespace earthxpert {
-class EXCORE_EXPORTS LocalGeoid {
+class EXDEM_EXPORTS Geoid final : public IGeoid {
 public:
-  LocalGeoid();
-  ~LocalGeoid() = default;
+  Geoid();
+  ~Geoid() = default;
 };
 }

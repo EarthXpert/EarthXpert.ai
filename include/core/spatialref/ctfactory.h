@@ -10,6 +10,8 @@
 #include "core/spatialref/projct.h"
 #include "core/spatialref/spatialdef.h"
 
+#include <mutex>
+
 namespace earthxpert {
 class EXCORE_EXPORTS CtFactory {
 public:
@@ -20,5 +22,8 @@ public:
   static std::shared_ptr<OgrCt> CreateOgrCt(const CtInfo* ctInfo);
 
   static std::shared_ptr<ProjCt> CreateProjCt(const CtInfo* ctInfo);
+
+private:
+  inline static std::mutex mMtx;
 };
 }

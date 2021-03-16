@@ -19,15 +19,15 @@
 
 using namespace earthxpert;
 
-static constexpr int kGridStride = 128;
+constexpr int kGridStride = 128;
 
-static void CreateRationalEpipolarModel(const std::string& leftMdlFile,
+void CreateRationalEpipolarModel(const std::string& leftMdlFile,
   const std::string& rightMdlFile, EpiModelPair& epiModels);
-static void TestRaw2Epi_Epi2Raw_Grid(const IEpipolarModel* epiModel, double tol=kTolMM);
-static void TestStride(const IEpipolarModel* epiModel, int stride, double tol = kTolMM);
+void TestRaw2Epi_Epi2Raw_Grid(const IEpipolarModel* epiModel, double tol=kTolMM);
+void TestStride(const IEpipolarModel* epiModel, int stride, double tol = kTolMM);
 
-static void TestCubeI2G(const ISensorModel* epiSensorModel);
-static void TestImageToGround_Cube(const ISensorModel* leftEpiSensorModel,
+void TestCubeI2G(const ISensorModel* epiSensorModel);
+void TestImageToGround_Cube(const ISensorModel* leftEpiSensorModel,
   const ISensorModel* rightSensorModel);
 
 /**
