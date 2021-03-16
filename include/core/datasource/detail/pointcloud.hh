@@ -28,7 +28,7 @@ inline void Pointcloud::SetField(const size_t i, const FieldTy& field) {
   SetField_Unchecked<FieldTy>(i, field);
 }
 
-inline void Pointcloud::SetXYZ(const size_t i, const Point3f xyz) {
+inline void Pointcloud::SetXYZ(const size_t i, const Point3f& xyz) {
   assert(mFieldGroup.test(FieldGroup::kPOSXYZ));
   assert(i < mPointCapacity);
   mXYZ[i].x = xyz.x;
@@ -36,10 +36,10 @@ inline void Pointcloud::SetXYZ(const size_t i, const Point3f xyz) {
   mXYZ[i].z = xyz.z;
 }
 
-inline void Pointcloud::SetXYZ(const size_t i, const XYZD xyz) {
-  SetXYZ(i, static_cast<Point3d>(xyz));
+inline void Pointcloud::SetXYZ(const size_t i, const XYZD& xyz) {
+  SetXYZ(i, static_cast<const Point3d&>(xyz));
 }
-inline void Pointcloud::SetXYZ(const size_t i, const Point3d xyz) {
+inline void Pointcloud::SetXYZ(const size_t i, const Point3d& xyz) {
   assert(mFieldGroup.test(FieldGroup::kPOSXYZ));
   assert(i < mPointCapacity);
   mXYZ[i].x = xyz.x - mOrigin.x;

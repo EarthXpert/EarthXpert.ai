@@ -25,6 +25,8 @@ namespace earthxpert {
  */
 template <class GroundPolicy>
 class EXEPIPOLARMODEL_EXPORTS EpipolarModel final : public SensorEpipolarModel {
+    static_assert(std::is_base_of_v<IGroundPolicy, GroundPolicy>, "IGroundPolicy");
+
 public:
   using PolicyType = GroundPolicy;
   using UPGroundPolicy = std::unique_ptr<GroundPolicy>;

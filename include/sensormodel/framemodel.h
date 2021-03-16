@@ -24,6 +24,8 @@ namespace earthxpert {
  */
 template <class ImageModelPolicy>
 class EXSENSORMODEL_EXPORTS FrameModel final : public SensorModel {
+    static_assert(std::is_base_of_v<IImageModelPolicy, ImageModelPolicy>, "IImageModelPolicy");
+
 public:
   using PolicyType = ImageModelPolicy;
   enum {

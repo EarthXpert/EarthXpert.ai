@@ -96,7 +96,7 @@ public:
    *  \param [in] i index of point
    *  \param [in] field the field object.
    */
-  template <typename FieldTy> void SetField(const size_t i, const FieldTy& field);
+  template <typename FieldTy> void SetField(size_t i, const FieldTy& field);
 
   /**
    *  \brief set XYZ coordinates at specified index
@@ -104,10 +104,10 @@ public:
    *  \param [in] i index of point
    *  \param [in] xyz XYZ coordinates
    */
-  void SetXYZ(const size_t i, const Point3f xyz);
+  void SetXYZ(size_t i, const Point3f& xyz);
 
-  void SetXYZ(const size_t i, const XYZD xyz);
-  void SetXYZ(const size_t i, const Point3d xyz);
+  void SetXYZ(size_t i, const XYZD& xyz);
+  void SetXYZ(size_t i, const Point3d& xyz);
 
   /**
    *  \return Returns origin.
@@ -125,17 +125,17 @@ public:
  *  \param [in] i index of point
  *  \return Returns XYZ coordinates at specified index.
  */
-  XYZD GetXYZD(const size_t i) noexcept;
-  Point3d GetPoint3d(const size_t i) noexcept;
+  XYZD GetXYZD(size_t i) noexcept;
+  Point3d GetPoint3d(size_t i) noexcept;
 
   /**
    *  \param FieldTy the field type of a WxPoint<> component
    *  \param [in] i index of point
    *  \return Returns a field at given index.
    */
-  template <typename FieldTy> const FieldTy& GetField(const size_t i) const;
+  template <typename FieldTy> const FieldTy& GetField(size_t i) const;
 
-  template <typename FieldTy> FieldTy& GetField(const size_t i);
+  template <typename FieldTy> FieldTy& GetField(size_t i);
 
   /**
    *  \brief Set fields to given point.
@@ -144,7 +144,7 @@ public:
    *  \param [in] i index of point
    *  \param [in] i point object of type PointTy
    */
-  template <typename PointTy> void SetPoint(const size_t i, const PointTy& point);
+  template <typename PointTy> void SetPoint(size_t i, const PointTy& point);
 
   /**
    *  \brief Set fields to given point.
@@ -152,14 +152,14 @@ public:
    *  \param [in] i index of point
    *  \param [in] point LASlib point
    */
-  void SetPoint(const size_t i, const LASpoint& point, const LASquantizer* quantizer);
+  void SetPoint(size_t i, const LASpoint& point, const LASquantizer* quantizer);
 
   /**
    *  \param PointTy the point type of WxPoint<>, being all or a partial of available fields
    *  \param [in] i index of point
    *  \return Returns a point at given index.
    */
-  template <typename PointTy> PointTy GetPoint(const size_t i) const;
+  template <typename PointTy> PointTy GetPoint(size_t i) const;
 
   /**
    *  \param FieldTy the field type of a WxPoint<> component
@@ -181,16 +181,16 @@ public:
    *  \param [in] field the FieldTy object
    */
   template <typename FieldTy>
-  void SetField_Unchecked(const size_t i, const FieldTy& field);
+  void SetField_Unchecked(size_t i, const FieldTy& field);
 
   /**
    *  \param FieldTy the field type of a WxPoint<> component
    *  \param [in] i index of point
    *  \return Returns a field at given index.
    */
-  template <typename FieldTy> const FieldTy& GetField_Unchecked(const size_t i) const;
+  template <typename FieldTy> const FieldTy& GetField_Unchecked(size_t i) const;
 
-  template <typename FieldTy> FieldTy& GetField_Unchecked(const size_t i);
+  template <typename FieldTy> FieldTy& GetField_Unchecked(size_t i);
 
   /**
    *  \brief Set fields to given point.
@@ -199,13 +199,13 @@ public:
    *  \param PointTy the point type of WxPoint<>
    */
   template <typename PointTy>
-  void SetPoint_Unchecked(const size_t i, const PointTy& point);
+  void SetPoint_Unchecked(size_t i, const PointTy& point);
 
   /**
    *  \param [in] i index of point
    *  \return Returns a point at given index.
    */
-  template <typename PointTy> PointTy GetPoint_Unchecked(const size_t i) const;
+  template <typename PointTy> PointTy GetPoint_Unchecked(size_t i) const;
 
   /**
    *  \brief Set fields of given point.
@@ -233,7 +233,7 @@ public:
    */
   template <typename PointcloudTy>
   struct PointProxy {
-    static_assert(std::is_same_v<Pointcloud, std::remove_cv_t<PointcloudTy>>, "Must be Pointcloud");
+    static_assert(std::is_same_v<Pointcloud, std::remove_cv_t<PointcloudTy>>, "Pointcloud");
     using Pointcloud_Pointer = std::add_pointer_t<PointcloudTy>;
 
     PointProxy(Pointcloud_Pointer pointCloud, const size_t index) : pc(pointCloud), i(index) {}
@@ -295,7 +295,7 @@ private:
    *  \param [in] pointFieldGroup The field groups bit mask requested.
    *  \throw Throws invalid_argument if point cloud does not contain all the requested field groups.
    */
-  void VerifyPointFieldBits(const size_t pointFieldBits) const;
+  void VerifyPointFieldBits(size_t pointFieldBits) const;
 
   /**
    *  \param FieldTy the field type of a WxPoint<> component
