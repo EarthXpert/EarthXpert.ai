@@ -17,7 +17,7 @@ namespace earthxpert {
  */
 class EXCORE_EXPORTS OgrCt final : public ICt {
 public:
-  OgrCt(const OgrSrs* src, const OgrSrs* tgt);
+  OgrCt(OgrSrs* src, OgrSrs* tgt);
   OgrCt(OGRSpatialRef* src, OGRSpatialRef* tgt);
   OgrCt(int srcEpsg, int tgtEpsg);
   OgrCt(const std::string& srcWkt, const std::string& tgtWkt);

@@ -106,7 +106,9 @@ if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
     set(GDAL_ROOT "${EX_THIRD_PARTY}/gdal_2.4.1")
     set(GDAL_BIN_DIR "${GDAL_ROOT}/bin/${CDEGREL}")
     set(GDAL_INCLUDE_DIRS "${GDAL_ROOT}/include")
-    set(GDAL_LIBRARIES "${GDAL_ROOT}/lib/${CDEGREL}/gdal_i.lib")
+    set(GDAL_LIBRARY_DIR "${GDAL_ROOT}/lib")
+    set(GDAL_LIBRARIES debug "${GDAL_LIBRARY_DIR}/debug/gdal_i.lib"
+                       optimized "${GDAL_LIBRARY_DIR}/release/gdal_i.lib")
     
     set(geotiff_ROOT "${EX_THIRD_PARTY}/libgeotiff_1.4.2")
     set(geotiff_BIN_DIR "${geotiff_ROOT}/bin/${CDEGREL}")
@@ -351,7 +353,7 @@ if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
     set(xtl_ROOT "${EX_THIRD_PARTY}/xtl_0.6.11")
     set(xtl_DIR "${xtl_ROOT}/share/xtl")
     
-    set(zlib_ROOT "${EX_THIRD_PARTY}/zlib_1.2.11")
+    set(zlib_ROOT "${EX_THIRD_PARTY}/zlib_1.2.11s")
     set(zlib_INCLUDE_DIR "${zlib_ROOT}/include")
     set(zlib_LIBRARY_DIR "${zlib_ROOT}/lib")
     set(zlib_LIBRARIES debug "${zlib_LIBRARY_DIR}/debug/zlibd.lib"

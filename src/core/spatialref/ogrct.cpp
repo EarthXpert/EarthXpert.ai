@@ -15,7 +15,7 @@ using namespace earthxpert::thirdparty;
  * \param [in] src the source SRS
  * \param [in] tgt the target SRS
  */
-OgrCt::OgrCt(const OgrSrs* src, const OgrSrs* tgt) {
+OgrCt::OgrCt(OgrSrs* src, OgrSrs* tgt) {
   Initialize(src->mSrs.get(), tgt->mSrs.get());
 }
 
@@ -61,7 +61,7 @@ OgrCt::OgrCt(const std::string& srcWkt, const std::string& tgtWkt) {
  *  That is, the mappings are X -> lat, Y -> lon. To maintain the backward compatibility,
  *  set the stategy OAMS_TRADITIONAL_GIS_ORDER here.
  *
- *  \todo use the new WKT definition for GDAL 2
+ *  \todo use the new WKT definition for GDAL 3
  *  \question what to do when mixing GDAL 2 & 3 with 3rd-party
  */
 void OgrCt::Initialize(OGRSpatialRef* src, OGRSpatialRef* tgt) {

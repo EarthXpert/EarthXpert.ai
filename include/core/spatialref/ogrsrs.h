@@ -27,6 +27,7 @@ private:
   friend class OgrCt;
 
   UPSpatialRefSys mSrs;
+  void Initialize();
 
   // cached info
 };
