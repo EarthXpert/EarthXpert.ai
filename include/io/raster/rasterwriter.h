@@ -14,6 +14,7 @@ namespace earthxpert {
  *  The class RasterWriter provides functios to write into an image file
  *  with GDAL as backend, and serialize pixle block in an IRaster object
  *  having specific configurations, such as size, offset, bands, etc.
+ * 
  *  Each RasterWriter instance is connected and thus bound to specific bands.
  *  Therefore a new instance is needed to write into different subsets of bands.
  *
