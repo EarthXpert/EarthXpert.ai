@@ -18,9 +18,8 @@ public:
     eIM_DIGITAL, //
     eIM_FILM
   };
-  using impt = ImageModelPolicyType;
 
-  virtual ~IImageModelPolicy() {}
+  virtual ~IImageModelPolicy() = default;
 
   /**
    *  \brief Given a 2d position in image coordinate system,
@@ -49,4 +48,6 @@ public:
 
   virtual std::pair<int, int> GetImageSize() const noexcept = 0;
 };
+
+using impt = IImageModelPolicy::ImageModelPolicyType;
 }
