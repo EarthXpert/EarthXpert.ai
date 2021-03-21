@@ -8,6 +8,7 @@ set(exdem_srcs "./dem.cpp"
   "geoid/localgeoid.cpp"
   "rasterdem/rasterdem.cpp"
   "tindem/tindem.cpp"
+  "utils/demqc.cpp"
   "utils/landscapemodel.cpp")
 set(exdem_items ex3rdparty core dataio
   Boost::boost Boost::filesystem Boost::iostreams
