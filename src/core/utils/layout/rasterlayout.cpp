@@ -22,9 +22,9 @@ using earthxpert::RasterWindow;
  *  \param [in] kind the primary direction for division
  */
 RasterLayout::RasterLayout(const int numCols, const int numRows,
-  const int winNumCols, const int winNumRows, const LayoutKind kind)
+  const int winNumCols, const int winNumRows, const LayoutDir dir)
   : RasterLayout(RasterWindow{0, 0, numCols, numRows}, 
-                 winNumCols, winNumRows, kind) {}
+                 winNumCols, winNumRows, dir) {}
 
 /**
  *  \param [in] range raster range to divide into smaller windows
@@ -33,9 +33,9 @@ RasterLayout::RasterLayout(const int numCols, const int numRows,
  *  \param [in] kind the primary direction for division
  */
 RasterLayout::RasterLayout(const RasterWindow& range,
-  const int winNumCols, const int winNumRows, const LayoutKind kind)
+  const int winNumCols, const int winNumRows, const LayoutDir dir)
   : mRange(range), mWinNumCols(winNumCols), 
-    mWinNumRows(winNumRows), mLayoutkind(kind) {
+    mWinNumRows(winNumRows), mLayoutDir(dir) {
   LayoutWindows();
 }
 
@@ -93,7 +93,7 @@ void RasterLayout::LayoutWindows() {
   mWins.resize(numWins);
   for (int w = 0; w < numWins; ++w) {
     int c{}, r{};
-    if (LayoutKind::eLK_HORIZONTAL == mLayoutkind) {
+    if (LayoutDir::eLD_HORIZONTAL == mLayoutDir) {
       std::tie(c, r) = IndexToCR(w, numHoriWins);
     }
     else {

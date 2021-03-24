@@ -12,7 +12,7 @@
 #include <vector>
 
 namespace earthxpert {
-enum class LayoutKind;
+enum class LayoutDir;
 /**
  *  The class RasterLayout formulate the non-overlapping tiling of image
  *  in raster coodinate system.
@@ -21,9 +21,9 @@ enum class LayoutKind;
 class EXCORE_EXPORTS RasterLayout {
 public:
   RasterLayout(int numCols, int numRows, int winNumCols, int winNumRows, 
-    LayoutKind kind = LayoutKind::eLK_HORIZONTAL);
+    LayoutDir dir = LayoutDir::eLD_HORIZONTAL);
   RasterLayout(const RasterWindow& range, int winNumCols, int winNumRows, 
-    LayoutKind kind = LayoutKind::eLK_HORIZONTAL);
+    LayoutDir dir = LayoutDir::eLD_HORIZONTAL);
   RasterLayout(const RasterLayout& rhs) = default;
   RasterLayout(RasterLayout&& rhs) noexcept = default;
   ~RasterLayout() = default;
@@ -54,7 +54,7 @@ private:
   RasterWindow mRange;    // raster range to divide into smaller windows
   int mWinNumCols{};  // width of window
   int mWinNumRows{};  // height of window
-  LayoutKind mLayoutkind{LayoutKind::eLK_HORIZONTAL};  // major direction
+  LayoutDir mLayoutDir{LayoutDir::eLD_HORIZONTAL};  // major direction
   std::vector<RasterWindow> mWins;  // array of raster windows formulating the layout
 
   void LayoutWindows();
