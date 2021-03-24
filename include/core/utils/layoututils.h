@@ -105,7 +105,8 @@ inline bool MaskAllOne(const uchar* mask, const int64_t i1,
 }
 
 std::pair<int, int> EXCORE_EXPORTS EstimateTileSize(size_t memSize,
-  int bpp, int numCols, int numRows, int kTile=256);
+  int bpp, int numCols, int numRows, int kTile=256,
+  int marginCols=0, int marginRows=0);
 
 /**
  *  \tparam PT point type: Point2d, PointXYd

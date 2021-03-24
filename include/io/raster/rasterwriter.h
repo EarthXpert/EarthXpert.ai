@@ -232,6 +232,7 @@ public:
 
 private:
   void Initialize(GDALDataset* dataset, const std::vector<int>& bands = {});
+  void CheckRasterInfo(const IRaster* raster);
 
   void WriteBand(GDALRasterBand* band, const RasterWindow& writeWin,
     uchar* const writeBuffer, int64_t rowNumBytes);

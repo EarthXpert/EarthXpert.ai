@@ -123,19 +123,19 @@ void DenseFill(EigMatX& A, EigVecX& b) {
 }
 
 template<typename EigMatX>
-void CondNums(const EigMatX& A) {
+void RCondNums(const EigMatX& A) {
   // design matrix
-  const double cnSvd = CondNumSvd(A);
-  std::cout << "Condition number SVD: " << cnSvd << std::endl;
+  const double rcnSvd = RCondSvd(A);
+  std::cout << "Reciprocal condition number SVD: " << rcnSvd << std::endl;
 
   // normal matrix
   const auto& ldlt = (A.transpose() * A).ldlt();
 
-  const double cnNmSvd = CondNumSvd(ldlt.matrixLDLT());
-  std::cout << "Condition number NE SVD: " << cnNmSvd << std::endl;
+  const double rcnNmSvd = RCondSvd(ldlt.matrixLDLT());
+  std::cout << "Reciprocal condition number NE SVD: " << rcnNmSvd << std::endl;
 
-  const double cnNm = 1.0 / ldlt.rcond();
-  std::cout << "Condition number NE: " << cnNm << " " << ldlt.info() << std::endl;
+  const double rcnNm = ldlt.rcond();
+  std::cout << "Reciprocal condition number NE: " << rcnNm << " " << ldlt.info() << std::endl;
 }
 
 template<typename EigMatX, typename EigVecX>
@@ -200,7 +200,7 @@ TEST(eigen, DenseSolve_Rnd_dynamic) {
   EigVecX<double> b = EigVecX<double>::Random(kR);
   DenseFill_Rnd<double>(A, b);
 
-  CondNums(A);
+  RCondNums(A);
   //DenseSolve_Direct(A, b);
   //DenseSolve_Iterative(A, b);
 }
@@ -210,7 +210,7 @@ TEST(eigen, DenseSolve_dynamic) {
   EigVecX<double> b = EigVecX<double>::Zero(kR);
   DenseFill(A, b);
 
-  CondNums(A);
+  RCondNums(A);
   //DenseSolve_Direct(A, b);
   //DenseSolve_Iterative(A, b);
 }
@@ -220,7 +220,7 @@ TEST(eigen, DenseSolve_sized) {
   EigVecS b;
   DenseFill(A, b);
 
-  CondNums(A);
+  RCondNums(A);
   DenseSolve_Direct(A, b);
   //DenseSolve_Iterative(A, b);
 }

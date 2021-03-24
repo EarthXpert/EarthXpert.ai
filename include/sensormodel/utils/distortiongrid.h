@@ -14,7 +14,7 @@ namespace earthxpert {
  *  \brief Encapsulates a calibrated grid of camera lens distortion.
  *
  *  \tparam Ty value type such as float, double
- *  \todo represent node position suing Point_<Ty> 
+ *  \todo represent node position suing Point_<Ty>
  */
 template <typename Ty> class EXSENSORMODEL_EXPORTS DistortionGrid {
   static_assert(std::is_floating_point_v<Ty>, "Requires that template argument be floating data type");
@@ -75,10 +75,9 @@ private:
   std::string mCameraName;
   std::unique_ptr<InterpGrid<Ty>> mGrid;
 
-  // void VerifyGrid(const std::vector<Ty>& vX, const std::vector<Ty>& vY)
-  // const;
+  // void CheckGrid(const std::vector<Ty>& vX, const std::vector<Ty>& vY) const;
   void EstablishGrid(const std::vector<Ty> &vX, const std::vector<Ty> &vY,
-                     const std::vector<Ty> &vdX, const std::vector<Ty> &vdY);
+    const std::vector<Ty> &vdX, const std::vector<Ty> &vdY);
 
   void CopyFrom(const DistortionGrid &rhs);
   void MoveFrom(DistortionGrid &&rhs) noexcept;

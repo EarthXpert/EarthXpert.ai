@@ -12,9 +12,12 @@ namespace earthxpert {
  *  \param [in] numCols max number of columns
  *  \param [in] numRows max number of rows
  *  \param [in] kTile minimal tile dimension
+ *  \param [in] marginCols number of columns of left & right margins
+ *  \param [in] marginRows number of rows of top & bottom margins
  */
-std::pair<int, int> EstimateTileSize(const size_t memSize, const int bpp, 
-  const int numCols, const int numRows, const int kTile) {
+std::pair<int, int> EstimateTileSize(const size_t memSize, 
+  const int bpp, const int numCols, const int numRows, 
+  const int kTile, const int marginCols, const int marginRows) {
   int tileDim = int(sqrt(memSize / bpp));
   tileDim = std::max(1, (tileDim / kTile)) * kTile;
 
