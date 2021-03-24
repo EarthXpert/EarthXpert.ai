@@ -491,9 +491,9 @@ else()
 
 endif()
 
-#earthxpert_get_INCLUDE_DIRS(libInterpolate libInterpolate::Interpolate)
-#earthxpert_get_INCLUDE_DIRS(SLTBENCH sltbench)
-#earthxpert_get_LIBRARIES(SLTBENCH sltbench)
+#exai_get_INCLUDE_DIRS(libInterpolate libInterpolate::Interpolate)
+#exai_get_INCLUDE_DIRS(SLTBENCH sltbench)
+#exai_get_LIBRARIES(SLTBENCH sltbench)
 
 get_target_property(libInterpolate_INCLUDE_DIRS libInterpolate::Interpolate INTERFACE_INCLUDE_DIRECTORIES)
 get_target_property(range-v3_INCLUDE_DIRS range-v3 INTERFACE_INCLUDE_DIRECTORIES)

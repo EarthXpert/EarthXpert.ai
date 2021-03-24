@@ -9,7 +9,7 @@
  *
  *  \detail 
  *
- *  usage:  sparsematch.exe [options]
+ *  usage:  exsparsematch.exe [options]
  *      --memsize     [memory_size_in_MB]           // 4000
  *
  *  examples:

@@ -1,7 +1,7 @@
 project(tests_cppunit_3rdparty)
 
 function(add_3rdparty_cppunit_test name)
-  earthxpert_add_test(${name} "tests/cppunit/3rdparty" ${ARGN})
+  exai_add_test(${name} "tests/cppunit/3rdparty" ${ARGN})
 endfunction()
 
 add_subdirectory(boost)

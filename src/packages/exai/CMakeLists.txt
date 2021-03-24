@@ -14,9 +14,9 @@ set(pfexai_items ex3rdparty blockadjust colorbal core dataio epipolar
   ${CGAL_LIBRARIES} ${GDAL_LIBRARIES} ${geotrans_LIBRARIES} ${GETTEXT_LIBRARY} 
   glog::glog ${ICONV_LIBRARIES} ${LASLIB_LIBRARY} ${LIBXML2_LIBRARIES}
   ${OpenCV_LIBS} ${PDAL_LIBRARIES})
-earthxpert_add_library(pfexai "platform"
+exai_add_library(pfexai "platform"
   SRCS ${pfexai_srcs}
   ITEMS ${pfexai_items})
 
-earthxpert_source_group(${pfexai_srcs})
-earthxpert_install_target(pfexai)
+exai_source_group(${pfexai_srcs})
+exai_install_target(pfexai)

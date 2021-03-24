@@ -3,7 +3,7 @@ project(src)
 configure_file(srcconfig.h.in ${CMAKE_BINARY_DIR}/src/srcconfig.h)
 include_directories(${CMAKE_BINARY_DIR}/src/)
 
-function(earthxpert_source_group)
+function(exai_source_group)
   foreach(SRC IN ITEMS ${ARGN})
     if(IS_ABSOLUTE ${SRC})
       file(RELATIVE_PATH SRC_REL ${CMAKE_CURRENT_SOURCE_DIR} ${SRC})
@@ -16,9 +16,9 @@ function(earthxpert_source_group)
     endif()
     source_group(${SRC_PATH} FILES ${SRC})
   endforeach()
-endfunction(earthxpert_source_group)
+endfunction(exai_source_group)
 
-function(earthxpert_add_library name libs_dir)
+function(exai_add_library name libs_dir)
   cmake_parse_arguments(
     EX              # prefix of output variables
     ""              # list of names of the boolean arguments (only defined ones will be true)
@@ -39,7 +39,7 @@ function(earthxpert_add_library name libs_dir)
   endif()
 endfunction()
 
-function(earthxpert_add_executable name exec_dir)
+function(exai_add_executable name exec_dir)
   cmake_parse_arguments(
     EX              # prefix of output variables
     ""              # list of names of the boolean arguments (only defined ones will be true)
@@ -60,7 +60,7 @@ function(earthxpert_add_executable name exec_dir)
   endif()
 endfunction()
 
-function(earthxpert_install_target name)
+function(exai_install_target name)
   install(TARGETS ${name} ${ARGN}
     LIBRARY DESTINATION sdk/lib
     ARCHIVE DESTINATION sdk/lib

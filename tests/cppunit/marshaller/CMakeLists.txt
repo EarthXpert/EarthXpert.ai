@@ -16,5 +16,5 @@ $ENV{PATH}")
 endif()
 
 if(EARTHXPERT_INSTALL_TESTS_CPPUNIT)
-  earthxpert_install_test(marshaller_tests)
+  exai_install_test(marshaller_tests)
 endif()

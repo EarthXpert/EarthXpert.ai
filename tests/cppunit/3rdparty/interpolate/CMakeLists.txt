@@ -12,5 +12,5 @@ ${GTEST_BIN_DIR};${proj_BIN_DIR};${TESTS_BIN_DIR};$ENV{PATH}")
 endif()
 
 if(EARTHXPERT_INSTALL_TESTS_3RDPARTY)
-  earthxpert_install_test(interpolate_tests)
+  exai_install_test(interpolate_tests)
 endif()

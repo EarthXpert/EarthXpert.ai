@@ -1,8 +1,8 @@
 project(expyext CXX)
 
 # Build a Python extension API module:
-function(earthxpert_add_py_library name libs_dir)
-  earthxpert_add_library(${name} ${libs_dir} ${ARGN})
+function(exai_add_py_library name libs_dir)
+  exai_add_library(${name} ${libs_dir} ${ARGN})
 
   # Python debug libraries expose slightly different objects
   # https://docs.python.org/3.6/c-api/intro.html#debugging-builds
@@ -38,8 +38,8 @@ set(expyext_items ex3rdparty blockadjust colorbal core dataio
   Boost::boost Boost::numpy Boost::python 
   ${GDAL_LIBRARIES} ${geotrans_LIBRARIES} ${GETTEXT_LIBRARY} 
   ${OpenCV_LIBS} ${proj_LIBRARIES} ${PYTHON_LIBRARIES} ${PYTHON_NUMPY_LIBRARIES})
-earthxpert_add_py_library(expyext "bindings/python"
+exai_add_py_library(expyext "bindings/python"
   SRCS ${expyext_srcs}
   ITEMS ${expyext_items})
 
-earthxpert_install_target(expyext)
+exai_install_target(expyext)

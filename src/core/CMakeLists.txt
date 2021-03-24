@@ -67,9 +67,9 @@ set(core_items ex3rdparty
   libInterpolate::Interpolate
   ${MPFR4_LIBRARIES} ${MPIR_LIBRARIES} ${nsimd_LIBRARIES} ${OpenCL_LIBRARIES} 
   ${OpenCV_LIBS}  ${proj_LIBRARIES} ${Simd_LIBRARIES} ${TBB_LIBRARIES})
-earthxpert_add_library(core "api"
+exai_add_library(core "api"
   SRCS ${core_srcs}
   ITEMS ${core_items})
 
-earthxpert_source_group(${core_srcs})
-earthxpert_install_target(core)
+exai_source_group(${core_srcs})
+exai_install_target(core)

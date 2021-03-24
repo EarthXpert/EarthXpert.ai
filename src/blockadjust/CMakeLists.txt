@@ -32,9 +32,9 @@ set(blockadjust_items ex3rdparty core exproject sensormodel
   ${CERES_LIBRARY} ${CGAL_LIBRARIES} ${GDAL_LIBRARIES} ${geotrans_LIBRARIES} 
   ${GETTEXT_LIBRARY} ${ICONV_LIBRARIES} ${LIBXML2_LIBRARIES} 
   ${MPFR4_LIBRARIES} ${MPIR_LIBRARIES} ${OpenCV_LIBS})
-earthxpert_add_library(blockadjust "api"
+exai_add_library(blockadjust "api"
   SRCS ${blockadjust_srcs}
   ITEMS ${blockadjust_items})
 
-earthxpert_source_group(${blockadjust_srcs})
-earthxpert_install_target(blockadjust)
+exai_source_group(${blockadjust_srcs})
+exai_install_target(blockadjust)
