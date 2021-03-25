@@ -1,7 +1,8 @@
 project(pfexai CXX)
 
 add_definitions(-DEXEXAI_API)
-set(pfexai_srcs "exaiblockadjust.cpp"
+set(pfexai_srcs 
+  "exaiblockadjust.cpp"
   "exaicmd.cpp"
   "exaicolorbal.cpp"
   "exaiepipolar.cpp"

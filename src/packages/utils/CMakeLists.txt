@@ -1,7 +1,8 @@
 project(pfutils CXX)
 
 add_definitions(-DEXPFUTILS_API)
-set(pfutils_srcs "./commandinfo.cpp"
+set(pfutils_srcs 
+  "./commandinfo.cpp"
   "./pfutils.cpp")
 set(_items ex3rdparty core dataio epipolar epipolarmodel exdem exutils sensormodel sfm
   Boost::boost Boost::filesystem ${CERES_LIBRARY} ${CGAL_LIBRARIES} 

@@ -1,7 +1,8 @@
 project(sfm CXX)
 
 add_definitions(-DEXSFM_API)
-set(sfm_srcs "densematch/circleneighbor.cpp"
+set(sfm_srcs 
+  "densematch/circleneighbor.cpp"
   "densematch/densematch.cpp"
   "densematch/densematchfactory.cpp"
   "densematch/depthmatch.cpp"

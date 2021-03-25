@@ -1,7 +1,8 @@
 project(sensormodel CXX)
 
 add_definitions(-DEXSENSORMODEL_API)
-set(sensormodel_srcs "ads/adsmodel.cpp"
+set(sensormodel_srcs 
+  "ads/adsmodel.cpp"
   "ads/adsstereomodel.cpp"
   "ads/adsutils.cpp"
   "affine/affinemodel.cpp"

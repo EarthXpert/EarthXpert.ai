@@ -29,7 +29,8 @@ message(STATUS "wxwidgets_LIBRARIES: ${wxwidgets_LIBRARIES}")
 message(STATUS "zlib_LIBRARIES: ${zlib_LIBRARIES}")
 
 add_definitions(-DEX3RDPARTY_API)
-set(ex3rdparty_srcs "blas/exblas.cpp"
+set(ex3rdparty_srcs 
+  "blas/exblas.cpp"
   "boost/exboost.cpp"
   "ceres/bal_problem.cpp"
   "ceres/exceres.cpp"
@@ -77,8 +78,8 @@ set(ex3rdparty_srcs "blas/exblas.cpp"
   "xtensor/exxtensor.cpp"
   "xtl/exxtl.cpp"
   "zlib/exzlib.cpp")
-set(ex3rdparty_items Boost::boost Boost::date_time Boost::filesystem Boost::iostreams 
-  Boost::locale Boost::numpy Boost::program_options Boost::python Boost::timer 
+set(ex3rdparty_items Boost::boost Boost::date_time Boost::filesystem 
+  Boost::iostreams Boost::locale Boost::numpy Boost::program_options Boost::python Boost::timer 
   ${CERES_LIBRARY} ${CGAL_LIBRARIES} ${CUDA_LIBRARIES} ${exiv2_LIBRARIES}
   ${GDAL_LIBRARIES} ${geotiff_LIBRARIES} ${geotrans_LIBRARIES} ${GETTEXT_LIBRARY} glog::glog 
   ${gsl_LIBRARIES} ${GTEST_BOTH_LIBRARIES} ${ICONV_LIBRARIES} ${lapack_LIBRARIES} ${LASLIB_LIBRARY} 

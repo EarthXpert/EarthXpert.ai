@@ -1,7 +1,8 @@
 project(pfservices CXX)
 
 add_definitions(-DEXSERVICES_API)
-set(pfservices_srcs "./service.cpp"
+set(pfservices_srcs 
+  "./service.cpp"
   "./webservice.cpp")
 set(pfservices_items ex3rdparty exutils core dataio epipolar epipolarmodel 
   pfutils sensormodel sfm

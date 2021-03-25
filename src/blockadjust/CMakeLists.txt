@@ -1,7 +1,8 @@
 project(blockadjust CXX)
 
 add_definitions(-DEXBBA_API)
-set(blockadjust_srcs "./blockadjust.cpp"
+set(blockadjust_srcs 
+  "./blockadjust.cpp"
   "./ceressolver.cpp"
   "./eigensolver.cpp"
   "ads/adjustads.cpp"

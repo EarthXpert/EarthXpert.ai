@@ -1,7 +1,8 @@
 project(colorbal CXX)
 
 add_definitions(-DEXCOLORBAL_API)
-set(colorbal_srcs "./cbperf.cpp"
+set(colorbal_srcs 
+  "./cbperf.cpp"
   "./colorbal.cpp"
   "./colorbalqc.cpp")
 set(colorbal_items ex3rdparty dataio marshaller 

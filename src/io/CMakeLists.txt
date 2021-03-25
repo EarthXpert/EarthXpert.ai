@@ -1,7 +1,8 @@
 project(dataio)
 
 add_definitions(-DEXIO_API)
-set(dataio_srcs "pointcloud/tiledpointcloudreader.cpp"
+set(dataio_srcs 
+  "pointcloud/tiledpointcloudreader.cpp"
   "pointcloud/tiledpointcloudwriter.cpp"
   "pointcloud/pointcloudreader.cpp"
   "pointcloud/pointcloudwriter.cpp"

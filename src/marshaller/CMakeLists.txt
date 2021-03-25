@@ -1,7 +1,8 @@
 project(marshaller CXX)
 
 add_definitions(-DEXMARSHALLER_API -D_SILENCE_CXX17_ITERATOR_BASE_CLASS_DEPRECATION_WARNING)
-set(marshaller_srcs "epipolarmodel/epipolarstereomarshaller.cpp"
+set(marshaller_srcs 
+  "epipolarmodel/epipolarstereomarshaller.cpp"
   "project/adsprjmarshaller.cpp"
   "project/bgoprjmarshaller.cpp"
   "project/oeprjmarshaller.cpp"

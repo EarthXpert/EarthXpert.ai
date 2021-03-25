@@ -1,7 +1,8 @@
 project(epipolarmodel CXX)
 
 add_definitions(-DEXEPIPOLARMODEL_API)
-set(epipolarmodel_srcs "./epipolarmodel.cpp"
+set(epipolarmodel_srcs 
+  "./epipolarmodel.cpp"
   "./epipolarrect.cpp"
   "./epipolarstereofactory.cpp"
   "./frameepipolarmodel.cpp"

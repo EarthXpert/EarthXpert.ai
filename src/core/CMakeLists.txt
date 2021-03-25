@@ -1,7 +1,8 @@
 project(core CXX)
 
 add_definitions(-DEXCORE_API)
-set(core_srcs "datasource/cvraster.cpp"
+set(core_srcs 
+  "datasource/cvraster.cpp"
   "datasource/gdalraster.cpp"
   "datasource/kindfillpolicy.cpp"
   "datasource/metadata.cpp"

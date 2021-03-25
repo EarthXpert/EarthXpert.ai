@@ -26,8 +26,8 @@ SensorEpipolarModel::SensorEpipolarModel(StereoPos pos,
  *  \brief Given a list of 2d poistions on epipolar, output the corresponding
  * positions on original image.
  *
- *  \param [in] epi List of 2d positions (x, y) in epipolar image pixel coordinate system
- *  \param [in] raw List of 2d positions (x, y) in image raster coordinate system
+ *  \param [in] epi List of 2d positions (x, y) in epipolar image pixel CS
+ *  \param [in] raw List of 2d positions (x, y) in image raster CS
  *  \return Returns true if operation succeeds
  */
 size_t SensorEpipolarModel::EpiToRaw(const std::vector<Point2d>& epi, 

@@ -3,6 +3,7 @@
  * -----------------------------------------------------------------------------
  */
 #include "core/utils/layoututils.h"
+#include "core/exceptions/exexcept.h"
 #include "core/math/math.h"
 #include <algorithm>
 
@@ -23,8 +24,14 @@ std::pair<int, int> EstimateTileSize(const size_t memSize,
   const int bpp, const int numCols, const int numRows, 
   const int kTile, const LayoutKind kind,
   const int marginCols, const int marginRows) {
+  const size_t marginMemSize = 
+    size_t(marginCols) * size_t(marginRows) * size_t(bpp) * 4;
+  if (marginMemSize >= memSize) {
+    throw std::invalid_argument(_("memSize: increase to be larger than ") + 
+      std::to_string(marginMemSize));
+  }
+  
   const size_t numPix = memSize / bpp;
-
   int tileNumCols{}, tileNumRows{};
 
   if (eLK_FULLHEIGHT == kind)
@@ -58,7 +65,7 @@ std::pair<int, int> EstimateTileSize(const size_t memSize,
   Smaller(tileNumCols, numCols);
   Smaller(tileNumRows, numRows);
 
-  //  \brief balance tile size
+  //  \brief balance tile size to be even over the entire scene
   //  \param [in] num total number of pixels
   //  \param [in] tileNum number of tile pixels
   //  \return number of tile pixels to decrease by

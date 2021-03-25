@@ -1,7 +1,8 @@
 project(testutils CXX)
 
 add_definitions(-DEXTESTUTILS_API)
-set(testutils_srcs "./testutils.cpp")
+set(testutils_srcs 
+  "./testutils.cpp")
 set(testutils_items ex3rdparty blockadjust core dataio epipolar epipolarmodel exutils 
   imageproc marshaller pcproc sensormodel sfm
   Boost::boost Boost::filesystem Boost::iostreams

@@ -1,7 +1,8 @@
 project(pfgdal CXX)
 
 add_definitions(-DEXGDAL_API)
-set(pfgdal_srcs "gdalinfo.cpp"
+set(pfgdal_srcs 
+  "gdalinfo.cpp"
   "gdaljob.cpp"
   "gdalmanager.cpp"
   "gdalsrsinfo.cpp"
