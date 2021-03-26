@@ -163,7 +163,7 @@ bool GraphFit::FitLineEigen(const std::vector<Point2d>& points, std::vector<doub
  *
  *    p: the observed 3D point
  *    p0: the anchor point, can be initialized by the average position or a selected observation
- *    v: the direction vector
+ *    v: the normalized direction vector
  *    t: the parametric ratio
  */
 bool GraphFit::FitLineCeres(const std::vector<Point3d>& points,
@@ -181,7 +181,41 @@ bool GraphFit::FitLineCv(const std::vector<Point3d>& points, cv::Vec6d& pb) {
   if (2 > points.size())
     throw std::invalid_argument(_("FitLine: must have 2+ points"));
 
-  cv::fitLine(points, pb, cv::DIST_L2, 0, 0.01, 0.01);
+  cv::fitLine(points, pb, cv::DIST_L2, 0, 1.0e-6, 1.0e-6);
+  return true;
+}
+
+/**
+ *  \brief fit line by Eigen Solver
+ *  \todo point-normal equation
+ */
+bool GraphFit::FitLineEigen(const std::vector<Point3d>& points, std::vector<double>& pb) {
+  const int n = int(points.size());
+  if (2 > n)
+    throw std::invalid_argument(_("FitLine: must have 2+ points"));
+
+  if (pb.empty()) {
+    pb.resize(3, 0.0);
+  }
+
+  MatrixXd A(n, 3);
+  VectorXd b(n);
+  for (int i = 0; i < n; ++i) {
+    A(i, 0) = points[i].x;
+    A(i, 1) = points[i].y;
+    A(i, 2) = 1.0;
+    b[i] = points[i].z;
+  }
+
+  //A.colPivHouseholderQr().solve(b);
+  //A.bdcSvd(ComputeThinU | ComputeThinV).solve(b);
+  const auto& x = (A.transpose() * A).ldlt().solve(A.transpose() * b);
+  //const double err = RelativeErr(A, x, b);
+  // if (kTol < err) return false;
+
+  pb[0] = x[0];
+  pb[1] = x[1];
+  pb[2] = x[2];
   return true;
 }
 
@@ -237,4 +271,34 @@ bool GraphFit::FitPlaneCeres(const std::vector<Point3d>& points,
     throw std::invalid_argument(_("FitPlane: must have 3+ points"));
 
   return FitPoints<Point3d, LinearFitResidual>(points, pb, mOptions, summary);
+}
+
+bool GraphFit::FitPlaneEigen(const std::vector<Point3d>& points, std::vector<double>& pb) {
+  const int n = int(points.size());
+  if (3 > n)
+    throw std::invalid_argument(_("FitPlane: must have 3+ points"));
+
+  if (pb.empty()) {
+    pb.resize(3, 0.0);
+  }
+
+  MatrixXd A(n, 3);
+  VectorXd b(n);
+  for (int i = 0; i < n; ++i) {
+    A(i, 0) = points[i].x;
+    A(i, 1) = points[i].y;
+    A(i, 2) = 1.0;
+    b[i] = points[i].z;
+  }
+
+  //A.colPivHouseholderQr().solve(b);
+  //A.bdcSvd(ComputeThinU | ComputeThinV).solve(b);
+  const auto& x = (A.transpose() * A).ldlt().solve(A.transpose() * b);
+  //const double err = RelativeErr(A, x, b);
+  // if (kTol < err) return false;
+
+  pb[0] = x[0];
+  pb[1] = x[1];
+  pb[2] = x[2];
+  return true;
 }

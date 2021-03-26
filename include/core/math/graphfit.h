@@ -89,6 +89,8 @@ public:
 
   bool FitLineCv(const std::vector<Point3d>& points, cv::Vec6d& pb);
 
+  bool FitLineEigen(const std::vector<Point3d>& points, std::vector<double>& pb);
+
   /**
    *  \breif fit a parameterized exponential curve to a sequence of 2D points.
    *  The line equation is defined by
@@ -130,6 +132,8 @@ public:
    */
   bool FitPlaneCeres(const std::vector<Point3d>& points,
     std::vector<double>& pb, Solver::Summary& summary);
+
+  bool FitPlaneEigen(const std::vector<Point3d>& points, std::vector<double>& pb);
 
 private:
   Solver::Options mOptions;   // the options to control ceres solver
