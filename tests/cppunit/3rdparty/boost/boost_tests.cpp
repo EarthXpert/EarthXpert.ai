@@ -6,6 +6,7 @@
 #include "3rdparty/boost/exboost.h"
 
 //#include "algo.hpp"
+#include "asio.hpp"
 #include "fusion.hpp"
 #include "datetime.hpp"
 #include "geometry.hpp"
@@ -17,8 +18,10 @@
 #include "multiarray.hpp"
 //#include "multiprecision.hpp"
 #include "numpy.hpp"
+#include "process.hpp"
 #include "python.hpp"
 #include "spirit.hpp"
+#include "thread.hpp"
 #include "timer.hpp"
 
 #include <boost/pool/object_pool.hpp>

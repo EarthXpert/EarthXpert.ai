@@ -30,7 +30,7 @@ private:
   std::queue<std::function<void()>> mTasks;  // the task queue
 
   // synchronization
-  std::mutex mQueueMtx;
+  std::mutex mMutex;
   std::condition_variable mCondVar;
   bool mStop;
 };
@@ -45,7 +45,7 @@ inline ThreadPool::ThreadPool(size_t numThreads)
       for (;;) {
         std::function<void()> task;
         {
-          std::unique_lock<std::mutex> lock(mQueueMtx);
+          std::unique_lock<std::mutex> lock(mMutex);
           mCondVar.wait(lock, [this] { 
             return mStop || !mTasks.empty(); });
           if (mStop && mTasks.empty())
@@ -70,7 +70,7 @@ auto ThreadPool::enqueue(F&& f, Args&&... args)
 
   std::future<return_type> res = task->get_future();
   {
-    std::unique_lock<std::mutex> lock(mQueueMtx);
+    std::unique_lock<std::mutex> lock(mMutex);
 
     // don't allow enqueueing after stopping the pool
     if (mStop) {
@@ -85,7 +85,7 @@ auto ThreadPool::enqueue(F&& f, Args&&... args)
 // the destructor joins all numThreads
 inline ThreadPool::~ThreadPool() {
   {
-    std::unique_lock<std::mutex> lock(mQueueMtx);
+    std::unique_lock<std::mutex> lock(mMutex);
     mStop = true;
   }
   mCondVar.notify_all();
