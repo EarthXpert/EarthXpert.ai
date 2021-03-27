@@ -21,6 +21,7 @@
  *      --outgsd      [gsd_of_ortho]                // "0.5,0.5"
  *      --outdir      [path_of_output_directory]    // "d:/out/"
  *      --stride      [stride_interval]             // 1
+ *      --rotangle    [angle_of_rotation]
  *      --resample    [linear|cubic|gaussian|sinc]  // "cubic"
  *      --memsize     [memory_size_in_MB]           // 4000
  *
