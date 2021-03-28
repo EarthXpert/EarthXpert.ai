@@ -38,6 +38,10 @@ public:
     }
   }
 
+  inline void operator()(CvRaster& src, CvRaster& tgt, CvRaster& tfm) const {
+    Resample(src, tgt, tfm);
+  }
+
   void Resample(cv::Mat& src, cv::Mat& tgt, cv::Mat& tfm) const override {
     if constexpr(eAB_CV == algoBackend) {
       ResampleCV(src, tgt, tfm);
@@ -45,6 +49,10 @@ public:
     else {
       throw std::invalid_argument(_("RasterResample: backend algorithm not supported"));
     }
+  }
+
+  inline void operator()(cv::Mat& src, cv::Mat& tgt, cv::Mat& tfm) const {
+    Resample(src, tgt, tfm);
   }
 
 private:

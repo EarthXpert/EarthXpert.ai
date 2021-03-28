@@ -37,6 +37,10 @@ public:
   bool operator==(const DistortionGrid &rhs) const;
   bool operator!=(const DistortionGrid &rhs) const;
 
+  std::unique_ptr<DistortionGrid> Clone() const {
+    return std::make_unique<DistortionGrid>(*this);
+  }
+
   bool FetchGrid(unsigned int &numCols, unsigned int &numRows,
                  std::vector<Ty> &vX, std::vector<Ty> &vY,
                  std::vector<Ty> &vdX, std::vector<Ty> &vdY) const;
@@ -50,6 +54,10 @@ public:
    */
   bool GetDistortion(const Ty x, const Ty y, Ty* const d) const;
 
+  inline bool operator()(const Ty x, const Ty y, Ty* const d) const {
+    return GetDistortion(x, y, d);
+  }
+
   /**
    * Interpolate a distortion value for the given x,y position.
    *
@@ -59,8 +67,8 @@ public:
    */
   std::pair<Ty, Ty> GetDistortion(const Ty x, const Ty y) const;
 
-  std::unique_ptr<DistortionGrid> Clone() const {
-    return std::make_unique<DistortionGrid>(*this);
+  inline std::pair<Ty, Ty> operator()(const Ty x, const Ty y) const {
+    return GetDistortion(x, y);
   }
 
   void SetCameraName(std::string cameraName) {

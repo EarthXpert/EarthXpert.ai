@@ -80,12 +80,17 @@ public:
    *  \param [in] leftImage 2d position (x, y) in left image raster coordinate system
    *  \param [in] rightImage the corresponding 2d position (x, y) in right image
    *              raster coordinate system
-   *  \param [in/out] ground 3d ground position (X, Y, Z) in ground coordinate system 
+   *  \param [in/out] ground 3d ground position (X, Y, Z) in ground coordinate system
    *  \return Returns true if the operation succeeds
    *  clang-format on
    */
   virtual bool ImagesToGround(const Point2d& leftImage,
     const Point2d& rightImage, Point3d& ground) const override;
+
+  //bool operator()(const Point2d& leftImage,
+  //  const Point2d& rightImage, Point3d& ground) const {
+  //  return ImagesToGround(leftImage, rightImage, ground);
+  //}
 
   /**
    *  \brief Given a pair of sensor models and associated list of 2d positions

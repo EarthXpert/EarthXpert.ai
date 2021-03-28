@@ -52,6 +52,10 @@ public:
    */
   bool Process(IRasterReader* img, IRasterWriter* epi, IEpipolarModel const* epiModel);
 
+  inline bool operator()(IRasterReader* img, IRasterWriter* epi, IEpipolarModel const* epiModel) {
+    return Process(img, epi, epiModel);
+  }
+
   /**
    *  \return Returns performance info
    */

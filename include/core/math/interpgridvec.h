@@ -71,6 +71,11 @@ public:
       yf * ((1 - xf) * mLl + xf * mLr);
   }
 
+  template<typename Ty2>
+  inline VecType operator()(const Ty2 xf, const Ty2 yf) const {
+    return GetVal(xf, yf);
+  }
+
 private:
   const VecType& mUl;  // upper-left corner
   const VecType& mUr;  // upper-right corner

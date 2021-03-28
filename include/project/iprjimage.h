@@ -18,6 +18,8 @@ public:
   virtual ~IPrjImage() = default;
 
   //virtual ImageType GetImageType() = 0;
+
+  //virtual void operator()() = 0;
 };
 
 using UPIPrjImage = std::unique_ptr<IPrjImage>;
