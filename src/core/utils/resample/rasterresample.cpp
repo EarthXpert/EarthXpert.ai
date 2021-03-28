@@ -60,22 +60,15 @@ int RasterResample<algoBackend>::GetWinDim() const noexcept {
  *  \todo src mask.
  */
 template <int algoBackend>
-void RasterResample<algoBackend>::ResampleCV(CvRaster& src,
-  CvRaster& tgt, CvRaster& tfm) const {
-  assert(tgt.GetSize() == tfm.GetSize());
-  assert(tgt.GetMarginSize() == tfm.GetMarginSize());
-  cv::remap(src.GetCvMat(), tgt.GetCvMat(), tfm.GetCvMat(), 
-    cv::Mat(), mInterpAlgo, mBorderType, mBorderValue);
-}
-
-/**
- *  \param [in] tfmMat Resampling transformation of target raster in source raster.
- */
-template <int algoBackend>
-void RasterResample<algoBackend>::ResampleCV(cv::Mat& src, 
+void RasterResample<algoBackend>::ResampleCv(cv::Mat& src,
   cv::Mat& tgt, cv::Mat& tfm) const {
-  assert(tgt.size() == tfm.size());
   cv::remap(src, tgt, tfm, cv::Mat(), mInterpAlgo, mBorderType, mBorderValue);
 }
 
+template <int algoBackend>
+void RasterResample<algoBackend>::ResampleExai(cv::Mat& src,
+  cv::Mat& tgt, cv::Mat& tfm) const {
+}
+
 template class earthxpert::RasterResample<IRasterResample::eAB_CV>;
+template class earthxpert::RasterResample<IRasterResample::eAB_EXAI>;
