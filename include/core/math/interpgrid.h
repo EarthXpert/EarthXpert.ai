@@ -31,11 +31,11 @@ template <typename Ty> class EXCORE_EXPORTS InterpGrid {
 public:
   using ValueType = Ty;
 
-  InterpGrid(unsigned int dim, Ty minX, Ty minY, Ty maxX, Ty maxY, Ty spcX, Ty spcY);
-  InterpGrid(unsigned int dim, const cv::Point_<Ty>& min,
+  InterpGrid(unsigned dim, Ty minX, Ty minY, Ty maxX, Ty maxY, Ty spcX, Ty spcY);
+  InterpGrid(unsigned dim, const cv::Point_<Ty>& min,
     const cv::Point_<Ty>& max, const cv::Point_<Ty>& spc);
-  InterpGrid(unsigned int dim, const SpatialTile<Ty>& range, Ty spcX, Ty spcY);
-  InterpGrid(unsigned int dim, const SpatialTile<Ty>& range,
+  InterpGrid(unsigned dim, const SpatialTile<Ty>& range, Ty spcX, Ty spcY);
+  InterpGrid(unsigned dim, const SpatialTile<Ty>& range,
     const cv::Point_<Ty>& spc);
   InterpGrid(const InterpGrid &rhs);
   InterpGrid(InterpGrid &&rhs) noexcept;
@@ -54,7 +54,7 @@ public:
   /**
    * Interpolate a value for the given x,y position.
    */
-  void GetVal(cv::Point_<Ty> point, Ty *const z) const {
+  void GetVal(const cv::Point_<Ty>& point, Ty *const z) const {
     assert(z);
     GetVal(point.x, point.y, z);
   }
@@ -68,19 +68,19 @@ public:
   }
 
   // \return Return value of the 1st dimension
-  Ty GetVal1(cv::Point_<Ty> point) const {
+  Ty GetVal1(const cv::Point_<Ty>& point) const {
     return GetVal1(point.x, point.y);
   }
   Ty GetVal1(Ty x, Ty y) const;
 
   // \return Return values of the beginning two dimensions
-  std::pair<Ty, Ty> GetVal2(cv::Point_<Ty> point) const {
+  std::pair<Ty, Ty> GetVal2(const cv::Point_<Ty>& point) const {
     return GetVal2(point.x, point.y);
   }
   std::pair<Ty, Ty> GetVal2(Ty x, Ty y) const;
 
   // \return Return values of the beginning three dimensions
-  Tuple3<Ty> GetVal3(cv::Point_<Ty> point) const {
+  Tuple3<Ty> GetVal3(const cv::Point_<Ty>& point) const {
     return GetVal3(point.x, point.y);
   }
   Tuple3<Ty> GetVal3(Ty x, Ty y) const;
@@ -90,7 +90,7 @@ public:
    *
    * \return Point dimension
    */
-  unsigned int GetDimension() const noexcept { return mDim; }
+  unsigned GetDimension() const noexcept { return mDim; }
 
   /**
    * Get the x- and y-coordinate that are used to compute indices within the
@@ -139,7 +139,7 @@ public:
    *
    * \return Returns Number of grid nodes in x & y directions
    */
-  std::pair<unsigned int, unsigned int> GetSize() const { return { mNumX, mNumY }; }
+  std::pair<unsigned, unsigned> GetSize() const { return { mNumX, mNumY }; }
 
   /**
    * Get the size of the data array in bytes.
@@ -149,9 +149,9 @@ public:
   size_t GetSizeBytes() const { return sizeof(Ty) * mNumX * mNumY * mDim; }
 
 private:
-  unsigned int mDim{1};   // Dimension of node points stored in the grid.
-  unsigned int mNumX{0};  // Number of grid nodes in the x-dimension
-  unsigned int mNumY{0};  // Number of grid nodes in the y-dimension
+  unsigned mDim{1};   // Dimension of node points stored in the grid.
+  unsigned mNumX{0};  // Number of grid nodes in the x-dimension
+  unsigned mNumY{0};  // Number of grid nodes in the y-dimension
   Ty mOffX{0};           // x coordinate offset
   Ty mOffY{0};           // y coordinate offset
   Ty mSpcX{1};           // x coordinate spacing of grid points
@@ -163,7 +163,7 @@ private:
    *
    * \param [in] dim New dimension of points for the grid
    */
-  void SetDimension(const unsigned int dim) { mDim = dim; }
+  void SetDimension(const unsigned dim) { mDim = dim; }
 
   void LayoutNodes(Ty minX, Ty minY, Ty width, Ty height, Ty spcX, Ty spcY);
   inline void LayoutNodes(const cv::Point_<Ty>& min, 

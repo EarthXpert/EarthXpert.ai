@@ -5,6 +5,7 @@
 #include "rectification/epipolar/epipolargenerator.h"
 #include "3rdparty/taskflow/extaskflow.h"
 #include "core/exceptions/exexcept.h"
+#include "core/math/interpgridvec.h"
 #include "core/utils/irasterresample.h"
 #include "core/utils/geomutils.h"
 #include "core/utils/layoututils.h"
@@ -54,7 +55,7 @@ bool EpipolarGenerator::Process(IRasterReader *const img,
     LayoutTiles();
     mPerf.tmInitial = mClock.TimeSinceStart() - start;
 
-    ProcessTiles<eTF>();
+    ProcessTiles<eTF>(); // ePL2 ePL3
   }
   catch (...) {
     throw EpipolarError(_("Process failed"));
@@ -446,11 +447,11 @@ void EpipolarGenerator::DensifyCells(const int tileId, cv::Mat& tfmMat,
     if (MaskAllOne(mMaskBuf.get(), i1, i2, i3, i4)) {
       const auto invTileCols = 1.0 / (tileColR - tileColL);
       const auto invTileRows = 1.0 / (tileRowL - tileRowU);
-      const auto [tfm1, tfm2, tfm3, tfm4] = MatCorners<cv::Vec2f>(tfmMat, 
-        tileColL, tileRowU, tileColR, tileRowL);
+      const InterpGridVec<float, 2, std::false_type> interp(
+        MatCorners<cv::Vec2f>(tfmMat, tileColL, tileRowU, tileColR, tileRowL));
 
       double xf{};
-      for (int c = 0; c < numCellCols; ++c, xf+= invTileCols) {
+      for (int c = 0; c < numCellCols; ++c, xf+=invTileCols) {
         const int tileCol = tileColL + c;
 
         double yf{};
@@ -459,12 +460,7 @@ void EpipolarGenerator::DensifyCells(const int tileId, cv::Mat& tfmMat,
           const int64_t k = CRToIndex(tileCol, tileRow, numCols);
           if (eMK_NORM == mMaskBuf[k]) continue;
 
-          auto& tfm = tfmMat.at<cv::Vec2f>(tileRow, tileCol);
-          tfm[0] = float(LinearInterp<double>(
-            tfm1[0], tfm2[0], tfm3[0], tfm4[0], xf, yf));
-          tfm[1] = float(LinearInterp<double>(
-            tfm1[1], tfm2[1], tfm3[1], tfm4[1], xf, yf));
-
+          tfmMat.at<cv::Vec2f>(tileRow, tileCol) = interp.GetVal<float>(xf, yf);
           mMaskBuf[k] = eMK_FAST; 
         }
       }
@@ -531,11 +527,8 @@ void EpipolarGenerator::DensifyPixels(const int tileId, cv::Mat& tfmMat,
       const auto xf = double(tileCol - tileColL) / double(tileColR - tileColL);
       const auto yf = double(tileRow - tileRowU) / double(tileRowL - tileRowU);
 
-      auto& tfm = tfmMat.at<cv::Vec2f>(tileRow, tileCol);
-      tfm[0] = float(LinearInterp<double>(tfm1[0], tfm2[0], 
-        tfm3[0], tfm4[0], xf, yf));
-      tfm[1] = float(LinearInterp<double>(tfm1[1], tfm2[1],
-        tfm3[1], tfm4[1], xf, yf));
+      tfmMat.at<cv::Vec2f>(tileRow, tileCol) = 
+        LinearInterp<float, 2, double>(tfm1, tfm2, tfm3, tfm4, xf, yf);
       mMaskBuf[k] = eMK_FAST;   
     }
     else {

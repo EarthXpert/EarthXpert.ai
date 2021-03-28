@@ -92,18 +92,37 @@ inline Tuple4<Ty> LinearWeights(const Ty xf, const Ty yf) {
 
 /**
  *  \brief bi-linear interpolation
+ * 
+ *  \param Ty scalar type
+ *
+ *  \param [in] xf x fraction
+ *  \param [in] yf y fraction
+ *  \return Returns the interpolated value
  */
 template<typename Ty=double>
-inline Ty LinearInterp(const Ty v1, const Ty v2,
-  const Ty v3, const Ty v4, const Ty xf, const Ty yf) {
-  return Ty((1.0 - yf) * ((1.0 - xf) * v1 + xf * v2) +
-    yf * ((1.0 - xf) * v3 + xf * v4));
+inline Ty LinearInterp(const Ty ul, const Ty ur,
+  const Ty ll, const Ty lr, const Ty xf, const Ty yf) {
+  return Ty((1 - yf) * ((1 - xf) * ul + xf * ur) +
+    yf * ((1 - xf) * ll + xf * lr));
 }
 
-inline cv::Vec2f LinearInterp(const cv::Vec2f v1, const cv::Vec2f v2,
-  const cv::Vec2f v3, const cv::Vec2f v4, const double xf, const double yf) {
-  return cv::Vec2f(float(LinearInterp<double>(v1[0], v2[0], v3[0], v4[0], xf, yf)),
-                   float(LinearInterp<double>(v1[1], v2[1], v3[1], v4[1], xf, yf)));
+/**
+ *  \param Ty scalar type
+ *  \param dim dimension of vector elements
+ *  \param Ty2 scalar type of x & y fractions
+ *
+ *  \param [in] xf x fraction
+ *  \param [in] yf y fraction
+ *  \return Returns the interpolated point
+ *
+ *  \ref InterpGridVec
+ */
+template<typename Ty, int dim = 1, typename Ty2=double>
+inline cv::Vec<Ty, dim> LinearInterp(const cv::Vec<Ty, dim>& ul, 
+  const cv::Vec<Ty, dim>& ur, const cv::Vec<Ty, dim>& ll, 
+  const cv::Vec<Ty, dim>& lr, const Ty2 xf, const Ty2 yf) {
+  return (1 - yf) * ((1 - xf) * ul + xf * ur) +
+    yf * ((1 - xf) * ll + xf * lr);
 }
 
 /**

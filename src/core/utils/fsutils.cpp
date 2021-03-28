@@ -162,22 +162,22 @@ CombineFilenames(const std::string& s1, const std::string& s2,
  *  \param [in] devPath The path to retrieve.
  *  \todo check device type/class
  */
-unsigned int GetDiskId(const std::string& devPath) {
-  unsigned int id{};
+unsigned GetDiskId(const std::string& devPath) {
+  unsigned id{};
 
 #if (defined _WIN32 || defined WINCE || defined __CYGWIN__)
 
   struct _stat s;
   auto ret = _stat(devPath.c_str(), &s);
   if (0 == ret) 
-    id = static_cast<unsigned int>(s.st_dev);
+    id = static_cast<unsigned>(s.st_dev);
 
 #else
 
   struct stat s;
   auto ret = stat(devPath.c_str(), &s);
   if (-1 != ret) 
-    id = static_cast<unsigned int>(minor(s.st_dev) / 16);
+    id = static_cast<unsigned>(minor(s.st_dev) / 16);
 
 #endif
 

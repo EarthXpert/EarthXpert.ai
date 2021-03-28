@@ -51,7 +51,7 @@ void DistGridMarshaller::Serialize(std::ostream &outS,
   if (!distGrid || !distGrid->HasGrid()) 
     throw std::invalid_argument(_("Given distortion grid should contain valid data."));
 
-  unsigned int gridCols{}, gridRows{};
+  unsigned gridCols{}, gridRows{};
   std::vector<float> vX, vY, vdX, vdY;
 
   const auto bOk = distGrid->FetchGrid(gridCols, gridRows, vX, vY, vdX, vdY);
