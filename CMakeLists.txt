@@ -103,6 +103,8 @@ if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
                         optimized "${exiv2_LIBRARY_DIR}/release/exiv2.lib"
                         optimized "${exiv2_LIBRARY_DIR}/release/exiv2-xmp.lib")
     
+    #set(fmt_ROOT "${EX_THIRD_PARTY}/fmt")
+    
     set(GDAL_ROOT "${EX_THIRD_PARTY}/gdal_2.4.1")
     set(GDAL_BIN_DIR "${GDAL_ROOT}/bin/${CDEGREL}")
     set(GDAL_INCLUDE_DIRS "${GDAL_ROOT}/include")
