@@ -60,14 +60,17 @@ int RasterResample<algoBackend>::GetWinDim() const noexcept {
  *  \todo src mask.
  */
 template <int algoBackend>
-void RasterResample<algoBackend>::ResampleCv(cv::Mat& src,
-  cv::Mat& tgt, cv::Mat& tfm) const {
+void RasterResample<algoBackend>::ResampleCv(cv::Mat& src, cv::Mat* srcMask,
+  cv::Mat& tgt, cv::Mat* tgtMask, cv::Mat& tfm) const {
+  // erose tgtMask if srcMask presents nodata pixels and 
+  // reset erosen pixels in tfm as (-1,-1)
+
   cv::remap(src, tgt, tfm, cv::Mat(), mInterpAlgo, mBorderType, mBorderValue);
 }
 
 template <int algoBackend>
-void RasterResample<algoBackend>::ResampleExai(cv::Mat& src,
-  cv::Mat& tgt, cv::Mat& tfm) const {
+void RasterResample<algoBackend>::ResampleExai(cv::Mat& src, cv::Mat* srcMask,
+  cv::Mat& tgt, cv::Mat* tgtMask, cv::Mat& tfm) const {
 }
 
 template class earthxpert::RasterResample<IRasterResample::eAB_CV>;

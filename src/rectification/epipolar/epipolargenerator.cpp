@@ -311,6 +311,7 @@ void EpipolarGenerator::ProcessTile(const int tileId) {
 
   cv::Mat imgMat(imgNumRows, imgNumCols, mImgCvDT, mImgBufWork.get());
   cv::Mat epiMat(numRows, numCols, mEpiCvDT, mEpiBufWork.get());
+  cv::Mat epiMask(numRows, numCols, CV_8UC1, mEpiMaskBuf.get());
   cv::Mat tfmMat(numRows, numCols, mTfmCvDT, mTfmBuf.get());
 
   // in-memory ProcessTile(imgMat, epiMat, tfmMat)
@@ -318,7 +319,7 @@ void EpipolarGenerator::ProcessTile(const int tileId) {
     tfm[0] = -1; tfm[1] = -1; });
   GeotransformTile(tileId, tfmMat);
 
-  mRasResample->Resample(imgMat, epiMat, tfmMat); // ResampleTile
+  mRasResample->Resample(imgMat, nullptr, epiMat, &epiMask, tfmMat); // ResampleTile
 
   //GatherStatTile(tileId);
   mPerf.tmProcess += mClock.TimeSinceStart() - start;
