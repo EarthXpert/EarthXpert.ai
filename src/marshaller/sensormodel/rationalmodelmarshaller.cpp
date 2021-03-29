@@ -235,6 +235,10 @@ RationalModelMarshaller::DeserializeRpb(std::istream& inS) {
     if (sRpbEntryMap.end() == it) continue;
     
     switch (it->second) {
+    case 0:
+    case 1:
+    case 2:
+      break;
     case 3: // errBias
       errBias = std::stod(tokens[1]);
       break;
@@ -251,7 +255,7 @@ RationalModelMarshaller::DeserializeRpb(std::istream& inS) {
     case 12:
     case 13:
     case 14:
-      nfc.at(it->second) = std::stod(tokens[1]);
+      nfc.at(it->second-5) = std::stod(tokens[1]);
       break;
     case 15: // lineNumCoef
       ExtractCoefs(inS, lineNumCoef);
