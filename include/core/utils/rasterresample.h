@@ -61,7 +61,7 @@ public:
 
 private:
   cv::InterpolationFlags mInterpAlgo{ cv::INTER_CUBIC }; // interpolation algorithm
-  cv::BorderTypes mBorderType{ cv::BORDER_CONSTANT };
+  cv::BorderTypes mBorderType{ cv::BORDER_REPLICATE };
   cv::Scalar mBorderValue{ cv::Scalar::all(0) };
 
   void ResampleCv(cv::Mat& src, cv::Mat* srcMask, 
