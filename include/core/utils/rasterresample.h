@@ -37,17 +37,17 @@ public:
 
   inline void operator()(CvRaster& src, CvRaster* srcMask, 
     CvRaster& tgt, CvRaster* tgtMask, CvRaster& tfm) const {
-    Resample(src, nullptr, tgt, nullptr, tfm);
+    Resample(src, srcMask, tgt, tgtMask, tfm);
   }
 
   void Resample(cv::Mat& src, cv::Mat* srcMask, 
     cv::Mat& tgt, cv::Mat* tgtMask, cv::Mat& tfm) const override {
     assert(tgt.size() == tfm.size());
     if constexpr (eAB_CV == algoBackend) {
-      ResampleCv(src, nullptr, tgt, nullptr, tfm);
+      ResampleCv(src, srcMask, tgt, tgtMask, tfm);
     }
     else if constexpr (eAB_EXAI == algoBackend) {
-      ResampleExai(src, nullptr, tgt, nullptr, tfm);
+      ResampleExai(src, srcMask, tgt, tgtMask, tfm);
     }
     else {
       throw std::invalid_argument(_("RasterResample: backend algorithm not supported"));
@@ -56,7 +56,7 @@ public:
 
   inline void operator()(cv::Mat& src, cv::Mat* srcMask, 
     cv::Mat& tgt, cv::Mat* tgtMask, cv::Mat& tfm) const {
-    Resample(src, nullptr, tgt, nullptr, tfm);
+    Resample(src, srcMask, tgt, tgtMask, tfm);
   }
 
 private:
