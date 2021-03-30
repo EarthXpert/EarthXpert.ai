@@ -63,8 +63,19 @@ template <int algoBackend>
 void RasterResample<algoBackend>::ResampleCv(cv::Mat& src, cv::Mat* srcMask,
   cv::Mat& tgt, cv::Mat* tgtMask, cv::Mat& tfm) const {
   // erose tgtMask if srcMask presents nodata pixels and 
-  // reset erosen pixels in tfm as (-1,-1)
+  // reset corresponding erosen pixels in tfm as (-1,-1)
+  if (srcMask) {
+    bool hasBkgd{}; // AnyOf
+    for (auto it = srcMask->begin<uchar>(); it != srcMask->end<uchar>(); ++it) {
+      if (0 == *it) {
+        hasBkgd = true;
+        break;
+      }
+    }
+    if (hasBkgd) {
 
+    }
+  }
   cv::remap(src, tgt, tfm, cv::Mat(), mInterpAlgo, mBorderType, mBorderValue);
 }
 

@@ -32,7 +32,9 @@ public:
   void Resample(CvRaster& src, CvRaster* srcMask, 
     CvRaster& tgt, CvRaster* tgtMask, CvRaster& tfm) const override {
     assert(tgt.GetMarginSize() == tfm.GetMarginSize());
-    Resample(src.GetCvMat(), nullptr, tgt.GetCvMat(), nullptr, tfm.GetCvMat());
+    cv::Mat* srcM = srcMask ? &(srcMask->GetCvMat()) : nullptr;
+    cv::Mat* tgtM = tgtMask ? &(tgtMask->GetCvMat()) : nullptr;
+    Resample(src.GetCvMat(), srcM, tgt.GetCvMat(), tgtM, tfm.GetCvMat());
   }
 
   inline void operator()(CvRaster& src, CvRaster* srcMask, 
