@@ -54,7 +54,7 @@ void ExaiOrtho::AddRationalOptions(bpo::options_description & optDesc) {
     ("sensorname", bpo::value<std::string>()->required(), "sensor name: frame|rational")
     ("prjdir", bpo::value<std::string>(), "project directory or file")
     ("image", bpo::value<std::string>()->required(), "image file")
-    ("model", bpo::value<std::string>()->required(), "model file")
+    ("model", bpo::value<std::string>()->default_value(""), "model file")
     ("bands,b", bpo::value<std::vector<int>>()->multitoken(), "list of bands")
     ("dem", bpo::value<std::string>(), "DEM file | constant height")
     ("stride,d", bpo::value<int>()->default_value(8), "stride interval")

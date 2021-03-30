@@ -43,5 +43,7 @@ inline bool RemoveFile(const std::string& filePath) {
 std::string EXCORE_EXPORTS CombineFilenames(const std::string& s1,
   const std::string& s2, const std::string& delim = "_-", CombineType combType= eALL);
 
-unsigned int EXCORE_EXPORTS GetDiskId(const std::string& devPath);
+unsigned EXCORE_EXPORTS GetDiskId(const std::string& devPath);
+
+std::string EXCORE_EXPORTS FindRationalModelFile(const std::string& imgFile);
 } // namespace earthxpert::utils

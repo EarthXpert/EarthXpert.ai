@@ -183,5 +183,14 @@ unsigned GetDiskId(const std::string& devPath) {
 
   return id;
 }
+
+/**
+ *  \brief _rpc.txt | .rpb | .rpc
+ * 
+ *  \param [in] imgFile path of the image file
+ */
+std::string FindRationalModelFile(const std::string& imgFile) {
+  return {};
+}
 } // utils
 } // earthxpert

@@ -40,7 +40,11 @@ struct EpipolarOptions {
 
 std::string EXEPIPOLAR_EXPORTS ToString(const EpipolarOptions* epiOpt);
 
+bool EXEPIPOLAR_EXPORTS CheckEpipolarOptions(const EpipolarOptions& epiOpt);
+bool EXEPIPOLAR_EXPORTS CheckFrameEpipolarOptions(const EpipolarOptions& epiOpt);
+bool EXEPIPOLAR_EXPORTS CheckRationalEpipolarOptions(const EpipolarOptions& epiOpt);
+
 void EXEPIPOLAR_EXPORTS GenerateFrameEpipolar();
 
-void EXEPIPOLAR_EXPORTS GenerateRationalEpipolar(const EpipolarOptions& epiOpt);
+void EXEPIPOLAR_EXPORTS GenerateRationalEpipolar(EpipolarOptions& epiOpt);
 } // namespace earthxpert::epipolar
