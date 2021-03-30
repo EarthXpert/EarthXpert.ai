@@ -52,6 +52,10 @@ public:
    */
   bool Process(IRasterReader* img, IRasterWriter* epi, IEpipolarModel const* epiModel);
 
+  inline bool operator()(IRasterReader* img, IRasterWriter* epi, IEpipolarModel const* epiModel) {
+    return Process(img, epi, epiModel);
+  }
+
   /**
    *  \return Returns performance info
    */
@@ -112,11 +116,12 @@ private:
   int64_t mImgBufNumBytes{};
   std::unique_ptr<uchar[]> mImgBufRead;   // read buffer of raw image tile
   std::unique_ptr<uchar[]> mImgBufWork;   // work buffer
+  //std::unique_ptr<uchar[]> mImgMaskBuf;   // image mask
 
   int64_t mEpiBufNumBytes{};
   std::unique_ptr<uchar[]> mEpiBufWork;   // work buffer of epipolar tile
   std::unique_ptr<uchar[]> mEpiBufWrit;   // write buffer
-  std::unique_ptr<uchar[]> mMaskBuf;      // epipolar mask
+  std::unique_ptr<uchar[]> mEpiMaskBuf;   // epipolar mask
   std::unique_ptr<uchar[]> mTfmBuf;       // transfomration map
 
   void AllocateBuffers();

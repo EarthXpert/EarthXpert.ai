@@ -12,5 +12,5 @@ if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
 endif()
 
 if(EARTHXPERT_INSTALL_TESTS_CPPUNIT)
-  earthxpert_install_test(eigen_perf_tests)
+  exai_install_test(eigen_perf_tests)
 endif()

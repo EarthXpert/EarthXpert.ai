@@ -12,7 +12,7 @@
 #include <vector>
 
 namespace earthxpert {
-enum class LayoutKind;
+enum class LayoutDir;
 
 /**
  *  The class SpatialLayout formulate the non-overlapping tiling of 2D
@@ -28,9 +28,9 @@ public:
   using ValueType = Ty;
 
   SpatialLayout(Ty width, Ty height, Ty tileWidth, Ty tileHeight, 
-    LayoutKind kind = LayoutKind::eLK_HORIZONTAL);
+    LayoutDir dir = LayoutDir::eLD_HORIZONTAL);
   SpatialLayout(const SpatialTile<Ty>& range, Ty tileWidth, Ty tileHeight, 
-    LayoutKind kind = LayoutKind::eLK_HORIZONTAL);
+    LayoutDir dir = LayoutDir::eLD_HORIZONTAL);
   SpatialLayout(const SpatialLayout& rhs) = default;
   SpatialLayout(SpatialLayout&& rhs) noexcept = default;
   ~SpatialLayout() = default;
@@ -61,7 +61,7 @@ private:
   SpatialTile<Ty> mRange; // spatial range to divide into smaller tiles
   Ty mTileWidth{};     // width of tile
   Ty mTileHeight{};    // height of tile
-  LayoutKind mLayoutkind{LayoutKind::eLK_HORIZONTAL};  // major direction
+  LayoutDir mLayoutDir{LayoutDir::eLD_HORIZONTAL};  // major direction
   std::vector<SpatialTile<Ty>> mTiles;  // array of tiles formulating the layout
 
   void LayoutTiles();

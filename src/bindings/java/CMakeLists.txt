@@ -1,14 +1,14 @@
 project(exjava CXX)
 
 # Build a Java API module:
-function(earthxpert_add_java_library name libs_dir)
-  earthxpert_add_library(${name} ${libs_dir} ${ARGN})
+function(exai_add_java_library name libs_dir)
+  exai_add_library(${name} ${libs_dir} ${ARGN})
 
 endfunction()
 
-earthxpert_add_java_library(exjava "bindings/java"
+exai_add_java_library(exjava "bindings/java"
   SRCS "exjava.cpp"
   ITEMS ex3rdparty core dataio epipolar epipolarmodel marshaller sensormodel
         Boost::python37 ${GDAL_LIBRARIES} ${GETTEXT_LIBRARY})
 
-earthxpert_install_target(exjava)
+exai_install_target(exjava)

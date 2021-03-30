@@ -8,7 +8,7 @@
 
 #include <Eigen/Eigen>
 
-using EGTri = Eigen::Triplet<double>;
+using EigTri = Eigen::Triplet<double>;
 
 namespace earthxpert {
 template<typename _Scalar, int _Rows, int _Cols, int _Options, int _MaxRows, int _MaxCols>
@@ -19,19 +19,30 @@ using VecView = MatView<_Scalar, _Rows, 1, _Options, _MaxRows, _MaxCols>;
 
 /**
  *  \param [in] A a matrix from small to median size.
+ *  \return Return reciprocal of condition number by SVD
+ *
+ *  \except bad_allocate if the matrix size is large.
+ */
+template<typename MatTy> inline double RCondSvd(const MatTy& A) {
+  Eigen::JacobiSVD<Eigen::MatrixXd> svd(A);
+  const auto& sv = svd.singularValues();
+  const double rcn = sv(sv.size() - 1) / sv(0);
+  return rcn;
+}
+
+/**
+ *  \param [in] A a matrix from small to median size.
  *  \return Return condition number by SVD
  *
  *  \except bad_allocate if the matrix size is large.
  */
-template<typename MatTy> double CondNumSvd(const MatTy& A) {
-  Eigen::JacobiSVD<Eigen::MatrixXd> svd(A);
-  const auto& sv = svd.singularValues();
-  const double cn = sv(0) / sv(sv.size() - 1);
+template<typename MatTy> inline double CondSvd(const MatTy& A) {
+  const double cn = 1.0 / RCondSvd(A);
   return cn;
 }
 
 template<typename MatTy, typename VecTy1, typename VecTy2> 
-auto RelativeErr(const MatTy& A, const VecTy1& x, 
+inline auto RelativeErr(const MatTy& A, const VecTy1& x, 
   const VecTy2& b) -> typename MatTy::Scalar {
   return (A * x - b).norm() / b.norm();
 }

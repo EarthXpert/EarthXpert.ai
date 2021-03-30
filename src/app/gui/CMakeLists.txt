@@ -12,4 +12,4 @@ add_gui_executable(exqt5_hw
        "mainwindow.cpp"
   ITEMS ex3rdparty exgui ${GETTEXT_LIBRARY} Qt5::Widgets)
 
-earthxpert_install_target(exqt5_hw)
+exai_install_target(exqt5_hw)

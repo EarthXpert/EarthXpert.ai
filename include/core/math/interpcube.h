@@ -60,6 +60,14 @@ public:
   }
   void GetVal(Ty x, Ty y, Ty z, Ty *const v, uint32_t len=UINT_MAX) const;
 
+  inline void operator()(cv::Point3_<Ty> point, Ty* const v) const {
+    return GetVal(point, v);
+  }
+  inline void operator()(Ty x, Ty y, Ty z, 
+    Ty* const v, uint32_t len = UINT_MAX) const {
+    return GetVal(x, y, z, v, len);
+  }
+
   // \return Return value of the 1st dimension
   Ty GetVal1(cv::Point3_<Ty> point) const {
     return GetVal1(point.x, point.y, point.z);

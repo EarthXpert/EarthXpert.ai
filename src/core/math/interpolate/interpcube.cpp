@@ -28,7 +28,7 @@ using earthxpert::InterpCube;
  * \param [in] spcZ z spacing of cube points
  */
 template <typename Ty>
-InterpCube<Ty>::InterpCube(const unsigned int dim, const Ty minX,
+InterpCube<Ty>::InterpCube(const unsigned dim, const Ty minX,
   const Ty minY, const Ty minZ, const Ty maxX, const Ty maxY,
   const Ty maxZ, const Ty spcX, const Ty spcY, const Ty spcZ) : mDim(dim) {
   LayoutNodes(minX, minY, minZ, maxX-minX, maxY-minY, maxZ-minZ, spcX, spcY, spcZ);
@@ -43,19 +43,19 @@ InterpCube<Ty>::InterpCube(const unsigned int dim, const Ty minX,
  * \param [in] spc XYZ spacing of cube points
  */
 template <typename Ty>
-InterpCube<Ty>::InterpCube(const unsigned int dim, const cv::Point3_<Ty>& min,
+InterpCube<Ty>::InterpCube(const unsigned dim, const cv::Point3_<Ty>& min,
   const cv::Point3_<Ty>& max, const cv::Point3_<Ty>& spc) : mDim(dim) {
   LayoutNodes(min, max, spc);
 }
 
 template <typename Ty>
-InterpCube<Ty>::InterpCube(const unsigned int dim, const SpatialCube<Ty>& range,
+InterpCube<Ty>::InterpCube(const unsigned dim, const SpatialCube<Ty>& range,
   const Ty spcX, const Ty spcY, const Ty spcZ) : mDim(dim) {
   LayoutNodes(range, spcX, spcY, spcZ);
 }
 
 template <typename Ty>
-InterpCube<Ty>::InterpCube(const unsigned int dim, const SpatialCube<Ty>& range,
+InterpCube<Ty>::InterpCube(const unsigned dim, const SpatialCube<Ty>& range,
   const cv::Point3_<Ty>& spc) : mDim(dim) {
   LayoutNodes(range, spc.x, spc.y, spc.z);
 }

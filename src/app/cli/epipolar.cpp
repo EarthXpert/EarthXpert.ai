@@ -5,7 +5,7 @@
 #include "packages/exai/exaiepipolar.h"
 
 /**
- *  The console program epipolar generates epipolar or pseudo epipolar images
+ *  The console program exepipolar generates epipolar or pseudo epipolar images
  *  from a pair of overlapping images acquired by the same sensor.
  *
  *  \detail Epipolar geometry is from the geometry of stereo vision. When a camera

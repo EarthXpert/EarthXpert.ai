@@ -8,6 +8,7 @@
 #include "3rdparty/boost/exboost.h"
 #include "3rdparty/opencv/exopencv.h"
 
+#include <type_traits>
 #include <vector>
 #include <utility>
 
@@ -53,6 +54,8 @@ public:
    */
   virtual bool EpiToRaw(const Point2d &epi, Point2d &raw) const = 0;
 
+  //virtual bool operator()(const Point2d& epi, Point2d& raw) const = 0;
+
   /**
    *  \brief Given a list of 2d poistions on epipolar, output the corresponding
    * positions on original image.
@@ -74,7 +77,9 @@ public:
    *  \param [in] epi 2d position (x, y) in epipolar raster coordinate system
    *  \return Returns true if operation succeeds
    */
-  virtual bool RawToEpi(const Point2d &raw, Point2d &epi) const = 0;
+  virtual bool RawToEpi(const Point2d& raw, Point2d& epi) const = 0;
+
+  //virtual bool operator()(const Point2d& raw, Point2d& epi) const = 0;
 
   /**
    *  \brief Given a list of 2d poistions on original image, output the 

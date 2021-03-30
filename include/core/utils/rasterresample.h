@@ -29,32 +29,49 @@ public:
 
   int GetWinDim() const noexcept override;
 
-  void Resample(CvRaster& src, CvRaster& tgt, CvRaster& tfm) const override {
-    if constexpr(eAB_CV == algoBackend) {
-      ResampleCV(src, tgt, tfm);
+  void Resample(CvRaster& src, CvRaster* srcMask, 
+    CvRaster& tgt, CvRaster* tgtMask, CvRaster& tfm) const override {
+    assert(tgt.GetMarginSize() == tfm.GetMarginSize());
+    cv::Mat* srcM = srcMask ? &(srcMask->GetCvMat()) : nullptr;
+    cv::Mat* tgtM = tgtMask ? &(tgtMask->GetCvMat()) : nullptr;
+    Resample(src.GetCvMat(), srcM, tgt.GetCvMat(), tgtM, tfm.GetCvMat());
+  }
+
+  inline void operator()(CvRaster& src, CvRaster* srcMask, 
+    CvRaster& tgt, CvRaster* tgtMask, CvRaster& tfm) const {
+    Resample(src, srcMask, tgt, tgtMask, tfm);
+  }
+
+  void Resample(cv::Mat& src, cv::Mat* srcMask, 
+    cv::Mat& tgt, cv::Mat* tgtMask, cv::Mat& tfm) const override {
+    assert(tgt.size() == tfm.size());
+    if constexpr (eAB_CV == algoBackend) {
+      ResampleCv(src, srcMask, tgt, tgtMask, tfm);
+    }
+    else if constexpr (eAB_EXAI == algoBackend) {
+      ResampleExai(src, srcMask, tgt, tgtMask, tfm);
     }
     else {
       throw std::invalid_argument(_("RasterResample: backend algorithm not supported"));
     }
   }
 
-  void Resample(cv::Mat& src, cv::Mat& tgt, cv::Mat& tfm) const override {
-    if constexpr(eAB_CV == algoBackend) {
-      ResampleCV(src, tgt, tfm);
-    }
-    else {
-      throw std::invalid_argument(_("RasterResample: backend algorithm not supported"));
-    }
+  inline void operator()(cv::Mat& src, cv::Mat* srcMask, 
+    cv::Mat& tgt, cv::Mat* tgtMask, cv::Mat& tfm) const {
+    Resample(src, srcMask, tgt, tgtMask, tfm);
   }
 
 private:
   cv::InterpolationFlags mInterpAlgo{ cv::INTER_CUBIC }; // interpolation algorithm
-  cv::BorderTypes mBorderType{ cv::BORDER_CONSTANT };
+  cv::BorderTypes mBorderType{ cv::BORDER_REPLICATE };
   cv::Scalar mBorderValue{ cv::Scalar::all(0) };
 
-  void ResampleCV(CvRaster& src, CvRaster& tgt, CvRaster& tfm) const;
-  void ResampleCV(cv::Mat& src, cv::Mat& tgt, cv::Mat& tfm) const;
+  void ResampleCv(cv::Mat& src, cv::Mat* srcMask, 
+    cv::Mat& tgt, cv::Mat* tgtMask, cv::Mat& tfm) const;
+  void ResampleExai(cv::Mat& src, cv::Mat* srcMask, 
+    cv::Mat& tgt, cv::Mat* tgtMask, cv::Mat& tfm) const;
 };
 
-using RasterResampleCV = RasterResample<IRasterResample::eAB_CV>;
+using RasterResampleCv = RasterResample<IRasterResample::eAB_CV>;
+using RasterResampleExai = RasterResample<IRasterResample::eAB_EXAI>;
 }

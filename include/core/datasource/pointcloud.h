@@ -295,13 +295,13 @@ private:
    *  \param [in] pointFieldGroup The field groups bit mask requested.
    *  \throw Throws invalid_argument if point cloud does not contain all the requested field groups.
    */
-  void VerifyPointFieldBits(size_t pointFieldBits) const;
+  void CheckPointFieldBits(size_t pointFieldBits) const;
 
   /**
    *  \param FieldTy the field type of a WxPoint<> component
    *  \throw Throws invalid_argument if point cloud does not contain the requested field group.
    */
-  template <typename FieldTy> void VerifyFieldType() const;
+  template <typename FieldTy> void CheckFieldType() const;
 
   // cache
   size_t mPointCount{};     // actual number of points held, default to mPointCapacity

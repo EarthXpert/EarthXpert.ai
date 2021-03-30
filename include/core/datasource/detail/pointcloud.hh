@@ -16,14 +16,14 @@ inline void Pointcloud::SetOrigin(const Point3d& origin) {
 
 template <typename FieldTy>
 inline void Pointcloud::SetField(std::vector<FieldTy>&& fields) {
-  VerifyFieldType<FieldTy>();
+  CheckFieldType<FieldTy>();
   assert(mPointCapacity == fields.size());
   SetField_Unchecked<FieldTy>(std::move(fields));
 }
 
 template <typename FieldTy>
 inline void Pointcloud::SetField(const size_t i, const FieldTy& field) {
-  VerifyFieldType<FieldTy>();
+  CheckFieldType<FieldTy>();
   assert(i < mPointCapacity);
   SetField_Unchecked<FieldTy>(i, field);
 }
@@ -49,12 +49,12 @@ inline void Pointcloud::SetXYZ(const size_t i, const Point3d& xyz) {
 
 template <typename FieldTy>
 inline const std::vector<FieldTy>& Pointcloud::GetField() const {
-  VerifyFieldType<FieldTy>();
+  CheckFieldType<FieldTy>();
   return GetField_Unchecked<FieldTy>();
 }
 template <typename FieldTy> 
 inline std::vector<FieldTy>& Pointcloud::GetField() {
-  VerifyFieldType<FieldTy>();
+  CheckFieldType<FieldTy>();
   return GetField_Unchecked<FieldTy>();
 }
 
@@ -68,7 +68,7 @@ inline Point3d Pointcloud::GetPoint3d(const size_t i) noexcept {
 
 template <typename FieldTy>
 inline const FieldTy& Pointcloud::GetField(const size_t i) const {
-  VerifyFieldType<FieldTy>();
+  CheckFieldType<FieldTy>();
   if (mPointCapacity <= i)
     throw std::out_of_range(_("Pointcloud::GetField()"));
 
@@ -77,7 +77,7 @@ inline const FieldTy& Pointcloud::GetField(const size_t i) const {
 
 template <typename FieldTy>
 inline FieldTy& Pointcloud::GetField(const size_t i) {
-  VerifyFieldType<FieldTy>();
+  CheckFieldType<FieldTy>();
   if (mPointCapacity <= i)
     throw std::out_of_range(_("Pointcloud::GetField()"));
 
@@ -88,7 +88,7 @@ template <typename PointTy>
 inline void Pointcloud::SetPoint(const size_t i, const PointTy& point) {
   if (mPointCapacity <= i)
     throw std::out_of_range(_("Pointcloud::SetPoint()"));
-  VerifyPointFieldBits(PointTy::kPointFieldBits);
+  CheckPointFieldBits(PointTy::kPointFieldBits);
 
   SetPoint_Unchecked<PointTy>(i, point);
 }
@@ -105,7 +105,7 @@ template <typename PointTy>
 inline PointTy Pointcloud::GetPoint(const size_t i) const {
   if (mPointCapacity <= i)
     throw std::out_of_range(_("Pointcloud::GetPoint()"));
-  VerifyPointFieldBits(PointTy::kPointFieldBits);
+  CheckPointFieldBits(PointTy::kPointFieldBits);
 
   return GetPoint_Unchecked<PointTy>(i);
 }
@@ -255,7 +255,7 @@ inline PointTy Pointcloud::GetPoint_Unchecked(const size_t i) const {
   return point;
 }
 
-inline void Pointcloud::VerifyPointFieldBits(const size_t pointFieldBits) const {
+inline void Pointcloud::CheckPointFieldBits(const size_t pointFieldBits) const {
   bool good{ true };
   for (auto [pos, bit] : FieldGroup::kPOSBIT) {
     if (bit & pointFieldBits) {
@@ -264,12 +264,12 @@ inline void Pointcloud::VerifyPointFieldBits(const size_t pointFieldBits) const 
   }
 
   if (!good)
-    throw std::invalid_argument(_("VerifyPointFieldBits: pointFieldBits"));
+    throw std::invalid_argument(_("CheckPointFieldBits: pointFieldBits"));
 }
 
 template <typename FieldTy> 
-inline void Pointcloud::VerifyFieldType() const {
-  static_assert(IsField_v<FieldTy>, "VerifyFieldType: FieldTy");
+inline void Pointcloud::CheckFieldType() const {
+  static_assert(IsField_v<FieldTy>, "CheckFieldType: FieldTy");
   if (!mFieldGroup.test(FieldTy::kFieldPos))
-    throw std::invalid_argument(_("VerifyFieldType: FieldTy"));
+    throw std::invalid_argument(_("CheckFieldType: FieldTy"));
 }

@@ -66,7 +66,7 @@ public:
     return mMat.ptr(mMarginRows + row, mMarginCols + col);
   }
 
-  uchar* operator()(const int col, const int row) const override {
+  inline uchar* operator()(const int col, const int row) const override {
     return GetPixel(col, row);
   }
 

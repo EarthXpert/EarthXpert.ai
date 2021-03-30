@@ -23,6 +23,6 @@ ${TESTS_BIN_DIR};$ENV{PATH}")
 endif()
 
 if(EARTHXPERT_INSTALL_TESTS_CPPUNIT)
-  earthxpert_install_test(rationalmodel_perf_tests)  #CubeS2G #CalcJocobianA, CalcJacobianNc
-  earthxpert_install_test(stereomodel_perf_tests)
+  exai_install_test(rationalmodel_perf_tests)  #CubeS2G #CalcJocobianA, CalcJacobianNc
+  exai_install_test(stereomodel_perf_tests)
 endif()

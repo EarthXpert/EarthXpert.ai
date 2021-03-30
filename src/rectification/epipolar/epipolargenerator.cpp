@@ -5,6 +5,7 @@
 #include "rectification/epipolar/epipolargenerator.h"
 #include "3rdparty/taskflow/extaskflow.h"
 #include "core/exceptions/exexcept.h"
+#include "core/math/interpgridvec.h"
 #include "core/utils/irasterresample.h"
 #include "core/utils/geomutils.h"
 #include "core/utils/layoututils.h"
@@ -54,7 +55,7 @@ bool EpipolarGenerator::Process(IRasterReader *const img,
     LayoutTiles();
     mPerf.tmInitial = mClock.TimeSinceStart() - start;
 
-    ProcessTiles<eTF>();
+    ProcessTiles<eTF>(); // ePL2 ePL3
   }
   catch (...) {
     throw EpipolarError(_("Process failed"));
@@ -110,7 +111,7 @@ void EpipolarGenerator::SetEpipolarParams(
 
 /**
  *  \brief allocate memory buffers
- *  \todo reduce mMaskBuf to label grid nodes
+ *  \todo reduce mEpiMaskBuf to label grid nodes
  */
 void EpipolarGenerator::AllocateBuffers() {
   const auto [imgBufNumPix, epiBufNumPix] = GetTilesLimit(mTiles);
@@ -128,13 +129,13 @@ void EpipolarGenerator::AllocateBuffers() {
   if (mEpiBufNumBytes < epiBufNumBytes) {
     mEpiBufWork.reset();
     mEpiBufWrit.reset();
-    mMaskBuf.reset();
+    mEpiMaskBuf.reset();
     mTfmBuf.reset();
     
     mEpiBufNumBytes = epiBufNumBytes;
     mEpiBufWork.reset(new uchar[mEpiBufNumBytes]);
     mEpiBufWrit.reset(new uchar[mEpiBufNumBytes]);
-    mMaskBuf.reset(new uchar[epiBufNumPix]);
+    mEpiMaskBuf.reset(new uchar[epiBufNumPix]);
     mTfmBuf.reset(new uchar[mTfmBpp * epiBufNumPix]);
   }
 }
@@ -166,12 +167,13 @@ void EpipolarGenerator::FreeBuffers() {
   mEpiBufWork.reset();
   mEpiBufWrit.reset();
   mTfmBuf.reset();
-  mMaskBuf.reset();
+  mEpiMaskBuf.reset();
 }
 
 /**
  *  \brief pipelined overlapping of read/write and computation tasks
- *  \todo investigate GDAL thread model: does it allow simuteneous read/write of different datasets?
+ *  \todo investigate GDAL thread model: does it allow 
+ *  simuteneous read/write of different datasets?
  */
 void EpipolarGenerator::ProcessTilesPL2() {
   for (int t = -1; t <= mNumTiles; ++t) {
@@ -286,7 +288,8 @@ void EpipolarGenerator::ReadTile(const int tileId) {
   const auto start = mClock.TimeSinceStart();
   //memset(mImgBufRead.get(), 0, size_t(mImgBpp) * numCols * numRows);
 
-  CvRaster imgRaster(numCols, numRows, mImgCvDT, colOffset, rowOffset, mImgBufRead.get());
+  CvRaster imgRaster(numCols, numRows, mImgCvDT, 
+    colOffset, rowOffset, mImgBufRead.get());
   mImgReader->ReadRaster(&imgRaster);
 
   mPerf.tmRead += mClock.TimeSinceStart() - start;
@@ -304,10 +307,11 @@ void EpipolarGenerator::ProcessTile(const int tileId) {
   const auto start = mClock.TimeSinceStart();
 
   const auto [colOffset, rowOffset, numCols, numRows] = EpiTile(tileId);
-  memset(mMaskBuf.get(), eMK_BKGD, size_t(numCols) * numRows);
+  memset(mEpiMaskBuf.get(), eMK_BKGD, size_t(numCols) * numRows);
 
   cv::Mat imgMat(imgNumRows, imgNumCols, mImgCvDT, mImgBufWork.get());
   cv::Mat epiMat(numRows, numCols, mEpiCvDT, mEpiBufWork.get());
+  cv::Mat epiMask(numRows, numCols, CV_8UC1, mEpiMaskBuf.get());
   cv::Mat tfmMat(numRows, numCols, mTfmCvDT, mTfmBuf.get());
 
   // in-memory ProcessTile(imgMat, epiMat, tfmMat)
@@ -315,7 +319,7 @@ void EpipolarGenerator::ProcessTile(const int tileId) {
     tfm[0] = -1; tfm[1] = -1; });
   GeotransformTile(tileId, tfmMat);
 
-  mRasResample->Resample(imgMat, epiMat, tfmMat); // ResampleTile
+  mRasResample->Resample(imgMat, nullptr, epiMat, &epiMask, tfmMat); // ResampleTile
 
   //GatherStatTile(tileId);
   mPerf.tmProcess += mClock.TimeSinceStart() - start;
@@ -331,7 +335,8 @@ void EpipolarGenerator::WriteTile(const int tileId) {
   const auto start = mClock.TimeSinceStart();
 
   const auto [colOffset, rowOffset, numCols, numRows] = EpiTile(tileId);
-  CvRaster epiRaster(numCols, numRows, mEpiCvDT, colOffset, rowOffset, mEpiBufWrit.get());
+  CvRaster epiRaster(numCols, numRows, mEpiCvDT, 
+    colOffset, rowOffset, mEpiBufWrit.get());
   mEpiWriter->WriteRaster(&epiRaster);
 
   mPerf.tmWrite += mClock.TimeSinceStart() - start;
@@ -421,9 +426,11 @@ void EpipolarGenerator::DensifyCells(const int tileId, cv::Mat& tfmMat,
   const auto [numCols, numRows] = EpiTile(tileId).GetSize();
   const int numGridCols = int(gridCols.size());
   const int numGridRows = int(gridRows.size());
-  const int64_t numGridCells = int64_t(numGridCols - 1) * (numGridRows - 1);
+  const int64_t numGridCells = 
+    (int64_t(numGridCols) - 1) * (int64_t(numGridRows) - 1);
 
-#pragma omp parallel for num_threads(mNumPT) schedule(dynamic, (numGridCols - 1)*2)
+#pragma omp parallel for num_threads(mNumPT) \
+    schedule(dynamic, (numGridCols - 1)*2)
   for (int64_t g = 0; g < numGridCells; ++g) {
     const auto [gridCol, gridRow] = IndexToCR(g, numGridCols-1);
 
@@ -432,35 +439,30 @@ void EpipolarGenerator::DensifyCells(const int tileId, cv::Mat& tfmMat,
     const auto [i1, i2, i3, i4] = CornersIndex(tileColL, tileRowU,
       tileColR, tileRowL, numCols);
 
-    if (MaskAllZero(mMaskBuf.get(), i1, i2, i3, i4)) 
+    if (MaskAllZero(mEpiMaskBuf.get(), i1, i2, i3, i4)) 
       continue;
     
     const int numCellCols = std::min<int>(mStride, tileColR - tileColL + 1);
     const int numCellRows = std::min<int>(mStride, tileRowL - tileRowU + 1);
 
-    if (MaskAllOne(mMaskBuf.get(), i1, i2, i3, i4)) {
+    if (MaskAllOne(mEpiMaskBuf.get(), i1, i2, i3, i4)) {
       const auto invTileCols = 1.0 / (tileColR - tileColL);
       const auto invTileRows = 1.0 / (tileRowL - tileRowU);
-      const auto [tfm1, tfm2, tfm3, tfm4] = MatCorners<cv::Vec2f>(tfmMat, 
-        tileColL, tileRowU, tileColR, tileRowL);
+      const InterpGridVec<float, 2, std::false_type> interp(
+        MatCorners<cv::Vec2f>(tfmMat, tileColL, tileRowU, tileColR, tileRowL));
 
       double xf{};
-      for (int c = 0; c < numCellCols; ++c, xf+= invTileCols) {
+      for (int c = 0; c < numCellCols; ++c, xf+=invTileCols) {
         const int tileCol = tileColL + c;
 
         double yf{};
         for (int r = 0; r < numCellRows; ++r, yf+=invTileRows) {
           const int tileRow = tileRowU + r;
           const int64_t k = CRToIndex(tileCol, tileRow, numCols);
-          if (eMK_NORM == mMaskBuf[k]) continue;
+          if (eMK_NORM == mEpiMaskBuf[k]) continue;
 
-          auto& tfm = tfmMat.at<cv::Vec2f>(tileRow, tileCol);
-          tfm[0] = float(LinearInterp<double>(
-            tfm1[0], tfm2[0], tfm3[0], tfm4[0], xf, yf));
-          tfm[1] = float(LinearInterp<double>(
-            tfm1[1], tfm2[1], tfm3[1], tfm4[1], xf, yf));
-
-          mMaskBuf[k] = eMK_FAST; 
+          tfmMat.at<cv::Vec2f>(tileRow, tileCol) = interp.GetVal<float>(xf, yf);
+          mEpiMaskBuf[k] = eMK_FAST; 
         }
       }
     }
@@ -471,7 +473,7 @@ void EpipolarGenerator::DensifyCells(const int tileId, cv::Mat& tfmMat,
         for (int r = 0; r < numCellRows; ++r) {
           const int tileRow = tileRowU + r;
           const int64_t k = CRToIndex(tileCol, tileRow, numCols);
-          if (eMK_NORM == mMaskBuf[k]) continue;
+          if (eMK_NORM == mEpiMaskBuf[k]) continue;
 
           EpiToImg(tileId, tfmMat, tileCol, tileRow);
         }
@@ -500,7 +502,7 @@ void EpipolarGenerator::DensifyPixels(const int tileId, cv::Mat& tfmMat,
 
 #pragma omp parallel for num_threads(mNumPT) schedule(dynamic, numCols*16)
   for (int64_t k = 0; k < numPix; ++k) {
-    if (eMK_NORM == mMaskBuf[k]) continue;
+    if (eMK_NORM == mEpiMaskBuf[k]) continue;
     const auto [tileCol, tileRow] = IndexToCR(k, numCols);
 
     //const bool isGridCol = (0 == tileCol % mStride || tileCol == numCols - 1);
@@ -515,10 +517,10 @@ void EpipolarGenerator::DensifyPixels(const int tileId, cv::Mat& tfmMat,
     const auto [i1, i2, i3, i4] = CornersIndex(tileColL, tileRowU,
       tileColR, tileRowL, numCols);
 
-    if (MaskAllZero(mMaskBuf.get(), i1, i2, i3, i4)) 
+    if (MaskAllZero(mEpiMaskBuf.get(), i1, i2, i3, i4)) 
       continue;
 
-    if (MaskAllOne(mMaskBuf.get(), i1, i2, i3, i4)) {
+    if (MaskAllOne(mEpiMaskBuf.get(), i1, i2, i3, i4)) {
       // Bilinear interpolation if all four grid points are valid
       // \todo pre-calculate fraction lookup table at locations 0 ~ mStride -1
       const auto [tfm1, tfm2, tfm3, tfm4] = 
@@ -526,10 +528,9 @@ void EpipolarGenerator::DensifyPixels(const int tileId, cv::Mat& tfmMat,
       const auto xf = double(tileCol - tileColL) / double(tileColR - tileColL);
       const auto yf = double(tileRow - tileRowU) / double(tileRowL - tileRowU);
 
-      auto& tfm = tfmMat.at<cv::Vec2f>(tileRow, tileCol);
-      tfm[0] = float(LinearInterp<double>(tfm1[0], tfm2[0], tfm3[0], tfm4[0], xf, yf));
-      tfm[1] = float(LinearInterp<double>(tfm1[1], tfm2[1], tfm3[1], tfm4[1], xf, yf));
-      mMaskBuf[k] = eMK_FAST;   
+      tfmMat.at<cv::Vec2f>(tileRow, tileCol) = 
+        LinearInterp<float, 2, double>(tfm1, tfm2, tfm3, tfm4, xf, yf);
+      mEpiMaskBuf[k] = eMK_FAST;   
     }
     else {
       // Do actual geometry if any grid node is invalid
@@ -567,7 +568,7 @@ void EpipolarGenerator::EpiToImg(const int tileId, cv::Mat& tfmMat,
     tfm[1] = tfmRow;
 
     const int64_t k = CRToIndex(tileCol, tileRow, numCols);
-    mMaskBuf[k] = eMK_NORM; 
+    mEpiMaskBuf[k] = eMK_NORM; 
   }
 }
 
@@ -582,6 +583,6 @@ void EpipolarGenerator::GatherStatTile(const int tileId) {
 
 //#pragma omp parallel for reduction(+ : )
   for (int64_t k = 0; k < numPix; ++k) {
-    mPerf.pixels[mMaskBuf[k]] ++;
+    mPerf.pixels[mEpiMaskBuf[k]] ++;
   }
 }

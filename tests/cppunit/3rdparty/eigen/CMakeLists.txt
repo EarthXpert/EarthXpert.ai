@@ -12,5 +12,5 @@ if(WIN32)
 endif()
 
 if(EARTHXPERT_INSTALL_TESTS_3RDPARTY)
-  earthxpert_install_test(eigen_tests)
+  exai_install_test(eigen_tests)
 endif()

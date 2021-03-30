@@ -22,5 +22,5 @@ ${TESTS_BIN_DIR};$ENV{PATH}")
 endif()
 
 if(EARTHXPERT_INSTALL_TESTS_CPPUNIT)
-  earthxpert_install_test(epigen_tests)
+  exai_install_test(epigen_tests)
 endif()

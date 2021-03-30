@@ -148,6 +148,8 @@ void RasterReader::ReadRaster(IRaster* const raster) {
  */
 void RasterReader::ReadRaster(CvRaster* const raster) {
   assert(mDataset);
+  CheckRasterInfo(raster);
+
   std::lock_guard<std::mutex> lock(mMutex);
   const int64_t rowNumBytes = raster->GetRowNumBytes();
   const auto [readWin, readPixelOff] = ObtainReadWindow(raster);
@@ -204,6 +206,8 @@ void RasterReader::ReadRaster(CvRaster* const raster) {
  */
 void RasterReader::ReadRaster(GdalRaster* const raster) {
   assert(mDataset);
+  CheckRasterInfo(raster);
+
   std::lock_guard<std::mutex> lock(mMutex);
   const int64_t rowNumBytes = raster->GetRowNumBytes();
   const int64_t bandNumBytes = raster->GetBandNumBytes();
@@ -220,6 +224,13 @@ void RasterReader::ReadRaster(GdalRaster* const raster) {
 
   const auto fillDim = ObtainMarginFillDim(raster);
   FillMargins(raster, fillDim);
+}
+
+/**
+ *  \brief 
+ */
+void RasterReader::CheckRasterInfo(const IRaster* raster) {
+
 }
 
 void RasterReader::ReadBand(GDALRasterBand* band, const RasterWindow& readWin,

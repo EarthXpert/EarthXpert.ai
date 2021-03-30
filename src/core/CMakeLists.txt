@@ -1,7 +1,8 @@
 project(core CXX)
 
 add_definitions(-DEXCORE_API)
-set(core_srcs "datasource/cvraster.cpp"
+set(core_srcs 
+  "datasource/cvraster.cpp"
   "datasource/gdalraster.cpp"
   "datasource/kindfillpolicy.cpp"
   "datasource/metadata.cpp"
@@ -22,7 +23,9 @@ set(core_srcs "datasource/cvraster.cpp"
   "math/interpolate/interp2d.cpp"
   "math/interpolate/interp3d.cpp"
   "math/interpolate/interpcube.cpp"
+  "math/interpolate/interpcubevec.cpp"
   "math/interpolate/interpgrid.cpp"
+  "math/interpolate/interpgridvec.cpp"
   "math/interpolate/interpnd.cpp"
   "math/interpolate/interputils.cpp"
   "parallel/cuda/excuda.cpp"
@@ -35,6 +38,7 @@ set(core_srcs "datasource/cvraster.cpp"
   "parallel/simd/exsimd.cpp"
   "parallel/simd/exsimd_math.cpp"
   "parallel/simd/exsimd_utils.cpp"
+  "qc/qc.cpp"
   "spatialref/ccsct.cpp"
   "spatialref/ccssrs.cpp"
   "spatialref/ccsutils.cpp"
@@ -66,9 +70,9 @@ set(core_items ex3rdparty
   libInterpolate::Interpolate
   ${MPFR4_LIBRARIES} ${MPIR_LIBRARIES} ${nsimd_LIBRARIES} ${OpenCL_LIBRARIES} 
   ${OpenCV_LIBS}  ${proj_LIBRARIES} ${Simd_LIBRARIES} ${TBB_LIBRARIES})
-earthxpert_add_library(core "api"
+exai_add_library(core "api"
   SRCS ${core_srcs}
   ITEMS ${core_items})
 
-earthxpert_source_group(${core_srcs})
-earthxpert_install_target(core)
+exai_source_group(${core_srcs})
+exai_install_target(core)

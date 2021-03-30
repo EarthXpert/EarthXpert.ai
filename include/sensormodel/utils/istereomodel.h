@@ -66,6 +66,9 @@ public:
   virtual bool ImagesToGround(const Point2d &leftImage,
     const Point2d &rightImage, Point3d &ground) const = 0;
 
+  //virtual bool operator()(const Point2d& leftImage,
+  //  const Point2d& rightImage, Point3d& ground) const = 0;
+
   /**
    *  \brief Given a pair of sensor models and associated list of 2d positions
    *  in image coordinate system, do forward intersection of pair-rays, and
@@ -149,6 +152,9 @@ public:
    */
   virtual bool GroundToImages(const Point3d& ground, 
     std::vector<Point2d>& images) const = 0;
+
+  //virtual bool operator()(const Point3d& ground, 
+  //  std::vector<Point2d>& images) const = 0;
 
   /**
    *  Ground-to-image backward projection (variable).

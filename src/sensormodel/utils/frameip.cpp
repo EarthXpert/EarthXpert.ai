@@ -199,10 +199,7 @@ void FrameIP::SetMisalignment(const std::array<double, 3> &pc,
  *
  *    r = sqrt(x^2 + y^2)
  */
-Point2d FrameIP::CalcRadialCorr(const Point2d& sensor) const {
-  if (!mDistFlags[kRADDIST])
-    return { 0.0, 0.0 };
-
+Point2d FrameIP::CalcRadialCorr_Unchecked(const Point2d& sensor) const {
   const auto rc2 = cv::normL2Sqr<double>(sensor);
 
   double rcPow = 1.0;
@@ -228,10 +225,7 @@ Point2d FrameIP::CalcRadialCorr(const Point2d& sensor) const {
  *    dx = (P1 * (r^2 + 2 * x^2) + 2 * P2 * x * y) * f
  *    dy = (P2 * (r^2 + 2 * y^2) + 2 * P1 * x * y) * f
  */
-Point2d FrameIP::CalcDecentCorr(const Point2d& sensor) const {
-  if (!mDistFlags[kDECDIST])
-    return { 0.0, 0.0 };
-
+Point2d FrameIP::CalcDecentCorr_Unchecked(const Point2d& sensor) const {
   const auto x2 = sensor.x * sensor.x;
   const auto y2 = sensor.y * sensor.y;
   const auto rc2 = x2 + y2;
@@ -240,8 +234,9 @@ Point2d FrameIP::CalcDecentCorr(const Point2d& sensor) const {
   const auto factor = (1.0 + mDecentDist[eP3] * rc2 + mDecentDist[eP4] * rc4);
   const auto xy = sensor.x * sensor.y;
 
-  return { (mDecentDist[eP1] * (rc2 + 2.0 * x2) + 2.0 * mDecentDist[eP2] * xy) * factor,
-           (mDecentDist[eP2] * (rc2 + 2.0 * y2) + 2.0 * mDecentDist[eP1] * xy) * factor };
+  const auto dXdec = mDecentDist[eP1] * (rc2 + 2.0 * x2) + 2.0 * mDecentDist[eP2] * xy;
+  const auto dYdec = mDecentDist[eP2] * (rc2 + 2.0 * y2) + 2.0 * mDecentDist[eP1] * xy;
+  return { dXdec * factor, dYdec * factor };
 }
 
 /**

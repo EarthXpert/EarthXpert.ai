@@ -148,6 +148,8 @@ void RasterWriter::WriteRaster(IRaster* const raster) {
  *  \param [in] raster the OpenCV raster object to be written into image file on disk
  */
 void RasterWriter::WriteRaster(const CvRaster* raster) {
+  CheckRasterInfo(raster);
+
   std::unique_lock<std::shared_mutex> lock(mMutex);
   const int64_t rowNumBytes = raster->GetRowNumBytes();
   const auto [writeWin, writePixelOff] = ObtainWriteWindow(raster);
@@ -199,6 +201,8 @@ void RasterWriter::WriteRaster(const CvRaster* raster) {
  *  \param [in] raster the GDAL raster object to be written into image file on disk
  */
 void RasterWriter::WriteRaster(const GdalRaster* raster) {
+  CheckRasterInfo(raster);
+
   std::unique_lock<std::shared_mutex> lock(mMutex);
   const auto gdalDT = raster->GetDataType();
   if (gdalDT != mGdalDT) 
@@ -216,6 +220,13 @@ void RasterWriter::WriteRaster(const GdalRaster* raster) {
     WriteBand(band, writeWin, writeBuffer, rowNumBytes);
     writeBuffer += bandNumBytes;
   }
+}
+
+/**
+ *  \brief
+ */
+void RasterWriter::CheckRasterInfo(const IRaster* raster) {
+
 }
 
 void RasterWriter::WriteBand(GDALRasterBand* band, const RasterWindow& writeWin,

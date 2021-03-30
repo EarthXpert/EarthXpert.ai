@@ -19,8 +19,8 @@ using earthxpert::SpatialTile;
  */
 template <typename Ty>
 SpatialLayout<Ty>::SpatialLayout(const Ty width, const Ty height,
-  const Ty tileWidth, const Ty tileHeight, const LayoutKind kind)
-  : SpatialLayout(SpatialTile<Ty>{0, 0, width, height}, tileWidth, tileHeight, kind) {
+  const Ty tileWidth, const Ty tileHeight, const LayoutDir dir)
+  : SpatialLayout(SpatialTile<Ty>{0, 0, width, height}, tileWidth, tileHeight, dir) {
 }
 
 /**
@@ -33,8 +33,8 @@ SpatialLayout<Ty>::SpatialLayout(const Ty width, const Ty height,
  */
 template <typename Ty>
 SpatialLayout<Ty>::SpatialLayout(const SpatialTile<Ty>& range,
-  const Ty tileWidth, const Ty tileHeight, const LayoutKind kind)
-  : mRange(range), mTileWidth(tileWidth), mTileHeight(tileHeight), mLayoutkind(kind) {
+  const Ty tileWidth, const Ty tileHeight, const LayoutDir dir)
+  : mRange(range), mTileWidth(tileWidth), mTileHeight(tileHeight), mLayoutDir(dir) {
   LayoutTiles();
 }
 
@@ -91,7 +91,7 @@ template <typename Ty> void SpatialLayout<Ty>::LayoutTiles() {
   mTiles.resize(numTiles);
   for (int t = 0; t < numTiles; ++t) {
     int x{}, y{};
-    if (LayoutKind::eLK_HORIZONTAL == mLayoutkind) {
+    if (LayoutDir::eLD_HORIZONTAL == mLayoutDir) {
       std::tie(x, y) = IndexToCR(t, numHoriTiles);
     }
     else {

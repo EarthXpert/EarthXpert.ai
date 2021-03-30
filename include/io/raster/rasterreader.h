@@ -202,6 +202,8 @@ private:
   UPGDALDataset mDataset;  // pointer to GDALDataset object
   std::vector<int> mBands;  // list of bands to read from
 
+  void CheckRasterInfo(const IRaster* raster);
+
   void ReadBand(GDALRasterBand* band, const RasterWindow& readWin, 
     uchar* const readBuffer, int64_t rowNumBytes);
 

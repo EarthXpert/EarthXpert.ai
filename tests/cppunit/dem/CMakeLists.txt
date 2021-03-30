@@ -22,6 +22,6 @@ ${TESTS_BIN_DIR};$ENV{PATH}")
 endif()
 
 if(EARTHXPERT_INSTALL_TESTS_CPPUNIT)
-  earthxpert_install_test(dem_tests)
-  earthxpert_install_test(geoid_tests)
+  exai_install_test(dem_tests)
+  exai_install_test(geoid_tests)
 endif()

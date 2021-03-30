@@ -30,6 +30,8 @@ public:
    */
   virtual bool Transform(double& x, double& y, double& z) = 0;
   
+  //virtual bool operator()(double& x, double& y, double& z) = 0;
+
   virtual bool Transform(const double xSrc, const double ySrc, const double zSrc,
     double& xTgt, double& yTgt, double& zTgt) = 0;
 

@@ -23,6 +23,13 @@ enum MaskKind : uint8_t {
   eMK_FAST      // fast, e.g. interpolated from rigorous
 };
 
+// enforce the tile shape of layout
+enum LayoutKind : uint8_t {
+  eLK_FULLHEIGHT, // image rows
+  eLK_FULLWIDTH,  // image columns
+  eLK_SQUARE      // square 
+};
+
 /**
  *  \return Return the col/row for given linear index of a row-major 2d grid
  */
@@ -105,7 +112,8 @@ inline bool MaskAllOne(const uchar* mask, const int64_t i1,
 }
 
 std::pair<int, int> EXCORE_EXPORTS EstimateTileSize(size_t memSize,
-  int bpp, int numCols, int numRows, int kTile=256);
+  int bpp, int numCols, int numRows, int kTile=256,
+  LayoutKind kind = eLK_SQUARE, int marginCols=0, int marginRows=0);
 
 /**
  *  \tparam PT point type: Point2d, PointXYd

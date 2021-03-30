@@ -99,7 +99,7 @@ void GenerateRationalEpipolar(const EpipolarOptions& epiOpt) {
       epiOpt.sample, epiOpt.epiHgt, epiOpt.rotAngle);
   assert(IEpipolarModel::ePLANERECT == leftEpiModel->GetEpipolarAlgorithm());
 
-  auto rasResample = std::make_unique<RasterResampleCV>(epiOpt.resample);
+  auto rasResample = std::make_unique<RasterResampleCv>(epiOpt.resample);
   EpipolarGenerator epiGen(rasResample.get(), epiOpt.memSize, epiOpt.stride);
 
   // generate left epipolar image

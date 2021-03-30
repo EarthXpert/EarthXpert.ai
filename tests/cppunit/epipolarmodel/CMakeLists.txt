@@ -23,6 +23,6 @@ ${TESTS_BIN_DIR};$ENV{PATH}")
 endif()
 
 if(EARTHXPERT_INSTALL_TESTS_CPPUNIT)
-  earthxpert_install_test(epipolarmodel_tests)
-  earthxpert_install_test(epipolarstereofactory_tests)
+  exai_install_test(epipolarmodel_tests)
+  exai_install_test(epipolarstereofactory_tests)
 endif()

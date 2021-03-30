@@ -28,7 +28,9 @@ public:
     eK3 = 3,        // r^7
     eK4 = 4,        // r^9  fisheye
     eK5 = 5,        // r^11
-    NumRadCoef = 6  // number of coefficients
+    eK6 = 6,        // r^13
+    eK7 = 7,        // r^15
+    NumRadCoef = 8  // number of coefficients
   };
 
   // index of decentering distortion coefficients
@@ -103,34 +105,8 @@ public:
 
   Point2d CalcRadialCorr(const Point2d& sensor) const;
   Point2d CalcDecentCorr(const Point2d& sensor) const;
-
-  /**
-   *  \brief Compute correction to linear distortion.
-   *
-   * \param [in] sensor the measured position where the ray actually hits the
-   * focal plane
-   * \return the linear correction.
-   */
-  Point2d CalcLinearCorr(const Point2d& sensor) const {
-    if (!mDistFlags[kLINDIST])
-      return { 0.0, 0.0 };
-
-    return { mLinearDist[0] * sensor.x + mLinearDist[1] * sensor.y, 0.0 };
-  }
-
-  /**
-   *  \brief Compute correction to grid distortion.
-   *
-   * \param [in] sensor the apprant position where the ray would hit the
-   * focal plane after correcting radial and decentering distortions.
-   * \return the grid correction.
-   */
-  Point2d CalcGridCorr(const Point2d& sensor) const {
-    double dX{}, dY{};
-    if (mDistFlags[kGRDDIST])
-      std::tie(dX, dY) = mGridDist->GetDistortion(float(sensor.x), float(sensor.y));
-    return { double(dX), double(dY) };
-  }
+  Point2d CalcLinearCorr(const Point2d& sensor) const;
+  Point2d CalcGridCorr(const Point2d& sensor) const;
 
   Point2d PPSToPPA(const Point2d& sensor) const {
     return { sensor.x - mPPA[0], sensor.y - mPPA[1] };
@@ -161,6 +137,11 @@ private:
   std::array<double, NumLinCoef> mLinearDist{};  // linear distortion for non-square, non-orthogonality [B1 B2]
   std::unique_ptr<DistortionGridF> mGridDist;   // grid distortion
 
+  Point2d CalcRadialCorr_Unchecked(const Point2d& sensor) const;
+  Point2d CalcDecentCorr_Unchecked(const Point2d& sensor) const;
+  Point2d CalcLinearCorr_Unchecked(const Point2d& sensor) const;
+  Point2d CalcGridCorr_Unchecked(const Point2d& sensor) const;
+
   // self-calibration model with added parameters
 
   // uncertainties [mm]
@@ -184,4 +165,10 @@ private:
   // cached info
   mutable std::bitset<4> mDistFlags; // [Grid Linear Dec Rad]
 };
+
+using frc = FrameIP::RadialCoeff;
+using fdc = FrameIP::DecenterCoeff;
+using flc = FrameIP::LinearCoeff;
+
+#include "detail/frameip.hh"
 } // namespace earthxpert

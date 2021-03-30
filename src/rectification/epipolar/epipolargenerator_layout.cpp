@@ -24,7 +24,6 @@ void EpipolarGenerator::LayoutTiles() {
     bpp, mEpiNumCols, mEpiNumRows, kTileDim);
 
   mPerf.numImgTiles = DefineTiles(tileNumCols, tileNumRows);
-  
   if (0 == mPerf.numImgTiles)
     throw EpipolarError(_("LayoutTiles: empty tiles"));
 
@@ -106,8 +105,7 @@ RasterWindow EpipolarGenerator::DefineImgTile(const RasterWindow& epiTile) {
  */
 std::pair<int64_t, int64_t> 
 EpipolarGenerator::GetTilesLimit(const std::vector<TileInfo>& tiles) const {
-  int64_t maxImgTileNumPix{ -1 };
-  int64_t maxEpiTileNumPix{ -1 };
+  int64_t maxImgTileNumPix{ -1 }, maxEpiTileNumPix{ -1 };
 
   for (auto& tile : tiles) {
     if (tile.imgTile.IsValid()) {

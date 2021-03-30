@@ -23,8 +23,8 @@ struct SolverTraits {
 /**
  *  \brief enum LayoutKind specifies the major direction of tile division.
  */
-enum class LayoutKind {
-  eLK_HORIZONTAL,
-  eLK_VERTICAL
+enum class LayoutDir {
+  eLD_HORIZONTAL,
+  eLD_VERTICAL
 };
 }

@@ -19,7 +19,10 @@ public:
   virtual ~IDem() = default;
 
   virtual float GetElev(const Point2d& xy) const = 0;
+  virtual float operator()(const Point2d& xy) const = 0;
+
   virtual float GetElev(double x, double y) const = 0;
+  virtual float operator()(double x, double y) const = 0;
 
   /**
    *  \brief Fetch the ground coordinate system where the DEM operates.

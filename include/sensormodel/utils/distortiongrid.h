@@ -14,7 +14,7 @@ namespace earthxpert {
  *  \brief Encapsulates a calibrated grid of camera lens distortion.
  *
  *  \tparam Ty value type such as float, double
- *  \todo represent node position suing Point_<Ty> 
+ *  \todo represent node position suing Point_<Ty>
  */
 template <typename Ty> class EXSENSORMODEL_EXPORTS DistortionGrid {
   static_assert(std::is_floating_point_v<Ty>, "Requires that template argument be floating data type");
@@ -37,6 +37,10 @@ public:
   bool operator==(const DistortionGrid &rhs) const;
   bool operator!=(const DistortionGrid &rhs) const;
 
+  std::unique_ptr<DistortionGrid> Clone() const {
+    return std::make_unique<DistortionGrid>(*this);
+  }
+
   bool FetchGrid(unsigned int &numCols, unsigned int &numRows,
                  std::vector<Ty> &vX, std::vector<Ty> &vY,
                  std::vector<Ty> &vdX, std::vector<Ty> &vdY) const;
@@ -50,6 +54,10 @@ public:
    */
   bool GetDistortion(const Ty x, const Ty y, Ty* const d) const;
 
+  inline bool operator()(const Ty x, const Ty y, Ty* const d) const {
+    return GetDistortion(x, y, d);
+  }
+
   /**
    * Interpolate a distortion value for the given x,y position.
    *
@@ -59,8 +67,8 @@ public:
    */
   std::pair<Ty, Ty> GetDistortion(const Ty x, const Ty y) const;
 
-  std::unique_ptr<DistortionGrid> Clone() const {
-    return std::make_unique<DistortionGrid>(*this);
+  inline std::pair<Ty, Ty> operator()(const Ty x, const Ty y) const {
+    return GetDistortion(x, y);
   }
 
   void SetCameraName(std::string cameraName) {
@@ -75,10 +83,9 @@ private:
   std::string mCameraName;
   std::unique_ptr<InterpGrid<Ty>> mGrid;
 
-  // void VerifyGrid(const std::vector<Ty>& vX, const std::vector<Ty>& vY)
-  // const;
+  // void CheckGrid(const std::vector<Ty>& vX, const std::vector<Ty>& vY) const;
   void EstablishGrid(const std::vector<Ty> &vX, const std::vector<Ty> &vY,
-                     const std::vector<Ty> &vdX, const std::vector<Ty> &vdY);
+    const std::vector<Ty> &vdX, const std::vector<Ty> &vdY);
 
   void CopyFrom(const DistortionGrid &rhs);
   void MoveFrom(DistortionGrid &&rhs) noexcept;

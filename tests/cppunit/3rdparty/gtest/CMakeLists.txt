@@ -13,5 +13,5 @@ if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
 endif()
 
 if(EARTHXPERT_INSTALL_TESTS_3RDPARTY)
-  earthxpert_install_test(gtest_tests)
+  exai_install_test(gtest_tests)
 endif()

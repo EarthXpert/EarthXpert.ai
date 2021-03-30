@@ -119,14 +119,14 @@ bool DistortionGrid<Ty>::operator==(const DistortionGrid<Ty> &rhs) const {
  * \return true if getting grid points successfully.
  */
 template <typename Ty>
-bool DistortionGrid<Ty>::FetchGrid(unsigned int &numCols, unsigned int &numRows, 
+bool DistortionGrid<Ty>::FetchGrid(unsigned &numCols, unsigned &numRows, 
   std::vector<Ty> &vX, std::vector<Ty> &vY, 
   std::vector<Ty> &vdX, std::vector<Ty> &vdY) const {
   if (!mGrid)
     return false;
   std::tie(numCols, numRows) = mGrid->GetSize();
 
-  const unsigned int dim = mGrid->GetDimension();
+  const unsigned dim = mGrid->GetDimension();
   if (2 != dim) 
     throw std::exception("Distortion grid must be 2D.");
 
@@ -142,8 +142,8 @@ bool DistortionGrid<Ty>::FetchGrid(unsigned int &numCols, unsigned int &numRows,
   auto gridCorr = mGrid->GetArray();
 
   for (size_t k = 0; k < numPts; ++k) {
-    const unsigned int X = static_cast<unsigned int>(k / numRows);
-    const unsigned int Y = static_cast<unsigned int>(k % numRows);
+    const unsigned X = static_cast<unsigned>(k / numRows);
+    const unsigned Y = static_cast<unsigned>(k % numRows);
     const size_t idx = size_t(Y) * size_t(numCols) + size_t(X);
 
     vX[idx] = gridNodes[k * 2];
@@ -186,8 +186,8 @@ void DistortionGrid<Ty>::EstablishGrid(const std::vector<Ty> &vX,
   const size_t numPts = mGrid->GetNumNodes();
 
   for (size_t k = 0; k < numPts; ++k) {
-    const auto X = static_cast<unsigned int>(k / numY);
-    const auto Y = static_cast<unsigned int>(k % numY);
+    const auto X = static_cast<unsigned>(k / numY);
+    const auto Y = static_cast<unsigned>(k % numY);
 
     const size_t idx = size_t(Y) * size_t(numX) + size_t(X);
     grid[k * 2] = vdX[idx];
