@@ -25,16 +25,16 @@ struct EpipolarOptions {
   std::string rightMdlFile;
 
   std::vector<int> bands;
+  std::string epiOpt;
   int sample{ 1 };
   int stride{ 8 };
-  bool grey{ false };     // convert color image into grey
-  bool oneFile{ false };  // store all epipolar images in one file
-  int outBkgd{ 0 };
-  std::string outOpt;
-  std::string outPath;
   float epiHgt{};
   float rotAngle{};
   std::string resample;
+  std::string outPath;
+  bool oneFile{ false };  // store all epipolar images in one file
+  bool grey{ false };     // convert color image into grey
+  int outBkgd{ 0 };
   size_t memSize;  // [unit: bytes]
 };
 

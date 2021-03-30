@@ -22,14 +22,14 @@ struct OrthoOptions {
 
   std::vector<int> bands;
   std::string demFile;
-  double ulPos[4]{};
-  std::string ourSrs;
-  double outGsd{};
-  int outBkgd{ 0 };
-  std::string outPath;
   int stride{ 8 };
   float rotAngle{};
   std::string resample;
+  std::string outPath;
+  std::string ourSrs;
+  double ulPos[4]{};
+  double outGsd{};
+  int outBkgd{ 0 };
   size_t memSize;  // [unit: bytes]
 };
 

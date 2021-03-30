@@ -56,11 +56,11 @@ std::string ToString(const EpipolarOptions* epiOpt) {
   ss << boost::format("** EpipolarOptions **\n"
     "sensorName: %1%\nleftImgFile: %2%\nleftMdlFile: %3%\n"
     "rightImgFile: %4%\nrightMdlFile: %5%\nbands: %6%\nsample: %7%\n"
-    "stride: %8%\ngrey: %9%\noutPath: %10%\nresample: %11%\nmemSize: %12%\n") % \
+    "stride: %8%\nresample: %9%\noutPath: %10%\ngrey: %11%\nmemSize: %12%\n") % \
     epiOpt->sensorName % epiOpt->leftImgFile % epiOpt->leftMdlFile % \
     epiOpt->rightImgFile % epiOpt->rightMdlFile % epiOpt->bands.size() %\
-    epiOpt->sample % epiOpt->stride % epiOpt->grey % epiOpt->outPath % \
-    epiOpt->resample % epiOpt->memSize;
+    epiOpt->sample % epiOpt->stride % epiOpt->resample % epiOpt->outPath % \
+    epiOpt->grey % epiOpt->memSize;
 
   return ss.str();
 }
@@ -93,7 +93,7 @@ void GenerateRationalEpipolar(const EpipolarOptions& epiOpt) {
     rmMarshaller.Deserialize(epiOpt.rightMdlFile);
   assert(SensorType::eMT_RATIONAL == rightModel->GetModelType());
 
-  EpipolarStereoFactory epiModelFac(epiOpt.outOpt);
+  EpipolarStereoFactory epiModelFac(epiOpt.epiOpt);
   auto [leftEpiModel, rightEpiModel] = 
     epiModelFac.CreateRationalEpiStereo(leftModel, rightModel, 
       epiOpt.sample, epiOpt.epiHgt, epiOpt.rotAngle);
