@@ -13,6 +13,7 @@
 #include "io/raster/irasterreader.h"
 #include "io/raster/rasterwriter.h"
 
+#include <boost/format.hpp>
 #include <iostream>
 #include <omp.h>
 
@@ -323,6 +324,10 @@ void EpipolarGenerator::ProcessTile(const int tileId) {
 
   //GatherStatTile(tileId);
   mPerf.tmProcess += mClock.TimeSinceStart() - start;
+
+  //std::stringstream ss;
+  //ss << boost::format("[%2d] Process tile (%d, %d, %d, %d)") % tileId % colOffset % rowOffset % numCols % numRows;
+  //std::cout << ss.str() << std::endl;
 }
 
 /**
