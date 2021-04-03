@@ -3,7 +3,6 @@
  * -----------------------------------------------------------------------------
  */
 #include "packages/exai/exaiepipolar.h"
-#include "3rdparty/boost/exboost.h"
 #include "3rdparty/gdal/exgdal.h"
 #include "core/exceptions/exexcept.h"
 #include "core/utils/rasterresample.h"
@@ -80,6 +79,10 @@ int ExaiEpipolar::Execute() {
   return 0;
 }
 
+void ExaiEpipolar::AddOptions(bpo::options_description& optDesc) {
+
+}
+
 void ExaiEpipolar::AddFrameOptions(bpo::options_description& optDesc) {
 }
 
@@ -115,4 +118,8 @@ void ExaiEpipolar::AddRationalOptions(bpo::options_description & optDesc) {
 
 void ExaiEpipolar::Help() {
   printf("\nUsage: exai epipolar\n");
+}
+
+int ExaiEpipolar::ExecuteImp() {
+  return {};
 }

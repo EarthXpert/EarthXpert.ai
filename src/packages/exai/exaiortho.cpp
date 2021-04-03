@@ -3,7 +3,6 @@
  * -----------------------------------------------------------------------------
  */
 #include "packages/exai/exaiortho.h"
-#include "3rdparty/boost/exboost.h"
 #include "3rdparty/gdal/exgdal.h"
 #include "core/exceptions/exexcept.h"
 #include "core/utils/rasterresample.h"
@@ -42,6 +41,10 @@ int ExaiOrtho::Execute() {
   return 0;
 }
 
+void ExaiOrtho::AddOptions(bpo::options_description& optDesc) {
+
+}
+
 void ExaiOrtho::AddFrameOptions(bpo::options_description& optDesc) {
 }
 
@@ -71,4 +74,8 @@ void ExaiOrtho::AddRationalOptions(bpo::options_description & optDesc) {
 
 void ExaiOrtho::Help() {
   printf("\nUsage: exai ortho\n");
+}
+
+int ExaiOrtho::ExecuteImp() {
+  return {};
 }
