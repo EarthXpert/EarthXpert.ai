@@ -6,6 +6,8 @@
  */
 #pragma once
 
+#include "3rdparty/ex3rdparty.h"
+
 #include <condition_variable>
 #include <functional>
 #include <future>
@@ -16,9 +18,9 @@
 #include <thread>
 #include <vector>
 
-class ThreadPool {
+class EX3RDPARTY_EXPORTS ThreadPool {
 public:
-  explicit ThreadPool(size_t numThreads = std::thread::hardware_concurrency());
+  explicit ThreadPool(unsigned numThreads = std::thread::hardware_concurrency());
   ~ThreadPool();
 
   template<class F, class... Args>
@@ -32,63 +34,7 @@ private:
   // synchronization
   std::mutex mMutex;
   std::condition_variable mCondVar;
-  bool mStop;
+  bool mStop{false};
 };
- 
-// the constructor just launches some amount of mWorkers
-inline ThreadPool::ThreadPool(size_t numThreads)
-  : mStop(false) {
-  if (0 == numThreads)
-    numThreads = 4;
-  for (size_t i = 0; i < numThreads; ++i) {
-    mWorkers.emplace_back([this] {
-      for (;;) {
-        std::function<void()> task;
-        {
-          std::unique_lock<std::mutex> lock(mMutex);
-          mCondVar.wait(lock, [this] { 
-            return mStop || !mTasks.empty(); });
-          if (mStop && mTasks.empty())
-            return;
-          task = std::move(mTasks.front());
-          mTasks.pop();
-        }
 
-        task();
-      } });
-  }
-}
-
-// add new work item to the pool
-template<class F, class... Args>
-auto ThreadPool::enqueue(F&& f, Args&&... args) ->
-  std::future<typename std::result_of<F(Args...)>::type> {
-  using return_type = typename std::result_of<F(Args...)>::type;
-
-  auto task = std::make_shared<std::packaged_task<return_type()>>(
-    std::bind(std::forward<F>(f), std::forward<Args>(args)...));
-
-  std::future<return_type> res = task->get_future();
-  {
-    std::unique_lock<std::mutex> lock(mMutex);
-
-    // don't allow enqueueing after stopping the pool
-    if (mStop) {
-      throw std::runtime_error("enqueue on stopped ThreadPool");
-    }
-    mTasks.emplace([task]() { (*task)(); });
-  }
-  mCondVar.notify_one();
-  return res;
-}
-
-// the destructor joins all numThreads
-inline ThreadPool::~ThreadPool() {
-  {
-    std::unique_lock<std::mutex> lock(mMutex);
-    mStop = true;
-  }
-  mCondVar.notify_all();
-  for (auto& worker : mWorkers)
-    worker.join();
-}
+#include "detail/threadpool.hpp"
