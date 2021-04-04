@@ -8,7 +8,7 @@
 
 class EX3RDPARTY_EXPORTS ProcessPool {
 public:
-  explicit ProcessPool(size_t numProcesses) {}
+  explicit ProcessPool(unsigned numProcesses) {}
   ~ProcessPool();
 
 private:
