@@ -8,6 +8,7 @@
 using namespace earthxpert;
 
 namespace {
+  // Srs object pool
   std::map<SrsInfo, std::weak_ptr<CcsSrs>> gCcsSrss;
   std::map<SrsInfo, std::weak_ptr<OgrSrs>> gOgrSrss;
   std::map<SrsInfo, std::weak_ptr<ProjSrs>> gProjSrss;

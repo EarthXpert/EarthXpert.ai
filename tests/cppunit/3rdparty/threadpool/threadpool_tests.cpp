@@ -17,12 +17,12 @@ TEST(threadpool, ABCD) {
   std::vector<std::future<int>> results;
 
   for (int i = 0; i < 8; ++i) {
-    results.emplace_back(
-      pool.enqueue([i] {
+    results.emplace_back(pool.enqueue([i] {
         std::cout << " hello " + std::to_string(i);
         //std::this_thread::sleep_for(std::chrono::milliseconds(1));
         std::cout << " world " + std::to_string(i);
-        return i * i; }));
+        return i * i; 
+      }));
   }
 
   std::cout << std::endl;
