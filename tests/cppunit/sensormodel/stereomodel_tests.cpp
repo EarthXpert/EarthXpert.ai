@@ -166,6 +166,16 @@ void TestI2G_Cube(const std::string& leftMdlFile, const std::string& rightMdlFil
   RationalModelMarshaller rmMarshaller;
   auto leftModel = rmMarshaller.Deserialize(leftMdlFile);
   auto rightModel = rmMarshaller.Deserialize(rightMdlFile);
+
+  // Correction to KhalifaSat
+  //const std::array<double, rcc::NumCorr>& lineCorr16{ 3.70437483461934e+01, 0, 0, 0, 0, 0 };  // 15.1038
+  //const std::array<double, rcc::NumCorr>& sampCorr16{ 7.60528964987891e+00, 0, 0, 0, 0, 0 };  // 21.7609
+  //leftModel->SetCorrection(lineCorr16, sampCorr16);
+
+  //const std::array<double, rcc::NumCorr>& lineCorr17{ -2.21544336811923e+02, 0, 0, 0, 0, 0 }; // -160.386
+  //const std::array<double, rcc::NumCorr>& sampCorr17{ 1.25613131266920e+02, 0, 0, 0, 0, 0 };  // 89.6603
+  //rightModel->SetCorrection(lineCorr17, sampCorr17);
+
   TestI2G_Cube(leftModel.get(), rightModel.get(), num, leftImg, rightImg);
 }
 
@@ -275,13 +285,13 @@ void TestI2G_Cube(const RationalModel* leftModel, const RationalModel* rightMode
     for (auto sm : stereoModels) {
       Point3d grd;
       sm->ImagesToGround(leftImg[i], rightImg[i], grd);
-      std::cout << boost::format("%.3f %.3f %.3f; ") % grd.x % grd.y % grd.z;
+      std::cout << boost::format("%.8f %.8f %.3f; ") % grd.x % grd.y % grd.z;
     }
     std::cout << std::endl;
   }
 }
 
-static void TestCurveI2G(const std::string& leftMdlFile, const std::string& rightMdlFile,
+void TestCurveI2G(const std::string& leftMdlFile, const std::string& rightMdlFile,
   const int num, const Point2d* leftImg, const Point2d* rightImg, const std::string& txtFile) {
   RationalModelMarshaller rmMarshaller;
   auto leftModel = rmMarshaller.Deserialize(leftMdlFile);

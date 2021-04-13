@@ -10,6 +10,7 @@ add_core_cppunit_test(coordinatesystem_tests)
 add_core_cppunit_test(coordinatetransform_tests)
 add_core_cppunit_test(earthellipsoid_tests)
 add_core_cppunit_test(graphfit_tests)
+add_core_cppunit_test(layout_tests)
 add_core_cppunit_test(pointcloud_tests)
 
 if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
@@ -22,7 +23,7 @@ ${TESTS_BIN_DIR};$ENV{PATH}")
   string(REPLACE ";" "\\;" TESTS_CORE_PATH "${TESTS_CORE_PATH}")
   message(STATUS "Tests_Core_Path: ${TESTS_CORE_PATH}")
   set_tests_properties(coordinatesystem_tests coordinatetransform_tests earthellipsoid_tests 
-    graphfit_tests pointcloud_tests 
+    graphfit_tests layout_tests pointcloud_tests 
     PROPERTIES ENVIRONMENT "${TESTS_CORE_PATH}")
 endif()
 
@@ -31,5 +32,6 @@ if(EARTHXPERT_INSTALL_TESTS_CPPUNIT)
   exai_install_test(coordinatetransform_tests)
   exai_install_test(earthellipsoid_tests)
   exai_install_test(graphfit_tests)
+  exai_install_test(layout_tests)
   exai_install_test(pointcloud_tests)
 endif()

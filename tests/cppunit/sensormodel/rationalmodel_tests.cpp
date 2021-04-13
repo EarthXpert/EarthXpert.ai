@@ -121,12 +121,20 @@ TEST(rationalmodel, KhalifaSat_PCI) {
   ratModel17->GroundToImage(gcp04, ip04_17N);
   std::cout << "ip04_17: " << (ip04_17N - ip04_17) << std::endl;
 
-  const std::array<double, rcc::NumCorr>& lineCorr16{ 15.1038, 0, 0, 0, 0, 0 };  // 3.70437483461934e+01
-  const std::array<double, rcc::NumCorr>& sampCorr16{ 21.7609, 0, 0, 0, 0, 0 };  // 7.60528964987891e+00
+  Point3d gcp04_16{ 0., 0., -30.0 };
+  ratModel16->ImageToGround(ip04_16, gcp04_16);
+  std::cout << "gcp04_16: " << (gcp04_16 - gcp04) << std::endl;
+
+  Point3d gcp04_17{ 0., 0., -30.0 };
+  ratModel17->ImageToGround(ip04_17, gcp04_17);
+  std::cout << "gcp04_17: " << (gcp04_17 - gcp04) << std::endl;
+
+  const std::array<double, rcc::NumCorr>& lineCorr16{ 3.70437483461934e+01, 0, 0, 0, 0, 0 };  // 15.1038
+  const std::array<double, rcc::NumCorr>& sampCorr16{ 7.60528964987891e+00, 0, 0, 0, 0, 0 };  // 21.7609
   ratModel16->SetCorrection(lineCorr16, sampCorr16);
 
-  const std::array<double, rcc::NumCorr>& lineCorr17{ -160.386, 0, 0, 0, 0, 0 }; // -2.21544336811923e+02
-  const std::array<double, rcc::NumCorr>& sampCorr17{ 89.6603, 0, 0, 0, 0, 0 };  // 1.25613131266920e+02
+  const std::array<double, rcc::NumCorr>& lineCorr17{ -2.21544336811923e+02, 0, 0, 0, 0, 0 }; // -160.386
+  const std::array<double, rcc::NumCorr>& sampCorr17{ 1.25613131266920e+02, 0, 0, 0, 0, 0 };  // 89.6603
   ratModel17->SetCorrection(lineCorr17, sampCorr17);
 
   ratModel16->GroundToImage(gcp04, ip04_16N);
@@ -134,6 +142,12 @@ TEST(rationalmodel, KhalifaSat_PCI) {
 
   ratModel17->GroundToImage(gcp04, ip04_17N);
   std::cout << "Corr ip04_17: " << (ip04_17N - ip04_17) << std::endl;
+
+  ratModel16->ImageToGround(ip04_16, gcp04_16);
+  std::cout << "Corr gcp04_16: " << (gcp04_16 - gcp04) << std::endl;
+
+  ratModel17->ImageToGround(ip04_17, gcp04_17);
+  std::cout << "Corr gcp04_17: " << (gcp04_17 - gcp04) << std::endl;
 }
 
 /**
