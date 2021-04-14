@@ -22,7 +22,7 @@ void RasterReader_ORTHOGF1MS_CVMAT() {
   RasterReader reader(imgFile);
 
   auto [fileNumCols, fileNumRows] = reader.GetSize();
-  auto raster = reader.ReadRaster(fileNumCols / 2 - 1000, fileNumRows / 2 - 1000, 2000, 2000, RasterType::eCVMAT);
+  auto raster = reader.ReadRaster(fileNumCols / 2 - 1000, fileNumRows / 2 - 1000, 2000, 2000, RasterType::eRT_CVMAT);
 }
 
 /**
@@ -35,7 +35,7 @@ void RasterReader_ORTHOGF1MS_GDAL() {
   RasterReader reader(imgFile);
 
   auto [fileNumCols, fileNumRows] = reader.GetSize();
-  auto raster = reader.ReadRaster(fileNumCols / 2 - 1000, fileNumRows / 2 - 1000, 2000, 2000, RasterType::eGDAL);
+  auto raster = reader.ReadRaster(fileNumCols / 2 - 1000, fileNumRows / 2 - 1000, 2000, 2000, RasterType::eRT_GDAL);
 }
 
 SLTBENCH_FUNCTION(RasterReader_ORTHOGF1MS_CVMAT);

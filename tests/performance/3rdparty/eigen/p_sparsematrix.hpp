@@ -7,15 +7,17 @@
 using namespace earthxpert;
 using namespace::Eigen;
 
-static constexpr int64_t kN = 1'000'000;
+namespace {
+  constexpr int64_t kN = 1'000'000;
 
-enum class FillOrder {
-  eFO_ByRow,
-  eFO_ByCol
-};
+  enum struct FillOrder {
+    eFO_ByRow,
+    eFO_ByCol
+  };
 
-inline std::pair<int, int> IndexToRowCol(const int64_t index) {
-  return { int(index / kN), int(index % kN) };
+  inline std::pair<int, int> IndexToRowCol(const int64_t index) {
+    return { int(index / kN), int(index % kN) };
+  }
 }
 
 template<StorageOptions option = RowMajor, FillOrder fillOrder = FillOrder::eFO_ByCol>

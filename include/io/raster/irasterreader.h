@@ -81,7 +81,7 @@ public:
    *  \param [in] rasterType type of data structure
    *  \return Returns pointer to raster object holding the entire image
    */
-  virtual UPIRaster ReadRaster(RasterType rasterType = RasterType::eCVMAT) = 0;
+  virtual UPIRaster ReadRaster(RasterType rasterType = RasterType::eRT_CVMAT) = 0;
 
   /**
    *  \brief Reads a pixel block defined by offsets, size, internal
@@ -95,10 +95,10 @@ public:
    *  \return Returns pointer to raster object holding a pixel block
    */
   virtual UPIRaster ReadRaster(int colOffset, int rowOffset,
-    int numCols, int numRows, RasterType rasterType = RasterType::eCVMAT) = 0;
+    int numCols, int numRows, RasterType rasterType = RasterType::eRT_CVMAT) = 0;
 
   virtual UPIRaster ReadRaster(const RasterWindow& win,
-    RasterType rasterType = RasterType::eCVMAT) = 0;
+    RasterType rasterType = RasterType::eRT_CVMAT) = 0;
 
   /**
    *  \brief Reads a pixel block defined by the passed raster object, populates

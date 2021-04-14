@@ -52,7 +52,7 @@ public:
 
   std::pair<int, int> GetMargins() const noexcept override { return {0, 0}; }
 
-  MarginKind GetMarginKind() const noexcept override { return MarginKind::eCONSTANT; }
+  MarginKind GetMarginKind() const noexcept override { return MarginKind::eMK_CONSTANT; }
 
   std::unique_ptr<OGRSpatialRef> GetCoordinateSystem() const override { return nullptr; }
 

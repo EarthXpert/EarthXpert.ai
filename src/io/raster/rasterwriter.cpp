@@ -131,10 +131,10 @@ void RasterWriter::SetGeocoding(const Geocoding* geocoding) {
  */
 void RasterWriter::WriteRaster(IRaster* const raster) {
   const auto rasterType = raster->GetRasterType();
-  if (RasterType::eCVMAT == rasterType) {
+  if (RasterType::eRT_CVMAT == rasterType) {
     WriteRaster(static_cast<CvRaster* const>(raster));
   }
-  else if (RasterType::eGDAL == rasterType) {
+  else if (RasterType::eRT_GDAL == rasterType) {
     WriteRaster(static_cast<GdalRaster* const>(raster));
   }
   else {

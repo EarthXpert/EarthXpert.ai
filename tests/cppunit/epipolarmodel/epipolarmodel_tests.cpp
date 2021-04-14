@@ -65,7 +65,7 @@ void CreateRationalEpipolarModel(const std::string& leftMdlFile,
   std::shared_ptr<RationalModel> leftModel = rmMarshaller.Deserialize(leftMdlFile);
   std::shared_ptr<RationalModel> rightModel = rmMarshaller.Deserialize(rightMdlFile);
 
-  EpipolarStereoFactory epiModelFac(FacEpiOpt::eFULL);
+  EpipolarStereoFactory epiModelFac(FacEpiOpt::eEO_FULL);
   auto [leftEpiModel, rightEpiModel] = epiModelFac.CreateRationalEpiStereo(leftModel, rightModel);
   ASSERT_TRUE(IEpipolarModel::ePLANERECT == leftEpiModel->GetEpipolarAlgorithm());
   ASSERT_TRUE(IEpipolarModel::ePLANERECT == rightEpiModel->GetEpipolarAlgorithm());

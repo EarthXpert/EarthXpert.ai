@@ -17,7 +17,7 @@ class EXCORE_EXPORTS GdalRaster final : public IRaster {
 public:
   GdalRaster(int numCols, int numRows, GDALDataType dataType, int numBands,
     int colOffset = 0, int rowOffset = 0, int marginCols = 0, int marginRows = 0,
-    MarginKind marginKind = MarginKind::eCONSTANT);
+    MarginKind marginKind = MarginKind::eMK_CONSTANT);
   GdalRaster(int numCols, int numRows, GDALDataType dataType, int numBands,
     int colOffset, int rowOffset, int marginCols, int marginRows, MarginKind marginKind, uchar* buffer);
   GdalRaster(int numCols, int numRows, GDALDataType dataType, int numBands, uchar* buffer);
@@ -39,7 +39,7 @@ public:
    *  \return Returns type of raster data
    */
   RasterType GetRasterType() const noexcept override {
-    return RasterType::eGDAL;
+    return RasterType::eRT_GDAL;
   }
 
   template <typename GdalRasterTy>
@@ -226,7 +226,7 @@ private:
   int mRowOffset{};             // row offset of image
   int mMarginCols{};            // margin cols
   int mMarginRows{};            // margin rows
-  MarginKind mMarginKind{ MarginKind::eCONSTANT };
+  MarginKind mMarginKind{ MarginKind::eMK_CONSTANT };
   std::shared_ptr<uchar[]> mBuffer; // pointer to data buffer, that is the pixel block including both image and margin
 
   // cached temporaries for performance

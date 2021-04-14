@@ -101,13 +101,13 @@ RasterReader::ReadRaster(const int colOffset, const int rowOffset,
   const int numCols, const int numRows, const RasterType rasType) {
   UPIRaster raster;
 
-  if (RasterType::eCVMAT == rasType) {
+  if (RasterType::eRT_CVMAT == rasType) {
     auto cvRaster = new CvRaster(numCols, numRows, mCvDT,
       colOffset, rowOffset, mMarginCols, mMarginRows, mMarginKind);
     raster.reset(cvRaster);
     ReadRaster(cvRaster);
   }
-  else if (RasterType::eGDAL == rasType) {
+  else if (RasterType::eRT_GDAL == rasType) {
     auto gdalRaster = new GdalRaster(numCols, numRows, mGdalDT, mReadNumBands,
       colOffset, rowOffset, mMarginCols, mMarginRows, mMarginKind);
     raster.reset(gdalRaster);
@@ -129,10 +129,10 @@ RasterReader::ReadRaster(const int colOffset, const int rowOffset,
 void RasterReader::ReadRaster(IRaster* const raster) {
   const auto rasType = raster->GetRasterType();
 
-  if (RasterType::eCVMAT == rasType) {
+  if (RasterType::eRT_CVMAT == rasType) {
     ReadRaster(static_cast<CvRaster* const>(raster));
   }
-  else if (RasterType::eGDAL == rasType) {
+  else if (RasterType::eRT_GDAL == rasType) {
     ReadRaster(static_cast<GdalRaster* const>(raster));
   }
   else {
@@ -347,10 +347,10 @@ MarginFlag RasterReader::ObtainMarginFlag(IRaster* const raster) const {
   const auto bufRowMax = bufRowOff + bufNumRows;
 
   MarginFlag flag;
-  if (0 > bufRowOff) flag.set(Enum(MarginSide::eTOP));
-  if (bufRowMax > mFileNumRows) flag.set(Enum(MarginSide::eBOTTOM));
-  if (0 > bufColOff) flag.set(Enum(MarginSide::eLEFT));
-  if (bufColMax > mFileNumCols) flag.set(Enum(MarginSide::eRIGHT));
+  if (0 > bufRowOff) flag.set(Enum(MarginSide::eMS_TOP));
+  if (bufRowMax > mFileNumRows) flag.set(Enum(MarginSide::eMS_BOTTOM));
+  if (0 > bufColOff) flag.set(Enum(MarginSide::eMS_LEFT));
+  if (bufColMax > mFileNumCols) flag.set(Enum(MarginSide::eMS_RIGHT));
 
   return flag;
 }

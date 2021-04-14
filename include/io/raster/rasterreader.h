@@ -209,7 +209,7 @@ private:
 
   int mMarginCols{};
   int mMarginRows{};
-  MarginKind mMarginKind{MarginKind::eCONSTANT};
+  MarginKind mMarginKind{MarginKind::eMK_CONSTANT};
 
   void FillMargins(CvRaster* const raster, MarginFillDim fillDim);
   void FillMargins(GdalRaster* const raster, MarginFillDim fillDim);

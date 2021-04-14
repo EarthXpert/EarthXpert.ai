@@ -26,10 +26,10 @@ namespace fs = std::filesystem;
  */
 bool IsImageEqual(const std::string& imgFile, const std::string& imgFileT) {
   RasterReader reader(imgFile);
-  auto img = reader.ReadRaster(RasterType::eCVMAT);
+  auto img = reader.ReadRaster(RasterType::eRT_CVMAT);
 
   RasterReader readerT(imgFileT);
-  auto imgT = readerT.ReadRaster(RasterType::eCVMAT);
+  auto imgT = readerT.ReadRaster(RasterType::eRT_CVMAT);
 
   const auto cvimg = dynamic_cast<CvRaster*>(img.get());
   const auto cvimgT = dynamic_cast<CvRaster*>(imgT.get());
@@ -60,7 +60,7 @@ TEST(rasterwriter, NullWriter) {
 
   for (auto& rw : rasterWins) {
     CvRaster raster(rw.numCols, rw.numRows, CV_8UC3, rw.colOffset, rw.rowOffset,
-      0, 0, MarginKind::eCONSTANT, buffer.get());
+      0, 0, MarginKind::eMK_CONSTANT, buffer.get());
     reader.ReadRaster(&raster);
 
     auto [numCols, numRows] = raster.GetSize();
@@ -84,7 +84,7 @@ TEST(rasterwriter, CvRaster) {
 
   const int marginCols{ 20 };
   const int marginRows{ 20 };
-  reader.SetMargins(20, 20, MarginKind::eCONSTANT);
+  reader.SetMargins(20, 20, MarginKind::eMK_CONSTANT);
 
   auto [fileNumCols, fileNumRows] = reader.GetSize();
   ASSERT_EQ(fileNumCols, 5000);
@@ -115,7 +115,7 @@ TEST(rasterwriter, CvRaster) {
 
   for (auto& rw : rasterWins) {
     CvRaster raster(rw.numCols, rw.numRows, cvDT, rw.colOffset, rw.rowOffset,
-      marginCols, marginRows, MarginKind::eCONSTANT, buffer.get());
+      marginCols, marginRows, MarginKind::eMK_CONSTANT, buffer.get());
     reader.ReadRaster(&raster);
 
     auto [numCols, numRows] = raster.GetSize();
@@ -143,7 +143,7 @@ TEST(rasterwriter, CvRasterOMP) {
 
   const int marginCols{ 20 };
   const int marginRows{ 20 };
-  reader.SetMargins(marginCols, marginRows, MarginKind::eCONSTANT);
+  reader.SetMargins(marginCols, marginRows, MarginKind::eMK_CONSTANT);
 
   auto [fileNumCols, fileNumRows] = reader.GetSize();
   ASSERT_EQ(fileNumCols, 5000);
@@ -178,7 +178,7 @@ TEST(rasterwriter, CvRasterOMP) {
   for (int64_t i = 0; i < rasterWins.size(); ++i) {  // auto& rw : rasterWins
     auto& rw = rasterWins[i];
     CvRaster raster(rw.numCols, rw.numRows, cvDT, rw.colOffset, rw.rowOffset,
-      marginCols, marginRows, MarginKind::eCONSTANT, buffer.get());
+      marginCols, marginRows, MarginKind::eMK_CONSTANT, buffer.get());
     
     reader.ReadRaster(&raster);
     writer.WriteRaster(&raster);
@@ -198,7 +198,7 @@ TEST(rasterwriter, GdalRaster) {
 
   const int marginCols{ 20 };
   const int marginRows{ 20 };
-  reader.SetMargins(20, 20, MarginKind::eCONSTANT);
+  reader.SetMargins(20, 20, MarginKind::eMK_CONSTANT);
 
   auto [fileNumCols, fileNumRows] = reader.GetSize();
   ASSERT_EQ(fileNumCols, 5000);
@@ -230,7 +230,7 @@ TEST(rasterwriter, GdalRaster) {
 
   for (auto& rw : rasterWins) {
     GdalRaster raster(rw.numCols, rw.numRows, gdalDT, numBands, rw.colOffset, rw.rowOffset,
-      marginCols, marginRows, MarginKind::eCONSTANT, buffer.get());
+      marginCols, marginRows, MarginKind::eMK_CONSTANT, buffer.get());
     reader.ReadRaster(&raster);
 
     auto [numCols, numRows] = raster.GetSize();
@@ -258,7 +258,7 @@ TEST(rasterwriter, GdalRasterOMP) {
 
   const int marginCols{ 20 };
   const int marginRows{ 20 };
-  reader.SetMargins(marginCols, marginRows, MarginKind::eCONSTANT);
+  reader.SetMargins(marginCols, marginRows, MarginKind::eMK_CONSTANT);
 
   auto [fileNumCols, fileNumRows] = reader.GetSize();
   ASSERT_EQ(fileNumCols, 5000);
@@ -294,7 +294,7 @@ TEST(rasterwriter, GdalRasterOMP) {
     for (int64_t i = 0; i < rasterWins.size(); ++i) {  // auto& rw : rasterWins
       auto& rw = rasterWins[i];
       GdalRaster raster(rw.numCols, rw.numRows, gdalDT, numBands, rw.colOffset, rw.rowOffset,
-        marginCols, marginRows, MarginKind::eCONSTANT, buffer.get());
+        marginCols, marginRows, MarginKind::eMK_CONSTANT, buffer.get());
 
       reader.ReadRaster(&raster);
       writer.WriteRaster(&raster);
