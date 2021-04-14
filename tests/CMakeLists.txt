@@ -41,7 +41,7 @@ add_definitions(-DMPFR_USE_FILE -DMPFR_USE_INTMAX_T -DMPFR_USE_VA_LIST)
 
 set(TESTS_BIN_DIR ${CMAKE_INSTALL_PREFIX}/${EARTHXPERT_BIN_DIR})
 set(BOOST_BIN_DIR "${Boost_LIBRARY_DIRS}")
-add_subdirectory(utils)
+add_subdirectory(src)
 #add_subdirectory(acceptance)
 add_subdirectory(cppunit)
 #add_subdirectory(integration)
