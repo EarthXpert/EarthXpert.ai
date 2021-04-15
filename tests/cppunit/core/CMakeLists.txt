@@ -12,6 +12,8 @@ add_core_cppunit_test(earthellipsoid_tests)
 add_core_cppunit_test(graphfit_tests)
 add_core_cppunit_test(layout_tests)
 add_core_cppunit_test(pointcloud_tests)
+add_core_cppunit_test(pointtypes_tests)
+add_core_cppunit_test(typehelper_tests)
 
 if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
   get_filename_component(BOOST_BIN_DIR "${Boost_DIR}/../.." ABSOLUTE)
@@ -23,7 +25,7 @@ ${TESTS_BIN_DIR};$ENV{PATH}")
   string(REPLACE ";" "\\;" TESTS_CORE_PATH "${TESTS_CORE_PATH}")
   message(STATUS "Tests_Core_Path: ${TESTS_CORE_PATH}")
   set_tests_properties(coordinatesystem_tests coordinatetransform_tests earthellipsoid_tests 
-    graphfit_tests layout_tests pointcloud_tests 
+    graphfit_tests layout_tests pointcloud_tests pointtypes_tests typehelper_tests
     PROPERTIES ENVIRONMENT "${TESTS_CORE_PATH}")
 endif()
 
@@ -34,4 +36,6 @@ if(EARTHXPERT_INSTALL_TESTS_CPPUNIT)
   exai_install_test(graphfit_tests)
   exai_install_test(layout_tests)
   exai_install_test(pointcloud_tests)
+  exai_install_test(pointtypes_tests)
+  exai_install_test(typehelper_tests)
 endif()

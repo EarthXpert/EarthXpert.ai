@@ -67,4 +67,12 @@ template <typename ...Ts>
 struct Overloaded : Ts... {
   using Ts::operator()...;
 };
+
+template <typename ...Ts>
+Overloaded(Ts...) -> Overloaded<Ts...>;
+
+template <typename ...Ts>
+auto MakeOverloaded() {
+  return Overloaded<Ts...>();
+}
 } // namespace earthxpert
