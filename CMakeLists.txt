@@ -144,6 +144,7 @@ if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
     
     #GMT_DIR
     #GMTSAR_DIR
+    #gnu_gsl
     
     set(gsl_ROOT "${EX_THIRD_PARTY}/gsl_2.4.0")
     set(gsl_BIN_DIR "${gsl_ROOT}/bin/${CDEGREL}")

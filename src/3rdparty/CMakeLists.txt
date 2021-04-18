@@ -45,6 +45,7 @@ set(ex3rdparty_srcs
   "gettext/exgettext.cpp"
   "gflags/exgflags.cpp"
   "glog/exglog.cpp"
+  "gnu_gsl/exgnu_gsl.cpp"
   "gsl/exgsl.cpp"
   "gtest/exgtest.cpp"
   "iconv/exiconv.cpp"
