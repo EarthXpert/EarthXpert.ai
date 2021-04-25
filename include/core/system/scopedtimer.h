@@ -15,20 +15,19 @@ public:
   using ClockType = schrono::steady_clock;
 
   ScopedTimer(double& tm) : mStart(ClockType::now()), mTm(tm) {}
-
   ScopedTimer(const ScopedTimer&) = delete;
   ScopedTimer(ScopedTimer&&) = delete;
-
-  auto operator=(const ScopedTimer&) -> ScopedTimer& = delete;
-  auto operator=(ScopedTimer&&) -> ScopedTimer& = delete;
 
   ~ScopedTimer() {
     const schrono::duration<double> elapsed = ClockType::now() - mStart;
     mTm += elapsed.count();
   }
 
+  auto operator=(const ScopedTimer&) -> ScopedTimer& = delete;
+  auto operator=(ScopedTimer&&) -> ScopedTimer& = delete;
+
 private:
   const ClockType::time_point mStart{};
-  double& mTm;
+  double& mTm;  // ref to elapsed time in seconds
 };
 }

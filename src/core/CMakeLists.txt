@@ -2,6 +2,7 @@ project(core CXX)
 
 add_definitions(-DEXCORE_API)
 set(core_srcs 
+  "algorithm/crtpalgorithm.cpp"
   "datasource/cvraster.cpp"
   "datasource/gdalraster.cpp"
   "datasource/kindfillpolicy.cpp"
