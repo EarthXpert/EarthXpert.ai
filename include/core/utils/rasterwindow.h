@@ -7,6 +7,7 @@
 #include "core/excore.h"
 #include "3rdparty/opencv/exopencv.h"
 
+#include <functional>
 #include <stdint.h>
 
 namespace earthxpert {
@@ -92,6 +93,19 @@ struct EXCORE_EXPORTS RasterWindow /*: public Rect2i*/ {
     if (colOffset + numCols < rhs.colOffset + rhs.numCols) return false;
     if (rowOffset + numRows < rhs.rowOffset + rhs.numRows) return false;
     return true;
+  }
+};
+}
+
+namespace std {
+template<> struct hash<earthxpert::RasterWindow> {
+  size_t operator()(const earthxpert::RasterWindow& item)  const {
+    size_t hashValue = 17;
+    hashValue = 31 * hashValue + hash<int>{}(item.colOffset);
+    hashValue = 31 * hashValue + hash<int>{}(item.rowOffset);
+    hashValue = 31 * hashValue + hash<int>{}(item.numCols);
+    hashValue = 31 * hashValue + hash<int>{}(item.numRows);
+    return hashValue;
   }
 };
 }

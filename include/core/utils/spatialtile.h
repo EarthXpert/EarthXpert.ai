@@ -5,6 +5,7 @@
 #pragma once
 
 #include "core/excore.h"
+#include <functional>
 #include <type_traits>
 
 namespace earthxpert {
@@ -61,3 +62,16 @@ template <typename Ty> struct SpatialTile {
 using SpatialTileF = SpatialTile<float>;
 using SpatialTileD = SpatialTile<double>;
 } // namespace earthxpert
+
+namespace std {
+template<typename Ty> struct hash<earthxpert::SpatialTile<Ty>> {
+  size_t operator()(const earthxpert::SpatialTile<Ty>& item)  const {
+    size_t hashValue = 17;
+    hashValue = 31 * hashValue + hash<Ty>{}(item.minX);
+    hashValue = 31 * hashValue + hash<Ty>{}(item.minY);
+    hashValue = 31 * hashValue + hash<Ty>{}(item.width);
+    hashValue = 31 * hashValue + hash<Ty>{}(item.height);
+    return hashValue;
+  }
+};
+}
