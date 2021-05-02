@@ -23,17 +23,17 @@
  *      --bands       [list_of_band_ids]            // "1,2,3"
  *      --sample      [downsample_factor]           // 1
  *      --stride      [stride interval]             // 1
- *      --grey        [convert_color]               // false
- *      --outdir      [path_of_output_directory]    // "d:/out/"
  *      --height      [height_of_rectification]
  *      --rotangle    [angle_of_rotation]
  *      --resample    [linear|cubic|gaussian|sinc]  // "cubic"
+ *      --outdir      [path_of_output_directory]    // "d:/out/"
+ *      --grey        [convert_color]               // false
  *      --memsize     [memory_size_in_MB]           // 4000
  *
  *  examples:
  *
- *    exepipolar.exe --sensorname="rational" --leftimg="D:/home/workspace/TestData/Imagery/Satellite/052522862010_01_P001_PAN/09JAN15034657-P2AS-052522862010_01_P001.TIF" --leftmdl="D:/home/workspace/TestData/Imagery/Satellite/052522862010_01_P001_PAN/09JAN15034657-P2AS-052522862010_01_P001.RPB" --rightimg="D:/home/workspace/TestData/Imagery/Satellite/052522862010_01_P001_PAN/09JAN15034801-P2AS-052522862010_01_P001.TIF" --rightmdl="D:/home/workspace/TestData/Imagery/Satellite/052522862010_01_P001_PAN/09JAN15034801-P2AS-052522862010_01_P001.RPB" --bands=1 --sample=1 --outdir="D:/home/workspace/build/windows/vs2019/tests/output/" --resample="cubic" --memsize=4000
- *    exepipolar.exe --sensorname="rational" --leftimg="D:/home/workspace/TestData/Imagery/Satellite/po_162796_pan/po_162796_pan_0000000.tif" --leftmdl="D:/home/workspace/TestData/Imagery/Satellite/po_162796_pan/po_162796_pan_0000000_rpc.txt" --rightimg="D:/home/workspace/TestData/Imagery/Satellite/po_162796_pan/po_162796_pan_0010000.tif" --rightmdl="D:/home/workspace/TestData/Imagery/Satellite/po_162796_pan/po_162796_pan_0010000_rpc.txt" --bands=1 --sample=1 --outdir="D:/home/workspace/build/windows/vs2019/tests/output/" --resample="cubic" --memsize=4000
+ *    exepipolar.exe --sensorname="rational" --leftimg="D:/home/workspace/TestData/Imagery/Satellite/052522862010_01_P001_PAN/09JAN15034657-P2AS-052522862010_01_P001.TIF" --leftmdl="D:/home/workspace/TestData/Imagery/Satellite/052522862010_01_P001_PAN/09JAN15034657-P2AS-052522862010_01_P001.RPB" --rightimg="D:/home/workspace/TestData/Imagery/Satellite/052522862010_01_P001_PAN/09JAN15034801-P2AS-052522862010_01_P001.TIF" --rightmdl="D:/home/workspace/TestData/Imagery/Satellite/052522862010_01_P001_PAN/09JAN15034801-P2AS-052522862010_01_P001.RPB" --bands=1 --sample=1 --resample="cubic" --outdir="D:/home/workspace/build/windows/vs2019/tests/output/" --memsize=4000
+ *    exepipolar.exe --sensorname="rational" --leftimg="D:/home/workspace/TestData/Imagery/Satellite/po_162796_pan/po_162796_pan_0000000.tif" --leftmdl="D:/home/workspace/TestData/Imagery/Satellite/po_162796_pan/po_162796_pan_0000000_rpc.txt" --rightimg="D:/home/workspace/TestData/Imagery/Satellite/po_162796_pan/po_162796_pan_0010000.tif" --rightmdl="D:/home/workspace/TestData/Imagery/Satellite/po_162796_pan/po_162796_pan_0010000_rpc.txt" --bands=1 --sample=1 --resample="cubic" --outdir="D:/home/workspace/build/windows/vs2019/tests/output/" --memsize=4000
  */
 int main(int argc, char** argv) {
   earthxpert::ExaiEpipolar cmd;

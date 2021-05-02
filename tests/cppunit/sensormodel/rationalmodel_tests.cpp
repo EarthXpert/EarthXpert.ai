@@ -37,6 +37,10 @@ std::unique_ptr<RationalModel> CreateRationalModelB();
 std::unique_ptr<RationalModel> CreateRationalModelC();
 std::unique_ptr<RationalModel> CreateRationalModelD();
 std::unique_ptr<RationalModel> CreateRationalModelE();
+std::unique_ptr<RationalModel> CreateRationalModelF();
+std::unique_ptr<RationalModel> CreateRationalModelFpci();
+std::unique_ptr<RationalModel> CreateRationalModelG();
+std::unique_ptr<RationalModel> CreateRationalModelGpci();
 std::unique_ptr<RationalModel> CreateRationalModelS();  //SAR
 
 /**
@@ -79,6 +83,71 @@ TEST(rationalmodel, CornerI2G) {
     ASSERT_NEAR(ground.x, grdI2G.x, kTolDEG) << "Longitude difference > 1 mm";
     ASSERT_NEAR(ground.y, grdI2G.y, kTolDEG) << "Latitude difference > 1 mm";
   }
+}
+
+/**
+ * Test precision of coefficients
+ */
+TEST(rationalmodel, KhalifaSat) {
+  auto ratModel16 = CreateRationalModelF();
+  auto ratModel17 = CreateRationalModelG();
+
+  const Point3d gcp04{ 55.192938, 25.0687260, -30 };
+  const Point2d ip04_16{ 2133.875, 7343.791 };
+  const Point2d ip04_17{ 15759.621, 15409.574 };
+
+  Point2d ip04_16N;
+  ratModel16->GroundToImage(gcp04, ip04_16N);
+  std::cout << "ip04_16: " << (ip04_16N - ip04_16) << std::endl;
+
+  Point2d ip04_17N;
+  ratModel17->GroundToImage(gcp04, ip04_17N);
+  std::cout << "ip04_17: " << (ip04_17N - ip04_17) << std::endl;
+}
+
+TEST(rationalmodel, KhalifaSat_PCI) {
+  auto ratModel16 = CreateRationalModelFpci();
+  auto ratModel17 = CreateRationalModelGpci();
+
+  const Point3d gcp04{ 55.192938, 25.0687260, -30 };
+  const Point2d ip04_16{ 2133.875, 7343.791 };
+  const Point2d ip04_17{ 15759.621, 15409.574 };
+
+  Point2d ip04_16N;
+  ratModel16->GroundToImage(gcp04, ip04_16N);
+  std::cout << "ip04_16: " << (ip04_16N - ip04_16) << std::endl;
+
+  Point2d ip04_17N;
+  ratModel17->GroundToImage(gcp04, ip04_17N);
+  std::cout << "ip04_17: " << (ip04_17N - ip04_17) << std::endl;
+
+  Point3d gcp04_16{ 0., 0., -30.0 };
+  ratModel16->ImageToGround(ip04_16, gcp04_16);
+  std::cout << "gcp04_16: " << (gcp04_16 - gcp04) << std::endl;
+
+  Point3d gcp04_17{ 0., 0., -30.0 };
+  ratModel17->ImageToGround(ip04_17, gcp04_17);
+  std::cout << "gcp04_17: " << (gcp04_17 - gcp04) << std::endl;
+
+  const std::array<double, rcc::NumCorr>& lineCorr16{ 3.70437483461934e+01, 0, 0, 0, 0, 0 };  // 15.1038
+  const std::array<double, rcc::NumCorr>& sampCorr16{ 7.60528964987891e+00, 0, 0, 0, 0, 0 };  // 21.7609
+  ratModel16->SetCorrection(lineCorr16, sampCorr16);
+
+  const std::array<double, rcc::NumCorr>& lineCorr17{ -2.21544336811923e+02, 0, 0, 0, 0, 0 }; // -160.386
+  const std::array<double, rcc::NumCorr>& sampCorr17{ 1.25613131266920e+02, 0, 0, 0, 0, 0 };  // 89.6603
+  ratModel17->SetCorrection(lineCorr17, sampCorr17);
+
+  ratModel16->GroundToImage(gcp04, ip04_16N);
+  std::cout << "Corr ip04_16: " << (ip04_16N - ip04_16) << std::endl;
+
+  ratModel17->GroundToImage(gcp04, ip04_17N);
+  std::cout << "Corr ip04_17: " << (ip04_17N - ip04_17) << std::endl;
+
+  ratModel16->ImageToGround(ip04_16, gcp04_16);
+  std::cout << "Corr gcp04_16: " << (gcp04_16 - gcp04) << std::endl;
+
+  ratModel17->ImageToGround(ip04_17, gcp04_17);
+  std::cout << "Corr gcp04_17: " << (gcp04_17 - gcp04) << std::endl;
 }
 
 /**
@@ -374,8 +443,37 @@ std::unique_ptr<RationalModel> CreateRationalModelD() {
 }
 
 std::unique_ptr<RationalModel> CreateRationalModelE() {
-  //std::string mdlFile = TestConfig::DataPath("Imagery/Satellite/Khalifasat/20190704093357_03703_UAE 15_11121_Radio_P_rpc.txt");
-  std::string mdlFile = TestConfig::DataPath("Imagery/Satellite/Khalifasat/20190704093359_03703_UAE 15_11121_Radio_P_rpc.txt");
+  //std::string mdlFile = TestConfig::DataPath("Imagery/Satellite/Khalifasat/KhalifaSat_20190704093357_03703_UAE 15_11121_Radio_P_rpc.txt");
+  std::string mdlFile = TestConfig::DataPath("Imagery/Satellite/Khalifasat/KhalifaSat_20190704093359_03703_UAE 15_11121_Radio_P_rpc.txt");
+  RationalModelMarshaller rmMarshaller;
+  return rmMarshaller.Deserialize(mdlFile);
+}
+
+/**
+ * Create an instance of rational model of DubaiSat-3 image:
+ * KhalifaSat_20190729093737_04076_UAE 16_Dubai_expo2020_11263_Radio_P
+ */
+std::unique_ptr<RationalModel> CreateRationalModelF() {
+  std::string mdlFile = TestConfig::DataPath("Imagery/Satellite/Khalifasat/KhalifaSat_20190729093737_04076_UAE 16_Dubai_expo2020_11263_Radio_P_rpc.txt");
+  RationalModelMarshaller rmMarshaller;
+  return rmMarshaller.Deserialize(mdlFile);
+}
+
+std::unique_ptr<RationalModel> CreateRationalModelFpci() {
+  std::string mdlFile = TestConfig::DataPath("Imagery/Satellite/Khalifasat/KhalifaSat_20190729093737_04076_UAE 16_Dubai_expo2020_11263_Radio_P_pci_rpc.txt");
+  RationalModelMarshaller rmMarshaller;
+  return rmMarshaller.Deserialize(mdlFile);
+}
+
+// KhalifaSat_20190713094256_03837_UAE 17_Aslam_expo2020_11158_Radio_P
+std::unique_ptr<RationalModel> CreateRationalModelG() {
+  std::string mdlFile = TestConfig::DataPath("Imagery/Satellite/Khalifasat/KhalifaSat_20190713094256_03837_UAE 17_Aslam_expo2020_11158_Radio_P_rpc.txt");
+  RationalModelMarshaller rmMarshaller;
+  return rmMarshaller.Deserialize(mdlFile);
+}
+
+std::unique_ptr<RationalModel> CreateRationalModelGpci() {
+  std::string mdlFile = TestConfig::DataPath("Imagery/Satellite/Khalifasat/KhalifaSat_20190713094256_03837_UAE 17_Aslam_expo2020_11158_Radio_P_pci_rpc.txt");
   RationalModelMarshaller rmMarshaller;
   return rmMarshaller.Deserialize(mdlFile);
 }

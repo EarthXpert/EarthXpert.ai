@@ -21,9 +21,9 @@ using namespace earthxpert;
 namespace {
   // output option
   static const std::map<std::string, FacEpiOpt> sOutOptMap = {
-    {"compact", FacEpiOpt::eCOMPACT},
-    {"full", FacEpiOpt::eFULL},
-    {"intersect", FacEpiOpt::eINTERSECT} };
+    {"compact", FacEpiOpt::eEO_COMPACT},
+    {"full", FacEpiOpt::eEO_FULL},
+    {"intersect", FacEpiOpt::eEO_INTERSECT} };
 }
 
 /**
@@ -117,17 +117,17 @@ EpiModelPair EpipolarStereoFactory::CreateRationalEpiStereo(
   int leftNumCols{}, rightNumCols{};
 
   switch (mOutOpt) {
-  case EpiOpt::eCOMPACT:
+  case EpiOpt::eEO_COMPACT:
     leftOffsetX = leftEpiMin.x;
     leftNumCols = int(leftEpiMax.x - leftOffsetX + 0.5);
     rightOffsetX = rightEpiMin.x;
     rightNumCols = int(rightEpiMax.x - rightOffsetX + 0.5);
     break;
-  case EpiOpt::eFULL:
+  case EpiOpt::eEO_FULL:
     leftOffsetX = rightOffsetX = std::min(leftEpiMin.x, rightEpiMin.x);
     leftNumCols = rightNumCols = int(std::max(leftEpiMax.x, rightEpiMax.x) - leftOffsetX + 0.5);
     break;
-  case EpiOpt::eINTERSECT:  // \todo parallax buffer
+  case EpiOpt::eEO_INTERSECT:  // \todo parallax buffer
     leftOffsetX = rightOffsetX = std::max(leftEpiMin.x, rightEpiMin.x);
     leftNumCols = rightNumCols = int(std::min(leftEpiMax.x, rightEpiMax.x) - leftOffsetX + 0.5);
     break;
@@ -249,7 +249,7 @@ double EpipolarStereoFactory::CalcEpiRotation(const ISensorModel* leftModel,
   Point2d ed;
 
   switch (mEpiDir) {
-  case eLONGEST: {// select the longest vector as direction having largest parallax
+  case eED_LONGEST: {// select the longest vector as direction having largest parallax
     auto it = std::max_element(epiDir.cbegin(), epiDir.cend(),
       [](const Point2d& da, const Point2d& db) {
         return cv::norm(da) < cv::norm(db); });
@@ -257,7 +257,7 @@ double EpipolarStereoFactory::CalcEpiRotation(const ISensorModel* leftModel,
   }
   break;
 
-  case eOVERALL: {// sum all direction vectors
+  case eED_OVERALL: {// sum all direction vectors
     ed = std::accumulate(epiDir.cbegin(), epiDir.cend(), Point2d());
   }
   break;

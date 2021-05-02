@@ -25,10 +25,10 @@ def main() -> int:
     help='list of band ids')
   ap.add_argument('-s', '--sample', default=1, type=int,
     help='downsample factor')
-  ap.add_argument('-o', '--outdir', type=str, required=True,
-    help='output path to the generated epipolar images')
   ap.add_argument('-r', '--resample', default='cubic', type=str, choices=['bilinear', 'cubic', 'gaussian'],
     help='resample kernel: bilinear|cubic|gaussian')
+  ap.add_argument('-o', '--outdir', type=str, required=True,
+    help='output path to the generated epipolar images')
   ap.add_argument('--memsize', default=4000, type=int,
     help='memory size in MB')
 
@@ -41,8 +41,8 @@ def main() -> int:
   rightmdl = args['rightmdl']
   bands = args['bands']
   sample = args['sample']
-  outdir = args['outdir']
   resample = args['resample']
+  outdir = args['outdir']
   memsize = args['memsize']
 
   return 0
@@ -65,8 +65,8 @@ if __name__ == '__main__':
               --rightmdl <path_of_right_model_file>  // 'images/img02_rpc.tif'
               --bands [list_of_band_ids]             // [1,2,3]
               --sample [downsample_factor]           // 2
-              --outdir [path_of_output_directory]    // 'd:/out/'
               --resample [cubic|gaussian|sinc]
+              --outdir [path_of_output_directory]    // 'd:/out/'
               --memsize [memory_size_in_MB]          // 4000
   """
   sys.exit(main())

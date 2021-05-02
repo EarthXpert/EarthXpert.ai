@@ -3,6 +3,7 @@
  * -----------------------------------------------------------------------------
  */
 #include "rectification/epipolar/epipolar.h"
+#include "core/exceptions/exexcept.h"
 #include "core/utils/fsutils.h"
 #include "core/utils/rasterresample.h"
 #include "epipolarmodel/epipolarmodel.h"
@@ -12,6 +13,7 @@
 #include "marshaller/epipolarstereomarshaller.h"
 #include "marshaller/sensormodel/rationalmodelmarshaller.h"
 #include "rectification/epipolar/epipolargenerator.h"
+#include "sensormodel/utils/smutils.h"
 
 #include <boost/format.hpp>
 #include <iostream>
@@ -56,13 +58,36 @@ std::string ToString(const EpipolarOptions* epiOpt) {
   ss << boost::format("** EpipolarOptions **\n"
     "sensorName: %1%\nleftImgFile: %2%\nleftMdlFile: %3%\n"
     "rightImgFile: %4%\nrightMdlFile: %5%\nbands: %6%\nsample: %7%\n"
-    "stride: %8%\ngrey: %9%\noutPath: %10%\nresample: %11%\nmemSize: %12%\n") % \
+    "stride: %8%\nresample: %9%\noutPath: %10%\ngrey: %11%\nmemSize: %12%\n") % \
     epiOpt->sensorName % epiOpt->leftImgFile % epiOpt->leftMdlFile % \
     epiOpt->rightImgFile % epiOpt->rightMdlFile % epiOpt->bands.size() %\
-    epiOpt->sample % epiOpt->stride % epiOpt->grey % epiOpt->outPath % \
-    epiOpt->resample % epiOpt->memSize;
+    epiOpt->sample % epiOpt->stride % epiOpt->resample % epiOpt->outPath % \
+    epiOpt->grey % epiOpt->memSize;
 
   return ss.str();
+}
+
+/**
+ *  \brief check the minimal requirement of options
+ */
+bool CheckEpipolarOptions(const EpipolarOptions& epiOpt) {
+  const auto stype = SensorNameToType(epiOpt.sensorName);
+  switch (stype) {
+  case SensorType::eMT_FRAME:
+    return CheckFrameEpipolarOptions(epiOpt);
+
+  case SensorType::eMT_RATIONAL:
+    return CheckRationalEpipolarOptions(epiOpt);
+  }
+  return {};
+}
+
+bool CheckFrameEpipolarOptions(const EpipolarOptions& epiOpt) {
+  return true;
+}
+
+bool CheckRationalEpipolarOptions(const EpipolarOptions& epiOpt) {
+  return true;
 }
 
 /**
@@ -74,12 +99,18 @@ void GenerateFrameEpipolar() {
 /**
  *  \brief Generate epipolar images for a pair of stereo image having rational models.
  */
-void GenerateRationalEpipolar(const EpipolarOptions& epiOpt) {
+void GenerateRationalEpipolar(EpipolarOptions& epiOpt) {
+  if (!CheckRationalEpipolarOptions(epiOpt)) {
+    throw EpipolarError(_("Missing arguments."));
+  }
+
   RationalModelMarshaller rmMarshaller;
 
   RasterReader leftReader(epiOpt.leftImgFile, epiOpt.bands);
   auto [leftNumCols, leftNumRows] = leftReader.GetSize();
   
+  if (epiOpt.leftMdlFile.empty()) 
+    epiOpt.leftMdlFile = FindRationalModelFile(epiOpt.leftImgFile);
   rmMarshaller.SetImageSize(leftNumCols, leftNumRows);
   std::shared_ptr<RationalModel> leftModel = 
     rmMarshaller.Deserialize(epiOpt.leftMdlFile);
@@ -88,12 +119,14 @@ void GenerateRationalEpipolar(const EpipolarOptions& epiOpt) {
   RasterReader rightReader(epiOpt.rightImgFile, epiOpt.bands);
   auto [rightNumCols, rightNumRows] = rightReader.GetSize();
 
+  if (epiOpt.rightMdlFile.empty()) 
+    epiOpt.rightMdlFile = FindRationalModelFile(epiOpt.rightImgFile);
   rmMarshaller.SetImageSize(rightNumCols, rightNumRows);
   std::shared_ptr<RationalModel> rightModel =
     rmMarshaller.Deserialize(epiOpt.rightMdlFile);
   assert(SensorType::eMT_RATIONAL == rightModel->GetModelType());
 
-  EpipolarStereoFactory epiModelFac(epiOpt.outOpt);
+  EpipolarStereoFactory epiModelFac(epiOpt.epiOpt);
   auto [leftEpiModel, rightEpiModel] = 
     epiModelFac.CreateRationalEpiStereo(leftModel, rightModel, 
       epiOpt.sample, epiOpt.epiHgt, epiOpt.rotAngle);

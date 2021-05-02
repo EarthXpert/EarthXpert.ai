@@ -10,6 +10,7 @@
 using namespace earthxpert;
 
 namespace {
+  // Ct object pool
   std::map<CtInfo, std::weak_ptr<ICt>> gCCsCTs;
   std::map<CtInfo, std::weak_ptr<ICt>> gOgrCTs;
   std::map<CtInfo, std::weak_ptr<ICt>> gProjCTs;

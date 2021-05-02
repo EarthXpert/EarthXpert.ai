@@ -7,11 +7,8 @@
 #include "packages/exai/exaicmd.h"
 #include "rectification/epipolar/epipolar.h"
 
-#include <boost/program_options.hpp>
 #include <string>
 #include <vector>
-
-namespace bpo = boost::program_options;
 
 namespace earthxpert {
 /**
@@ -42,8 +39,11 @@ private:
   int mArgc{};
   char** mArgv{};
 
+  void AddOptions(bpo::options_description& optDesc) override;
   void AddFrameOptions(bpo::options_description& optDesc);
   void AddRationalOptions(bpo::options_description& optDesc);
   void Help();
+
+  int ExecuteImp() override;
 };
 }

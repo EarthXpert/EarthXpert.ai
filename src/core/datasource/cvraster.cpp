@@ -67,7 +67,7 @@ CvRaster::CvRaster(const int numCols, const int numRows,
 CvRaster::CvRaster(const int numCols, const int numRows,
   const int dataType, const int colOffset, const int rowOffset, uchar* buffer)
   : CvRaster(numCols, numRows, dataType, colOffset, rowOffset, 
-             0, 0, MarginKind::eCONSTANT, buffer) {
+             0, 0, MarginKind::eMK_CONSTANT, buffer) {
 }
 
 /**
@@ -83,7 +83,7 @@ CvRaster::CvRaster(const int numCols, const int numRows,
 CvRaster::CvRaster(const int numCols, const int numRows, 
   const int dataType, uchar* buffer)
   : CvRaster(numCols, numRows, dataType, 0, 0, 
-             0, 0, MarginKind::eCONSTANT, buffer) {
+             0, 0, MarginKind::eMK_CONSTANT, buffer) {
 }
 
 /**

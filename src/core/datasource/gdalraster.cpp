@@ -67,7 +67,7 @@ GdalRaster::GdalRaster(const int numCols, const int numRows, const GDALDataType 
 GdalRaster::GdalRaster(const int numCols, const int numRows, 
   const GDALDataType dataType, const int numBands, uchar* buffer)
   : GdalRaster(numCols, numRows, dataType, numBands, 
-    0, 0, 0, 0, MarginKind::eCONSTANT, buffer) {
+    0, 0, 0, 0, MarginKind::eMK_CONSTANT, buffer) {
 }
 
 /**

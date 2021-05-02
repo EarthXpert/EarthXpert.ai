@@ -120,13 +120,13 @@ void SetPixel(const IRaster* raster, const int c, const int r, const uchar* src)
  */
 void FillMargins(CvRaster* const raster, MarginFillDim dim) {
   switch (raster->GetMarginKind()) {
-  case MarginKind::eCONSTANT:
+  case MarginKind::eMK_CONSTANT:
     detail::FillMargin<ConstantFill>(raster, dim);
     break;
-  case MarginKind::eREFLECTION:
+  case MarginKind::eMK_REFLECTION:
     detail::FillMargin<ReflectionFill>(raster, dim);
     break;
-  case MarginKind::eREPLICATION:
+  case MarginKind::eMK_REPLICATION:
     detail::FillMargin<ReplicationFill>(raster, dim);
     break;
   default:

@@ -3,7 +3,6 @@
  * -----------------------------------------------------------------------------
  */
 #include "packages/exai/exaiepipolar.h"
-#include "3rdparty/boost/exboost.h"
 #include "3rdparty/gdal/exgdal.h"
 #include "core/exceptions/exexcept.h"
 #include "core/utils/rasterresample.h"
@@ -50,16 +49,16 @@ int ExaiEpipolar::Execute() {
   epiOpt.nadImgFile = vm["nadimg"].as<std::string>();
   epiOpt.rightImgFile = vm["rightimg"].as<std::string>();
   epiOpt.bands = vm["bands"].as<std::vector<int>>();
+  epiOpt.epiOpt = vm["epiopt"].as<std::string>();
   epiOpt.sample = vm["sample"].as<int>();
   epiOpt.stride = vm["stride"].as<int>();
-  epiOpt.grey = vm["grey"].as<bool>();
-  epiOpt.oneFile = vm["onefile"].as<bool>();
-  epiOpt.outBkgd = vm["outbkgd"].as<int>();
-  epiOpt.outOpt = vm["outopt"].as<std::string>();
-  epiOpt.outPath = vm["outdir"].as<std::string>();
   epiOpt.epiHgt = vm["epihgt"].as<float>();
   epiOpt.rotAngle = vm["rotangle"].as<float>();
   epiOpt.resample = vm["resample"].as<std::string>();
+  epiOpt.outPath = vm["outdir"].as<std::string>();
+  epiOpt.oneFile = vm["onefile"].as<bool>();
+  epiOpt.grey = vm["grey"].as<bool>();
+  epiOpt.outBkgd = vm["outbkgd"].as<int>();
   epiOpt.memSize = size_t(vm["memsize"].as<int>()) * 1024 * 1024;  // [unit: bytes]
 
   switch (st) {
@@ -80,6 +79,10 @@ int ExaiEpipolar::Execute() {
   return 0;
 }
 
+void ExaiEpipolar::AddOptions(bpo::options_description& optDesc) {
+
+}
+
 void ExaiEpipolar::AddFrameOptions(bpo::options_description& optDesc) {
 }
 
@@ -93,26 +96,30 @@ void ExaiEpipolar::AddRationalOptions(bpo::options_description & optDesc) {
     ("prjdir", bpo::value<std::string>(), "project directory or file")
     //("images,i", bpo::value<std::string>()->multitoken(), "list of 2 or 3 images")
     ("leftimg", bpo::value<std::string>()->required(), "left/fore image file")
-    ("leftmdl", bpo::value<std::string>()->required(), "left/fore model file")
+    ("leftmdl", bpo::value<std::string>()->default_value(""), "left/fore model file")
     ("nadimg", bpo::value<std::string>()->default_value(""), "nadir image file")
     ("nadmdl", bpo::value<std::string>()->default_value(""), "nadir model file")
     ("rightimg", bpo::value<std::string>()->required(), "right/aft image file")
-    ("rightmdl", bpo::value<std::string>()->required(), "right/aft model file")
+    ("rightmdl", bpo::value<std::string>()->default_value(""), "right/aft model file")
     ("bands,b", bpo::value<std::vector<int>>()->multitoken(), "list of bands")
+    ("epiopt", bpo::value<std::string>()->default_value("full"), "epipolar option: compact|full|intersect")
     ("sample,s", bpo::value<int>()->default_value(1), "downsample factor")
     ("stride,d", bpo::value<int>()->default_value(8), "stride interval")
-    ("grey,g", bpo::value<bool>()->default_value(false), "convert to grey image")
-    ("onefile,f", bpo::value<bool>()->default_value(false), "save two epipolar images in a single file")
-    ("outbkgd", bpo::value<int>()->default_value(0), "output pixel background value")
-    ("outopt", bpo::value<std::string>()->default_value("full"), "output option: compact|full|intersect")
-    ("outdir,o", bpo::value<std::string>()->required(), "output directory")
     ("epihgt,h", bpo::value<float>()->default_value(0), "height of rectification plane")
     ("rotangle", bpo::value<float>()->default_value(0), "rotation angle of epipolar direction")
     ("resample,r", bpo::value<std::string>()->default_value("cubic"), "resample algorithm: bilinear|cubic|gausian")
+    ("outdir,o", bpo::value<std::string>()->required(), "output directory")
+    ("onefile,f", bpo::value<bool>()->default_value(false), "save two epipolar images in a single file")
+    ("grey,g", bpo::value<bool>()->default_value(false), "convert to grey image")
+    ("outbkgd", bpo::value<int>()->default_value(0), "output pixel background value")
     ("memsize,m", bpo::value<int>()->default_value(4000), "memory size in MB")
     ("help,h", "Usage help");
 }
 
 void ExaiEpipolar::Help() {
   printf("\nUsage: exai epipolar\n");
+}
+
+int ExaiEpipolar::ExecuteImp() {
+  return {};
 }

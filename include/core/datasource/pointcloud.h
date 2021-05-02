@@ -129,7 +129,7 @@ public:
   Point3d GetPoint3d(size_t i) noexcept;
 
   /**
-   *  \param FieldTy the field type of a WxPoint<> component
+   *  \param FieldTy the field type of a ExPoint<> component
    *  \param [in] i index of point
    *  \return Returns a field at given index.
    */
@@ -140,7 +140,7 @@ public:
   /**
    *  \brief Set fields to given point.
    *
-   *  \param PointTy the point type of WxPoint<>, being all or a partial of available fields
+   *  \param PointTy the point type of ExPoint<>, being all or a partial of available fields
    *  \param [in] i index of point
    *  \param [in] i point object of type PointTy
    */
@@ -155,20 +155,20 @@ public:
   void SetPoint(size_t i, const LASpoint& point, const LASquantizer* quantizer);
 
   /**
-   *  \param PointTy the point type of WxPoint<>, being all or a partial of available fields
+   *  \param PointTy the point type of ExPoint<>, being all or a partial of available fields
    *  \param [in] i index of point
    *  \return Returns a point at given index.
    */
   template <typename PointTy> PointTy GetPoint(size_t i) const;
 
   /**
-   *  \param FieldTy the field type of a WxPoint<> component
+   *  \param FieldTy the field type of a ExPoint<> component
    *  \param [in] fields an array of FieldTy objects
    */
   template <typename FieldTy> void SetField_Unchecked(std::vector<FieldTy>&& fields);
 
   /**
-   *  \param FieldTy the field type of a WxPoint<> component
+   *  \param FieldTy the field type of a ExPoint<> component
    *  \return Return a reference to the array of FieldTy objects
    */
   template <typename FieldTy> const std::vector<FieldTy>& GetField_Unchecked() const;
@@ -176,7 +176,7 @@ public:
   template <typename FieldTy> std::vector<FieldTy>& GetField_Unchecked();
 
   /**
-   *  \param FieldTy the field type of a WxPoint<> component
+   *  \param FieldTy the field type of a ExPoint<> component
    *  \param [in] i index of point
    *  \param [in] field the FieldTy object
    */
@@ -184,7 +184,7 @@ public:
   void SetField_Unchecked(size_t i, const FieldTy& field);
 
   /**
-   *  \param FieldTy the field type of a WxPoint<> component
+   *  \param FieldTy the field type of a ExPoint<> component
    *  \param [in] i index of point
    *  \return Returns a field at given index.
    */
@@ -196,7 +196,7 @@ public:
    *  \brief Set fields to given point.
    *
    *  \param [in] i index of point
-   *  \param PointTy the point type of WxPoint<>
+   *  \param PointTy the point type of ExPoint<>
    */
   template <typename PointTy>
   void SetPoint_Unchecked(size_t i, const PointTy& point);
@@ -298,7 +298,7 @@ private:
   void CheckPointFieldBits(size_t pointFieldBits) const;
 
   /**
-   *  \param FieldTy the field type of a WxPoint<> component
+   *  \param FieldTy the field type of a ExPoint<> component
    *  \throw Throws invalid_argument if point cloud does not contain the requested field group.
    */
   template <typename FieldTy> void CheckFieldType() const;

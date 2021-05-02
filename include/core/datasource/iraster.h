@@ -25,10 +25,10 @@ public:
   /**
    *  The RasterType defines the raster data structure
    */
-  enum class RasterType {
-    eUNDEFINED = -1,
-    eGDAL,        ///< Indicates GDAL band interleave
-    eCVMAT,       ///< Indicates OpenCV pixel interleave
+  enum struct RasterType {
+    eRT_UNDEFINED = -1,
+    eRT_GDAL,        ///< Indicates GDAL band interleave
+    eRT_CVMAT,       ///< Indicates OpenCV pixel interleave
     NumRasterTypes
   };
   using rt = RasterType;

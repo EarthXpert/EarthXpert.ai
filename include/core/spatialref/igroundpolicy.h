@@ -15,7 +15,7 @@ namespace earthxpert {
  */
 class EXCORE_EXPORTS IGroundPolicy {
 public:
-  enum class GroundPolicyType {
+  enum struct GroundPolicyType {
     eGP_GEOGRAPHIC, //
     eGP_LOCAL, //
     eGP_MAP //

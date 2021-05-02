@@ -144,6 +144,7 @@ if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
     
     #GMT_DIR
     #GMTSAR_DIR
+    #gnu_gsl
     
     set(gsl_ROOT "${EX_THIRD_PARTY}/gsl_2.4.0")
     set(gsl_BIN_DIR "${gsl_ROOT}/bin/${CDEGREL}")
@@ -167,6 +168,8 @@ if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
     set(ICONV_LIBRARY_DIR "${ICONV_ROOT}/lib")
     set(ICONV_LIBRARIES "${ICONV_LIBRARY_DIR}/${CDEGREL}/iconv.lib")
     
+    #set(ITK_ROOT)
+
     set(lapack_ROOT "${EX_THIRD_PARTY}/lapack_3.9.0")
     set(lapack_DIR "${lapack_ROOT}/lib/cmake")
     set(lapack_BIN_DIR "${lapck_ROOT}/bin/${CDEGREL}")
@@ -264,7 +267,9 @@ if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
     
     set(OPENNI_ROOT "${EX_THIRD_PARTY}/openni_2.2.0")
     set(OPENNI_BIN_DIR "${OPENNI_ROOT}/Redist")
-    
+  
+    #set(OTB_ROOT)
+
     set(PDAL_ROOT "${EX_THIRD_PARTY}/pdal_1.9.1")
     set(PDAL_DIR "${PDAL_ROOT}/lib/cmake/PDAL")
     
@@ -451,6 +456,7 @@ find_package(glog CONFIG REQUIRED)
 #find_package(gsl CONFIG REQUIRED)
 find_package(GTest REQUIRED)
 find_package(ICONV CONFIG REQUIRED)
+#find_package(ITK CONFIG REQUIRED)
 #find_package(lapack CONFIG REQUIRED)
 find_package(libInterpolate CONFIG REQUIRED)
 find_package(LIBXML2 CONFIG REQUIRED)
@@ -464,6 +470,7 @@ find_package(OpenCV CONFIG REQUIRED)   # opencv_ml opencv_dnn opencv_core opencv
 #find_package(OpenCL CONFIG REQUIRED)
 #find_package(OpenEXR CONFIG REQUIRED)
 find_package(OpenImageIO CONFIG REQUIRED)
+#find_package(OTB CONFIG REQUIRED)
 find_package(PDAL CONFIG REQUIRED)
 #find_package(proj CONFIG REQUIRED)
 find_package(Protobuf CONFIG REQUIRED)

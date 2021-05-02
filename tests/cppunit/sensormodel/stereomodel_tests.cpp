@@ -126,29 +126,38 @@ TEST(stereomodel, I2G_Cube) {
   //  TestConfig::DataPath("Imagery/Satellite/Kompsat/K3A/K3A_20190926202934_24873_00025357_L1O_Bundle/K3A_20190926202934_24873_00025357_L1O_P_rpc.txt");
   //TestI2G_Cube(leftMdlFileD, rightMdlFileD);
 
+  // Strip Mode in-track
   //std::string leftMdlFileE =
-  //  TestConfig::DataPath("Imagery/Satellite/Khalifasat/20190704093357_03703_UAE 15_11121_Radio_P_rpc.txt");
+  //  TestConfig::DataPath("Imagery/Satellite/Khalifasat/Khalifasat_20190704093357_03703_UAE 15_11121_Radio_P_rpc.txt");
   //std::string rightMdlFileE =
-  //  TestConfig::DataPath("Imagery/Satellite/Khalifasat/20190704093359_03703_UAE 15_11121_Radio_P_rpc.txt");
+  //  TestConfig::DataPath("Imagery/Satellite/Khalifasat/Khalifasat_20190704093359_03703_UAE 15_11121_Radio_P_rpc.txt");
   
   //std::vector<Point2d> leftImg{ {16373.7, 15802.1}, {12182.3,	16139.1}, {11130.3,	16139.5}, {13760.3,	16139.6}, {14812.3,	16139.1} };
   //std::vector<Point2d> rightImg{ {16373,	422}, {12182,	759}, {11130,	759}, {13760,	759}, {14812,	759} };
   //std::vector<Point2d> leftImg{ {5515, 15802}, {1897.1,	1594}, {1314.8,	15487.9}, {1662,	15464}, {610.1,	15464.1} };
   //std::vector<Point2d> rightImg{ {5515,	422}, {1897,	113.5}, {1314.8,	108}, {1662,	84}, {610,	84} };
 
-  std::string leftMdlFileE =
-    TestConfig::DataPath("Imagery/Satellite/Khalifasat/20190729093737_04076_UAE 16_Dubai_expo2020_11263_Radio_P_rpc.txt");
-  std::string rightMdlFileE =
-    TestConfig::DataPath("Imagery/Satellite/Khalifasat/20190704093357_03703_UAE 15_11121_Radio_P_rpc.txt");
-  std::vector<Point2d> leftImg{ {15077, 12564}, {15705,	12564}, {14449,	13650}, {15705,	14193}, {16330,	14736} };
-  std::vector<Point2d> rightImg{ {1348,	2756}, {1951.2,	2760.9}, {738.7,	3814}, {1940.9,	4355.2}, {2538.1,	4892} };
+  // Strip Mode cross-track
+  //std::string leftMdlFileF =
+  //  TestConfig::DataPath("Imagery/Satellite/Khalifasat/Khalifasat_20190729093737_04076_UAE 16_Dubai_expo2020_11263_Radio_P_rpc.txt");
+  //std::string rightMdlFileF =
+  //  TestConfig::DataPath("Imagery/Satellite/Khalifasat/Khalifasat_20190704093357_03703_UAE 15_11121_Radio_P_rpc.txt");
+  //std::vector<Point2d> leftImg{ {15077, 12564}, {15705,	12564}, {14449,	13650}, {15705,	14193}, {16330,	14736} };
+  //std::vector<Point2d> rightImg{ {1348,	2756}, {1951.2,	2760.9}, {738.7,	3814}, {1940.9,	4355.2}, {2538.1,	4892} };
+  
+  std::string leftMdlFileG =
+    TestConfig::DataPath("Imagery/Satellite/Khalifasat/KhalifaSat_20190729093737_04076_UAE 16_Dubai_expo2020_11263_Radio_P_rpc.txt");
+  std::string rightMdlFileG =
+    TestConfig::DataPath("Imagery/Satellite/Khalifasat/KhalifaSat_20190713094256_03837_UAE 17_Aslam_expo2020_11158_Radio_P_rpc.txt");
+  std::vector<Point2d> leftImg{ {2133.875, 7343.791} };
+  std::vector<Point2d> rightImg{ {15759.621, 15409.574} };
 
-  TestI2G_Cube(leftMdlFileE, rightMdlFileE,
+  TestI2G_Cube(leftMdlFileG, rightMdlFileG,
     int(leftImg.size()), leftImg.data(), rightImg.data());
 
   fs::path crvPath(TestConfig::OutputPath("curves_rational.txt"));
   RemoveFile(crvPath);
-  TestCurveI2G(leftMdlFileE, rightMdlFileE,
+  TestCurveI2G(leftMdlFileG, rightMdlFileG,
     int(leftImg.size()), leftImg.data(), rightImg.data(), crvPath.string());
 }
 
@@ -157,6 +166,16 @@ void TestI2G_Cube(const std::string& leftMdlFile, const std::string& rightMdlFil
   RationalModelMarshaller rmMarshaller;
   auto leftModel = rmMarshaller.Deserialize(leftMdlFile);
   auto rightModel = rmMarshaller.Deserialize(rightMdlFile);
+
+  // Correction to KhalifaSat
+  //const std::array<double, rcc::NumCorr>& lineCorr16{ 3.70437483461934e+01, 0, 0, 0, 0, 0 };  // 15.1038
+  //const std::array<double, rcc::NumCorr>& sampCorr16{ 7.60528964987891e+00, 0, 0, 0, 0, 0 };  // 21.7609
+  //leftModel->SetCorrection(lineCorr16, sampCorr16);
+
+  //const std::array<double, rcc::NumCorr>& lineCorr17{ -2.21544336811923e+02, 0, 0, 0, 0, 0 }; // -160.386
+  //const std::array<double, rcc::NumCorr>& sampCorr17{ 1.25613131266920e+02, 0, 0, 0, 0, 0 };  // 89.6603
+  //rightModel->SetCorrection(lineCorr17, sampCorr17);
+
   TestI2G_Cube(leftModel.get(), rightModel.get(), num, leftImg, rightImg);
 }
 
@@ -266,17 +285,27 @@ void TestI2G_Cube(const RationalModel* leftModel, const RationalModel* rightMode
     for (auto sm : stereoModels) {
       Point3d grd;
       sm->ImagesToGround(leftImg[i], rightImg[i], grd);
-      std::cout << boost::format("%.3f %.3f %.3f; ") % grd.x % grd.y % grd.z;
+      std::cout << boost::format("%.8f %.8f %.3f; ") % grd.x % grd.y % grd.z;
     }
     std::cout << std::endl;
   }
 }
 
-static void TestCurveI2G(const std::string& leftMdlFile, const std::string& rightMdlFile,
+void TestCurveI2G(const std::string& leftMdlFile, const std::string& rightMdlFile,
   const int num, const Point2d* leftImg, const Point2d* rightImg, const std::string& txtFile) {
   RationalModelMarshaller rmMarshaller;
   auto leftModel = rmMarshaller.Deserialize(leftMdlFile);
   auto rightModel = rmMarshaller.Deserialize(rightMdlFile);
+  
+  // Correction to KhalifaSat
+  //const std::array<double, rcc::NumCorr>& lineCorr16{ 15.1038, 0, 0, 0, 0, 0 };
+  //const std::array<double, rcc::NumCorr>& sampCorr16{ 21.7609, 0, 0, 0, 0, 0 };
+  //leftModel->SetCorrection(lineCorr16, sampCorr16);
+
+  //const std::array<double, rcc::NumCorr>& lineCorr17{ -160.386, 0, 0, 0, 0, 0 };
+  //const std::array<double, rcc::NumCorr>& sampCorr17{ 89.6603, 0, 0, 0, 0, 0 };
+  //rightModel->SetCorrection(lineCorr17, sampCorr17);
+
   TestCurveI2G(leftModel.get(), rightModel.get(), num, leftImg, rightImg, txtFile);
 }
 
@@ -290,8 +319,8 @@ void TestCurveI2G(const RationalModel* leftModel, const RationalModel* rightMode
   const auto minHgtR = nfcR[rnf::eOHGT] - nfcR[rnf::eSHGT] * kFactor;
   const auto maxHgtR = nfcR[rnf::eOHGT] + nfcR[rnf::eSHGT] * kFactor;
 
-  const auto minHgt = std::min(minHgtL, minHgtR);
-  const auto maxHgt = std::max(maxHgtL, maxHgtR);
+  const auto minHgt = std::min(minHgtL, minHgtR); // -30. - 50
+  const auto maxHgt = std::max(maxHgtL, maxHgtR); // -30. + 50
   const auto stepHgt = (maxHgt - minHgt) / kNH - DBL_EPSILON;
 
   Point3d origin((nfcL[rnf::eOLON] + nfcR[rnf::eOLON]) / 2, (nfcL[rnf::eOLAT] + nfcR[rnf::eOLAT]) / 2, (minHgt + maxHgt) / 2);

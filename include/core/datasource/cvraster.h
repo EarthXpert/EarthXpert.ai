@@ -19,7 +19,7 @@ class EXCORE_EXPORTS CvRaster final : public IRaster {
 public:
   CvRaster(int numCols, int numRows, int dataType,
     int colOffset = 0, int rowOffset = 0, int marginCols = 0, int marginRows = 0, 
-    MarginKind marginKind = MarginKind::eCONSTANT);
+    MarginKind marginKind = MarginKind::eMK_CONSTANT);
   CvRaster(int numCols, int numRows, int dataType, int colOffset, int rowOffset, 
     int marginCols, int marginRows, MarginKind marginKind, uchar* buffer);
   CvRaster(int numCols, int numRows, int dataType,
@@ -42,7 +42,7 @@ public:
   /**
    * \return Returns type of raster data
    */
-  RasterType GetRasterType() const noexcept override { return RasterType::eCVMAT; }
+  RasterType GetRasterType() const noexcept override { return RasterType::eRT_CVMAT; }
 
   /**
    *  Update a pixel value for the given pixel position.
@@ -206,7 +206,7 @@ private:
   int mRowOffset{};             // row offset of image
   int mMarginCols{};            // margin cols
   int mMarginRows{};            // margin rows
-  MarginKind mMarginKind{ MarginKind::eCONSTANT };
+  MarginKind mMarginKind{ MarginKind::eMK_CONSTANT };
   mutable cv::Mat mMat;         // 2D matrix reprents the pixel block, each element is an pixel
 
   // cached temporaries for performance

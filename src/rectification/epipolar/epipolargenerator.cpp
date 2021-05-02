@@ -6,6 +6,7 @@
 #include "3rdparty/taskflow/extaskflow.h"
 #include "core/exceptions/exexcept.h"
 #include "core/math/interpgridvec.h"
+#include "core/system/scopedtimer.h"
 #include "core/utils/irasterresample.h"
 #include "core/utils/geomutils.h"
 #include "core/utils/layoututils.h"
@@ -13,6 +14,7 @@
 #include "io/raster/irasterreader.h"
 #include "io/raster/rasterwriter.h"
 
+#include <boost/format.hpp>
 #include <iostream>
 #include <omp.h>
 
@@ -285,14 +287,12 @@ void EpipolarGenerator::ReadTile(const int tileId) {
   if (!TileId(tileId)) return;
   const auto [colOffset, rowOffset, numCols, numRows] = ImgTile(tileId);
   if (0 == numCols || 0 == numRows) return;
-  const auto start = mClock.TimeSinceStart();
+  ScopedTimer st(mPerf.tmRead);
   //memset(mImgBufRead.get(), 0, size_t(mImgBpp) * numCols * numRows);
 
   CvRaster imgRaster(numCols, numRows, mImgCvDT, 
     colOffset, rowOffset, mImgBufRead.get());
   mImgReader->ReadRaster(&imgRaster);
-
-  mPerf.tmRead += mClock.TimeSinceStart() - start;
 }
 
 /**
@@ -304,7 +304,7 @@ void EpipolarGenerator::ProcessTile(const int tileId) {
   if (!TileId(tileId)) return;
   const auto [imgNumCols, imgNumRows] = ImgTile(tileId).GetSize();
   if (0 == imgNumCols || 0 == imgNumRows) return;
-  const auto start = mClock.TimeSinceStart();
+  ScopedTimer st(mPerf.tmProcess);
 
   const auto [colOffset, rowOffset, numCols, numRows] = EpiTile(tileId);
   memset(mEpiMaskBuf.get(), eMK_BKGD, size_t(numCols) * numRows);
@@ -322,7 +322,10 @@ void EpipolarGenerator::ProcessTile(const int tileId) {
   mRasResample->Resample(imgMat, nullptr, epiMat, &epiMask, tfmMat); // ResampleTile
 
   //GatherStatTile(tileId);
-  mPerf.tmProcess += mClock.TimeSinceStart() - start;
+
+  //std::stringstream ss;
+  //ss << boost::format("[%2d] Process tile (%d, %d, %d, %d)") % tileId % colOffset % rowOffset % numCols % numRows;
+  //std::cout << ss.str() << std::endl;
 }
 
 /**
@@ -332,14 +335,12 @@ void EpipolarGenerator::ProcessTile(const int tileId) {
  */
 void EpipolarGenerator::WriteTile(const int tileId) {
   if (!TileId(tileId)) return;
-  const auto start = mClock.TimeSinceStart();
+  ScopedTimer st(mPerf.tmWrite);
 
   const auto [colOffset, rowOffset, numCols, numRows] = EpiTile(tileId);
   CvRaster epiRaster(numCols, numRows, mEpiCvDT, 
     colOffset, rowOffset, mEpiBufWrit.get());
   mEpiWriter->WriteRaster(&epiRaster);
-
-  mPerf.tmWrite += mClock.TimeSinceStart() - start;
 }
 
 /**
@@ -390,7 +391,7 @@ void EpipolarGenerator::GeotransformTile(const int tileId, cv::Mat& tfmMat) {
  */
 void EpipolarGenerator::RigorousGridNodes(const int tileId, cv::Mat& tfmMat,
   const std::vector<int>& gridCols, const std::vector<int>& gridRows) {
-  auto start = mClock.TimeSinceStart();
+  ScopedTimer st(mPerf.tmRigorous);
   const int numGridCols = static_cast<int>(gridCols.size());
   const int numGridRows = static_cast<int>(gridRows.size());
   assert(2 <= numGridCols && 2 <= numGridRows);
@@ -404,8 +405,6 @@ void EpipolarGenerator::RigorousGridNodes(const int tileId, cv::Mat& tfmMat,
     const int tileRow = gridRows[gridRow];
     EpiToImg(tileId, tfmMat, tileCol, tileRow);
   }
-
-  mPerf.tmRigorous += mClock.TimeSinceStart() - start;
 }
 
 /**
@@ -422,7 +421,7 @@ void EpipolarGenerator::RigorousGridNodes(const int tileId, cv::Mat& tfmMat,
 void EpipolarGenerator::DensifyCells(const int tileId, cv::Mat& tfmMat,
   const std::vector<int>& gridCols, const std::vector<int>& gridRows) {
   if (1 == mStride) return;  
-  const auto start = mClock.TimeSinceStart();
+  ScopedTimer st(mPerf.tmDensify);
   const auto [numCols, numRows] = EpiTile(tileId).GetSize();
   const int numGridCols = int(gridCols.size());
   const int numGridRows = int(gridRows.size());
@@ -480,7 +479,6 @@ void EpipolarGenerator::DensifyCells(const int tileId, cv::Mat& tfmMat,
       }
     }
   }
-  mPerf.tmDensify += mClock.TimeSinceStart() - start;
 }
 
 /** 
@@ -494,7 +492,7 @@ void EpipolarGenerator::DensifyCells(const int tileId, cv::Mat& tfmMat,
 void EpipolarGenerator::DensifyPixels(const int tileId, cv::Mat& tfmMat,
   const std::vector<int>& gridCols, const std::vector<int>& gridRows) {
   if (1 == mStride) return;  // Densify non-grid positions
-  const auto start = mClock.TimeSinceStart();
+  ScopedTimer st(mPerf.tmDensify);
   const auto [numCols, numRows] = EpiTile(tileId).GetSize();
   const int64_t numPix = int64_t(numCols) * numRows;
   const int numGridCols = int(gridCols.size());
@@ -537,7 +535,6 @@ void EpipolarGenerator::DensifyPixels(const int tileId, cv::Mat& tfmMat,
       EpiToImg(tileId, tfmMat, tileCol, tileRow);
     }
   }
-  mPerf.tmDensify += mClock.TimeSinceStart() - start;
 }
 
 /**

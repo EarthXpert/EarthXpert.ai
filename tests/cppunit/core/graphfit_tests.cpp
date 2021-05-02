@@ -283,6 +283,7 @@ std::vector<Point2d> ObtainLinePoints() {
   return points;
 }
 
+// SAR RPC
 std::vector<Point3d> ObtainLinePoints3D() {
   std::vector<Point3d> points = {
     {-8839.318481, 7769.793985, -511.854990}, {-8842.822459, 7772.924984, -501.843643},

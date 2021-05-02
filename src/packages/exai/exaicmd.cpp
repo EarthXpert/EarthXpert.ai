@@ -10,3 +10,7 @@ using earthxpert::ExaiCmd;
 ExaiCmd::ExaiCmd() {
   GDALInitialize();
 }
+
+//int ExaiCmd::Execute() {
+//  return {};
+//}

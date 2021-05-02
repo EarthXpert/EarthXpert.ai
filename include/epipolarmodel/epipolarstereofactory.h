@@ -28,18 +28,18 @@ public:
   // of epipolar width. With eFULL option, the average parallax in X direction
   // will be minimized; while with eCOMPACT option, the average X-parallax has
   // to be calculated for have the epipolar images aligned approximately.
-  enum class EpiOutputOption {
-    eCOMPACT,   // the smallest width for each epipolar image
-    eFULL,      // the largest width for a union of epipolar images
-    eINTERSECT, // the smallest width for intersection of epipolar images
-    eSENSOR     // raw images as epipolar without rectification
+  enum struct EpiOutputOption {
+    eEO_COMPACT,   // the smallest width for each epipolar image
+    eEO_FULL,      // the largest width for a union of epipolar images
+    eEO_INTERSECT, // the smallest width for intersection of epipolar images
+    eEO_SENSOR     // raw images as epipolar without rectification
   };
   using EpiOpt = EpiOutputOption;
 
   // direction of largest parallax
   enum EpiDirection {
-    eLONGEST, // select the longest vector
-    eOVERALL  // sum all direction vectors
+    eED_LONGEST, // select the longest vector
+    eED_OVERALL  // sum all direction vectors
   };
 
   EpipolarStereoFactory(EpiOutputOption outOpt);
@@ -53,7 +53,7 @@ public:
       std::shared_ptr<ISensorModel> rightModel, int sample, double height);
 
   EpiModelPair CreateRationalEpiStereo(std::shared_ptr<RationalModel> leftModel,
-    std::shared_ptr<RationalModel> rightModel, 
+    std::shared_ptr<RationalModel> rightModel,
     int sample = 1, float epiHgt = 0, float rotAngle = 0);
 
   EpiModelPair CreateSensorEpiStereo(std::shared_ptr<ISensorModel> leftModel,
@@ -81,11 +81,11 @@ private:
   static constexpr int kPosTfm{ 16 };   // position transformation to align
   static constexpr double kHgtTol{ 0.01 }; // Height tolerance [1cm]: good enough
 
-  EpiOutputOption mOutOpt{ EpiOpt::eFULL };
-  EpiDirection mEpiDir{ eOVERALL };
+  EpiOutputOption mOutOpt{ EpiOpt::eEO_FULL };
+  EpiDirection mEpiDir{ eED_OVERALL };
 
   double EpipolarStereoFactory::CalcEpiRotation(const ISensorModel* leftModel,
-    const ISensorModel* rightModel, const EarthEllipsoid* ee, double height, 
+    const ISensorModel* rightModel, const EarthEllipsoid* ee, double height,
     const Polygon2d& leftFp, const Polygon2d& rightFp) const;
   void ConvertEpiRect(Polygon2d& fp, double scale,
     double cosRot, double sinRot) const;

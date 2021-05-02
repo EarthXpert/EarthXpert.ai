@@ -238,6 +238,14 @@ struct ExPoint : Fields... {
   //static constexpr size_t kPointFieldBytes = (... + Fields::kFieldBytes);   // align()
 };
 
+template <typename... Fields>
+ExPoint(Fields...) -> ExPoint<Fields...>;
+
+template <typename... Fields>
+auto MakeExPoint(Fields&&... fields) {
+  return ExPoint<Fields...>{std::forward<Fields>(fields)...};
+}
+
 // XYZ
 template <typename CoordTy>
 using Point = ExPoint<XYZ<CoordTy>>;

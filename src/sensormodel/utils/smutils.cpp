@@ -47,13 +47,13 @@ namespace detail {
  *  \return Returns sensor type
  */
 SensorType SensorNameToType(const std::string& name) {
-  SensorType type{ SensorType::eUNDEFINED };
+  SensorType stype{ SensorType::eUNDEFINED };
   const auto it = detail::sSensorN2T.find(name);
   if (detail::sSensorN2T.end() != it) {
-    type = it->second;
+    stype = it->second;
   }
 
-  return type;
+  return stype;
 }
 
 /**

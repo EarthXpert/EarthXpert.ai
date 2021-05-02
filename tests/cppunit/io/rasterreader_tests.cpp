@@ -30,12 +30,12 @@ TEST(rasterreader, NullReader_T0) {
 
   ASSERT_EQ(reader.GetDataType(), GDT_Unknown);
   ASSERT_EQ(reader.GetNumBands(), 0);
-  ASSERT_EQ(reader.GetMarginKind(), MarginKind::eCONSTANT);
+  ASSERT_EQ(reader.GetMarginKind(), MarginKind::eMK_CONSTANT);
 
   ASSERT_FALSE(reader.GetCoordinateSystem());
   ASSERT_FALSE(reader.GetGeocoding());
 
-  auto raster = reader.ReadRaster(fileNumCols / 2 - 1000, fileNumRows / 2 - 1000, 2000, 2000, RasterType::eCVMAT);
+  auto raster = reader.ReadRaster(fileNumCols / 2 - 1000, fileNumRows / 2 - 1000, 2000, 2000, RasterType::eRT_CVMAT);
   ASSERT_FALSE(raster);
   //ASSERT_ANY_THROW(raster->GetBuffer());
 
@@ -57,7 +57,7 @@ TEST(rasterreader, ORTHOGF1MS_T1) {
   ASSERT_EQ(fileNumCols, 5000);
   ASSERT_EQ(fileNumRows, 5000);
 
-  auto raster = reader.ReadRaster(fileNumCols / 2 - 1000, fileNumRows / 2 - 1000, 2000, 2000, RasterType::eCVMAT);
+  auto raster = reader.ReadRaster(fileNumCols / 2 - 1000, fileNumRows / 2 - 1000, 2000, 2000, RasterType::eRT_CVMAT);
 
   auto [numCols, numRows] = raster->GetSize();
   ASSERT_EQ(numCols, 2000);
@@ -89,14 +89,14 @@ TEST(rasterreader, ORTHOGF1MS_T1) {
 TEST(rasterreader, ORTHOGF1MS_T2a) {
   const std::string imgFile(TestConfig::DataPath("Imagery/image_small.tif"));
   RasterReader reader(imgFile);
-  reader.SetMargins(20, 20, MarginKind::eCONSTANT);
+  reader.SetMargins(20, 20, MarginKind::eMK_CONSTANT);
 
   auto [fileNumCols, fileNumRows] = reader.GetSize();
   ASSERT_EQ(fileNumCols, 5000);
   ASSERT_EQ(fileNumRows, 5000);
 
   // margins within image file
-  auto raster = reader.ReadRaster(fileNumCols / 2 - 1000, fileNumRows / 2 - 1000, 2000, 2000, RasterType::eCVMAT);
+  auto raster = reader.ReadRaster(fileNumCols / 2 - 1000, fileNumRows / 2 - 1000, 2000, 2000, RasterType::eRT_CVMAT);
 
   auto [numCols, numRows] = raster->GetSize();
   ASSERT_EQ(numCols, 2000);
@@ -127,14 +127,14 @@ TEST(rasterreader, ORTHOGF1MS_T2a) {
 TEST(rasterreader, AERIALMS_T2b) {
   const std::string imgFile(TestConfig::DataPath("Imagery/Aerial/Graz25/images/Hi-RGB_02152.tif"));
   RasterReader reader(imgFile);
-  reader.SetMargins(20, 20, MarginKind::eREFLECTION);
+  reader.SetMargins(20, 20, MarginKind::eMK_REFLECTION);
 
   auto [fileNumCols, fileNumRows] = reader.GetSize();
   ASSERT_EQ(fileNumCols, 9420);
   ASSERT_EQ(fileNumRows, 14430);
 
   // margins partly outside image file
-  auto raster = reader.ReadRaster(0, 0, 2000, 2000, RasterType::eCVMAT);
+  auto raster = reader.ReadRaster(0, 0, 2000, 2000, RasterType::eRT_CVMAT);
 
   auto [numCols, numRows] = raster->GetSize();
   ASSERT_EQ(numCols, 2000);
@@ -174,7 +174,7 @@ TEST(rasterreader, ORTHOGF1MS_T3) {
   ASSERT_EQ(fileNumCols, 5000);
   ASSERT_EQ(fileNumRows, 5000);
 
-  auto raster = reader.ReadRaster(fileNumCols / 2 - 1000, fileNumRows / 2 - 1000, 2000, 2000, RasterType::eCVMAT);
+  auto raster = reader.ReadRaster(fileNumCols / 2 - 1000, fileNumRows / 2 - 1000, 2000, 2000, RasterType::eRT_CVMAT);
 
   auto [numCols, numRows] = raster->GetSize();
   ASSERT_EQ(numCols, 2000);
@@ -207,7 +207,7 @@ TEST(rasterreader, ORTHOGF1MS_T4) {
   ASSERT_EQ(fileNumCols, 5000);
   ASSERT_EQ(fileNumRows, 5000);
 
-  auto raster = reader.ReadRaster(fileNumCols / 2 - 1000, fileNumRows / 2 - 1000, 2000, 2000, RasterType::eGDAL);
+  auto raster = reader.ReadRaster(fileNumCols / 2 - 1000, fileNumRows / 2 - 1000, 2000, 2000, RasterType::eRT_GDAL);
 
   auto [numCols, numRows] = raster->GetSize();
   ASSERT_EQ(numCols, 2000);
@@ -253,8 +253,8 @@ TEST(rasterreader, AERIALMS_T5) {
   ASSERT_EQ(fileNumRows, 14430);
 
   // constant
-  reader.SetMargins(20, 20, MarginKind::eCONSTANT);
-  auto raster = reader.ReadRaster(0, 0, 2000, 2000, RasterType::eCVMAT);
+  reader.SetMargins(20, 20, MarginKind::eMK_CONSTANT);
+  auto raster = reader.ReadRaster(0, 0, 2000, 2000, RasterType::eRT_CVMAT);
   auto cvRaster = dynamic_cast<CvRaster*>(raster.get());
 
   const auto pix1a = cvRaster->GetPixel<cv::Vec3b>(1000, -10);
@@ -269,8 +269,8 @@ TEST(rasterreader, AERIALMS_T5) {
   ASSERT_EQ(pix1b[2], 0);
 
   // reflection
-  reader.SetMargins(20, 20, MarginKind::eREFLECTION);
-  raster = reader.ReadRaster(fileNumCols/2-1000, 10, 2000, 2000, RasterType::eCVMAT);
+  reader.SetMargins(20, 20, MarginKind::eMK_REFLECTION);
+  raster = reader.ReadRaster(fileNumCols/2-1000, 10, 2000, 2000, RasterType::eRT_CVMAT);
   cvRaster = dynamic_cast<CvRaster*>(raster.get());
 
   const auto pix2a = cvRaster->GetPixel<cv::Vec3b>(1000, -15);
@@ -285,8 +285,8 @@ TEST(rasterreader, AERIALMS_T5) {
   ASSERT_EQ(pix2b[2], 27);
 
   // replication
-  reader.SetMargins(20, 20, MarginKind::eREPLICATION);
-  raster = reader.ReadRaster(fileNumCols-2005, fileNumRows-2005, 2000, 2000, RasterType::eCVMAT);
+  reader.SetMargins(20, 20, MarginKind::eMK_REPLICATION);
+  raster = reader.ReadRaster(fileNumCols-2005, fileNumRows-2005, 2000, 2000, RasterType::eRT_CVMAT);
   cvRaster = dynamic_cast<CvRaster*>(raster.get());
 
   const auto pix3a = cvRaster->GetPixel<cv::Vec3b>(1000, 2010);
@@ -309,13 +309,13 @@ TEST(rasterreader, AERIALMS_T5) {
 TEST(rasterreader, ORTHOGF1MS_T6) {
   const std::string imgFile(TestConfig::DataPath("Imagery/image_small.tif"));
   RasterReader reader(imgFile);
-  reader.SetMargins(20, 20, MarginKind::eREPLICATION);
+  reader.SetMargins(20, 20, MarginKind::eMK_REPLICATION);
 
   auto [fileNumCols, fileNumRows] = reader.GetSize();
   ASSERT_EQ(fileNumCols, 5000);
   ASSERT_EQ(fileNumRows, 5000);
 
-  auto raster = reader.ReadRaster(fileNumCols / 2 - 1000, fileNumRows / 2 - 1000, 2000, 2000, RasterType::eGDAL);
+  auto raster = reader.ReadRaster(fileNumCols / 2 - 1000, fileNumRows / 2 - 1000, 2000, 2000, RasterType::eRT_GDAL);
 
   auto [numCols, numRows] = raster->GetSize();
   ASSERT_EQ(numCols, 2000);
@@ -369,7 +369,7 @@ TEST(rasterreader, ORTHOGF1MS_T7) {
   ASSERT_EQ(fileNumCols, 5000);
   ASSERT_EQ(fileNumRows, 5000);
 
-  auto raster = reader.ReadRaster(fileNumCols / 2 - 1000, fileNumRows / 2 - 1000, 2000, 2000, RasterType::eGDAL);
+  auto raster = reader.ReadRaster(fileNumCols / 2 - 1000, fileNumRows / 2 - 1000, 2000, 2000, RasterType::eRT_GDAL);
 
   auto [numCols, numRows] = raster->GetSize();
   ASSERT_EQ(numCols, 2000);
