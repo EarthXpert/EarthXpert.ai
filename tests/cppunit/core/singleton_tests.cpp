@@ -14,4 +14,5 @@ TEST(singleton, instance) {
   auto& inst2 = Singleton::Instance();
   
   ASSERT_EQ(&inst1, &inst2);
+  ASSERT_NO_THROW(inst1.SingletonMethod());
 }

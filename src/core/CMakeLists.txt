@@ -39,6 +39,7 @@ set(core_srcs
   "parallel/simd/exsimd.cpp"
   "parallel/simd/exsimd_math.cpp"
   "parallel/simd/exsimd_utils.cpp"
+  "patterns/singleton.cpp"
   "qc/qc.cpp"
   "spatialref/ccsct.cpp"
   "spatialref/ccssrs.cpp"
