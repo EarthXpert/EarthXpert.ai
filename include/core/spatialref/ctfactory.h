@@ -13,6 +13,9 @@
 #include <mutex>
 
 namespace earthxpert {
+/**
+ *  \brief monostate factory to create coordinate transformation objects.
+ */  
 class EXCORE_EXPORTS CtFactory {
 public:
   static std::shared_ptr<ICt> CreateCt(const CtInfo* ctInfo);

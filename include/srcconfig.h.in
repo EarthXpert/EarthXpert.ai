@@ -16,11 +16,9 @@
   #define SDK_CONFIG_EXT "d.exe"
 #endif
 
-class SdkConfig
-{
+class SdkConfig {
 public:
-  static std::string BinPath(const std::string &name)
-  {
+  static std::string BinPath(const std::string &name) {
     std::string dir_path = SDK_CONFIG_BIN_PATH;
     std::string exe_ext = SDK_CONFIG_EXT;
     return dir_path + name + exe_ext;

@@ -1,6 +1,6 @@
 project(src)
 
-configure_file(srcconfig.h.in ${CMAKE_BINARY_DIR}/src/srcconfig.h)
+configure_file("../include/srcconfig.h.in" ${CMAKE_BINARY_DIR}/src/srcconfig.h)
 include_directories(${CMAKE_BINARY_DIR}/src/)
 
 function(exai_source_group)

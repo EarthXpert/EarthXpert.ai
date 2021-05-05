@@ -13,6 +13,9 @@
 #include <mutex>
 
 namespace earthxpert {
+/**
+ *  \brief monostate factory to create coordinate system objects.
+ */  
 class EXCORE_EXPORTS SrsFactory {
 public:
   static std::shared_ptr<ISrs> CreateSrs(const SrsInfo* srsInfo);
