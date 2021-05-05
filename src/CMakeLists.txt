@@ -1,7 +1,7 @@
 project(src)
 
-configure_file("../include/srcconfig.h.in" ${CMAKE_BINARY_DIR}/src/srcconfig.h)
-include_directories(${CMAKE_BINARY_DIR}/src/)
+configure_file("../include/srcconfig.h.in" ${CMAKE_BINARY_DIR}/include/srcconfig.h)
+include_directories(${CMAKE_BINARY_DIR}/include/)
 
 function(exai_source_group)
   foreach(SRC IN ITEMS ${ARGN})

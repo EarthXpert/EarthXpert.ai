@@ -1,7 +1,7 @@
 project(core CXX)
 
 set(EX_LIB_NAME "EXCORE")
-#configure_file(${EARTHXPERT_INCLUDE_DIR}/ex.h.in ${CMAKE_BINARY_DIR}/src/excore.h)
+configure_file("../../include/ex.h.in" "../../include/core/excore.h")
 
 add_definitions(-DEXCORE_API)
 set(core_srcs 

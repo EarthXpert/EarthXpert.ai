@@ -2,10 +2,10 @@ project(tests)
 
 set(EARTHXPERT_TEST_DATA_DIR "${CMAKE_SOURCE_DIR}/../TestData")
 set(EARTHXPERT_TEST_OUTPUT_DIR "${CMAKE_BINARY_DIR}/tests/output")
-configure_file(testconfig.h.in ${CMAKE_BINARY_DIR}/tests/testconfig.h)
+configure_file("include/testconfig.h.in" ${CMAKE_BINARY_DIR}/tests/include/testconfig.h)
 file(MAKE_DIRECTORY ${EARTHXPERT_TEST_OUTPUT_DIR})
 
-include_directories(${CMAKE_BINARY_DIR}/tests/)
+include_directories(${CMAKE_BINARY_DIR}/tests/include/)
 include_directories("include")
 
 function(exai_add_test name tests_dir)

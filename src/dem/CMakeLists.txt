@@ -1,5 +1,8 @@
 project(exdem CXX)
 
+set(EX_LIB_NAME "EXDEM")
+configure_file("../../include/ex.h.in" "../../include/dem/exdem.h")
+
 add_definitions(-DEXDEM_API)
 set(exdem_srcs 
   "./dem.cpp"
