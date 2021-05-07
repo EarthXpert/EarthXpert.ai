@@ -7,6 +7,7 @@
 
 //#include "fft.hpp"
 #include "interp.hpp"
+#include "poly.hpp"
 
 TEST(gsl, DUMMY) {
   std::cout << "[   EXAI   ]" << std::endl;

@@ -146,9 +146,9 @@ if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
     
     #GMT_DIR
     #GMTSAR_DIR
-    #gnu_gsl
+    #gsl core guideline
     
-    set(gsl_ROOT "${EX_THIRD_PARTY}/gsl_2.4.0")
+    set(gsl_ROOT "${EX_THIRD_PARTY}/gsl_2.4.0")     #gnu_gsl
     set(gsl_BIN_DIR "${gsl_ROOT}/bin/${CDEGREL}")
     set(gsl_INCLUDE_DIR "${gsl_ROOT}/include")
     set(gsl_LIBRARY_DIR "${gsl_ROOT}/lib")
