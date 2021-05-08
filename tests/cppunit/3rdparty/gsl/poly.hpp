@@ -2,10 +2,10 @@
 #include <cstdio>
 #include <memory>
 
-TEST(gsl, poly_root)
-{
-  std::unique_ptr<gsl_poly_complex_workspace, decltype(&gsl_poly_complex_workspace_free)> w(
-        gsl_poly_complex_workspace_alloc(6), gsl_poly_complex_workspace_free);
+using namespace earthxpert;
+
+TEST(gsl, poly_root) {
+  UPGslPolyComplexWorkspace w(gsl_poly_complex_workspace_alloc(6));
 
   /* coefficients of P(x) =  -1 + x^5  */
   double z[10];
