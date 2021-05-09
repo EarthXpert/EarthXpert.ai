@@ -22,7 +22,7 @@ ${TESTS_BIN_DIR};$ENV{PATH}")
     PROPERTIES ENVIRONMENT "${TESTS_SENSORMODEL_PATH}")
 endif()
 
-if(EARTHXPERT_INSTALL_TESTS_CPPUNIT)
+if(EXAI_INSTALL_TESTS_CPPUNIT)
   exai_install_test(rationalmodel_perf_tests)  #CubeS2G #CalcJocobianA, CalcJacobianNc
   exai_install_test(stereomodel_perf_tests)
 endif()

@@ -13,6 +13,6 @@ if(WIN32)
   set_tests_properties(ceres_tests PROPERTIES ENVIRONMENT "${TESTS_CERES_PATH}")
 endif()
 
-if(EARTHXPERT_INSTALL_TESTS_3RDPARTY)
+if(EXAI_INSTALL_TESTS_3RDPARTY)
   exai_install_test(ceres_tests)
 endif()

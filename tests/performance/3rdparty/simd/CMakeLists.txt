@@ -11,6 +11,6 @@ if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
   set_tests_properties(simd_perf_tests PROPERTIES ENVIRONMENT "${TESTS_SIMD_PATH}")
 endif()
 
-if(EARTHXPERT_INSTALL_TESTS_CPPUNIT)
+if(EXAI_INSTALL_TESTS_CPPUNIT)
   exai_install_test(simd_perf_tests)
 endif()

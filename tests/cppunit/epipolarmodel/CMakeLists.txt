@@ -22,7 +22,7 @@ ${TESTS_BIN_DIR};$ENV{PATH}")
     PROPERTIES ENVIRONMENT "${TESTS_EPIMODEL_PATH}")
 endif()
 
-if(EARTHXPERT_INSTALL_TESTS_CPPUNIT)
+if(EXAI_INSTALL_TESTS_CPPUNIT)
   exai_install_test(epipolarmodel_tests)
   exai_install_test(epipolarstereofactory_tests)
 endif()

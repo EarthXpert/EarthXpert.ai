@@ -11,6 +11,6 @@ if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
   set_tests_properties(ceres_perf_tests PROPERTIES ENVIRONMENT "${TESTS_CERES_PATH}")
 endif()
 
-if(EARTHXPERT_INSTALL_TESTS_CPPUNIT)
+if(EXAI_INSTALL_TESTS_CPPUNIT)
   exai_install_test(ceres_perf_tests)
 endif()

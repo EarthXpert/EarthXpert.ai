@@ -15,6 +15,6 @@ ${TESTS_BIN_DIR};$ENV{PATH}")
   set_tests_properties(opencv_tests PROPERTIES ENVIRONMENT "${TESTS_OPENCV_PATH}")
 endif()
 
-if(EARTHXPERT_INSTALL_TESTS_3RDPARTY)
+if(EXAI_INSTALL_TESTS_3RDPARTY)
   exai_install_test(opencv_tests)
 endif()

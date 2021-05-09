@@ -13,6 +13,6 @@ ${GTEST_BIN_DIR};${proj_BIN_DIR};${TESTS_BIN_DIR};$ENV{PATH}")
   set_tests_properties(proj_tests PROPERTIES ENVIRONMENT "${TESTS_PROJ_PATH}")
 endif()
 
-if(EARTHXPERT_INSTALL_TESTS_3RDPARTY)
+if(EXAI_INSTALL_TESTS_3RDPARTY)
   exai_install_test(proj_tests)
 endif()

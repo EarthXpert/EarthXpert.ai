@@ -15,6 +15,6 @@ $ENV{PATH}")
     PROPERTIES ENVIRONMENT "${TESTS_MARSHALLER_PATH}")
 endif()
 
-if(EARTHXPERT_INSTALL_TESTS_CPPUNIT)
+if(EXAI_INSTALL_TESTS_CPPUNIT)
   exai_install_test(marshaller_tests)
 endif()
