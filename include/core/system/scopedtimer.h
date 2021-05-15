@@ -10,6 +10,9 @@
 namespace schrono = std::chrono;
 
 namespace earthxpert {
+/**
+ *  
+ */  
 class EXCORE_EXPORTS ScopedTimer {
 public:
   using ClockType = schrono::steady_clock;

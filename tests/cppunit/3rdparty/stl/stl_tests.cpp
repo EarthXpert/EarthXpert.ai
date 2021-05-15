@@ -9,6 +9,8 @@
 #include <iostream>
 #include <string>
 
+using namespace earthxpert;
+
 void CreateFiles(const std::string& path, int numFiles);
 
 TEST(stl, BitVector) {

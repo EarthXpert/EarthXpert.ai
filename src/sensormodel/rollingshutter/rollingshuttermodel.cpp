@@ -129,3 +129,7 @@ bool RollingShutterModel::EqualTo(const ISensorModel &rhs) const {
 
   return operator==(*rsModel);
 }
+
+void RollingShutterModel::BuildCubeG2S() {
+
+}

@@ -143,8 +143,7 @@ private:
   std::shared_ptr<SatelliteDP>
       mSatelliteDP{}; // distortion parameters defining external effects
 
-  std::shared_ptr<ScannerEPCorr>
-      mScannerEPCorr{}; // ephemeris & attitude corrections
+  std::shared_ptr<ScannerEPCorr> mScannerEPCorr{}; // ephemeris & attitude corrections
 
   bool EqualTo(const ISensorModel &rhs) const override;
 
@@ -154,6 +153,8 @@ private:
   std::shared_ptr<ScannerEP>
       mFusedScannerEP; // extrinsic parameters combining original extrinsic
                        // parameters and their corrections
+
+  void BuildCubeG2S();
 };
 
 using AirPushbroomModel = PushbroomModel<AircraftPolicy>;
