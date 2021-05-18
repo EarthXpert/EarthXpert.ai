@@ -32,6 +32,13 @@ public:
     eModelType = ModelType::eMT_FRAME
   };
 
+  // Acquisition platform
+  enum CraftType {
+    eCT_AERIAL,     // aircraft, UAV
+    eCT_DOMESTIC,   // near-range, robot
+    eCT_SPACE       // spacecraft, satellite
+  };
+
   // Optical axis direction
   enum OpticalDir {
     eOD_OBLIQUE,   // oblique
