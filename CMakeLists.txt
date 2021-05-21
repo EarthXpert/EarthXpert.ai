@@ -396,7 +396,7 @@ if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
     
     set(zlib_ROOT "${EX_THIRD_PARTY}/zlib_1.2.11s")
     set(zlib_INCLUDE_DIR "${zlib_ROOT}/include")
-    set(zlib_LIBRARY_DIR "${zlib_ROOT}/lib/${CDEGREL}")
+    set(zlib_LIBRARY_DIR "${zlib_ROOT}/lib")  #/${CDEGREL}
     set(zlib_LIBRARIES debug "${zlib_LIBRARY_DIR}/zlibd.lib"
                        optimized "${zlib_LIBRARY_DIR}/zlib.lib")
   else()

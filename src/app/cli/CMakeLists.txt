@@ -25,6 +25,11 @@ add_cli_executable(exgeoinfo
   ITEMS ex3rdparty core dataio
         Boost::filesystem Boost::program_options
         ${GDAL_LIBRARIES} ${geotrans_LIBRARIES} ${GETTEXT_LIBRARY})
+add_cli_executable(exlas2gts 
+  SRCS "las2gts.cpp"
+  ITEMS ex3rdparty core dataio
+        Boost::filesystem Boost::program_options
+        ${GDAL_LIBRARIES} ${GTS_LIBRARIES} ${LASLIB_LIBRARY})
 add_cli_executable(exortho 
   SRCS "ortho.cpp"
   ITEMS ex3rdparty core dataio marshaller ortho pfexai sensormodel
@@ -46,6 +51,7 @@ exai_install_target(exdensematch)
 exai_install_target(exepipolar)
 exai_install_target(exgdal)
 exai_install_target(exgeoinfo)
+exai_install_target(exlas2gts)
 exai_install_target(exortho)
 exai_install_target(expdal)
 exai_install_target(exsparsematch)
