@@ -7,6 +7,7 @@
 #include <boost/format.hpp>
 #include <array>
 #include <cassert>
+#include <cstdio>
 #include <iostream>
 #include <omp.h>
 
@@ -117,10 +118,10 @@ int main(int argc, char** argv) {
   if (checkDelaunay && gts_delaunay_check(surface))
     std::cerr << "delaunay: triangulation is not Delaunay\n";
 
-  const std::string gtsFile("D:\\home\\workspace\\TestData\\PointClouds\\points_small.gts");
-  FILE* fp = fopen (gtsFile.c_str(), "wt");
+  const std::string gtsFile("D:\\home\\workspace\\TestData\\PointClouds\\TIN\\points_small.gts");
+  FILE* fp = fopen(gtsFile.c_str(), "wt");
   gts_surface_write(surface, fp);   // write triangulation
-  fclose (fp);
+  fclose(fp);
 
   return 0;
 }
