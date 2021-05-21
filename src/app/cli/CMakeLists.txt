@@ -1,5 +1,7 @@
 project(cli CXX)
 
+add_definitions(-DNATIVE_WIN32)
+
 add_cli_executable(exai 
   SRCS "exai.cpp"
   ITEMS ex3rdparty core dataio epipolar epipolarmodel marshaller pfexai

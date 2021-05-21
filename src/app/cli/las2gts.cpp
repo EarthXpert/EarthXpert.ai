@@ -58,14 +58,11 @@ int main(int argc, char** argv) {
   }
 
   // create triangle enclosing all the vertices
-  GSList * list = NULL;
-  for (guint i = 0; i < vertices->len; i++)
+  GSList* list = NULL;
+  for (guint i = 0; i < vertices->len; ++i)
     list = g_slist_prepend(list, g_ptr_array_index(vertices, i));
   GtsTriangle* t = gts_triangle_enclosing(gts_triangle_class(), list, 100.);
   g_slist_free(list);
-
-  GtsVertex *v1, *v2, *v3;
-  gts_triangle_vertices (t, &v1, &v2, &v3);
 
   // create surface with one face: the enclosing triangle 
   GtsSurface* surface = gts_surface_new(gts_surface_class(),
@@ -74,22 +71,23 @@ int main(int argc, char** argv) {
       gts_face_class(), t->e1, t->e2, t->e3));
 
   // add vertices 
-  for (guint i = 0; i < vertices->len; i++) {
-    GtsVertex* v1 = (GtsVertex*)g_ptr_array_index(vertices, i);
-    GtsVertex* v = gts_delaunay_add_vertex(surface, v1, nullptr);
-    assert(v != v1);
-
+  for (guint i = 0; i < vertices->len; ++i) {
+    GtsVertex* v0 = (GtsVertex*)g_ptr_array_index(vertices, i);
+    GtsVertex* v = gts_delaunay_add_vertex(surface, v0, nullptr);
     if (v) 
-      gts_vertex_replace(v1, v);
+      gts_vertex_replace(v0, v);
   }
   g_ptr_array_free(vertices, TRUE);
 
   // destroy enclosing triangle 
-  gts_allow_floating_vertices = TRUE;
+  GtsVertex *v1, *v2, *v3;
+  gts_triangle_vertices (t, &v1, &v2, &v3);
+
+  //gts_allow_floating_vertices = TRUE;
   gts_object_destroy(GTS_OBJECT(v1));
   gts_object_destroy(GTS_OBJECT(v2));
   gts_object_destroy(GTS_OBJECT(v3));
-  gts_allow_floating_vertices = FALSE;
+  //gts_allow_floating_vertices = FALSE;
 
   if (!keepHull)
     gts_delaunay_remove_hull(surface);
@@ -100,13 +98,13 @@ int main(int argc, char** argv) {
   if (conform) {
     guint encroachedNumber = gts_delaunay_conform(surface, steiner_max, 
                     (GtsEncroachFunc)gts_vertex_encroaches_edge, nullptr);
-    if (0 == encroachedNumber && refine) {
+    if (refine && 0 == encroachedNumber) {
       gpointer data[2] = {&quality, &area};
       guint unrefinedNumber = gts_delaunay_refine(surface, steiner_max,
       			     (GtsEncroachFunc)gts_vertex_encroaches_edge, nullptr,
-			         (GtsKeyFunc)triangle_cost, data);
+			           (GtsKeyFunc)triangle_cost, data);
       if (verbose && unrefinedNumber > 0)
-	    std::cerr << "delaunay: ran out of Steiner points during refinement\n";
+	      std::cerr << "delaunay: ran out of Steiner points during refinement\n";
     }
     else if (verbose && encroachedNumber > 0)
       std::cerr << "delaunay: ran out of Steiner points during conforming\n";
