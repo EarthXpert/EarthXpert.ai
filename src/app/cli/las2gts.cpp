@@ -58,35 +58,36 @@ int main(int argc, char** argv) {
   }
 
   // create triangle enclosing all the vertices
-  GSList* list = NULL;
+  GSList* list{};
   for (guint i = 0; i < vertices->len; ++i)
     list = g_slist_prepend(list, g_ptr_array_index(vertices, i));
+
   GtsTriangle* t = gts_triangle_enclosing(gts_triangle_class(), list, 100.);
   g_slist_free(list);
 
   // create surface with one face: the enclosing triangle 
   GtsSurface* surface = gts_surface_new(gts_surface_class(),
-  			     gts_face_class(), gts_edge_class (), gts_vertex_class());
+  			     gts_face_class(), gts_edge_class(), gts_vertex_class());
   gts_surface_add_face(surface, gts_face_new(
       gts_face_class(), t->e1, t->e2, t->e3));
 
   // add vertices 
   for (guint i = 0; i < vertices->len; ++i) {
-    GtsVertex* v0 = (GtsVertex*)g_ptr_array_index(vertices, i);
-    GtsVertex* v = gts_delaunay_add_vertex(surface, v0, nullptr);
-    if (v) 
-      gts_vertex_replace(v0, v);
+    GtsVertex* v = (GtsVertex*)g_ptr_array_index(vertices, i);
+    GtsVertex* v0 = gts_delaunay_add_vertex(surface, v, nullptr);
+    if (v0) 
+      gts_vertex_replace(v, v0);
   }
   g_ptr_array_free(vertices, TRUE);
 
   // destroy enclosing triangle 
-  GtsVertex *v1, *v2, *v3;
-  gts_triangle_vertices (t, &v1, &v2, &v3);
+  GtsVertex* va[3];
+  gts_triangle_vertices(t, &va[0], &va[1], &va[2]);
 
   //gts_allow_floating_vertices = TRUE;
-  gts_object_destroy(GTS_OBJECT(v1));
-  gts_object_destroy(GTS_OBJECT(v2));
-  gts_object_destroy(GTS_OBJECT(v3));
+  gts_object_destroy(GTS_OBJECT(va[0]));
+  gts_object_destroy(GTS_OBJECT(va[1]));
+  gts_object_destroy(GTS_OBJECT(va[2]));
   //gts_allow_floating_vertices = FALSE;
 
   if (!keepHull)
@@ -116,7 +117,7 @@ int main(int argc, char** argv) {
   if (checkDelaunay && gts_delaunay_check(surface))
     std::cerr << "delaunay: triangulation is not Delaunay\n";
 
-  const std::string gtsFile("D:\\home\\workspace\\TestData\\PointClouds\\TIN\\points_small.gts");
+  const std::string gtsFile(argv[2]);
   FILE* fp = fopen(gtsFile.c_str(), "wt");
   gts_surface_write(surface, fp);   // write triangulation
   fclose(fp);
