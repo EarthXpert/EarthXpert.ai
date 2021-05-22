@@ -10,7 +10,7 @@ set(epipolar_srcs
   "./epipolartask.cpp"
   "./stereomategenerator.cpp")
 set(epipolar_items ex3rdparty core dataio frameworks sensormodel epipolarmodel marshaller 
-  ${GDAL_LIBRARIES} ${geotrans_LIBRARIES} ${GETTEXT_LIBRARY} ${OpenCL_LIBS})
+  ${GDAL_LIBRARIES} ${geotrans_LIBRARIES} ${OpenCL_LIBS})
 exai_add_library(epipolar "api"
   SRCS ${epipolar_srcs}
   ITEMS ${epipolar_items})

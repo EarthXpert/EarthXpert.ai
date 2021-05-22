@@ -6,7 +6,7 @@ set(colorbal_srcs
   "./colorbal.cpp"
   "./colorbalqc.cpp")
 set(colorbal_items ex3rdparty dataio marshaller 
-  ${GDAL_LIBRARIES} ${GETTEXT_LIBRARY} ${OpenCL_LIBS} ${OpenCV_LIBS})
+  ${GDAL_LIBRARIES} ${OpenCL_LIBS} ${OpenCV_LIBS})
 exai_add_library(colorbal "api"
   SRCS ${colorbal_srcs}
   ITEMS ${colorbal_items})

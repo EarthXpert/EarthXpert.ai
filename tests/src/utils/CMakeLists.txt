@@ -7,7 +7,7 @@ set(testutils_items ex3rdparty blockadjust core dataio epipolar epipolarmodel ex
   imageproc marshaller pcproc sensormodel sfm
   Boost::boost Boost::filesystem Boost::iostreams
   ${CERES_LIBRARY} ${CGAL_LIBRARIES} ${GDAL_LIBRARIES} ${geotrans_LIBRARIES}
-  ${GETTEXT_LIBRARY} ${LASLIB_LIBRARY} ${OpenCV_LIBS})
+  ${LASLIB_LIBRARY} ${OpenCV_LIBS})
 exai_add_library(testutils "tests"
   SRCS ${testutils_srcs}
   ITEMS ${testutils_items})

@@ -8,7 +8,7 @@ set(frameworks_srcs
   "pipeline/tileslayout.cpp"
   "utils/utils.cpp")
 set(frameworks_items ex3rdparty core  
-  Boost::boost ${GDAL_LIBRARIES} ${GETTEXT_LIBRARY} 
+  Boost::boost ${GDAL_LIBRARIES} 
   ${OpenCV_LIBS})
 exai_add_library(frameworks "api"
   SRCS ${frameworks_srcs}

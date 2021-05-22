@@ -12,7 +12,7 @@ set(pfexai_srcs
 set(pfexai_items ex3rdparty blockadjust colorbal core dataio epipolar 
   epipolarmodel exdem exproject exutils imageproc ortho pcproc pfutils sensormodel sfm
   Boost::boost Boost::filesystem Boost::program_options ${CERES_LIBRARY} 
-  ${CGAL_LIBRARIES} ${GDAL_LIBRARIES} ${geotrans_LIBRARIES} ${GETTEXT_LIBRARY} 
+  ${CGAL_LIBRARIES} ${GDAL_LIBRARIES} ${geotrans_LIBRARIES} 
   glog::glog ${ICONV_LIBRARIES} ${LASLIB_LIBRARY} ${LIBXML2_LIBRARIES}
   ${OpenCV_LIBS} ${PDAL_LIBRARIES})
 exai_add_library(pfexai "platform"

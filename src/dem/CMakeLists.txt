@@ -17,7 +17,7 @@ set(exdem_srcs
 set(exdem_items ex3rdparty core dataio
   Boost::boost Boost::filesystem Boost::iostreams
   ${CERES_LIBRARY} ${CGAL_LIBRARIES} ${GDAL_LIBRARIES} ${geotrans_LIBRARIES}
-  ${GETTEXT_LIBRARY} ${LASLIB_LIBRARY} ${OpenCV_LIBS})
+  ${LASLIB_LIBRARY} ${OpenCV_LIBS})
 exai_add_library(exdem "api"
   SRCS ${exdem_srcs}
   ITEMS ${exdem_items})

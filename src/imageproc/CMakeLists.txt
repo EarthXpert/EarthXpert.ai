@@ -11,7 +11,7 @@ set(imageproc_srcs
   "filter/atcomp.cpp"
   "filter/imagefilter.cpp")
 set(imageproc_items ex3rdparty core  
-        ${GDAL_LIBRARIES} ${GETTEXT_LIBRARY} ${OpenCL_LIBS} ${OpenCV_LIBS})
+        ${GDAL_LIBRARIES} ${OpenCL_LIBS} ${OpenCV_LIBS})
 exai_add_library(imageproc "api"
   SRCS ${imageproc_srcs}
   ITEMS ${imageproc_items})

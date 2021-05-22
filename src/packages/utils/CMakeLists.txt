@@ -6,7 +6,7 @@ set(pfutils_srcs
   "./pfutils.cpp")
 set(_items ex3rdparty core dataio epipolar epipolarmodel exdem exutils sensormodel sfm
   Boost::boost Boost::filesystem ${CERES_LIBRARY} ${CGAL_LIBRARIES} 
-  ${GDAL_LIBRARIES} ${geotrans_LIBRARIES} ${GETTEXT_LIBRARY} glog::glog 
+  ${GDAL_LIBRARIES} ${geotrans_LIBRARIES} glog::glog 
   ${LASLIB_LIBRARY} ${OpenCV_LIBS} ${PDAL_LIBRARIES} ${zlib_LIBRARIES})
 exai_add_library(pfutils "platform"
   SRCS ${pfutils_srcs}

@@ -71,7 +71,7 @@ set(core_srcs
 set(core_items ex3rdparty
   Boost::boost Boost::filesystem Boost::iostreams
   ${CERES_LIBRARY} ${CGAL_LIBRARIES} ${CUDA_LIBRARIES} ${GDAL_LIBRARIES} 
-  ${geotrans_LIBRARIES} ${GETTEXT_LIBRARY} glog::glog ${LASLIB_LIBRARY} 
+  ${geotrans_LIBRARIES} glog::glog ${LASLIB_LIBRARY} 
   libInterpolate::Interpolate
   ${MPFR4_LIBRARIES} ${MPIR_LIBRARIES} ${nsimd_LIBRARIES} ${OpenCL_LIBRARIES} 
   ${OpenCV_LIBS}  ${proj_LIBRARIES} ${Simd_LIBRARIES} ${TBB_LIBRARIES})

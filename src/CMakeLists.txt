@@ -32,7 +32,7 @@ function(exai_add_library name libs_dir)
     PROPERTIES
       CXX_STANDARD 17
       DEBUG_POSTFIX "${EXAI_DEBUG_POSTFIX}")
-  target_link_libraries(${name} ${EX_ITEMS} ${vld_LIBRARIES})
+  target_link_libraries(${name} ${EX_ITEMS} ${GETTEXT_LIBRARY} ${vld_LIBRARIES})
   
   if(libs_dir)
     set_property(TARGET ${name} PROPERTY FOLDER ${libs_dir})
@@ -53,7 +53,7 @@ function(exai_add_executable name exec_dir)
     PROPERTIES
       CXX_STANDARD 17
       DEBUG_POSTFIX "${EXAI_DEBUG_POSTFIX}")
-  target_link_libraries(${name} ${EX_ITEMS} ${vld_LIBRARIES})
+  target_link_libraries(${name} ${EX_ITEMS} ${GETTEXT_LIBRARY} ${vld_LIBRARIES})
   
   if(exec_dir)
     set_property(TARGET ${name} PROPERTY FOLDER ${exec_dir})
