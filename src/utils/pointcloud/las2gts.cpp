@@ -3,10 +3,11 @@
  * -----------------------------------------------------------------------------
  */
 #include "utils/pcutils.h"
+#include "3rdparty/gts/exgts.h"
+#include "3rdparty/opencv/exopencv.h"
 #include "core/system/clock.h"
 #include "io/pointcloud/pointcloudreader.h"
 
-#include <gts.h>
 #include <boost/format.hpp>
 #include <array>
 #include <cassert>
@@ -28,6 +29,13 @@ namespace detail {
 }
 
 using fgt = FieldGroup;
+
+/**
+ *  \brief pointcloud format conversion from .las to .gts
+ */
+void Las2Gts(const std::string& lasFile, 
+  const std::string& gtsFile, const CvOptions& cvOpt) {
+}
 
 /**
  *  \brief pointcloud format conversion from .las to .gts

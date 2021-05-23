@@ -31,9 +31,9 @@ function(exai_install_test name)
   endif()
 endfunction()
 
-option(EXAI_INSTALL_TESTS_3RDPARTY "install 3rd-party tests" OFF)
-option(EXAI_INSTALL_TESTS_CPPUNIT "install C++ unit tests" OFF)
-option(EXAI_INSTALL_TESTS_PYUNIT "install python unit tests" OFF)
+option(EXAI_INSTALL_TESTS_3RDPARTY "install 3rd-party tests" ON)
+option(EXAI_INSTALL_TESTS_CPPUNIT "install C++ unit tests" ON)
+option(EXAI_INSTALL_TESTS_PYUNIT "install python unit tests" ON)
 
 add_compile_definitions(BOOST_LIB_TOOLSET="vc142")
 add_definitions(-D_USE_MATH_DEFINES -DBOOST_ALL_DYN_LINK)

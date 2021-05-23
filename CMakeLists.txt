@@ -740,7 +740,7 @@ endif()
 
 install(DIRECTORY cmake DESTINATION sdk/lib)
 
-option(EXAI_INSTALL_PACKAGES_3RDPARTY "install 3rdparty packages" OFF)
+option(EXAI_INSTALL_PACKAGES_3RDPARTY "install 3rdparty packages" ON)
 if(EXAI_INSTALL_PACKAGES_3RDPARTY)
 endif()
 
