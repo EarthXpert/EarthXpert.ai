@@ -10,7 +10,9 @@ int main(int argc, char** argv) {
   const std::string lasFile(argv[1]);
   const std::string gtsFile(argv[2]);
 
-  GtsOptions gtsOpt;
-  Las2Gts(lasFile, gtsFile, gtsOpt);
+  //GtsOptions gtsOpt;
+  //Las2Gts(lasFile, gtsFile, gtsOpt);
+  CvOptions cvOpt;
+  Las2Gts(lasFile, gtsFile, cvOpt);
   return 0;
 }

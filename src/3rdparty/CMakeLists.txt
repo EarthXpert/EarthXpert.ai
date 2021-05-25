@@ -6,7 +6,7 @@ message(STATUS "exiv2_LIBRARIES: ${exiv2_LIBRARIES}")
 message(STATUS "GDAL_LIBRARIES: ${GDAL_LIBRARIES}")
 message(STATUS "GETTEXT_LIBRARY: ${GETTEXT_LIBRARY}")
 message(STATUS "geotiff_LIBRARIES: ${geotiff_LIBRARIES}")
-message(STATUS "glib_LIBRARIES: ${glib_LIBRARIES}")
+message(STATUS "GLIB_LIBRARIES: ${GLIB_LIBRARIES}")
 message(STATUS "gsl_LIBRARIES: ${gsl_LIBRARIES}")
 message(STATUS "GTEST_BOTH_LIBRARIES: ${GTEST_BOTH_LIBRARIES}")
 message(STATUS "GTS_LIBRARIES: ${GTS_LIBRARIES}")
@@ -62,6 +62,8 @@ set(ex3rdparty_srcs
   "numcpp/exnumcpp.cpp"
   "opencl/exopencl.cpp"
   "opencv/exopencv.cpp"
+  "opencv/delaunaytri2d.cpp"
+  "openimageio/exopenimageio.cpp"
   "pdal/expdal.cpp"
   "processpool/exprocesspool.cpp"
   "processpool/processpool.cpp"

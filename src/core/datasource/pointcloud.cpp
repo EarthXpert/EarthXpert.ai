@@ -241,7 +241,7 @@ SpatialTileD Pointcloud::GetBufTile() {
     minXs[tId] = minX;
     maxXs[tId] = maxX;
     minYs[tId] = minY;
-    maxXs[tId] = maxX;
+    maxYs[tId] = maxY;
   }
 
   // calculate extent of all points

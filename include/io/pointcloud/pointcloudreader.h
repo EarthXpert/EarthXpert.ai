@@ -79,6 +79,8 @@ public:
    */
   int64 GetPointCount() const noexcept override { return mFilePointCount; }
 
+  const SpatialTileD& GetBBox2D() const noexcept { return mFileBBox2D; }
+
   /**
    *  \return Return all points in the las file
    */

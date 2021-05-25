@@ -15,8 +15,9 @@ namespace thirdparty {
  *
  *  \param [in] mask source mask 
  */
-void remap(InputArray src, InputArray mask, OutputArray dst, InputArray map1, InputArray map2,
-  const int interpolation, const int borderMode, const Scalar& borderValue) {
+void remap(InputArray src, InputArray mask, OutputArray dst, 
+  InputArray map1, InputArray map2, const int interpolation, 
+  const int borderMode, const Scalar& borderValue) {
 
 }
 }

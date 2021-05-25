@@ -4,13 +4,14 @@
  */
 #include "utils/pcutils.h"
 #include "3rdparty/gts/exgts.h"
-#include "3rdparty/opencv/exopencv.h"
+#include "3rdparty/opencv/delaunaytri2d.h"
 #include "core/system/clock.h"
 #include "io/pointcloud/pointcloudreader.h"
 
 #include <boost/format.hpp>
 #include <array>
 #include <cassert>
+#include <cmath>
 #include <cstdio>
 #include <iostream>
 
@@ -35,6 +36,43 @@ using fgt = FieldGroup;
  */
 void Las2Gts(const std::string& lasFile, 
   const std::string& gtsFile, const CvOptions& cvOpt) {
+  PointcloudReader reader(lasFile, { fgt::kBITXYZ });
+  auto pc = reader.ReadPointcloud();
+  auto bbox = pc->GetBufTile();
+
+  WallClock wclock;
+
+  cv::Rect rect{int(bbox.minX)-1, int(bbox.minY)-1, 
+    int(ceil(bbox.width))+2, int(ceil(bbox.height))+2};
+  DelaunayTri2d dt(rect);
+
+  for (size_t j = 0; j < pc->GetPointCount(); ++j) {
+    const auto xyz = pc->GetField<XYZF>(j);
+    //std::cout << xyz << std::endl;
+    Point2f pt{xyz.x, xyz.y};
+    dt.insert(pt);
+  }
+
+  auto& vertices = dt.GetVertices();
+  auto edges = dt.GetEdges();
+  auto tris = dt.GetTriangles();
+
+  std::cerr << "delaunay: ellapsed time (s): " << wclock.TimeSinceStart() << std::endl;
+
+  std::ofstream ofs(gtsFile.c_str());
+  ofs << std::fixed;
+  ofs << vertices.size() << ' ' << edges.size() << ' ' << tris.size() 
+      << " GtsSurface GtsFace GtsEdge GtsVertex\n";
+
+  for (auto& v : vertices) {
+    ofs << v.pt.x << ' ' << v.pt.y << " 0.0\n";
+  }
+  for (auto& e : edges) {
+    ofs << e.v0 << ' ' << e.v1 << "\n";
+  }
+  for (auto& t : tris) {
+    ofs << t.e0 << ' ' << t.e1 << ' ' << t.e2 << "\n";
+  }
 }
 
 /**
@@ -48,6 +86,8 @@ void Las2Gts(const std::string& lasFile,
   PointcloudReader reader(lasFile, { fgt::kBITXYZ });
   const size_t filePointCount = reader.GetPointCount();
 
+  WallClock wclock;
+
   GPtrArray* vertices = g_ptr_array_new();
   g_ptr_array_set_size(vertices, filePointCount);
 
@@ -60,8 +100,6 @@ void Las2Gts(const std::string& lasFile,
         gts_vertex_new(gts_vertex_class(), xyz.x, xyz.y, xyz.z);
     }
   }
-
-  WallClock wclock;
 
   // create triangle enclosing all the vertices
   GSList* list{};

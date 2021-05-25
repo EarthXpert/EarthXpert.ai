@@ -315,8 +315,16 @@ if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
     set(proj_LIBRARIES debug "${proj_LIBRARY_DIR}/proj_d.lib"
                        optimized "${proj_LIBRARY_DIR}/proj.lib")
     
-    set(Protobuf_ROOT "${EX_THIRD_PARTY}/protobuf_3.11.3")
-    set(Protobuf_DIR "${Protobuf_ROOT}/share/protobuf")
+    set(protobuf_ROOT "${EX_THIRD_PARTY}/protobuf_3.11.3")
+    set(protobuf_DIR "${protobuf_ROOT}/share/protobuf")
+    set(Protobuf_INCLUDE_DIRS "${protobuf_ROOT}/include/google")
+    set(Protobuf_LIBRARY_DIR "${protobuf_ROOT}/lib/${CDEGREL}")
+    set(Protobuf_LIBRARIES debug "${Protobuf_LIBRARY_DIR}/libprotobufd.lib"
+                           debug "${Protobuf_LIBRARY_DIR}/libprotobuf-lited.lib"
+                           debug "${Protobuf_LIBRARY_DIR}/libprotocd.lib"
+                           optimized "${Protobuf_LIBRARY_DIR}/libprotobuf.lib"
+                           optimized "${Protobuf_LIBRARY_DIR}/libprotobuf-lite.lib"
+                           optimized "${Protobuf_LIBRARY_DIR}/libprotoc.lib")
     
     set(pybind11_DIR "${EX_THIRD_PARTY}/pybind11_2.5.0/share/cmake/pybind11")
     
@@ -510,7 +518,7 @@ find_package(OpenImageIO CONFIG REQUIRED)
 #find_package(pcre REQUIRED)
 find_package(PDAL CONFIG REQUIRED)
 #find_package(proj CONFIG REQUIRED)
-find_package(Protobuf CONFIG REQUIRED)
+find_package(protobuf CONFIG REQUIRED)
 find_package(pybind11 CONFIG REQUIRED)
 find_package(Qt5 5.11.2 COMPONENTS Core Gui LinguistTools OpenGL Widgets REQUIRED)
 find_package(range-v3 CONFIG REQUIRED)
