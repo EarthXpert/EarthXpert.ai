@@ -17,13 +17,13 @@
 
 namespace earthxpert {
 namespace detail {
-  gdouble triangle_cost(GtsTriangle* t, gpointer* data) {
-    gdouble* min_quality = (gdouble*)data[0];
-    gdouble* max_area = (gdouble*)data[1];
-    gdouble quality = gts_triangle_quality(t);
-    gdouble area = gts_triangle_area(t);
-
-    if (quality < *min_quality || area > *max_area)
+  /**
+   *  \param [in] data [min_quality, max_area]
+   */
+  gdouble triangle_cost(GtsTriangle* t, gdouble* data) {
+    const gdouble quality = gts_triangle_quality(t);
+    const gdouble area = gts_triangle_area(t);
+    if (quality < data[0] || area > data[1])
       return quality;
     return 0.0;
   }
@@ -37,35 +37,40 @@ using fgt = FieldGroup;
 void Las2Gts(const std::string& lasFile, 
   const std::string& gtsFile, const CvOptions& cvOpt) {
   PointcloudReader reader(lasFile, { fgt::kBITXYZ });
+  const size_t filePointCount = reader.GetPointCount();
+
   auto pc = reader.ReadPointcloud();
   auto bbox = pc->GetBufTile();
 
   WallClock wclock;
 
-  cv::Rect rect{int(bbox.minX)-1, int(bbox.minY)-1, 
+  // create rectangle enclosing all the vertices
+  cv::Rect rect{int(bbox.minX)-1, int(bbox.minY)-1,
     int(ceil(bbox.width))+2, int(ceil(bbox.height))+2};
   DelaunayTri2d dt(rect);
 
+  // add vertices into triangulation
   for (size_t j = 0; j < pc->GetPointCount(); ++j) {
     const auto xyz = pc->GetField<XYZF>(j);
     //std::cout << xyz << std::endl;
-    Point2f pt{xyz.x, xyz.y};
-    dt.insert(pt);
+    dt.insert(Point2f{xyz.x, xyz.y});
   }
 
-  auto& vertices = dt.GetVertices();
+  auto vertices = dt.GetVertices();
   auto edges = dt.GetEdges();
   auto tris = dt.GetTriangles();
 
-  std::cerr << "delaunay: ellapsed time (s): " << wclock.TimeSinceStart() << std::endl;
+  std::cerr << "delaunay: triangulated " << filePointCount << " vertices\n"
+            << "          ellapsed time " << wclock.TimeSinceStart() << " s" << std::endl;
 
+  // write triangulation
   std::ofstream ofs(gtsFile.c_str());
   ofs << std::fixed;
   ofs << vertices.size() << ' ' << edges.size() << ' ' << tris.size() 
       << " GtsSurface GtsFace GtsEdge GtsVertex\n";
 
   for (auto& v : vertices) {
-    ofs << v.pt.x << ' ' << v.pt.y << " 0.0\n";
+    ofs << v.x << ' ' << v.y << " 0.0\n";
   }
   for (auto& e : edges) {
     ofs << e.v0 << ' ' << e.v1 << "\n";
@@ -105,7 +110,6 @@ void Las2Gts(const std::string& lasFile,
   GSList* list{};
   for (guint i = 0; i < vertices->len; ++i)
     list = g_slist_prepend(list, g_ptr_array_index(vertices, i));
-
   GtsTriangle* t = gts_triangle_enclosing(gts_triangle_class(), list, 100.);
   g_slist_free(list);
 
@@ -115,7 +119,7 @@ void Las2Gts(const std::string& lasFile,
   gts_surface_add_face(surface, gts_face_new(
     gts_face_class(), t->e1, t->e2, t->e3));
 
-  // add vertices 
+  // add vertices into triangulation
   for (guint i = 0; i < vertices->len; ++i) {
     GtsVertex* v = (GtsVertex*)g_ptr_array_index(vertices, i);
     GtsVertex* v0 = gts_delaunay_add_vertex(surface, v, nullptr);
@@ -127,7 +131,6 @@ void Las2Gts(const std::string& lasFile,
   // destroy enclosing triangle 
   GtsVertex* va[3];
   gts_triangle_vertices(t, &va[0], &va[1], &va[2]);
-
   //gts_allow_floating_vertices = TRUE;
   gts_object_destroy(GTS_OBJECT(va[0]));
   gts_object_destroy(GTS_OBJECT(va[1]));
@@ -141,32 +144,32 @@ void Las2Gts(const std::string& lasFile,
   //  gts_delaunay_remove_holes(surface);
 
   if (gtsOpt.conform) {
-    guint encroachedNumber = gts_delaunay_conform(surface, gtsOpt.steiner_max,
-      (GtsEncroachFunc)gts_vertex_encroaches_edge, nullptr);
+    const guint encroachedNumber = gts_delaunay_conform(surface, 
+      gtsOpt.steiner_max, (GtsEncroachFunc)gts_vertex_encroaches_edge, nullptr);
     if (gtsOpt.refine && 0 == encroachedNumber) {
-      gdouble quality = gtsOpt.quality;
-      gdouble area = gtsOpt.area;
-      gpointer data[2] = { &quality, &area };
-      guint unrefinedNumber = gts_delaunay_refine(surface, gtsOpt.steiner_max,
-        (GtsEncroachFunc)gts_vertex_encroaches_edge, nullptr,
-        (GtsKeyFunc)detail::triangle_cost, data);
-      if (gtsOpt.verbose && unrefinedNumber > 0)
+      gdouble data[2] = {gtsOpt.quality, gtsOpt.area};
+      const guint unrefinedNumber = gts_delaunay_refine(surface, 
+        gtsOpt.steiner_max, (GtsEncroachFunc)gts_vertex_encroaches_edge, 
+        nullptr, (GtsKeyFunc)detail::triangle_cost, data);
+      if (gtsOpt.verbose && 0 < unrefinedNumber)
         std::cerr << "delaunay: ran out of Steiner points during refinement\n";
     }
-    else if (gtsOpt.verbose && encroachedNumber > 0)
+    else if (gtsOpt.verbose && 0 < encroachedNumber)
       std::cerr << "delaunay: ran out of Steiner points during conforming\n";
   }
   
   if (gtsOpt.verbose) {
-    std::cerr << "delaunay: ellapsed time (s): " << wclock.TimeSinceStart() << std::endl;
+    std::cerr << "delaunay: triangulated " << filePointCount << " vertices\n"
+              << "          ellapsed time " << wclock.TimeSinceStart() << " s" << std::endl;
     gts_surface_print_stats(surface, stderr);
   }
 
   if (gtsOpt.checkDelaunay && gts_delaunay_check(surface))
     std::cerr << "delaunay: triangulation is not Delaunay\n";
 
+  // write triangulation
   FILE* fp = fopen(gtsFile.c_str(), "wt");
-  gts_surface_write(surface, fp);   // write triangulation
+  gts_surface_write(surface, fp);   
   fclose(fp);
 }
 }

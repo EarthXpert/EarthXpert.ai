@@ -7,7 +7,25 @@
 using namespace earthxpert;
 using namespace cv;
 
-const std::vector<DTEdge> DelaunayTri2d::GetEdges() const {
+DelaunayTri2d::DelaunayTri2d(const cv::Rect& rect) 
+  : Subdiv2D(rect) {
+}
+
+/**
+ *  each vertex is represented by two coordinates.
+ *
+ *  \return an array of vertices.
+ */
+std::vector<Point2f> DelaunayTri2d::GetVertices() const {
+  return {};
+}
+
+/**
+ *  each edge is represented by two Ids indexed into vertices array.
+ *
+ *  \return an array of edges.
+ */
+std::vector<DTEdge> DelaunayTri2d::GetEdges() const {
   std::vector<DTEdge> edges;
 
   for (size_t i = 4; i < qedges.size(); i++) {
@@ -21,7 +39,12 @@ const std::vector<DTEdge> DelaunayTri2d::GetEdges() const {
   return edges;
 }
 
-const std::vector<DTTriangle> DelaunayTri2d::GetTriangles() const {
+/**
+ *  each triangle is represented by three Ids indexed into edges array.
+ * 
+ *  \return an array of triangles.
+ */
+std::vector<DTTriangle> DelaunayTri2d::GetTriangles() const {
   const Rect2f rect(topLeft.x, topLeft.y,
     bottomRight.x - topLeft.x, bottomRight.y - topLeft.y);
   std::vector<DTTriangle> tris;
@@ -56,4 +79,16 @@ const std::vector<DTTriangle> DelaunayTri2d::GetTriangles() const {
   }
 
   return tris;
+}
+
+/**
+ *  each voronoi polygon is represented by a list of Ids indexed into vertices array.
+ *
+ *  \param [out] voronoi an array of polygons.
+ *  \return an array of voronoi centers.
+ */
+std::vector<int> DelaunayTri2d::GetVoronoi(
+  std::vector<std::vector<int>>& voronoi) const {
+  std::vector<int> centers;
+  return centers;
 }
