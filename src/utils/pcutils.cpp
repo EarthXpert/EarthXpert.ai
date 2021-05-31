@@ -3,9 +3,59 @@
  * -----------------------------------------------------------------------------
  */
 #include "utils/pcutils.h"
+#include "3rdparty/stl/exstl.h"
 #include "core/system/clock.h"
 
 namespace earthxpert {
+namespace detail {
+  // GNU triangulated surface format .gts
+  void WriteGtsFile(const std::string& gtsFile,
+    const Point2f& origin, const std::vector<Point2f>& vertices,
+    const std::vector<DTEdge>& edges, const std::vector<DTTriangle>& tris) {
+    WallClock wclock;
+
+    std::ofstream ofs(gtsFile.c_str());
+    ofs << vertices.size() << ' ' << edges.size() << ' ' << tris.size()
+      << " GtsSurface GtsFace GtsEdge GtsVertex\n";
+    ofs << std::fixed;
+
+    for (auto& v : vertices) {
+      ofs << v.x + origin.x << ' ' << v.y + origin.y << " 0.0\n";
+    }
+    for (auto& e : edges) {
+      ofs << e.v0 + 1 << ' ' << e.v1 + 1 << "\n";
+    }
+    for (auto& t : tris) {
+      ofs << t.t0 + 1 << ' ' << t.t1 + 1 << ' ' << t.t2 + 1 << "\n";
+    }
+
+    std::cerr << "          WriteGtsFile time " << wclock.TimeSinceStart() << " s" << std::endl;
+  }
+
+  // Polygon file format .ply
+  void WritePlyFile(const std::string& plyFile, const Point2f& origin, 
+    const std::vector<Point2f>& vertices, const std::vector<DTTriangle>& tris) {
+    WallClock wclock;
+
+    std::ofstream ofs(plyFile.c_str());
+    ofs << "ply\nformat ascii 1.0\n"
+      << "element vertex " << vertices.size()
+      << "\nproperty float x\nproperty float y\nproperty float z\n"
+      << "element face " << tris.size()
+      << "\nproperty list uchar int vertex_index\nend_header\n";
+    ofs << std::fixed;
+
+    for (auto& v : vertices) {
+      ofs << v.x + origin.x << ' ' << v.y + origin.y << " 0.0\n";
+    }
+    for (auto& t : tris) {
+      ofs << "3 " << t.t0 << ' ' << t.t1 << ' ' << t.t2 << "\n";
+    }
+
+    std::cerr << "          WritePlyFile time " << wclock.TimeSinceStart() << " s" << std::endl;
+  }
+}
+
 /**
  *  \brief pointcloud format conversion from .las to .gts
  */
@@ -14,7 +64,6 @@ void Las2Gts(const std::string& lasFile,
   auto dt = CvDelaunay(lasFile, cvOpt);
 
   WallClock wclock;
-  double ti{};
 
   std::vector<Point2f> vertices;
   std::vector<DTEdge> edges;
@@ -22,31 +71,11 @@ void Las2Gts(const std::string& lasFile,
   dt->GetGtsInfo(vertices, edges, tris);
 
   if (cvOpt.verbose) {
-    ti = wclock.TimeSinceStart();
-    std::cerr << "          GetGtsInfo time " << ti << " s" << std::endl;
+    std::cerr << "          GetGtsInfo time " << wclock.TimeSinceStart() << " s" << std::endl;
   }
-
-  // write triangulation
-  std::ofstream ofs(gtsFile.c_str());
-  ofs << std::fixed;
-  ofs << vertices.size() << ' ' << edges.size() << ' ' << tris.size()
-    << " GtsSurface GtsFace GtsEdge GtsVertex\n";
 
   const auto origin = dt->GetOrigin();
-  for (auto& v : vertices) {
-    ofs << v.x + origin.x << ' ' << v.y + origin.y << " 0.0\n";
-  }
-  for (auto& e : edges) {
-    ofs << e.v0 + 1 << ' ' << e.v1 + 1 << "\n";
-  }
-  for (auto& t : tris) {
-    ofs << t.t0 + 1 << ' ' << t.t1 + 1 << ' ' << t.t2 + 1 << "\n";
-  }
-
-  if (cvOpt.verbose) {
-    ti = wclock.TimeSinceStart() - ti;
-    std::cerr << "          WriteGtsFile time " << ti << " s" << std::endl;
-  }
+  detail::WriteGtsFile(gtsFile, origin, vertices, edges, tris);
 }
 
 /**
@@ -57,39 +86,17 @@ void Las2Ply(const std::string& lasFile,
   auto dt = CvDelaunay(lasFile, cvOpt);
 
   WallClock wclock;
-  double ti{};
 
   std::vector<Point2f> vertices;
   std::vector<DTTriangle> tris;
   dt->GetPlyInfo(vertices, tris);
 
   if (cvOpt.verbose) {
-    ti = wclock.TimeSinceStart();
-    std::cerr << "          GetPlyInfo time " << ti << " s" << std::endl;
+    std::cerr << "          GetPlyInfo time " << wclock.TimeSinceStart() << " s" << std::endl;
   }
-
-  // write triangulation
-  std::ofstream ofs(plyFile.c_str());
-  ofs << std::fixed;
-  ofs << "ply\nformat ascii 1.0\n"
-    << "element vertex " << vertices.size()
-    << "\nproperty float x\nproperty float y\nproperty float z\n"
-    << "element face " << tris.size()
-    << "\nproperty list uchar int vertex_index\n"
-    << "end_header\n";
 
   const auto origin = dt->GetOrigin();
-  for (auto& v : vertices) {
-    ofs << v.x + origin.x << ' ' << v.y + origin.y << " 0.0\n";
-  }
-  for (auto& t : tris) {
-    ofs << "3 " << t.t0 << ' ' << t.t1 << ' ' << t.t2 << "\n";
-  }
-
-  if (cvOpt.verbose) {
-    ti = wclock.TimeSinceStart() - ti;
-    std::cerr << "          WritePlyFile time " << ti << " s" << std::endl;
-  }
+  detail::WritePlyFile(plyFile, origin, vertices, tris);
 }
 
 /**
@@ -101,14 +108,12 @@ void Las2Gts(const std::string& lasFile,
   
   WallClock wclock;
 
-  // write triangulation
-  FILE* fp = fopen(gtsFile.c_str(), "wt");
-  gts_surface_write(surface, fp);
-  fclose(fp);
+  // WriteGtsFile
+  UPFile fp{fopen(gtsFile.c_str(), "wt"), fclose};
+  gts_surface_write(surface, fp.get());
 
   if (gtsOpt.verbose) {
-    double ti = wclock.TimeSinceStart();
-    std::cerr << "          WriteGtsFile time " << ti << " s" << std::endl;
+    std::cerr << "          WriteGtsFile time " << wclock.TimeSinceStart() << " s" << std::endl;
   }
 }
 }

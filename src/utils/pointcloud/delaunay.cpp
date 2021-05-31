@@ -28,6 +28,9 @@ namespace detail {
 }
 using fgt = FieldGroup;
 
+/**
+ *  \brief Delaunay triangualtion by OpenCV lib.
+ */
 std::unique_ptr<CvDelaunay2d>
 CvDelaunay(const std::string& lasFile, const CvOptions& cvOpt) {
   PointcloudReader reader(lasFile, { fgt::kBITXYZ });
@@ -52,12 +55,16 @@ CvDelaunay(const std::string& lasFile, const CvOptions& cvOpt) {
   pc.reset();
 
   if (cvOpt.verbose) {
-    std::cerr << "delaunay: triangulated " << count << " vertices\n"
-      << "          ellapsed time " << wclock.TimeSinceStart() << " s" << std::endl;
+    std::cerr << "delaunay: " << count << " vertices\n"
+      << "          Triangulation time " << wclock.TimeSinceStart() << " s" << std::endl;
   }
   return dt;
 }
 
+/**
+ *  \brief Delaunay triangualtion by GNU Triangulated Surface lib.
+ *  \todo memory management by GTS
+ */
 GtsSurface* GtsDelaunay(const std::string& lasFile, const GtsOptions& gtsOpt) {
   PointcloudReader reader(lasFile, { fgt::kBITXYZ });
   auto pc = reader.ReadPointcloud();
@@ -128,8 +135,8 @@ GtsSurface* GtsDelaunay(const std::string& lasFile, const GtsOptions& gtsOpt) {
   }
 
   if (gtsOpt.verbose) {
-    std::cerr << "delaunay: triangulated " << count << " vertices\n"
-      << "          ellapsed time " << wclock.TimeSinceStart() << " s" << std::endl;
+    std::cerr << "delaunay: " << count << " vertices\n"
+      << "          Triangulation time " << wclock.TimeSinceStart() << " s" << std::endl;
     gts_surface_print_stats(surface, stderr);
   }
 

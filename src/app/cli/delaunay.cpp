@@ -15,7 +15,7 @@ void AddOptions(bpo::options_description& optDesc) {
   optDesc.add_options()
     ("backend", bpo::value<std::string>()->required(), "engine: cv|gts")
     ("lasf", bpo::value<std::string>()->required(), ".las file")
-    ("gtsf", bpo::value<std::string>()->required(), ".gts file")
+    ("tinf", bpo::value<std::string>()->required(), ".gts/.ply file")
     ("memsize,m", bpo::value<int>()->default_value(4000), "memory size in MB")
     ("help,h", "Usage help");
 }
@@ -29,7 +29,7 @@ void AddOptions(bpo::options_description& optDesc) {
  *  usage:  las2gts.exe [options]
  *      --backend     <cv|gnu>              // "cv"
  *      --lasf        [path_of_las_file]    // ".las"
- *      --gtsf        [path_of_gts_file]    // ".gts"
+ *      --tinf        [path_of_gts_file]    // ".gts", ".ply"
  *      --memsize     [memory_size_in_MB]   // 4000
  *
  *  examples:
@@ -59,20 +59,24 @@ int main(int argc, char** argv) {
   DelaunayOptions dlOpt;
   dlOpt.backend = vm["backend"].as<std::string>();
   dlOpt.lasf = vm["lasf"].as<std::string>();
-  dlOpt.tinf = vm["gtsf"].as<std::string>();
+  dlOpt.tinf = vm["tinf"].as<std::string>();
   dlOpt.memSize = size_t(vm["memsize"].as<int>()) * 1024 * 1024;  // [unit: bytes]
 
-  if (dlOpt.tinf.empty()) {
-    fs::path filePath(dlOpt.lasf);
-    dlOpt.tinf = filePath.parent_path().string() + 
-      utils::PathReplaceExt(dlOpt.lasf, ".ply");
-  }
+  fs::path filePath(dlOpt.lasf);
 
   if (std::string::npos != dlOpt.backend.find("cv")) {
+    if (dlOpt.tinf.empty()) {
+      dlOpt.tinf = filePath.parent_path().string() +
+        utils::PathReplaceExt(dlOpt.lasf, ".ply");
+    }
     CvOptions cvOpt;
     Las2Ply(dlOpt.lasf, dlOpt.tinf, cvOpt);
   }    // OpenCV Subdiv2D
   else if (std::string::npos != dlOpt.backend.find("gts")) {
+    if (dlOpt.tinf.empty()) {
+      dlOpt.tinf = filePath.parent_path().string() +
+        utils::PathReplaceExt(dlOpt.lasf, ".gts");
+    }
     GtsOptions gtsOpt;
     Las2Gts(dlOpt.lasf, dlOpt.tinf, gtsOpt);
   }    // GNU Triangulated Surface
