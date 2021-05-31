@@ -3,6 +3,7 @@
  * -----------------------------------------------------------------------------
  */
 #include "3rdparty/opencv/delaunay2d.h"
+#include <omp.h>
 
 using namespace earthxpert;
 using namespace cv;
@@ -22,13 +23,15 @@ void CvDelaunay2d::EstimateStatistics() {
  *  each vertex is represented by two coordinates.
  *
  *  \return an array of vertices.
+ *  \todo delete the first 4 vertices
  */
 std::vector<Point2f> CvDelaunay2d::GetVertices() const {
   assert(INT_MAX > vtx.size());
   const int total = int(vtx.size());
+  mNumV = total - kVE;
 
   std::vector<Point2f> vertices;
-  vertices.reserve(total);
+  vertices.reserve(total);  // mNumV
 
   // skip the fist 4 vertices
   for (int i = 0; i < total; ++i) {
@@ -47,9 +50,10 @@ std::vector<Point2f> CvDelaunay2d::GetVertices() const {
 std::vector<DTEdge> CvDelaunay2d::GetEdges() const {
   assert(INT_MAX > qedges.size());
   const int total = int(qedges.size());
+  mNumE = std::max(total - kVE, mNumV * 3);
 
   std::vector<DTEdge> edges;
-  edges.reserve(total);
+  edges.reserve(mNumE);
 
   for (int i = kVE; i < total; i++) {
     if (qedges[i].isfree()) continue;
@@ -73,16 +77,21 @@ std::vector<DTEdge> CvDelaunay2d::GetEdges() const {
 std::vector<DTTriangle> 
 CvDelaunay2d::GetTriangles(const std::vector<DTEdge>& edges) const {
   assert(INT_MAX > qedges.size()*4);
+  mNumT = std::max(mNumV * 2, mNumE * 2 / 3);
   const Rect2f rect(topLeft.x, topLeft.y,
     bottomRight.x - topLeft.x, bottomRight.y - topLeft.y);
 
-  const int total = int(qedges.size() * 4);
-  std::vector<bool> edgeMask(total, false);
-
+  const int total4 = int(qedges.size() * 4);
+  std::vector<bool> edgeMask(total4, false);
   std::vector<DTTriangle> tris;
+  tris.reserve(mNumT);
+
+  auto eqVtx = [](const DTEdge& e, const int v0, const int v1) {
+    return (e.v0 == v0 && e.v1 == v1) || (e.v1 == v0 && e.v0 == v1);
+  };
 
   Point2f v0, v1, v2;
-  for (int i = kVE; i < total; i += 2) {
+  for (int i = kVE; i < total4; i += 2) {
     if (edgeMask[i]) continue;
 
     const int em0 = i;
@@ -102,8 +111,43 @@ CvDelaunay2d::GetTriangles(const std::vector<DTEdge>& edges) const {
     edgeMask[em2] = true;
 
     if (kVE > vi0 || kVE > vi1 || kVE > vi2) continue;
+    int ei[3]{};
 
-    tris.emplace_back<DTTriangle>({vi0, vi1, vi2});
+#pragma omp parallel sections num_threads(3)
+    {
+    #pragma omp section
+      {
+        for (size_t e = 0; e < mNumE; ++e) {
+          if (eqVtx(edges[e], vi0, vi1)) {
+            ei[0] = e;
+            break;
+          }
+        }
+      }
+
+    #pragma omp section
+      {
+        for (size_t e = 0; e < mNumE; ++e) {
+          if (eqVtx(edges[e], vi1, vi2)) {
+            ei[1] = e;
+            break;
+          }
+        }
+      }
+
+    #pragma omp section
+      {
+        for (size_t e = 0; e < mNumE; ++e) {
+          if (eqVtx(edges[e], vi2, vi0)) {
+            ei[2] = e;
+            break;
+          }
+        }
+      }
+    }
+
+    if (0 == ei[0] || 0 == ei[1] || 0 == ei[2]) continue;
+    tris.emplace_back<DTTriangle>({ei[0], ei[1], ei[2]});
   }
 
   mNumT = int(tris.size());

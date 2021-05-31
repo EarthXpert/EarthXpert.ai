@@ -37,7 +37,7 @@ using fgt = FieldGroup;
 void Las2Gts(const std::string& lasFile, 
   const std::string& gtsFile, const CvOptions& cvOpt) {
   PointcloudReader reader(lasFile, { fgt::kBITXYZ });
-  auto pc = reader.ReadPointcloud(0, 10);
+  auto pc = reader.ReadPointcloud();
   const size_t count = pc->GetPointCount();
   auto bbox = pc->GetBufTile();
 
@@ -55,12 +55,15 @@ void Las2Gts(const std::string& lasFile,
   }
   pc.reset();
 
+  std::cerr << "delaunay: triangulated " << count << " vertices\n"
+            << "          ellapsed time " << wclock.TimeSinceStart() << " s" << std::endl;
+
+  //dt.EstimateStatistics();
   auto vertices = dt.GetVertices();
   auto edges = dt.GetEdges();
   auto tris = dt.GetTriangles(edges);
 
-  std::cerr << "delaunay: triangulated " << count << " vertices\n"
-            << "          ellapsed time " << wclock.TimeSinceStart() << " s" << std::endl;
+  std::cerr << "          GetTriangles time " << wclock.TimeSinceStart() << " s" << std::endl;
 
   // write triangulation
   std::ofstream ofs(gtsFile.c_str());
@@ -85,7 +88,7 @@ void Las2Gts(const std::string& lasFile,
 void Las2Gts(const std::string& lasFile, 
   const std::string& gtsFile, const GtsOptions& gtsOpt) {
   PointcloudReader reader(lasFile, { fgt::kBITXYZ });
-  auto pc = reader.ReadPointcloud(0, 10);
+  auto pc = reader.ReadPointcloud();
   const size_t count = pc->GetPointCount();
 
   WallClock wclock;
