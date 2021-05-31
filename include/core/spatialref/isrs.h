@@ -6,7 +6,6 @@
 
 #include "core/excore.h"
 #include <memory>
-
 namespace earthxpert {
 /**
  *  The class ISrs provides service of spatial coordinate system

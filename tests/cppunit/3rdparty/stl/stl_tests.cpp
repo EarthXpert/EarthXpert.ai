@@ -6,6 +6,12 @@
 #include "3rdparty/stl/bitvector.h"
 
 #include "algo.hpp"
+#include <iostream>
+#include <string>
+
+using namespace earthxpert;
+
+void CreateFiles(const std::string& path, int numFiles);
 
 TEST(stl, BitVector) {
   BitVector bv;
@@ -17,4 +23,14 @@ TEST(stl, BitVector) {
   ASSERT_TRUE(bv.any());
   ASSERT_FALSE(bv.all());
   ASSERT_TRUE(bv.none());
+}
+
+// Too Many Open Files
+TEST(stl, OpenFiles) {
+  const std::string path = "D:\\Workspace\\Results\\temp\\test\\";
+  CreateFiles(path, 5000);
+}
+
+void CreateFiles(const std::string& path, int numFiles) {
+
 }

@@ -3,4 +3,11 @@
 #  -----------------------------------------------------------------------------
 
 import multiprocessing as mp
-import pp	#  parallel python
+import multiprocessing.dummy as mt
+#import pp	#  parallel python
+
+from concurrent.futures import ThreadPoolExecutor
+from concurrent.futures import ProcessPoolExecutor
+
+from multiprocessing import Pool as ProcessPool
+from multiprocessing.dummy import Pool as ThreadPool

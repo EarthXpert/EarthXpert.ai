@@ -11,6 +11,6 @@ ${GTEST_BIN_DIR};${proj_BIN_DIR};${TESTS_BIN_DIR};$ENV{PATH}")
   set_tests_properties(interpolate_tests PROPERTIES ENVIRONMENT "${TESTS_INTERPOLATE_PATH}")
 endif()
 
-if(EARTHXPERT_INSTALL_TESTS_3RDPARTY)
+if(EXAI_INSTALL_TESTS_3RDPARTY)
   exai_install_test(interpolate_tests)
 endif()

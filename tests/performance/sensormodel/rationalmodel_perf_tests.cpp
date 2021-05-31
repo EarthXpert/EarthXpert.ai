@@ -27,11 +27,11 @@ void RationalModel_I2GOMP() {
 }
 
 void RationalModel_CubeS2G() {
-
+  //EnableCubeS2G(true);
 }
 
 void RationalModel_CubeS2GOMP() {
-
+  //EnableCubeS2G(true);
 }
 
 std::unique_ptr<RationalModel> CreateRationalModelLeft() {

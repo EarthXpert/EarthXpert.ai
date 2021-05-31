@@ -113,6 +113,8 @@ public:
 
 private:
   bool EqualTo(const ISensorModel& rhs) const override;
+
+  void BuildCubeG2S();
 };
 
 using UPSarModel = std::unique_ptr<SarModel>;

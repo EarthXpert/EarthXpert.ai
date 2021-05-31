@@ -11,9 +11,9 @@ using namespace earthxpert;
 
 namespace {
   // Ct object pool
-  std::map<CtInfo, std::weak_ptr<ICt>> gCCsCTs;
-  std::map<CtInfo, std::weak_ptr<ICt>> gOgrCTs;
-  std::map<CtInfo, std::weak_ptr<ICt>> gProjCTs;
+  std::map<CtInfo, std::weak_ptr<CcsCt>> gCCsCTs;
+  std::map<CtInfo, std::weak_ptr<OgrCt>> gOgrCTs;
+  std::map<CtInfo, std::weak_ptr<ProjCt>> gProjCTs;
 }
 
 std::shared_ptr<ICt> CtFactory::CreateCt(const CtInfo* ctInfo) {
@@ -40,6 +40,7 @@ std::shared_ptr<CcsCt> CtFactory::CreateCcsCt(const CtInfo* ctInfo) {
 std::shared_ptr<OgrCt> CtFactory::CreateOgrCt(const CtInfo* ctInfo) {
   auto it = gOgrCTs.find(*ctInfo);
   if (gOgrCTs.end() != it) {
+    //return it->second;
   }
   return {};
 }

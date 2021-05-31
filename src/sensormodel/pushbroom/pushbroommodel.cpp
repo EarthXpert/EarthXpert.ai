@@ -131,5 +131,10 @@ bool PushbroomModel<CraftPolicy>::EqualTo(const ISensorModel &rhs) const {
   return operator==(*pbModel);
 }
 
+template <typename CraftPolicy>
+void PushbroomModel<CraftPolicy>::BuildCubeG2S() {
+
+}
+
 template class earthxpert::PushbroomModel<AircraftPolicy>;
 template class earthxpert::PushbroomModel<SpacecraftPolicy>;

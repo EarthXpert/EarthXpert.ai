@@ -120,6 +120,8 @@ private:
   // cached calculation for better performance
   std::unique_ptr<InterpCubeD>
       mEll2Lsr; // interpolation cube for col/row/ell_hgt to lsr_hgt transform
+  
+  void BuildCubeS2G();
 };
 
 using UPAdsModel = std::unique_ptr<AdsModel>;

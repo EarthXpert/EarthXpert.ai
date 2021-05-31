@@ -10,7 +10,7 @@ set(pfgdal_srcs
   "ogrinfo.cpp")
 set(pfgdal_items ex3rdparty core pfutils 
   Boost::boost Boost::filesystem Boost::program_options ${GDAL_LIBRARIES} 
-  ${GETTEXT_LIBRARY} glog::glog)
+  glog::glog)
 exai_add_library(pfgdal "platform"
   SRCS ${pfgdal_srcs}
   ITEMS ${pfgdal_items})

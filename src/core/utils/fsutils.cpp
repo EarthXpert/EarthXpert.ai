@@ -3,6 +3,8 @@
  * -----------------------------------------------------------------------------
  */
 #include "core/utils/fsutils.h"
+#include "core/exceptions/exexcept.h"
+#include "core/formats/support/rfmsupportdata.h"
 
 #include <boost/algorithm/string.hpp>
 #include <sys/types.h>
@@ -190,7 +192,12 @@ unsigned GetDiskId(const std::string& devPath) {
  *  \param [in] imgFile path of the image file
  */
 std::string FindRationalModelFile(const std::string& imgFile) {
-  return {};
+  RfmSupportData sd;
+  std::string mdlFile = sd.ResolveModelFile(imgFile);
+  if (mdlFile.empty()) {
+    throw;
+  }
+  return mdlFile;
 }
 } // utils
 } // earthxpert

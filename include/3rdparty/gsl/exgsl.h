@@ -6,7 +6,5 @@
 
 #include "3rdparty/ex3rdparty.h"
 
-#include <gsl/gsl_const.h>
-
 namespace earthxpert {
 }

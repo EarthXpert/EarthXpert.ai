@@ -1,7 +1,7 @@
 project(src)
 
-configure_file(srcconfig.h.in ${CMAKE_BINARY_DIR}/src/srcconfig.h)
-include_directories(${CMAKE_BINARY_DIR}/src/)
+configure_file("../include/srcconfig.h.in" ${CMAKE_BINARY_DIR}/include/srcconfig.h)
+include_directories(${CMAKE_BINARY_DIR}/include/)
 
 function(exai_source_group)
   foreach(SRC IN ITEMS ${ARGN})
@@ -31,8 +31,8 @@ function(exai_add_library name libs_dir)
   set_target_properties(${name} 
     PROPERTIES
       CXX_STANDARD 17
-      DEBUG_POSTFIX "${EARTHXPERT_DEBUG_POSTFIX}")
-  target_link_libraries(${name} ${EX_ITEMS} ${vld_LIBRARIES})
+      DEBUG_POSTFIX "${EXAI_DEBUG_POSTFIX}")
+  target_link_libraries(${name} ${EX_ITEMS} ${GETTEXT_LIBRARY} ${vld_LIBRARIES})
   
   if(libs_dir)
     set_property(TARGET ${name} PROPERTY FOLDER ${libs_dir})
@@ -52,8 +52,8 @@ function(exai_add_executable name exec_dir)
   set_target_properties(${name} 
     PROPERTIES
       CXX_STANDARD 17
-      DEBUG_POSTFIX "${EARTHXPERT_DEBUG_POSTFIX}")
-  target_link_libraries(${name} ${EX_ITEMS} ${vld_LIBRARIES})
+      DEBUG_POSTFIX "${EXAI_DEBUG_POSTFIX}")
+  target_link_libraries(${name} ${EX_ITEMS} ${GETTEXT_LIBRARY} ${vld_LIBRARIES})
   
   if(exec_dir)
     set_property(TARGET ${name} PROPERTY FOLDER ${exec_dir})
@@ -64,9 +64,9 @@ function(exai_install_target name)
   install(TARGETS ${name} ${ARGN}
     LIBRARY DESTINATION sdk/lib
     ARCHIVE DESTINATION sdk/lib
-    RUNTIME DESTINATION ${EARTHXPERT_BIN_DIR})
+    RUNTIME DESTINATION ${EXAI_BIN_DIR})
   if(WIN32 AND MSVC AND (NOT MSVC_VERSION LESS 1600))
-    install(FILES $<TARGET_PDB_FILE:${name}> DESTINATION ${EARTHXPERT_BIN_DIR} OPTIONAL)
+    install(FILES $<TARGET_PDB_FILE:${name}> DESTINATION ${EXAI_BIN_DIR} OPTIONAL)
   endif()
 endfunction()
 

@@ -11,6 +11,6 @@ if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
   set_tests_properties(threadpool_tests PROPERTIES ENVIRONMENT "${TESTS_THREADPOOL_PATH}")
 endif()
 
-if(EARTHXPERT_INSTALL_TESTS_3RDPARTY)
+if(EXAI_INSTALL_TESTS_3RDPARTY)
   exai_install_test(threadpool_tests)
 endif()

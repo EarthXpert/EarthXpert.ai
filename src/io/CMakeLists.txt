@@ -23,7 +23,7 @@ set(dataio_srcs
   "vector/vectorreader.cpp"
   "vector/vectorwriter.cpp")
 set(dataio_items ex3rdparty core 
-  exiv2lib ${GDAL_LIBRARIES} ${geotrans_LIBRARIES} ${GETTEXT_LIBRARY} 
+  exiv2lib ${GDAL_LIBRARIES} ${geotrans_LIBRARIES} 
   ${LASLIB_LIBRARY} ${OpenCV_LIBS})
 exai_add_library(dataio "api"
   SRCS ${dataio_srcs}

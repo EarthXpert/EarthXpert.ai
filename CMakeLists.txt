@@ -9,7 +9,7 @@ if(POLICY CMP0079)
 endif()
 
 project(earthxpert)
-set(EARTHXPERT_VERSION 1.0.0)
+set(EARTHXPERTAI_VERSION 1.0.0)
 
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 
@@ -18,14 +18,16 @@ if(NOT CMAKE_BUILD_TYPE)
 endif()
 
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/sdk/lib)
-set(EARTHXPERT_WORKSPACE_DIR "$<SHELL_PATH:${CMAKE_SOURCE_DIR}/../>")
-message(STATUS "EARTHXPERT_WORKSPACE_DIR: ${EARTHXPERT_WORKSPACE_DIR}")
+set(EXAI_INCLUDE_DIR "$<SHELL_PATH:${CMAKE_SOURCE_DIR}>/include")
+message(STATUS "EXAI_INCLUDE_DIR: ${EXAI_INCLUDE_DIR}")
+set(EXAI_WORKSPACE_DIR "$<SHELL_PATH:${CMAKE_SOURCE_DIR}>/..")
+message(STATUS "EXAI_WORKSPACE_DIR: ${EXAI_WORKSPACE_DIR}")
 
 set(EX_THIRD_PARTY "$ENV{EX_Third_Party}")
 set(CUDA_ROOT "$ENV{CUDA_PATH}")
 set(OpenCL_ROOT "$ENV{CUDA_PATH}")
 
-option(EARTHXPERT_PACKAGES_3RDPARTY_DYNAMIC "link dynamic 3rdparty packages" ON)
+option(EXAI_PACKAGES_3RDPARTY_DYNAMIC "link dynamic 3rdparty packages" ON)
 
 #set(GFLAGS_USE_TARGET_NAMESPACE TRUE)
 
@@ -39,14 +41,14 @@ if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
   endif()
   add_definitions(-D_CRT_SECURE_NO_WARNINGS -DCPL_DISABLE_DLL)
 
-  set(EARTHXPERT_DEBUG_POSTFIX d)
+  set(EXAI_DEBUG_POSTFIX d)
   set(CDEGREL $<$<CONFIG:Debug>:debug>$<$<CONFIG:Release>:release>)
   message(STATUS "Debug_Release_Mode: ${CDEGREL}")
 
-  set(EARTHXPERT_BIN_ROOT "bin")
-  set(EARTHXPERT_BIN_DIR "${EARTHXPERT_BIN_ROOT}/${CDEGREL}")
+  set(EXAI_BIN_ROOT "bin")
+  set(EXAI_BIN_DIR "${EXAI_BIN_ROOT}/${CDEGREL}")
 
-  if (EARTHXPERT_PACKAGES_3RDPARTY_DYNAMIC)
+  if (EXAI_PACKAGES_3RDPARTY_DYNAMIC)
     set(Boost_ROOT "${EX_THIRD_PARTY}/boost_1.71.0")
     set(Boost_DIR "${Boost_ROOT}/lib/cmake/Boost-1.71.0")
     set(Boost_INCLUDE_DIRS "${Boost_ROOT}/include")
@@ -89,42 +91,43 @@ if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
     set(Eigen3_DIR "${Eigen3_ROOT}/share/eigen3/cmake")
     set(Eigen3BLAS_INCLUDE_DIR "${Eigen3_ROOT}/include")
     set(Eigen3LAPACK_INCLUDE_DIR "${Eigen3_ROOT}/include")
-    set(Eigen3_LIBRARY_DIR "${Eigen3_ROOT}/lib")
-    set(Eigen3BLAS_LIBRARIES "${Eigen3_LIBRARY_DIR}/${CDEGREL}/eigen_blas.lib")
-    set(Eigen3LAPACK_LIBRARIES "${Eigen3_LIBRARY_DIR}/${CDEGREL}/eigen_lapack.lib")
+    set(Eigen3_LIBRARY_DIR "${Eigen3_ROOT}/lib/${CDEGREL}")
+    set(Eigen3BLAS_LIBRARIES "${Eigen3_LIBRARY_DIR}/eigen_blas.lib")
+    set(Eigen3LAPACK_LIBRARIES "${Eigen3_LIBRARY_DIR}/eigen_lapack.lib")
     
     set(exiv2_ROOT "${EX_THIRD_PARTY}/exiv2_0.27.3")
     set(exiv2_BIN_DIR "${exiv2_ROOT}/bin/${CDEGREL}")
     set(exiv2_DIR "${exiv2_ROOT}/share/exiv2")
     set(exiv2_INCLUDE_DIR "${exiv2_ROOT}/include")
-    set(exiv2_LIBRARY_DIR "${exiv2_ROOT}/lib")
-    set(exiv2_LIBRARIES debug "${exiv2_LIBRARY_DIR}/debug/exiv2.lib"
-                        debug "${exiv2_LIBRARY_DIR}/debug/exiv2-xmp.lib"
-                        optimized "${exiv2_LIBRARY_DIR}/release/exiv2.lib"
-                        optimized "${exiv2_LIBRARY_DIR}/release/exiv2-xmp.lib")
+    set(exiv2_LIBRARY_DIR "${exiv2_ROOT}/lib/${CDEGREL}")
+    set(exiv2_LIBRARIES debug "${exiv2_LIBRARY_DIR}/exiv2.lib"
+                        debug "${exiv2_LIBRARY_DIR}/exiv2-xmp.lib"
+                        optimized "${exiv2_LIBRARY_DIR}/exiv2.lib"
+                        optimized "${exiv2_LIBRARY_DIR}/exiv2-xmp.lib")
     
     #set(fmt_ROOT "${EX_THIRD_PARTY}/fmt")
     
     set(GDAL_ROOT "${EX_THIRD_PARTY}/gdal_2.4.1")
     set(GDAL_BIN_DIR "${GDAL_ROOT}/bin/${CDEGREL}")
     set(GDAL_INCLUDE_DIRS "${GDAL_ROOT}/include")
-    set(GDAL_LIBRARY_DIR "${GDAL_ROOT}/lib")
-    set(GDAL_LIBRARIES debug "${GDAL_LIBRARY_DIR}/debug/gdal_i.lib"
-                       optimized "${GDAL_LIBRARY_DIR}/release/gdal_i.lib")
+    set(GDAL_LIBRARY_DIR "${GDAL_ROOT}/lib/${CDEGREL}")
+    set(GDAL_LIBRARIES debug "${GDAL_LIBRARY_DIR}/gdal_i.lib"
+                       optimized "${GDAL_LIBRARY_DIR}/gdal_i.lib")
     
     set(geotiff_ROOT "${EX_THIRD_PARTY}/libgeotiff_1.4.2")
     set(geotiff_BIN_DIR "${geotiff_ROOT}/bin/${CDEGREL}")
     set(geotiff_DIR "${geotiff_ROOT}/share/libgeotiff")
     set(geotiff_INCLUDE_DIR "${geotiff_ROOT}/include")
-    set(geotiff_LIBRARY_DIR "${geotiff_ROOT}/lib")
-    set(geotiff_LIBRARIES debug "${geotiff_LIBRARY_DIR}/debug/geotiff_d_i.lib"
-                          optimized "${geotiff_LIBRARY_DIR}/release/geotiff_i.lib")
+    set(geotiff_LIBRARY_DIR "${geotiff_ROOT}/lib/${CDEGREL}")
+    set(geotiff_LIBRARIES debug "${geotiff_LIBRARY_DIR}/geotiff_d_i.lib"
+                          optimized "${geotiff_LIBRARY_DIR}/geotiff_i.lib")
     
     set(geotrans_ROOT "${EX_THIRD_PARTY}/geotrans_3.8.0")
     set(geotrans_BIN_DIR "${geotrans_ROOT}/bin/${CDEGREL}")
     set(geotrans_INCLUDE_DIR "${geotrans_ROOT}/include")
-    set(geotrans_LIBRARIES "${geotrans_ROOT}/lib/${CDEGREL}/MSPCoordinateConversionService.lib"
-                           "${geotrans_ROOT}/lib/${CDEGREL}/MSPdtcc.lib")
+    set(geotrans_LIBRARY_DIR "${geotrans_ROOT}/lib/${CDEGREL}")
+    set(geotrans_LIBRARIES "${geotrans_LIBRARY_DIR}/MSPCoordinateConversionService.lib"
+                           "${geotrans_LIBRARY_DIR}/MSPdtcc.lib")
     
     set(GETTEXT_ROOT "${EX_THIRD_PARTY}/gettext_0.19.0")
     set(GETTEXT_BIN_DIR "${GETTEXT_ROOT}/bin/${CDEGREL}")
@@ -134,6 +137,16 @@ if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
     #set(GFLAGS_ROOT "${EX_THIRD_PARTY}/gflags_2.2.2")
     #set(gflags_DIR "${GFLAGS_ROOT}/lib/cmake/gflags")
     #set(GFLAGS_INCLUDE_DIR "${GFLAGS_ROOT}/include")
+
+    set(GLIB_ROOT "${EX_THIRD_PARTY}/glib_2.52.3")
+    set(GLIB_BIN_DIR "${GLIB_ROOT}/bin/${CDEGREL}")
+    set(GLIB_INCLUDE_DIR "${GLIB_ROOT}/include")
+    set(GLIB_LIBRARY_DIR "${GLIB_ROOT}/lib/${CDEGREL}")
+    set(GLIB_LIBRARIES "${GLIB_LIBRARY_DIR}/gio-2.0.lib"
+                       "${GLIB_LIBRARY_DIR}/glib-2.0.lib"
+                       "${GLIB_LIBRARY_DIR}/gmodule-2.0.lib"
+                       "${GLIB_LIBRARY_DIR}/gobject-2.0.lib"
+                       "${GLIB_LIBRARY_DIR}/gthread-2.0.lib")
     
     set(GLOG_ROOT "${EX_THIRD_PARTY}/glog_0.4.0")
     set(glog_DIR "${GLOG_ROOT}/lib/cmake/glog")
@@ -144,20 +157,26 @@ if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
     
     #GMT_DIR
     #GMTSAR_DIR
-    #gnu_gsl
+    #gsl core guideline
     
-    set(gsl_ROOT "${EX_THIRD_PARTY}/gsl_2.4.0")
+    set(gsl_ROOT "${EX_THIRD_PARTY}/gsl_2.4.0")     #gnu_gsl
     set(gsl_BIN_DIR "${gsl_ROOT}/bin/${CDEGREL}")
     set(gsl_INCLUDE_DIR "${gsl_ROOT}/include")
-    set(gsl_LIBRARY_DIR "${gsl_ROOT}/lib")
-    set(gsl_LIBRARIES debug "${gsl_LIBRARY_DIR}/debug/gslcblasd.lib"
-                      debug "${gsl_LIBRARY_DIR}/debug/gsld.lib"
-                      optimized "${gsl_LIBRARY_DIR}/release/gslcblas.lib"
-                      optimized "${gsl_LIBRARY_DIR}/release/gsl.lib")
+    set(gsl_LIBRARY_DIR "${gsl_ROOT}/lib/${CDEGREL}")
+    set(gsl_LIBRARIES debug "${gsl_LIBRARY_DIR}/gslcblasd.lib"
+                      debug "${gsl_LIBRARY_DIR}/gsld.lib"
+                      optimized "${gsl_LIBRARY_DIR}/gslcblas.lib"
+                      optimized "${gsl_LIBRARY_DIR}/gsl.lib")
     
     set(GTEST_ROOT "${EX_THIRD_PARTY}/gtest_1.8.1")
     set(GTEST_BIN_DIR "${GTEST_ROOT}/bin")
     set(GTEST_INCLUDE_DIR "${GTEST_ROOT}/include")
+
+    set(GTS_ROOT "${EX_THIRD_PARTY}/gts_0.7.6")
+    set(GTS_BIN_DIR "${GTS_ROOT}/bin/${CDEGREL}")
+    set(GTS_INCLUDE_DIR "${GTS_ROOT}/include")
+    set(GTS_LIBRARY_DIR "${GTS_ROOT}/lib/${CDEGREL}")
+    set(GTS_LIBRARIES "${GTS_LIBRARY_DIR}/gts.lib")
     
     set(HDF5_ROOT "${EX_THIRD_PARTY}/hdf5_1.10.5")
     set(HDF5_BIN_DIR "${HDF5_ROOT}/bin")
@@ -165,8 +184,8 @@ if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
     set(ICONV_ROOT "${EX_THIRD_PARTY}/iconv_1.16.0")
     set(ICONV_DIR "${ICONV_ROOT}/share/iconv/CMake")
     set(ICONV_INCLUDE_DIRS "${ICONV_ROOT}/include")
-    set(ICONV_LIBRARY_DIR "${ICONV_ROOT}/lib")
-    set(ICONV_LIBRARIES "${ICONV_LIBRARY_DIR}/${CDEGREL}/iconv.lib")
+    set(ICONV_LIBRARY_DIR "${ICONV_ROOT}/lib/${CDEGREL}")
+    set(ICONV_LIBRARIES "${ICONV_LIBRARY_DIR}/iconv.lib")
     
     #set(ITK_ROOT)
 
@@ -174,12 +193,12 @@ if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
     set(lapack_DIR "${lapack_ROOT}/lib/cmake")
     set(lapack_BIN_DIR "${lapck_ROOT}/bin/${CDEGREL}")
     set(lapack_INCLUDE_DIR "${lapack_ROOT}/include")
-    set(lapack_LIBRARY_DIR "${lapack_ROOT}/lib")
-    set(lapack_LIBRARIES "${lapack_LIBRARY_DIR}/${CDEGREL}/libblas.lib"
-                         "${lapack_LIBRARY_DIR}/${CDEGREL}/libcblas.lib"
-                         "${lapack_LIBRARY_DIR}/${CDEGREL}/liblapack.lib"
-                         "${lapack_LIBRARY_DIR}/${CDEGREL}/liblapacke.lib"
-                         "${lapack_LIBRARY_DIR}/${CDEGREL}/libtmglib.lib")
+    set(lapack_LIBRARY_DIR "${lapack_ROOT}/lib/${CDEGREL}")
+    set(lapack_LIBRARIES "${lapack_LIBRARY_DIR}/libblas.lib"
+                         "${lapack_LIBRARY_DIR}/libcblas.lib"
+                         "${lapack_LIBRARY_DIR}/liblapack.lib"
+                         "${lapack_LIBRARY_DIR}/liblapacke.lib"
+                         "${lapack_LIBRARY_DIR}/libtmglib.lib")
     
     set(LASLIB_ROOT "${EX_THIRD_PARTY}/lastools_19.05.07")
     #set(LASLIB_BIN_DIR "${LASLIB_ROOT}/bin")
@@ -191,20 +210,20 @@ if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
     set(LIBXML2_ROOT "${EX_THIRD_PARTY}/xml2_2.9.9")
     set(LIBXML2_DIR "${LIBXML2_ROOT}/share/libxml2/CMake")
     set(LIBXML2_INCLUDE_DIRS "${LIBXML2_ROOT}/include")
-    set(LIBXML2_LIBRARY_DIR "${LIBXML2_ROOT}/lib")
-    set(LIBXML2_LIBRARIES "${LIBXML2_LIBRARY_DIR}/${CDEGREL}/libxml2.lib")
+    set(LIBXML2_LIBRARY_DIR "${LIBXML2_ROOT}/lib/${CDEGREL}")
+    set(LIBXML2_LIBRARIES "${LIBXML2_LIBRARY_DIR}/libxml2.lib")
     
     set(MPFR4_ROOT "${EX_THIRD_PARTY}/mpfr_4.0.2")
     #set(MPFR4_DIR "${MPFR4_ROOT}/share/mpfr")
     set(MPFR4_INCLUDE_DIR "${MPFR4_ROOT}/include")
-    set(MPFR4_LIBRARY_DIR "${MPFR4_ROOT}/lib")
-    set(MPFR4_LIBRARIES "${MPFR4_LIBRARY_DIR}/${CDEGREL}/mpfr.lib")
+    set(MPFR4_LIBRARY_DIR "${MPFR4_ROOT}/lib/${CDEGREL}")
+    set(MPFR4_LIBRARIES "${MPFR4_LIBRARY_DIR}/mpfr.lib")
     
     set(MPIR_ROOT "${EX_THIRD_PARTY}/mpir_3.0.0")
     #set(MPIR_DIR "${MPIR_ROOT}/share/mpir")
     set(MPIR_INCLUDE_DIR "${MPIR_ROOT}/include")
-    set(MPIR_LIBRARY_DIR "${MPIR_ROOT}/lib")
-    set(MPIR_LIBRARIES "${MPIR_LIBRARY_DIR}/${CDEGREL}/mpir.lib")
+    set(MPIR_LIBRARY_DIR "${MPIR_ROOT}/lib/${CDEGREL}")
+    set(MPIR_LIBRARIES "${MPIR_LIBRARY_DIR}/mpir.lib")
     
     set(nlohmann_json_ROOT "${EX_THIRD_PARTY}/nlohmann-json_3.7.3")
     set(nlohmann_json_DIR "${nlohmann_json_ROOT}/share/nlohmann_json")
@@ -214,8 +233,8 @@ if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
     #set(nsimd_DIR "${nsimd_ROOT}/lib/cmake")
     set(nsimd_BIN_DIR "${nsimd_ROOT}/bin/${CDEGREL}")
     set(nsimd_INCLUDE_DIR "${nsimd_ROOT}/include")
-    set(nsimd_LIBRARY_DIR "${nsimd_ROOT}/lib")
-    set(nsimd_LIBRARIES "${nsimd_LIBRARY_DIR}/${CDEGREL}/libnsimd_x86_64.lib")
+    set(nsimd_LIBRARY_DIR "${nsimd_ROOT}/lib/${CDEGREL}")
+    set(nsimd_LIBRARIES "${nsimd_LIBRARY_DIR}/libnsimd_x86_64.lib")
     
     set(NumCpp_ROOT "${EX_THIRD_PARTY}/numcpp_2.3.1")
     set(NumCpp_DIR "${NumCpp_ROOT}/share\/NumCpp/cmake")
@@ -224,8 +243,8 @@ if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
     set(OpenBLAS_DIR "${OpenBLAS_ROOT}/share/openblas")
     set(OpenBLAS_BIN_DIR "${OpenBLAS_ROOT}/bin/${CDEGREL}")
     set(OpenBLAS_INCLUDE_DIR "${OpenBLAS_ROOT}/include")
-    set(OpenBLAS_LIBRARY_DIR "${OpenBLAS_ROOT}/lib")
-    set(OpenBLAS_LIBRARIES "${OpenBLAS_LIBRARY_DIR}/${CDEGREL}/openblas.lib")
+    set(OpenBLAS_LIBRARY_DIR "${OpenBLAS_ROOT}/lib/${CDEGREL}")
+    set(OpenBLAS_LIBRARIES "${OpenBLAS_LIBRARY_DIR}/openblas.lib")
     
     set(OpenCL_INCLUDE_DIRS "${OpenCL_ROOT}/include")
     set(OpenCL_BIN_DIR "${OpenCL_ROOT}/bin")
@@ -270,6 +289,21 @@ if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
   
     #set(OTB_ROOT)
 
+    set(PCRE_ROOT "${EX_THIRD_PARTY}/pcre_8.44.0")
+    set(PCRE_BIN_DIR "${PCRE_ROOT}/bin/${CDEGREL}")
+    set(PCRE_INCLUDE_DIR "${PCRE_ROOT}/include")
+    set(PCRE_LIBRARY_DIR "${PCRE_ROOT}/lib/${CDEGREL}")
+    set(PCRE_LIBRARIES debug "${PCRE_LIBRARY_DIR}/pcred.lib"
+                       debug "${PCRE_LIBRARY_DIR}/pcre16d.lib"
+                       debug "${PCRE_LIBRARY_DIR}/pcre32d.lib"
+                       debug "${PCRE_LIBRARY_DIR}/pcrecppd.lib"
+                       debug "${PCRE_LIBRARY_DIR}/pcreposixd.lib"
+                       optimized "${PCRE_LIBRARY_DIR}/pcre.lib"
+                       optimized "${PCRE_LIBRARY_DIR}/pcre16.lib"
+                       optimized "${PCRE_LIBRARY_DIR}/pcre32.lib"
+                       optimized "${PCRE_LIBRARY_DIR}/pcrecpp.lib"
+                       optimized "${PCRE_LIBRARY_DIR}/pcreposix.lib")
+
     set(PDAL_ROOT "${EX_THIRD_PARTY}/pdal_1.9.1")
     set(PDAL_DIR "${PDAL_ROOT}/lib/cmake/PDAL")
     
@@ -277,12 +311,20 @@ if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
     #set(proj_DIR "${proj_ROOT}/lib/cmake/proj")
     set(proj_BIN_DIR "${proj_ROOT}/bin/${CDEGREL}")
     set(proj_INCLUDE_DIR "${proj_ROOT}/include")
-    set(proj_LIBRARY_DIR "${proj_ROOT}/lib")
-    set(proj_LIBRARIES debug "${proj_LIBRARY_DIR}/debug/proj_d.lib"
-                       optimized "${proj_LIBRARY_DIR}/release/proj.lib")
+    set(proj_LIBRARY_DIR "${proj_ROOT}/lib/${CDEGREL}")
+    set(proj_LIBRARIES debug "${proj_LIBRARY_DIR}/proj_d.lib"
+                       optimized "${proj_LIBRARY_DIR}/proj.lib")
     
-    set(Protobuf_ROOT "${EX_THIRD_PARTY}/protobuf_3.11.3")
-    set(Protobuf_DIR "${Protobuf_ROOT}/share/protobuf")
+    set(protobuf_ROOT "${EX_THIRD_PARTY}/protobuf_3.11.3")
+    set(protobuf_DIR "${protobuf_ROOT}/share/protobuf")
+    set(Protobuf_INCLUDE_DIRS "${protobuf_ROOT}/include/google")
+    set(Protobuf_LIBRARY_DIR "${protobuf_ROOT}/lib/${CDEGREL}")
+    set(Protobuf_LIBRARIES debug "${Protobuf_LIBRARY_DIR}/libprotobufd.lib"
+                           debug "${Protobuf_LIBRARY_DIR}/libprotobuf-lited.lib"
+                           debug "${Protobuf_LIBRARY_DIR}/libprotocd.lib"
+                           optimized "${Protobuf_LIBRARY_DIR}/libprotobuf.lib"
+                           optimized "${Protobuf_LIBRARY_DIR}/libprotobuf-lite.lib"
+                           optimized "${Protobuf_LIBRARY_DIR}/libprotoc.lib")
     
     set(pybind11_DIR "${EX_THIRD_PARTY}/pybind11_2.5.0/share/cmake/pybind11")
     
@@ -315,23 +357,23 @@ if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
     set(TBB_ROOT "${EX_THIRD_PARTY}/tbb_20.0.0")
     set(TBB_DIR "${TBB_ROOT}/share/tbb")
     set(TBB_INCLUDE_DIRS "${TBB_ROOT}/include")
-    set(TBB_LIBRARY_DIR "${TBB_ROOT}/lib")
-    set(TBB_LIBRARIES debug "${TBB_LIBRARY_DIR}/debug/tbb_debug.lib"
-                      debug "${TBB_LIBRARY_DIR}/debug/tbbmalloc_debug.lib"
-                      debug "${TBB_LIBRARY_DIR}/debug/tbbmalloc_proxy_debug.lib"
-                      optimized "${TBB_LIBRARY_DIR}/release/tbb.lib"
-                      optimized "${TBB_LIBRARY_DIR}/release/tbbmalloc.lib"
-                      optimized "${TBB_LIBRARY_DIR}/release/tbbmalloc_proxy.lib")
+    set(TBB_LIBRARY_DIR "${TBB_ROOT}/lib/${CDEGREL}")
+    set(TBB_LIBRARIES debug "${TBB_LIBRARY_DIR}/tbb_debug.lib"
+                      debug "${TBB_LIBRARY_DIR}/tbbmalloc_debug.lib"
+                      debug "${TBB_LIBRARY_DIR}/tbbmalloc_proxy_debug.lib"
+                      optimized "${TBB_LIBRARY_DIR}/tbb.lib"
+                      optimized "${TBB_LIBRARY_DIR}/tbbmalloc.lib"
+                      optimized "${TBB_LIBRARY_DIR}/tbbmalloc_proxy.lib")
     
     set(tiff_ROOT "${EX_THIRD_PARTY}/tiff_4.0.10")
     set(tiff_BIN_DIR "${tiff_ROOT}/bin/${CDEGREL}")
     #set(tiff_DIR "${tiff_ROOT}/share/tiff")
     set(tiff_INCLUDE_DIR "${tiff_ROOT}/include")
-    set(tiff_LIBRARY_DIR "${tiff_ROOT}/lib")
-    set(tiff_LIBRARIES debug "${tiff_LIBRARY_DIR}/debug/tiffd.lib"
-                       debug "${tiff_LIBRARY_DIR}/debug/tiffxxd.lib"
-                       optimized "${tiff_LIBRARY_DIR}/release/tiff.lib"
-                       optimized "${tiff_LIBRARY_DIR}/release/tiffxx.lib")
+    set(tiff_LIBRARY_DIR "${tiff_ROOT}/lib/${CDEGREL}")
+    set(tiff_LIBRARIES debug "${tiff_LIBRARY_DIR}/tiffd.lib"
+                       debug "${tiff_LIBRARY_DIR}/tiffxxd.lib"
+                       optimized "${tiff_LIBRARY_DIR}/tiff.lib"
+                       optimized "${tiff_LIBRARY_DIR}/tiffxx.lib")
     
     set(vld_ROOT "${EX_THIRD_PARTY}/vld_2.5.1")
     #set(vld_DIR "${vld_ROOT}/lib/cmake")
@@ -343,11 +385,11 @@ if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
     set(wxwidgets_ROOT "${EX_THIRD_PARTY}/wxwidgets_3.1.4")
     set(wxwidgets_INCLUDE_DIRS "${wxwidgets_ROOT}/include"
                                "${wxwidgets_ROOT}/include/msvc")
-    set(wxwidgets_LIBRARY_DIR "${wxwidgets_ROOT}/lib")
-    set(wxwidgets_LIBRARIES debug "${wxwidgets_LIBRARY_DIR}/debug/wxbase31ud.lib"
-                            debug "${wxwidgets_LIBRARY_DIR}/debug/wxmsw31ud_core.lib"
-                            optimized "${wxwidgets_LIBRARY_DIR}/release/wxbase31u.lib"
-                            optimized "${wxwidgets_LIBRARY_DIR}/release/wxmsw31u_core.lib")
+    set(wxwidgets_LIBRARY_DIR "${wxwidgets_ROOT}/lib/${CDEGREL}")
+    set(wxwidgets_LIBRARIES debug "${wxwidgets_LIBRARY_DIR}/wxbase31ud.lib"
+                            debug "${wxwidgets_LIBRARY_DIR}/wxmsw31ud_core.lib"
+                            optimized "${wxwidgets_LIBRARY_DIR}/wxbase31u.lib"
+                            optimized "${wxwidgets_LIBRARY_DIR}/wxmsw31u_core.lib")
     
     set(xsimd_DIR "${EX_THIRD_PARTY}/xsimd_7.4.6/share/xsimd")
     
@@ -362,9 +404,9 @@ if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
     
     set(zlib_ROOT "${EX_THIRD_PARTY}/zlib_1.2.11s")
     set(zlib_INCLUDE_DIR "${zlib_ROOT}/include")
-    set(zlib_LIBRARY_DIR "${zlib_ROOT}/lib")
-    set(zlib_LIBRARIES debug "${zlib_LIBRARY_DIR}/debug/zlibd.lib"
-                       optimized "${zlib_LIBRARY_DIR}/release/zlib.lib")
+    set(zlib_LIBRARY_DIR "${zlib_ROOT}/lib")  #/${CDEGREL}
+    set(zlib_LIBRARIES debug "${zlib_LIBRARY_DIR}/zlibd.lib"
+                       optimized "${zlib_LIBRARY_DIR}/zlib.lib")
   else()
 
     set(Ceres_ROOT "${EX_THIRD_PARTY}/ceres_2.0.0s")
@@ -395,9 +437,9 @@ if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
 
 elseif(CMAKE_SYSTEM_NAME STREQUAL "Linux")
 
-  set(EARTHXPERT_BIN_ROOT "bin")
-  set(EARTHXPERT_BIN_DIR "bin")
-  set(EARTHXPERT_DEBUG_POSTFIX "")
+  set(EXAI_BIN_ROOT "bin")
+  set(EXAI_BIN_DIR "bin")
+  set(EXAI_DEBUG_POSTFIX "")
 
   set(CEREAL_INCLUDE_DIR "${EX_THIRD_PARTY}/cereal_1.2.2/include")
 
@@ -424,10 +466,10 @@ else()
   message(FATAL_ERROR "${CMAKE_SYSTEM_NAME}: not supported.")
 endif()
 
-message(STATUS "EARTHXPERT_BIN_DIR: ${EARTHXPERT_BIN_DIR}")
+message(STATUS "EXAI_BIN_DIR: ${EXAI_BIN_DIR}")
 
 if(DEFINED CMAKE_DEBUG_POSTFIX)
-  set(EARTHXPERT_DEBUG_POSTFIX "${CMAKE_DEBUG_POSTFIX}")
+  set(EXAI_DEBUG_POSTFIX "${CMAKE_DEBUG_POSTFIX}")
 endif()
 
 find_package(OpenMP)
@@ -452,9 +494,11 @@ find_package(exiv2 CONFIG REQUIRED) # exiv2lib exiv2-xmp
 #find_package(geotiff CONFIG REQUIRED)
 #find_package(GETTEXT CONFIG REQUIRED)
 #find_package(gflags CONFIG REQUIRED)
+#find_package(glib REQUIRED)
 find_package(glog CONFIG REQUIRED)
 #find_package(gsl CONFIG REQUIRED)
 find_package(GTest REQUIRED)
+#find_package(GTS REQUIRED)
 find_package(ICONV CONFIG REQUIRED)
 #find_package(ITK CONFIG REQUIRED)
 #find_package(lapack CONFIG REQUIRED)
@@ -471,9 +515,10 @@ find_package(OpenCV CONFIG REQUIRED)   # opencv_ml opencv_dnn opencv_core opencv
 #find_package(OpenEXR CONFIG REQUIRED)
 find_package(OpenImageIO CONFIG REQUIRED)
 #find_package(OTB CONFIG REQUIRED)
+#find_package(pcre REQUIRED)
 find_package(PDAL CONFIG REQUIRED)
 #find_package(proj CONFIG REQUIRED)
-find_package(Protobuf CONFIG REQUIRED)
+find_package(protobuf CONFIG REQUIRED)
 find_package(pybind11 CONFIG REQUIRED)
 find_package(Qt5 5.11.2 COMPONENTS Core Gui LinguistTools OpenGL Widgets REQUIRED)
 find_package(range-v3 CONFIG REQUIRED)
@@ -548,9 +593,11 @@ message(STATUS "geotiff_INCLUDE_DIR: ${geotiff_INCLUDE_DIR}")
 message(STATUS "geotrans_INCLUDE_DIR: ${geotrans_INCLUDE_DIR}")
 message(STATUS "GETTEXT_INCLUDE_DIR: ${GDAL_INCLUDE_DIRS}")
 #message(STATUS "GFLAGS_INCLUDE_DIR: ${GLOG_INCLUDE_DIR}")
+message(STATUS "GLIB_INCLUDE_DIR: ${GLIB_INCLUDE_DIR}")
 message(STATUS "GLOG_INCLUDE_DIR: ${GLOG_INCLUDE_DIR}")
 message(STATUS "gsl_INCLUDE_DIR: ${gsl_INCLUDE_DIR}")
 message(STATUS "GTEST_INCLUDE_DIRS: ${GTEST_INCLUDE_DIRS}")
+message(STATUS "GTS_INCLUDE_DIR: ${GTS_INCLUDE_DIR}")
 message(STATUS "ICONV_INCLUDE_DIRS: ${ICONV_INCLUDE_DIRS}")
 message(STATUS "lapack_INCLUDE_DIR: ${lapack_INCLUDE_DIR}")
 message(STATUS "LASLIB_INCLUDE_DIR: ${LASLIB_INCLUDE_DIR}")
@@ -567,6 +614,7 @@ message(STATUS "OpenCL_INCLUDE_DIRS: ${OpenCL_INCLUDE_DIRS}")
 message(STATUS "OpenCV_INCLUDE_DIR: ${OpenCV_INCLUDE_DIR}")
 message(STATUS "OpenEXR_INCLUDE_DIR: ${OpenEXR_INCLUDE_DIR}")
 message(STATUS "OpenImageIO_INCLUDE_DIR: ${OpenImageIO_INCLUDE_DIR}")
+message(STATUS "PCRE_INCLUDE_DIR: ${PCRE_INCLUDE_DIR}")
 message(STATUS "PDAL_INCLUDE_DIRS: ${PDAL_INCLUDE_DIRS}")
 message(STATUS "proj_INCLUDE_DIR: ${proj_INCLUDE_DIR}")
 message(STATUS "Protobuf_INCLUDE_DIRS: ${Protobuf_INCLUDE_DIRS}")
@@ -600,9 +648,11 @@ include_directories(${geotiff_INCLUDE_DIR})
 include_directories(${geotrans_INCLUDE_DIR})
 include_directories(${GETTEXT_INCLUDE_DIR})
 #include_directories(${GFLAGS_INCLUDE_DIR})
+include_directories(${GLIB_INCLUDE_DIR})
 include_directories(${GLOG_INCLUDE_DIR})
 include_directories(${gsl_INCLUDE_DIR})
 include_directories(${GTEST_INCLUDE_DIRS})
+include_directories(${GTS_INCLUDE_DIR})
 include_directories(${ICONV_INCLUDE_DIRS})
 include_directories(${lapack_INCLUDE_DIR})
 include_directories(${LASLIB_INCLUDE_DIR})
@@ -618,6 +668,7 @@ include_directories(${OpenCL_INCLUDE_DIRS})
 include_directories(${OpenCV_INCLUDE_DIR})
 include_directories(${OpenEXR_INCLUDE_DIR})
 include_directories(${OpenImageIO_INCLUDE_DIR})
+include_directories(${PCRE_INCLUDE_DIR})
 include_directories(${PDAL_INCLUDE_DIRS})
 include_directories(${proj_INCLUDE_DIR})
 include_directories(${Protobuf_INCLUDE_DIRS})
@@ -697,8 +748,8 @@ endif()
 
 install(DIRECTORY cmake DESTINATION sdk/lib)
 
-option(EARTHXPERT_INSTALL_PACKAGES_3RDPARTY "install 3rdparty packages" OFF)
-if(EARTHXPERT_INSTALL_PACKAGES_3RDPARTY)
+option(EXAI_INSTALL_PACKAGES_3RDPARTY "install 3rdparty packages" ON)
+if(EXAI_INSTALL_PACKAGES_3RDPARTY)
 endif()
 
 include(CPack)

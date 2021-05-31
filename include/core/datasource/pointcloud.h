@@ -33,6 +33,7 @@ public:
 
   // \todo support tile range
   Pointcloud(size_t pointCapacity, FieldGroup fieldGroup);
+  //Pointcloud(size_t pointCapacity, FieldGroup fieldGroup, uchar* buffer);
   //Pointcloud(const SpatialTile& tile, size_t pointCapacity, FieldGroup fieldGroup);
   Pointcloud(const Point3d& origin, std::vector<XYZF>&& xyz);
   Pointcloud(const Point3d& origin, std::vector<XYZF>&& xyz,

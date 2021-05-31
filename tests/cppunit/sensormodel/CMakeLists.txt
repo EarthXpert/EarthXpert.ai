@@ -23,7 +23,7 @@ ${TESTS_BIN_DIR};$ENV{PATH}")
     PROPERTIES ENVIRONMENT "${TESTS_SENSORMODEL_PATH}")
 endif()
 
-if(EARTHXPERT_INSTALL_TESTS_CPPUNIT)
+if(EXAI_INSTALL_TESTS_CPPUNIT)
   exai_install_test(framemodel_tests)
   exai_install_test(rationalmodel_tests)
   exai_install_test(stereomodel_tests)

@@ -33,7 +33,7 @@ ${TESTS_BIN_DIR};$ENV{PATH}")
     PROPERTIES ENVIRONMENT "${TESTS_CORE_PATH}")
 endif()
 
-if(EARTHXPERT_INSTALL_TESTS_CPPUNIT)
+if(EXAI_INSTALL_TESTS_CPPUNIT)
   exai_install_test(coordinatesystem_tests)
   exai_install_test(coordinatetransform_tests)
   exai_install_test(earthellipsoid_tests)

@@ -11,6 +11,6 @@ if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
   set_tests_properties(taskflow_tests PROPERTIES ENVIRONMENT "${TESTS_TASKFLOW_PATH}")
 endif()
 
-if(EARTHXPERT_INSTALL_TESTS_3RDPARTY)
+if(EXAI_INSTALL_TESTS_3RDPARTY)
   exai_install_test(taskflow_tests)
 endif()

@@ -47,7 +47,7 @@ set(sensormodel_srcs
   "./sensormodel.cpp"
   "./sensormodelfactory.cpp")
 set(sensormodel_items ex3rdparty core
-  ${GDAL_LIBRARIES} ${geotrans_LIBRARIES} ${GETTEXT_LIBRARY} ${OpenCV_LIBS})
+  ${GDAL_LIBRARIES} ${geotrans_LIBRARIES} ${OpenCV_LIBS})
 exai_add_library(sensormodel "api"
   SRCS ${sensormodel_srcs}
   ITEMS ${sensormodel_items})

@@ -11,6 +11,6 @@ if(WIN32)
   set_tests_properties(gsl_tests PROPERTIES ENVIRONMENT "${TESTS_GSL_PATH}")
 endif()
 
-if(EARTHXPERT_INSTALL_TESTS_3RDPARTY)
+if(EXAI_INSTALL_TESTS_3RDPARTY)
   exai_install_test(gsl_tests)
 endif()

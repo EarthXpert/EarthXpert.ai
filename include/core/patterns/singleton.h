@@ -11,6 +11,7 @@ namespace earthxpert {
  */    
 class EXCORE_EXPORTS Singleton : public SingletonBase<Singleton> {
 public:
+  void SingletonMethod();
   
 private:
   friend class SingletonBase<Singleton>;

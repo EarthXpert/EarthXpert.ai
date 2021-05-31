@@ -12,6 +12,7 @@
 #include <bitset>
 //#include <chrono>
 #include <cstdint>
+#include <iostream>
 #include <map>
 
 namespace earthxpert {
@@ -298,4 +299,12 @@ constexpr bool IsIntensity = std::is_same_v<Intensity, std::remove_cv_t<Ty>>;
 
 template<typename Ty>
 constexpr bool IsRGB16 = std::is_same_v<RGB16, std::remove_cv_t<Ty>>;
+
+// overload operators
+template<typename Ty, char delim = ','>
+std::ostream& operator<<(std::ostream& s, const XYZ<Ty>& xyz) {
+  s.put('(');
+  s << xyz.x << delim << xyz.y << delim << xyz.z;
+  return s << ')';
+}
 }

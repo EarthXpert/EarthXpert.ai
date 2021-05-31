@@ -7,6 +7,12 @@
 #include "3rdparty/ex3rdparty.h"
 #include <vector>
 
+namespace earthxpert {
+/**
+ *  BitVector implements a dynamic array of bits.
+ *
+ *  \ref bitset that is static array of bits.
+ */  
 class EX3RDPARTY_EXPORTS BitVector
 {
 public:
@@ -80,3 +86,4 @@ public:
 private:
   std::vector<bool> bv;
 };
+}

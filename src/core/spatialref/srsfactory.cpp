@@ -35,6 +35,7 @@ std::shared_ptr<CcsSrs> SrsFactory::CreateCcsSrs(const SrsInfo* srsInfo) {
 std::shared_ptr<OgrSrs> SrsFactory::CreateOgrSrs(const SrsInfo* srsInfo) {
   auto it = gOgrSrss.find(*srsInfo);
   if (gOgrSrss.end() != it) {
+    //return it->second;
   }
   return {};
 }

@@ -96,3 +96,6 @@ bool AdsModel::EqualTo(const ISensorModel &rhs) const {
 
   return operator==(*adsModel);
 }
+
+void AdsModel::BuildCubeS2G() {
+}

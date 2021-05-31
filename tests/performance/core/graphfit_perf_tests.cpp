@@ -12,8 +12,6 @@
 #include <random>
 
 using namespace earthxpert;
-
-using namespace earthxpert;
 using namespace earthxpert::math;
 using namespace ceres;
 

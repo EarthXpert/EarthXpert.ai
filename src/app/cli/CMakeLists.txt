@@ -4,7 +4,7 @@ add_cli_executable(exai
   SRCS "exai.cpp"
   ITEMS ex3rdparty core dataio epipolar epipolarmodel marshaller pfexai
         Boost::filesystem Boost::program_options
-        ${GDAL_LIBRARIES} ${geotrans_LIBRARIES} ${GETTEXT_LIBRARY} ${PDAL_LIBRARIES})
+        ${GDAL_LIBRARIES} ${geotrans_LIBRARIES} ${PDAL_LIBRARIES})
 add_cli_executable(exdensematch 
   SRCS "densematch.cpp"
   ITEMS ex3rdparty core dataio epipolarmodel marshaller pfexai sfm
@@ -19,12 +19,17 @@ add_cli_executable(exgdal
   SRCS "gdal.cpp"
   ITEMS ex3rdparty core dataio pfgdal
         Boost::filesystem Boost::program_options
-        ${GDAL_LIBRARIES} ${geotrans_LIBRARIES} ${GETTEXT_LIBRARY})
+        ${GDAL_LIBRARIES} ${geotrans_LIBRARIES})
 add_cli_executable(exgeoinfo 
   SRCS "geoinfo.cpp"
   ITEMS ex3rdparty core dataio
         Boost::filesystem Boost::program_options
-        ${GDAL_LIBRARIES} ${geotrans_LIBRARIES} ${GETTEXT_LIBRARY})
+        ${GDAL_LIBRARIES} ${geotrans_LIBRARIES})
+add_cli_executable(exlas2gts 
+  SRCS "las2gts.cpp"
+  ITEMS ex3rdparty core dataio exutils
+        Boost::filesystem Boost::program_options
+        ${GDAL_LIBRARIES})
 add_cli_executable(exortho 
   SRCS "ortho.cpp"
   ITEMS ex3rdparty core dataio marshaller ortho pfexai sensormodel
@@ -34,7 +39,7 @@ add_cli_executable(expdal
   SRCS "pdal.cpp"
   ITEMS ex3rdparty core dataio pfpdal
         Boost::filesystem Boost::program_options
-        ${GDAL_LIBRARIES} ${GETTEXT_LIBRARY} ${PDAL_LIBRARIES})
+        ${GDAL_LIBRARIES} ${PDAL_LIBRARIES})
 add_cli_executable(exsparsematch 
   SRCS "sparsematch.cpp"
   ITEMS ex3rdparty core dataio epipolarmodel marshaller pfexai sfm
@@ -46,6 +51,7 @@ exai_install_target(exdensematch)
 exai_install_target(exepipolar)
 exai_install_target(exgdal)
 exai_install_target(exgeoinfo)
+exai_install_target(exlas2gts)
 exai_install_target(exortho)
 exai_install_target(expdal)
 exai_install_target(exsparsematch)

@@ -11,6 +11,6 @@ ${GTEST_BIN_DIR};${GDAL_BIN_DIR};${TESTS_BIN_DIR};$ENV{PATH}")
   set_tests_properties(gdal_tests PROPERTIES ENVIRONMENT "${TESTS_GDAL_PATH}")
 endif()
 
-if(EARTHXPERT_INSTALL_TESTS_3RDPARTY)
+if(EXAI_INSTALL_TESTS_3RDPARTY)
   exai_install_test(gdal_tests)
 endif()
