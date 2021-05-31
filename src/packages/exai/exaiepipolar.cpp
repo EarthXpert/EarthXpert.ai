@@ -90,7 +90,7 @@ void ExaiEpipolar::AddFrameOptions(bpo::options_description& optDesc) {
  *  \brief setup cli parameters
  *  \todo auto find model files.
  */
-void ExaiEpipolar::AddRationalOptions(bpo::options_description & optDesc) {
+void ExaiEpipolar::AddRationalOptions(bpo::options_description& optDesc) {
     optDesc.add_options()
     ("sensorname", bpo::value<std::string>()->required(), "sensor name: frame|rational")
     ("prjdir", bpo::value<std::string>(), "project directory or file")

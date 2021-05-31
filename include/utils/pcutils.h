@@ -10,7 +10,15 @@
 
 namespace earthxpert {
 //
+struct Las2GtsOptions {
+  std::string backend;
+  std::string lasf;
+  std::string gtsf;
+  size_t memSize;  // [unit: bytes]
+};
+
 struct CvOptions {
+
 };
 
 struct GtsOptions {

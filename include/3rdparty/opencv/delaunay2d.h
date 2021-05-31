@@ -10,9 +10,9 @@
 
 namespace earthxpert {
 /**
- *  Class DelaunayTri2d extends Subdiv2D.
+ *  Class CvDelaunay2d extends Subdiv2D.
  */
-class EX3RDPARTY_EXPORTS DelaunayTri2d : public cv::Subdiv2D {
+class EX3RDPARTY_EXPORTS CvDelaunay2d : public cv::Subdiv2D {
 public:
   // edge described by start and end vertices Ids indexed into vertices array
   struct DTEdge {   // Point2i
@@ -27,20 +27,30 @@ public:
     int e2{}; // 3rd edge
   };
 
-  DelaunayTri2d(const cv::Rect& rect);
-  ~DelaunayTri2d() = default;
+  CvDelaunay2d(const cv::Rect& rect);
+  ~CvDelaunay2d() = default;
 
+  void EstimateStatistics();
   std::vector<Point2f> GetVertices() const;
   std::vector<DTEdge> GetEdges() const;
-  std::vector<DTTriangle> GetTriangles() const;
+  std::vector<DTTriangle> GetTriangles(const std::vector<DTEdge>& edges) const;
   std::vector<int> GetVoronoi(std::vector<std::vector<int>>& voronoi) const;
 
 private:
+  static constexpr int kVE = 4;
+
+  //Point2f mOrigin{};
+
+  // estimated statistics
+  mutable int mNumV{};  // vertices
+  mutable int mNumE{};  // edges
+  mutable int mNumT{};  // triangles
+  mutable int mNumP{};  // voronoi polygons
 };
 
-using DTEdge = DelaunayTri2d::DTEdge;
-using DTTriangle = DelaunayTri2d::DTTriangle;
+using DTEdge = CvDelaunay2d::DTEdge;
+using DTTriangle = CvDelaunay2d::DTTriangle;
 
-using UPDelaunayTri2d = std::unique_ptr<DelaunayTri2d>;
-using SPDelaunayTri2d = std::shared_ptr<DelaunayTri2d>;
+using UPCvDelaunay2d = std::unique_ptr<CvDelaunay2d>;
+using SPCvDelaunay2d = std::shared_ptr<CvDelaunay2d>;
 }

@@ -3,8 +3,8 @@
  * -----------------------------------------------------------------------------
  */
 #include "utils/pcutils.h"
-#include "3rdparty/gts/exgts.h"
-#include "3rdparty/opencv/delaunaytri2d.h"
+#include "3rdparty/gts/delaunay2d.h"
+#include "3rdparty/opencv/delaunay2d.h"
 #include "core/system/clock.h"
 #include "io/pointcloud/pointcloudreader.h"
 
@@ -37,30 +37,29 @@ using fgt = FieldGroup;
 void Las2Gts(const std::string& lasFile, 
   const std::string& gtsFile, const CvOptions& cvOpt) {
   PointcloudReader reader(lasFile, { fgt::kBITXYZ });
-  const size_t filePointCount = reader.GetPointCount();
-
-  auto pc = reader.ReadPointcloud();
+  auto pc = reader.ReadPointcloud(0, 10);
+  const size_t count = pc->GetPointCount();
   auto bbox = pc->GetBufTile();
 
   WallClock wclock;
 
   // create rectangle enclosing all the vertices
-  cv::Rect rect{int(bbox.minX)-1, int(bbox.minY)-1,
-    int(ceil(bbox.width))+2, int(ceil(bbox.height))+2};
-  DelaunayTri2d dt(rect);
+  Point2f origin{float(bbox.minX) - 1, float(bbox.minY) - 1};
+  cv::Rect rect{0, 0, int(ceil(bbox.width))+2, int(ceil(bbox.height))+2};
+  CvDelaunay2d dt(rect);
 
   // add vertices into triangulation
-  for (size_t j = 0; j < pc->GetPointCount(); ++j) {
+  for (size_t j = 0; j < count; ++j) {
     const auto xyz = pc->GetField<XYZF>(j);
-    //std::cout << xyz << std::endl;
-    dt.insert(Point2f{xyz.x, xyz.y});
+    dt.insert(Point2f{xyz.x-origin.x, xyz.y-origin.y});
   }
+  pc.reset();
 
   auto vertices = dt.GetVertices();
   auto edges = dt.GetEdges();
-  auto tris = dt.GetTriangles();
+  auto tris = dt.GetTriangles(edges);
 
-  std::cerr << "delaunay: triangulated " << filePointCount << " vertices\n"
+  std::cerr << "delaunay: triangulated " << count << " vertices\n"
             << "          ellapsed time " << wclock.TimeSinceStart() << " s" << std::endl;
 
   // write triangulation
@@ -70,13 +69,13 @@ void Las2Gts(const std::string& lasFile,
       << " GtsSurface GtsFace GtsEdge GtsVertex\n";
 
   for (auto& v : vertices) {
-    ofs << v.x << ' ' << v.y << " 0.0\n";
+    ofs << v.x+origin.x << ' ' << v.y+origin.y << " 0.0\n";
   }
   for (auto& e : edges) {
-    ofs << e.v0 << ' ' << e.v1 << "\n";
+    ofs << e.v0+1 << ' ' << e.v1+1 << "\n";
   }
   for (auto& t : tris) {
-    ofs << t.e0 << ' ' << t.e1 << ' ' << t.e2 << "\n";
+    ofs << t.e0+1 << ' ' << t.e1+1 << ' ' << t.e2+1 << "\n";
   }
 }
 
@@ -85,26 +84,21 @@ void Las2Gts(const std::string& lasFile,
  */
 void Las2Gts(const std::string& lasFile, 
   const std::string& gtsFile, const GtsOptions& gtsOpt) {
-  const size_t chunkNumPts = 1024;
-  Pointcloud pc(chunkNumPts, { fgt::kBITXYZ });
-  
   PointcloudReader reader(lasFile, { fgt::kBITXYZ });
-  const size_t filePointCount = reader.GetPointCount();
+  auto pc = reader.ReadPointcloud(0, 10);
+  const size_t count = pc->GetPointCount();
 
   WallClock wclock;
 
   GPtrArray* vertices = g_ptr_array_new();
-  g_ptr_array_set_size(vertices, filePointCount);
+  g_ptr_array_set_size(vertices, count);
 
-  for (size_t i = 0; i < filePointCount; i += chunkNumPts) {
-    const auto readNumPts = reader.ReadPointcloud(i, &pc);
-    for (size_t j = 0; j < readNumPts; ++j) {
-      const auto xyz = pc.GetField<XYZF>(j);
-      //std::cout << xyz << std::endl;
-      g_ptr_array_index(vertices, i + j) =
-        gts_vertex_new(gts_vertex_class(), xyz.x, xyz.y, xyz.z);
-    }
+  for (size_t j = 0; j < count; ++j) {
+    const auto xyz = pc->GetField<XYZF>(j);
+    g_ptr_array_index(vertices, j) =
+      gts_vertex_new(gts_vertex_class(), xyz.x, xyz.y, xyz.z);
   }
+  pc.reset();
 
   // create triangle enclosing all the vertices
   GSList* list{};
@@ -159,7 +153,7 @@ void Las2Gts(const std::string& lasFile,
   }
   
   if (gtsOpt.verbose) {
-    std::cerr << "delaunay: triangulated " << filePointCount << " vertices\n"
+    std::cerr << "delaunay: triangulated " << count << " vertices\n"
               << "          ellapsed time " << wclock.TimeSinceStart() << " s" << std::endl;
     gts_surface_print_stats(surface, stderr);
   }

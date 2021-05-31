@@ -17,6 +17,7 @@ set(core_srcs
   "datasource/vectorutils.cpp"
   "formats/support/supportdata.cpp"
   "formats/support/ads/adssupportdata.cpp"
+  "formats/support/rfm/rfmsupportdata.cpp"
   "formats/support/wv/wvsupportdata.cpp"
   "formats/support/zy3/zy3supportdata.cpp"
   "log/exlog.cpp"
