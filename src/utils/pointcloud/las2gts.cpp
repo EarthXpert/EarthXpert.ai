@@ -55,15 +55,17 @@ void Las2Gts(const std::string& lasFile,
   }
   pc.reset();
 
+  double ti = wclock.TimeSinceStart();
   std::cerr << "delaunay: triangulated " << count << " vertices\n"
-            << "          ellapsed time " << wclock.TimeSinceStart() << " s" << std::endl;
+            << "          ellapsed time " << ti << " s" << std::endl;
 
-  //dt.EstimateStatistics();
-  auto vertices = dt.GetVertices();
-  auto edges = dt.GetEdges();
-  auto tris = dt.GetTriangles(edges);
+  std::vector<Point2f> vertices;
+  std::vector<DTEdge> edges;
+  std::vector<DTTriangle> tris;
+  dt.GetGtsInfo(vertices, edges, tris);
 
-  std::cerr << "          GetTriangles time " << wclock.TimeSinceStart() << " s" << std::endl;
+  ti = wclock.TimeSinceStart() - ti;
+  std::cerr << "          GetGtsInfo time " << ti << " s" << std::endl;
 
   // write triangulation
   std::ofstream ofs(gtsFile.c_str());
@@ -78,7 +80,7 @@ void Las2Gts(const std::string& lasFile,
     ofs << e.v0+1 << ' ' << e.v1+1 << "\n";
   }
   for (auto& t : tris) {
-    ofs << t.e0+1 << ' ' << t.e1+1 << ' ' << t.e2+1 << "\n";
+    ofs << t.t0+1 << ' ' << t.t1+1 << ' ' << t.t2+1 << "\n";
   }
 }
 
@@ -168,5 +170,58 @@ void Las2Gts(const std::string& lasFile,
   FILE* fp = fopen(gtsFile.c_str(), "wt");
   gts_surface_write(surface, fp);   
   fclose(fp);
+}
+
+/**
+ *  \brief pointcloud format conversion from .las to .ply
+ */
+void Las2Ply(const std::string& lasFile,
+  const std::string& plyFile, const CvOptions& cvOpt) {
+  PointcloudReader reader(lasFile, { fgt::kBITXYZ });
+  auto pc = reader.ReadPointcloud();
+  const size_t count = pc->GetPointCount();
+  auto bbox = pc->GetBufTile();
+
+  WallClock wclock;
+
+  // create rectangle enclosing all the vertices
+  Point2f origin{ float(bbox.minX) - 1, float(bbox.minY) - 1 };
+  cv::Rect rect{ 0, 0, int(ceil(bbox.width)) + 2, int(ceil(bbox.height)) + 2 };
+  CvDelaunay2d dt(rect);
+
+  // add vertices into triangulation
+  for (size_t j = 0; j < count; ++j) {
+    const auto xyz = pc->GetField<XYZF>(j);
+    dt.insert(Point2f{ xyz.x - origin.x, xyz.y - origin.y });
+  }
+  pc.reset();
+
+  double ti = wclock.TimeSinceStart();
+  std::cerr << "delaunay: triangulated " << count << " vertices\n"
+    << "          ellapsed time " << ti << " s" << std::endl;
+
+  std::vector<Point2f> vertices;
+  std::vector<DTTriangle> tris;
+  dt.GetPlyInfo(vertices, tris);
+
+  ti = wclock.TimeSinceStart() - ti;
+  std::cerr << "          GetPlyInfo time " << ti << " s" << std::endl;
+
+  // write triangulation
+  std::ofstream ofs(plyFile.c_str());
+  ofs << std::fixed;
+  ofs << "ply\nformat ascii 1.0\n"
+    << "element vertex " << vertices.size()
+    << "\nproperty float x\nproperty float y\nproperty float z\n"
+    << "element face " << tris.size()
+    << "\nproperty list uchar int vertex_index\n"
+    << "end_header\n";
+
+  for (auto& v : vertices) {
+    ofs << v.x + origin.x << ' ' << v.y + origin.y << " 0.0\n";
+  }
+  for (auto& t : tris) {
+    ofs << "3 " << t.t0 << ' ' << t.t1 << ' ' << t.t2 << "\n";
+  }
 }
 }

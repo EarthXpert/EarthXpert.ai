@@ -35,7 +35,9 @@ struct GtsOptions {
 
 void EXUTILS_EXPORTS Las2Gts(const std::string& lasFile, 
   const std::string& gtsFile, const CvOptions& cvOpt);
-  
 void EXUTILS_EXPORTS Las2Gts(const std::string& lasFile, 
   const std::string& gtsFile, const GtsOptions& gtsOpt);
+
+void EXUTILS_EXPORTS Las2Ply(const std::string& lasFile,
+  const std::string& plyFile, const CvOptions& cvOpt);
 }

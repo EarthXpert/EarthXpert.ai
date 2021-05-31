@@ -21,20 +21,22 @@ public:
   };
 
   // triangle described by three edge Ids indexed into edges array
+  // or three vertex Ids indexed into vertices array
   struct DTTriangle {   // Point3i
-    int e0{}; // 1st edge
-    int e1{}; // 2nd edge
-    int e2{}; // 3rd edge
+    int t0{}; // 1st edge/vertex
+    int t1{}; // 2nd edge/vertex
+    int t2{}; // 3rd edge/vertex
   };
 
   CvDelaunay2d(const cv::Rect& rect);
   ~CvDelaunay2d() = default;
 
   void EstimateStatistics();
-  std::vector<Point2f> GetVertices() const;
-  std::vector<DTEdge> GetEdges() const;
-  std::vector<DTTriangle> GetTriangles(const std::vector<DTEdge>& edges) const;
   std::vector<int> GetVoronoi(std::vector<std::vector<int>>& voronoi) const;
+
+  void GetGtsInfo(std::vector<Point2f>& vertices,
+    std::vector<DTEdge>& edges, std::vector<DTTriangle>& tris);
+  void GetPlyInfo(std::vector<Point2f>& vertices, std::vector<DTTriangle>& tris);
 
 private:
   static constexpr int kVE = 4;

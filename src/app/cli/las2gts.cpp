@@ -70,7 +70,7 @@ int main(int argc, char** argv) {
 
   if (std::string::npos != l2gOpt.backend.find("cv")) {
     CvOptions cvOpt;
-    Las2Gts(l2gOpt.lasf, l2gOpt.gtsf, cvOpt);
+    Las2Ply(l2gOpt.lasf, l2gOpt.gtsf, cvOpt);
   }    // OpenCV Subdiv2D
   else if (std::string::npos != l2gOpt.backend.find("gts")) {
     GtsOptions gtsOpt;

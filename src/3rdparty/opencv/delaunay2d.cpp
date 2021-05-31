@@ -20,42 +20,28 @@ void CvDelaunay2d::EstimateStatistics() {
 }
 
 /**
- *  each vertex is represented by two coordinates.
- *
- *  \return an array of vertices.
- *  \todo delete the first 4 vertices
+ *  retrieve data structures for GTS
+ *  \todo skip the fist 4 vertices
  */
-std::vector<Point2f> CvDelaunay2d::GetVertices() const {
+void CvDelaunay2d::GetGtsInfo(std::vector<Point2f>& vertices,
+  std::vector<DTEdge>& edges, std::vector<DTTriangle>& tris) {
+  // each vertex is represented by two coordinates.
   assert(INT_MAX > vtx.size());
-  const int total = int(vtx.size());
-  mNumV = total - kVE;
+  const int numV = int(vtx.size());
+  vertices.reserve(numV);
 
-  std::vector<Point2f> vertices;
-  vertices.reserve(total);  // mNumV
-
-  // skip the fist 4 vertices
-  for (int i = 0; i < total; ++i) {
+  for (int i = 0; i < numV; ++i) {
     vertices.emplace_back(vtx[i].pt);
   }
 
   mNumV = int(vertices.size());
-  return vertices;
-}
 
-/**
- *  each edge is represented by two Ids indexed into vertices array.
- *
- *  \return an array of edges.
- */
-std::vector<DTEdge> CvDelaunay2d::GetEdges() const {
+  // each edge is represented by two Ids indexed into vertices array.
   assert(INT_MAX > qedges.size());
-  const int total = int(qedges.size());
-  mNumE = std::max(total - kVE, mNumV * 3);
+  const int numE = int(qedges.size());
+  edges.reserve(std::max(numE - kVE, mNumV * 3));
 
-  std::vector<DTEdge> edges;
-  edges.reserve(mNumE);
-
-  for (int i = kVE; i < total; i++) {
+  for (int i = kVE; i < numE; i++) {
     if (qedges[i].isfree()) continue;
 
     const int v0 = qedges[i].pt[0];
@@ -66,32 +52,22 @@ std::vector<DTEdge> CvDelaunay2d::GetEdges() const {
   }
 
   mNumE = int(edges.size());
-  return edges;
-}
 
-/**
- *  each triangle is represented by three Ids indexed into edges array.
- * 
- *  \return an array of triangles.
- */
-std::vector<DTTriangle> 
-CvDelaunay2d::GetTriangles(const std::vector<DTEdge>& edges) const {
-  assert(INT_MAX > qedges.size()*4);
-  mNumT = std::max(mNumV * 2, mNumE * 2 / 3);
+  // each triangle is represented by three Ids indexed into edges array.
+  assert(INT_MAX > qedges.size() * 4);
   const Rect2f rect(topLeft.x, topLeft.y,
     bottomRight.x - topLeft.x, bottomRight.y - topLeft.y);
+  tris.reserve(std::max(mNumV * 2, mNumE * 2 / 3));
 
-  const int total4 = int(qedges.size() * 4);
-  std::vector<bool> edgeMask(total4, false);
-  std::vector<DTTriangle> tris;
-  tris.reserve(mNumT);
+  const int numE4 = int(qedges.size() * 4);
+  std::vector<bool> edgeMask(numE4, false);
 
   auto eqVtx = [](const DTEdge& e, const int v0, const int v1) {
     return (e.v0 == v0 && e.v1 == v1) || (e.v1 == v0 && e.v0 == v1);
   };
 
   Point2f v0, v1, v2;
-  for (int i = kVE; i < total4; i += 2) {
+  for (int i = kVE; i < numE4; i += 2) {
     if (edgeMask[i]) continue;
 
     const int em0 = i;
@@ -147,11 +123,69 @@ CvDelaunay2d::GetTriangles(const std::vector<DTEdge>& edges) const {
     }
 
     if (0 == ei[0] || 0 == ei[1] || 0 == ei[2]) continue;
-    tris.emplace_back<DTTriangle>({ei[0], ei[1], ei[2]});
+
+    tris.emplace_back<DTTriangle>({ ei[0], ei[1], ei[2] });
   }
 
   mNumT = int(tris.size());
-  return tris;
+}
+
+/**
+ *  retrieve data structures for PLY
+ */
+void CvDelaunay2d::GetPlyInfo(std::vector<Point2f>& vertices,
+  std::vector<DTTriangle>& tris) {
+  // each vertex is represented by two coordinates.
+  assert(INT_MAX > vtx.size());
+  const int numV = int(vtx.size());
+  vertices.reserve(numV - kVE);
+
+  for (int i = kVE; i < numV; ++i) {
+    vertices.emplace_back(vtx[i].pt);
+  }
+
+  mNumV = int(vertices.size());
+
+  mNumE = std::max(int(qedges.size()) - kVE, mNumV * 3);
+
+  // each triangle is represented by three Ids indexed into edges array.
+  assert(INT_MAX > qedges.size() * 4);
+  const Rect2f rect(topLeft.x, topLeft.y,
+    bottomRight.x - topLeft.x, bottomRight.y - topLeft.y);
+  tris.reserve(std::max(mNumV * 2, mNumE * 2 / 3));
+
+  const int numE4 = int(qedges.size() * 4);
+  std::vector<bool> edgeMask(numE4, false);
+
+  Point2f v0, v1, v2;
+  for (int i = kVE; i < numE4; i += 2) {
+    if (edgeMask[i]) continue;
+
+    const int em0 = i;
+    int vi0 = edgeOrg(em0, &v0);
+    if (!rect.contains(v0)) continue;
+
+    const int em1 = getEdge(em0, NEXT_AROUND_LEFT);
+    int vi1 = edgeOrg(em1, &v1);
+    if (!rect.contains(v1)) continue;
+
+    const int em2 = getEdge(em1, NEXT_AROUND_LEFT);
+    int vi2 = edgeOrg(em2, &v2);
+    if (!rect.contains(v2)) continue;
+
+    edgeMask[em0] = true;
+    edgeMask[em1] = true;
+    edgeMask[em2] = true;
+
+    vi0 -= kVE;
+    vi1 -= kVE;
+    vi2 -= kVE;
+    if (0 > vi0 || 0 > vi1 || 0 > vi2) continue;
+
+    tris.emplace_back<DTTriangle>({vi0, vi1, vi2});
+  }
+
+  mNumT = int(tris.size());
 }
 
 /**
