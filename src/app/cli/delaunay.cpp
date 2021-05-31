@@ -56,25 +56,25 @@ int main(int argc, char** argv) {
     return 0;
   }
 
-  Las2GtsOptions l2gOpt;
-  l2gOpt.backend = vm["backend"].as<std::string>();
-  l2gOpt.lasf = vm["lasf"].as<std::string>();
-  l2gOpt.gtsf = vm["gtsf"].as<std::string>();
-  l2gOpt.memSize = size_t(vm["memsize"].as<int>()) * 1024 * 1024;  // [unit: bytes]
+  DelaunayOptions dlOpt;
+  dlOpt.backend = vm["backend"].as<std::string>();
+  dlOpt.lasf = vm["lasf"].as<std::string>();
+  dlOpt.tinf = vm["gtsf"].as<std::string>();
+  dlOpt.memSize = size_t(vm["memsize"].as<int>()) * 1024 * 1024;  // [unit: bytes]
 
-  if (l2gOpt.gtsf.empty()) {
-    fs::path filePath(l2gOpt.lasf);
-    l2gOpt.gtsf = filePath.parent_path().string() + 
-      utils::PathReplaceExt(l2gOpt.lasf, ".gts");
+  if (dlOpt.tinf.empty()) {
+    fs::path filePath(dlOpt.lasf);
+    dlOpt.tinf = filePath.parent_path().string() + 
+      utils::PathReplaceExt(dlOpt.lasf, ".ply");
   }
 
-  if (std::string::npos != l2gOpt.backend.find("cv")) {
+  if (std::string::npos != dlOpt.backend.find("cv")) {
     CvOptions cvOpt;
-    Las2Ply(l2gOpt.lasf, l2gOpt.gtsf, cvOpt);
+    Las2Ply(dlOpt.lasf, dlOpt.tinf, cvOpt);
   }    // OpenCV Subdiv2D
-  else if (std::string::npos != l2gOpt.backend.find("gts")) {
+  else if (std::string::npos != dlOpt.backend.find("gts")) {
     GtsOptions gtsOpt;
-    Las2Gts(l2gOpt.lasf, l2gOpt.gtsf, gtsOpt);
+    Las2Gts(dlOpt.lasf, dlOpt.tinf, gtsOpt);
   }    // GNU Triangulated Surface
   else {
     assert(false && "backend is not supported");

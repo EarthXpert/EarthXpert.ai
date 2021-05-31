@@ -31,8 +31,12 @@ public:
   CvDelaunay2d(const cv::Rect& rect);
   ~CvDelaunay2d() = default;
 
+  void SetOrigin(const Point2f& origin) { mOrigin = origin;  }
+
   void EstimateStatistics();
   std::vector<int> GetVoronoi(std::vector<std::vector<int>>& voronoi) const;
+
+  Point2f GetOrigin() const noexcept { return mOrigin; }
 
   void GetGtsInfo(std::vector<Point2f>& vertices,
     std::vector<DTEdge>& edges, std::vector<DTTriangle>& tris);
@@ -41,7 +45,7 @@ public:
 private:
   static constexpr int kVE = 4;
 
-  //Point2f mOrigin{};
+  Point2f mOrigin{};
 
   // estimated statistics
   mutable int mNumV{};  // vertices

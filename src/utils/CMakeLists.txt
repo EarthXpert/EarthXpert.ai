@@ -2,7 +2,8 @@ project(exutils CXX)
 
 add_definitions(-DEXUTILS_API -DNATIVE_WIN32)
 set(exutils_srcs 
-  "pointcloud/las2gts.cpp"
+  "./pcutils.cpp"
+  "pointcloud/delaunay.cpp"
   "pointcloud/pointcloudrasterize.cpp")
 set(exutils_items ex3rdparty core dataio exdem sensormodel
   Boost::boost Boost::filesystem Boost::iostreams
