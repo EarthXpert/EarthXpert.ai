@@ -83,6 +83,7 @@ set(ex3rdparty_srcs
   "stl/exstl.cpp"
   "taskflow/extaskflow.cpp"
   "tbb/extbb.cpp"
+  "tinyply/extinyply.cpp"
   "utils/utils.cpp"
   "vld/exvld.cpp"
   "vxl/exvxl.cpp"
@@ -102,7 +103,7 @@ set(ex3rdparty_items Boost::boost Boost::date_time Boost::filesystem
   OpenImageIO::OpenImageIO OpenImageIO::OpenImageIO_Util 
   ${nsimd_LIBRARIES} ${PCRE_LIBRARIES} ${PDAL_LIBRARIES} ${proj_LIBRARIES} ${Protobuf_LIBRARIES} 
   ${PYTHON_LIBRARIES} Qt5::Widgets 
-  ${Simd_LIBRARIES} ${SLTBENCH_LIBRARIES} ${TBB_LIBRARIES} ${tiff_LIBRARIES}
+  ${Simd_LIBRARIES} ${SLTBENCH_LIBRARIES} ${TBB_LIBRARIES} ${tiff_LIBRARIES} tinyply
   ${wxwidgets_LIBRARIES} ${zlib_LIBRARIES})   
 exai_add_library(ex3rdparty "3rdparty"
   SRCS ${ex3rdparty_srcs}

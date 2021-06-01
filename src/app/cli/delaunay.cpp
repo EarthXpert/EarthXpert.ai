@@ -70,7 +70,15 @@ int main(int argc, char** argv) {
         utils::PathReplaceExt(dlOpt.lasf, ".ply");
     }
     CvOptions cvOpt;
-    Las2Ply(dlOpt.lasf, dlOpt.tinf, cvOpt);
+    if (std::string::npos != dlOpt.tinf.find(".gts")) {
+      Las2Gts(dlOpt.lasf, dlOpt.tinf, cvOpt);
+    }
+    else if (std::string::npos != dlOpt.tinf.find(".ply")) {
+      Las2Ply(dlOpt.lasf, dlOpt.tinf, cvOpt);
+    }
+    else {
+      assert(false && "unsupported format");
+    }
   }    // OpenCV Subdiv2D
   else if (std::string::npos != dlOpt.backend.find("gts")) {
     if (dlOpt.tinf.empty()) {
@@ -78,7 +86,15 @@ int main(int argc, char** argv) {
         utils::PathReplaceExt(dlOpt.lasf, ".gts");
     }
     GtsOptions gtsOpt;
-    Las2Gts(dlOpt.lasf, dlOpt.tinf, gtsOpt);
+    if (std::string::npos != dlOpt.tinf.find(".gts")) {
+      Las2Gts(dlOpt.lasf, dlOpt.tinf, gtsOpt);
+    }
+    else if (std::string::npos != dlOpt.tinf.find(".ply")) {
+      Las2Ply(dlOpt.lasf, dlOpt.tinf, gtsOpt);
+    }
+    else {
+      assert(false && "unsupported format");
+    }
   }    // GNU Triangulated Surface
   else {
     assert(false && "backend is not supported");

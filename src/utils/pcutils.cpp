@@ -105,15 +105,36 @@ void Las2Ply(const std::string& lasFile,
 void Las2Gts(const std::string& lasFile,
   const std::string& gtsFile, const GtsOptions& gtsOpt) {
   auto surface = GtsDelaunay(lasFile, gtsOpt);
-  
+
   WallClock wclock;
 
   // WriteGtsFile
-  UPFile fp{fopen(gtsFile.c_str(), "wt"), fclose};
+  UPFile fp{ fopen(gtsFile.c_str(), "wt"), fclose };
   gts_surface_write(surface, fp.get());
 
   if (gtsOpt.verbose) {
     std::cerr << "          WriteGtsFile time " << wclock.TimeSinceStart() << " s" << std::endl;
   }
+}
+
+/**
+ *  \brief pointcloud format conversion from .las to .ply
+ */
+void Las2Ply(const std::string& lasFile,
+  const std::string& plyFile, const GtsOptions& gtsOpt) {
+  //auto dt = GtsDelaunay(lasFile, gtsOpt);
+
+  //WallClock wclock;
+
+  //std::vector<Point2f> vertices;
+  //std::vector<DTTriangle> tris;
+  //dt->GetPlyInfo(vertices, tris);
+
+  //if (gtsOpt.verbose) {
+  //  std::cerr << "          GetPlyInfo time " << wclock.TimeSinceStart() << " s" << std::endl;
+  //}
+
+  //const auto origin = dt->GetOrigin();
+  //detail::WritePlyFile(plyFile, origin, vertices, tris);
 }
 }
