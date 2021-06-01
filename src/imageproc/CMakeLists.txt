@@ -9,7 +9,8 @@ set(imageproc_srcs
   "algorithm/waterbodydetect.cpp"
   "algorithm/superres.cpp"
   "filter/atcomp.cpp"
-  "filter/imagefilter.cpp")
+  "filter/imagefilter.cpp"
+  "utils/utils.cpp")
 set(imageproc_items ex3rdparty core  
         ${GDAL_LIBRARIES} ${OpenCL_LIBS} ${OpenCV_LIBS})
 exai_add_library(imageproc "api"

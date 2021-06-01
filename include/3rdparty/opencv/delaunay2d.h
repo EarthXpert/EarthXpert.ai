@@ -40,7 +40,7 @@ public:
 
   void GetGtsInfo(std::vector<Point2f>& vertices,
     std::vector<DTEdge>& edges, std::vector<DTTriangle>& tris);
-  void GetPlyInfo(std::vector<Point2f>& vertices, std::vector<DTTriangle>& tris);
+  void GetPlyInfo(std::vector<Point3f>& vertices, std::vector<DTTriangle>& tris);
 
 private:
   static constexpr int kVE = 4;

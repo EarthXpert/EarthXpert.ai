@@ -15,7 +15,8 @@ set(marshaller_srcs
   "sensormodel/rationalmodelmarshaller.cpp"
   "sfm/featuremarshaller.cpp"
   "support/adssupportmarshaller.cpp"
-  "support/supportmarshaller.cpp")
+  "support/supportmarshaller.cpp"
+  "utils/utils.cpp")
 set(marshaller_items ex3rdparty core epipolarmodel exproject sensormodel
   ${GDAL_LIBRARIES} ${ICONV_LIBRARIES} ${LIBXML2_LIBRARIES})
 exai_add_library(marshaller "api"
