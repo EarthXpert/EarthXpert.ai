@@ -12,6 +12,36 @@ CvDelaunay2d::CvDelaunay2d(const cv::Rect& rect)
   : Subdiv2D(rect) {
 }
 
+/**
+ *  Locate the triangle containing the given point.
+ * 
+ *  \param [in] p the point to locate
+ *  \param [out] tri three verices indices if inside, the first two
+ *               vertices if on edge, the fist vertex if coincide.
+ * 
+ *  \return Return 
+ */
+int CvDelaunay2d::Locate(const Point2f& p, DTTriangle& tri) {
+  int e0{}, v0{};
+  const int loc = Locate(p, e0, v0);
+
+  if (PTLOC_VERTEX == loc) {
+    tri.t0 = v0;
+  }
+  else if (PTLOC_ON_EDGE == loc) {
+    tri.t0 = edgeOrg(e0);
+    tri.t1 = edgeDst(e0);
+  }
+  else {  // PTLOC_INSIDE
+    tri.t0 = v0;
+    const int e1 = getEdge(e0, NEXT_AROUND_LEFT);
+    tri.t1 = edgeOrg(e1);
+    const int e2 = getEdge(e1, NEXT_AROUND_LEFT);
+    tri.t2 = edgeOrg(e2);
+  }
+  return loc;
+}
+
 void CvDelaunay2d::EstimateStatistics() {
   mNumV = int(vtx.size()) - kVE;
   mNumE = std::max(int(qedges.size()) - kVE, mNumV * 3);
@@ -33,7 +63,6 @@ void CvDelaunay2d::GetGtsInfo(std::vector<Point2f>& vertices,
   for (int i = 0; i < numV; ++i) {
     vertices.emplace_back(vtx[i].pt + mOrigin);
   }
-
   mNumV = int(vertices.size());
 
   // each edge is represented by two Ids indexed into vertices array.
@@ -46,11 +75,10 @@ void CvDelaunay2d::GetGtsInfo(std::vector<Point2f>& vertices,
 
     const int v0 = qedges[i].pt[0];
     const int v2 = qedges[i].pt[2];
-    if (v0 > 0 && v2 > 0) {
+    if (0 < v0 && 0 < v2) {
       edges.emplace_back<DTEdge>({v0, v2});
     }
   }
-
   mNumE = int(edges.size());
 
   // each triangle is represented by three Ids indexed into edges array.
@@ -87,7 +115,7 @@ void CvDelaunay2d::GetGtsInfo(std::vector<Point2f>& vertices,
     edgeMask[em2] = true;
 
     if (kVE > vi0 || kVE > vi1 || kVE > vi2) continue;
-    int ei[3]{};
+    int ei[3]{};  // edge indices
 
 #pragma omp parallel sections num_threads(3)
     {
@@ -126,7 +154,6 @@ void CvDelaunay2d::GetGtsInfo(std::vector<Point2f>& vertices,
 
     tris.emplace_back<DTTriangle>({ ei[0], ei[1], ei[2] });
   }
-
   mNumT = int(tris.size());
 }
 
@@ -145,7 +172,6 @@ void CvDelaunay2d::GetPlyInfo(std::vector<Point3f>& vertices,
   }
 
   mNumV = int(vertices.size());
-
   mNumE = std::max(int(qedges.size()) - kVE, mNumV * 3);
 
   // each triangle is represented by three Ids indexed into edges array.
@@ -163,7 +189,7 @@ void CvDelaunay2d::GetPlyInfo(std::vector<Point3f>& vertices,
 
     const int em0 = i;
     int vi0 = edgeOrg(em0, &v0);
-    if (!rect.contains(v0)) continue;
+    if (!rect.contains(v0)) continue; // ? 4 > vi0
 
     const int em1 = getEdge(em0, NEXT_AROUND_LEFT);
     int vi1 = edgeOrg(em1, &v1);
@@ -200,4 +226,95 @@ std::vector<int> CvDelaunay2d::GetVoronoi(
 
   mNumP = int(centers.size());
   return centers;
+}
+
+int CvDelaunay2d::Locate(const Point2f& p, int& ei, int& vi) {
+  if (qedges.size() < 4 || p.x < topLeft.x || p.y < topLeft.y ||
+    p.x >= bottomRight.x || p.y >= bottomRight.y) {
+    return PTLOC_ERROR;
+  }
+
+  ei = recentEdge;
+
+  int right_of_curr = isRightOf(p, ei);
+  if (0 < right_of_curr) {
+    ei = symEdge(ei);
+    right_of_curr = -right_of_curr;
+  }
+
+  const int numE4 = int(qedges.size()) * 4;
+  int loc = PTLOC_ERROR;
+
+  for (int i = 0; i < numE4; i++) {
+    int onext_edge = nextEdge(ei);
+    int dprev_edge = getEdge(ei, PREV_AROUND_DST);
+
+    int right_of_onext = isRightOf(p, onext_edge);
+    int right_of_dprev = isRightOf(p, dprev_edge);
+
+    if (0 < right_of_dprev) {
+      if (0 < right_of_onext || (0 == right_of_onext && 0 == right_of_curr)) {
+        loc = PTLOC_INSIDE;
+        break;
+      }
+      else {
+        right_of_curr = right_of_onext;
+        ei = onext_edge;
+      }
+    }
+    else {
+      if (0 < right_of_onext) {
+        if (0 == right_of_dprev && 0 == right_of_curr) {
+          loc = PTLOC_INSIDE;
+          break;
+        }
+        else {
+          right_of_curr = right_of_dprev;
+          ei = dprev_edge;
+        }
+      }
+      else if (0 == right_of_curr &&
+        isRightOf(vtx[edgeDst(onext_edge)].pt, ei) >= 0) {
+        ei = symEdge(ei);
+      }
+      else {
+        right_of_curr = right_of_onext;
+        ei = onext_edge;
+      }
+    }
+  }
+
+  recentEdge = ei;
+  vi = 0;
+
+  if (PTLOC_INSIDE == loc) {
+    Point2f po, pd;
+    const int vio = edgeOrg(ei, &po);
+    const int vid = edgeDst(ei, &pd);
+
+    const double d1 = fabs(p.x - po.x) + fabs(p.y - po.y);
+    const double d2 = fabs(p.x - pd.x) + fabs(p.y - pd.y);
+    const double d3 = fabs(po.x - pd.x) + fabs(po.y - pd.y);
+
+    auto triArea = [](Point2f a, Point2f b, Point2f c) {
+      return ((double)b.x - a.x) * ((double)c.y - a.y) - 
+        ((double)b.y - a.y) * ((double)c.x - a.x);
+    };
+
+    if (FLT_EPSILON > d1) {
+      loc = PTLOC_VERTEX;
+      ei = 0;
+      vi = vio;
+    }
+    else if (FLT_EPSILON > d2) {
+      loc = PTLOC_VERTEX;
+      ei = 0;
+      vi = vid;
+    }
+    else if ((d1 < d3 || d2 < d3) && fabs(triArea(p, po, pd)) < FLT_EPSILON) {
+      loc = PTLOC_ON_EDGE;
+    }
+  }
+
+  return loc;
 }

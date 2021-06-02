@@ -33,6 +33,8 @@ public:
 
   void SetOrigin(const Point2f& origin) { mOrigin = origin;  }
 
+  int Locate(const Point2f& p, DTTriangle& tri);
+
   void EstimateStatistics();
   std::vector<int> GetVoronoi(std::vector<std::vector<int>>& voronoi) const;
 
@@ -46,6 +48,8 @@ private:
   static constexpr int kVE = 4;
 
   Point2f mOrigin{};
+
+  int Locate(const Point2f& p, int& ei, int& vi);
 
   // estimated statistics
   mutable int mNumV{};  // vertices

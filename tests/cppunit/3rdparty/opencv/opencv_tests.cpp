@@ -5,6 +5,7 @@
 #include "3rdparty/gtest/gtest_main_gdal.h"
 #include "testconfig.h"
 #include "3rdparty/opencv/exopencv.h"
+#include "3rdparty/opencv/delaunay2d.h"
 
 #include "opencv2/imgcodecs.hpp"
 #include <filesystem>
@@ -43,5 +44,9 @@ TEST(opencv, imgcodecs) {
  *    3) load ds_rgb.tif and ds_hsiv.tif, and compare: min, max, average, rms, etc.
  */
 TEST(opencv, rgb_hsv_downsample) {
+
+}
+
+TEST(opencv, Subdiv2D) {
 
 }
