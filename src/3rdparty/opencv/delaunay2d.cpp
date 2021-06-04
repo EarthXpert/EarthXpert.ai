@@ -51,7 +51,6 @@ void CvDelaunay2d::EstimateStatistics() {
 
 /**
  *  retrieve data structures for GTS
- *  \todo skip the fist 4 vertices
  */
 void CvDelaunay2d::GetGtsInfo(std::vector<Point2f>& vertices,
   std::vector<DTEdge>& edges, std::vector<DTTriangle>& tris) {
@@ -76,7 +75,7 @@ void CvDelaunay2d::GetGtsInfo(std::vector<Point2f>& vertices,
     const int v0 = qedges[i].pt[0];
     const int v2 = qedges[i].pt[2];
     if (0 < v0 && 0 < v2) {
-      edges.emplace_back<DTEdge>({v0, v2});
+      edges.emplace_back<DTEdge>({ v0, v2 });
     }
   }
   mNumE = int(edges.size());
@@ -115,44 +114,13 @@ void CvDelaunay2d::GetGtsInfo(std::vector<Point2f>& vertices,
     edgeMask[em2] = true;
 
     if (kVE > vi0 || kVE > vi1 || kVE > vi2) continue;
-    int ei[3]{};  // edge indices
 
-#pragma omp parallel sections num_threads(3)
-    {
-    #pragma omp section
-      {
-        for (size_t e = 0; e < mNumE; ++e) {
-          if (eqVtx(edges[e], vi0, vi1)) {
-            ei[0] = e;
-            break;
-          }
-        }
-      }
+    const int ei0 = em0 / kVE - kVE;
+    const int ei1 = em1 / kVE - kVE;
+    const int ei2 = em2 / kVE - kVE;
+    if (0 > ei0 || 0 > ei1 || 0 > ei2) continue;
 
-    #pragma omp section
-      {
-        for (size_t e = 0; e < mNumE; ++e) {
-          if (eqVtx(edges[e], vi1, vi2)) {
-            ei[1] = e;
-            break;
-          }
-        }
-      }
-
-    #pragma omp section
-      {
-        for (size_t e = 0; e < mNumE; ++e) {
-          if (eqVtx(edges[e], vi2, vi0)) {
-            ei[2] = e;
-            break;
-          }
-        }
-      }
-    }
-
-    if (0 == ei[0] || 0 == ei[1] || 0 == ei[2]) continue;
-
-    tris.emplace_back<DTTriangle>({ ei[0], ei[1], ei[2] });
+    tris.emplace_back<DTTriangle>({ ei0, ei1, ei2 });
   }
   mNumT = int(tris.size());
 }
@@ -188,24 +156,21 @@ void CvDelaunay2d::GetPlyInfo(std::vector<Point3f>& vertices,
     if (edgeMask[i]) continue;
 
     const int em0 = i;
-    int vi0 = edgeOrg(em0, &v0);
-    if (!rect.contains(v0)) continue; // ? 4 > vi0
+    int vi0 = edgeOrg(em0, &v0) - kVE;
+    if (!rect.contains(v0)) continue; // ? 0 > vi0
 
     const int em1 = getEdge(em0, NEXT_AROUND_LEFT);
-    int vi1 = edgeOrg(em1, &v1);
+    int vi1 = edgeOrg(em1, &v1) - kVE;
     if (!rect.contains(v1)) continue;
 
     const int em2 = getEdge(em1, NEXT_AROUND_LEFT);
-    int vi2 = edgeOrg(em2, &v2);
+    int vi2 = edgeOrg(em2, &v2) - kVE;
     if (!rect.contains(v2)) continue;
 
     edgeMask[em0] = true;
     edgeMask[em1] = true;
     edgeMask[em2] = true;
 
-    vi0 -= kVE;
-    vi1 -= kVE;
-    vi2 -= kVE;
     if (0 > vi0 || 0 > vi1 || 0 > vi2) continue;
 
     tris.emplace_back<DTTriangle>({vi0, vi1, vi2});
