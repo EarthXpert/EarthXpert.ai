@@ -4,6 +4,7 @@
  */
 #include "3rdparty/opencv/delaunay2d.h"
 #include <omp.h>
+#include <numeric>
 
 using namespace earthxpert;
 using namespace cv;
@@ -59,7 +60,7 @@ void CvDelaunay2d::GetGtsInfo(std::vector<Point2f>& vertices,
   const int numV = int(vtx.size());
   vertices.reserve(numV);
 
-  for (int i = 0; i < numV; ++i) {
+  for (int i = kVE; i < numV; ++i) {
     vertices.emplace_back(vtx[i].pt + mOrigin);
   }
   mNumV = int(vertices.size());
@@ -69,16 +70,31 @@ void CvDelaunay2d::GetGtsInfo(std::vector<Point2f>& vertices,
   const int numE = int(qedges.size());
   edges.reserve(std::max(numE - kVE, mNumV * 3));
 
+  std::vector<int> eis;   // edge indices logic ruler
+  eis.reserve(std::max(numE - kVE, mNumV * 3));
+
   for (int i = kVE; i < numE; i++) {
     if (qedges[i].isfree()) continue;
 
-    const int v0 = qedges[i].pt[0];
-    const int v2 = qedges[i].pt[2];
-    if (0 < v0 && 0 < v2) {
+    int v0 = qedges[i].pt[0];
+    int v2 = qedges[i].pt[2];
+    if (0 >= v0 || 0 >= v2) continue;
+
+    v0 -= kVE;
+    v2 -= kVE;
+    if (0 <= v0 && 0 <= v2) {
       edges.emplace_back<DTEdge>({ v0, v2 });
+      eis.push_back(1);
+    }
+    else {
+      eis.push_back(0);
     }
   }
   mNumE = int(edges.size());
+
+  auto it = std::find(eis.begin(), eis.end(), 1);
+  *it = 0;
+  std::partial_sum(eis.begin(), eis.end(), eis.begin());
 
   // each triangle is represented by three Ids indexed into edges array.
   assert(INT_MAX > qedges.size() * 4);
@@ -120,7 +136,7 @@ void CvDelaunay2d::GetGtsInfo(std::vector<Point2f>& vertices,
     const int ei2 = em2 / kVE - kVE;
     if (0 > ei0 || 0 > ei1 || 0 > ei2) continue;
 
-    tris.emplace_back<DTTriangle>({ ei0, ei1, ei2 });
+    tris.emplace_back<DTTriangle>({ eis[ei0], eis[ei1], eis[ei2] });
   }
   mNumT = int(tris.size());
 }
