@@ -62,6 +62,14 @@ CvDelaunay(const std::string& lasFile, const CvOptions& cvOpt) {
 }
 
 /**
+ *  \brief Delaunay triangualtion by GEOS lib.
+ */
+std::unique_ptr<GeosDelaunay2d>
+GeoDelaunay(const std::string& lasFile, const GeosOptions& cvOpt) {
+  return {};
+}
+
+/**
  *  \brief Delaunay triangualtion by GNU Triangulated Surface lib.
  *  \todo memory management by GTS
  */

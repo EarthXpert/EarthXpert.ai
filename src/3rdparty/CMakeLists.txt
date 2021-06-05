@@ -5,6 +5,7 @@ message(STATUS "CGAL_LIBRARIES: ${CGAL_LIBRARIES}")
 message(STATUS "exiv2_LIBRARIES: ${exiv2_LIBRARIES}")
 message(STATUS "GDAL_LIBRARIES: ${GDAL_LIBRARIES}")
 message(STATUS "GETTEXT_LIBRARY: ${GETTEXT_LIBRARY}")
+message(STATUS "geos_LIBRARIES: ${geos_LIBRARIES}")
 message(STATUS "geotiff_LIBRARIES: ${geotiff_LIBRARIES}")
 message(STATUS "GLIB_LIBRARIES: ${GLIB_LIBRARIES}")
 message(STATUS "gsl_LIBRARIES: ${gsl_LIBRARIES}")
@@ -44,6 +45,7 @@ set(ex3rdparty_srcs
   "eigen/exeigen.cpp"
   "exiv2/exexiv2.cpp"
   "gdal/exgdal.cpp"
+  "geos/exgeos.cpp"
   "geotiff/exgeotiff.cpp"
   "geotrans/exgeotrans.cpp"
   #"geotrans/exgeotrans_utils.cpp"
@@ -95,9 +97,10 @@ set(ex3rdparty_srcs
   "zlib/exzlib.cpp")
 set(ex3rdparty_items Boost::boost Boost::date_time Boost::filesystem 
   Boost::iostreams Boost::locale Boost::numpy Boost::program_options Boost::python Boost::timer 
-  ${CERES_LIBRARY} ${CGAL_LIBRARIES} ${CUDA_LIBRARIES} ${exiv2_LIBRARIES}
-  ${GDAL_LIBRARIES} ${geotiff_LIBRARIES} ${geotrans_LIBRARIES} ${GLIB_LIBRARIES} glog::glog 
-  ${gsl_LIBRARIES} ${GTEST_BOTH_LIBRARIES} ${GTS_LIBRARIES} ${ICONV_LIBRARIES} ${lapack_LIBRARIES} ${LASLIB_LIBRARY} 
+  ${CERES_LIBRARY} ${CGAL_LIBRARIES} ${CUDA_LIBRARIES} ${exiv2_LIBRARIES} ${GDAL_LIBRARIES}
+  ${geos_LIBRARIES} ${geotiff_LIBRARIES} ${geotrans_LIBRARIES} ${GLIB_LIBRARIES} glog::glog 
+  ${gsl_LIBRARIES} ${GTEST_BOTH_LIBRARIES} ${GTS_LIBRARIES} ${ICONV_LIBRARIES} 
+  ${lapack_LIBRARIES} ${LASLIB_LIBRARY} 
   libInterpolate::Interpolate ${LIBXML2_LIBRARIES} ${MPFR4_LIBRARIES} ${MPIR_LIBRARIES} 
   ${OpenBLAS_LIBRARIES} ${OpenCL_LIBRARIES} ${OpenCV_LIBS} ${OpenEXR_LIBS} 
   OpenImageIO::OpenImageIO OpenImageIO::OpenImageIO_Util 

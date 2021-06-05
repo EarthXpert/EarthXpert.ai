@@ -5,6 +5,7 @@
 #pragma once
 
 #include "utils/exutils.h"
+#include "3rdparty/geos/delaunay2d.h"
 #include "3rdparty/gts/delaunay2d.h"
 #include "3rdparty/opencv/delaunay2d.h"
 
@@ -26,6 +27,9 @@ struct CvOptions {
   bool verbose{ true };
 };
 
+struct GeosOptions {
+};
+
 struct GtsOptions {
   double quality{ 0.0 };
   double area{ DBL_MAX };
@@ -40,6 +44,8 @@ struct GtsOptions {
 
 std::unique_ptr<CvDelaunay2d> EXUTILS_EXPORTS CvDelaunay(
   const std::string& lasFile, const CvOptions& cvOpt);
-EXUTILS_EXPORTS GtsSurface* GtsDelaunay(const std::string& lasFile, 
+std::unique_ptr<GeosDelaunay2d> EXUTILS_EXPORTS GeoDelaunay(
+  const std::string& lasFile, const GeosOptions& cvOpt);
+EXUTILS_EXPORTS GtsSurface* GtsDelaunay(const std::string& lasFile,
   const GtsOptions& gtsOpt);
 }
