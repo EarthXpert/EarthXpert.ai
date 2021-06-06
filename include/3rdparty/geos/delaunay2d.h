@@ -12,6 +12,8 @@
 namespace earthxpert {
 /**
  *  Class GeosDelaunay2d encapsulates GEOSGeometry.
+ * 
+ *  \note: implements QuadEdge but lower performance compared to OpenCV
  */
 class EX3RDPARTY_EXPORTS GeosDelaunay2d {
 public:
