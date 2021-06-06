@@ -35,22 +35,22 @@ std::unique_ptr<CvDelaunay2d>
 CvDelaunay(const std::string& lasFile, const CvOptions& cvOpt) {
   PointcloudReader reader(lasFile, { fgt::kBITXYZ });
   auto pc = reader.ReadPointcloud();
-  const size_t count = pc->GetPointCount();
   auto bbox = pc->GetBufTile();
 
   WallClock wclock;
 
   // create rectangle enclosing all the vertices
-  Point2f origin{ float(bbox.minX) - 1, float(bbox.minY) - 1 };
+  DTVertex2f origin{ float(bbox.minX) - 1, float(bbox.minY) - 1 };
   cv::Rect rect{ 0, 0, int(ceil(bbox.width)) + 2, int(ceil(bbox.height)) + 2 };
   
   auto dt = std::make_unique<CvDelaunay2d>(rect);
   dt->SetOrigin(origin);
 
   // add vertices into triangulation
+  const size_t count = pc->GetPointCount();
   for (size_t j = 0; j < count; ++j) {
     const auto xyz = pc->GetField<XYZF>(j);
-    dt->insert(Point2f{ xyz.x - origin.x, xyz.y - origin.y });
+    dt->Insert(xyz.x - origin.x, xyz.y - origin.y);
   }
   pc.reset();
 
@@ -62,10 +62,44 @@ CvDelaunay(const std::string& lasFile, const CvOptions& cvOpt) {
 }
 
 /**
+ *  \brief Delaunay triangualtion by Geogram lib.
+ */
+std::unique_ptr<GeogramDelaunay2d>
+GeogramDelaunay(const std::string& lasFile, const GeogramOptions& ggOpt) {
+  PointcloudReader reader(lasFile, { fgt::kBITXYZ });
+  auto pc = reader.ReadPointcloud();
+  const auto& XYZ = pc->GetField<XYZF>();
+
+  const size_t count = pc->GetPointCount();
+  std::vector<double> vertices(count*2);
+
+  for (size_t i = 0; i < count; ++i) {
+    const size_t i2 = i * 2;
+    vertices[i2] = XYZ[i].x;
+    vertices[i2+1] = XYZ[i].y;
+  }
+  pc.reset();
+
+  WallClock wclock;
+
+  auto dt = std::make_unique<GeogramDelaunay2d>();
+  //dt->SetOrigin(origin);
+
+  // add vertices into triangulation
+  dt->Insert(std::move(vertices));
+
+  if (ggOpt.verbose) {
+    std::cerr << "delaunay: " << count << " vertices\n"
+      << "          Triangulation time " << wclock.TimeSinceStart() << " s" << std::endl;
+  }
+  return dt;
+}
+
+/**
  *  \brief Delaunay triangualtion by GEOS lib.
  */
 std::unique_ptr<GeosDelaunay2d>
-GeoDelaunay(const std::string& lasFile, const GeosOptions& cvOpt) {
+GeosDelaunay(const std::string& lasFile, const GeosOptions& cvOpt) {
   return {};
 }
 

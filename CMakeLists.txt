@@ -114,6 +114,15 @@ if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
     set(GDAL_LIBRARIES debug "${GDAL_LIBRARY_DIR}/gdal_i.lib"
                        optimized "${GDAL_LIBRARY_DIR}/gdal_i.lib")
     
+    set(Geogram_ROOT "${EX_THIRD_PARTY}/geogram_1.7.5")
+    set(Geogram_BIN_DIR "${Geogram_ROOT}/bin/${CDEGREL}")
+    set(Geogram_INCLUDE_DIR "${Geogram_ROOT}/include")
+    set(Geogram_LIBRARY_DIR "${Geogram_ROOT}/lib/${CDEGREL}")
+    set(Geogram_LIBRARIES debug "${Geogram_LIBRARY_DIR}/geogram.lib"
+                          debug "${Geogram_LIBRARY_DIR}/geogram_num_3rdparty.lib"
+                          optimized "${Geogram_LIBRARY_DIR}/geogram.lib"
+                          optimized "${Geogram_LIBRARY_DIR}/geogram_num_3rdparty.lib")
+    
     set(geotiff_ROOT "${EX_THIRD_PARTY}/libgeotiff_1.4.2")
     set(geotiff_BIN_DIR "${geotiff_ROOT}/bin/${CDEGREL}")
     set(geotiff_DIR "${geotiff_ROOT}/share/libgeotiff")
@@ -502,8 +511,9 @@ find_package(CGAL CONFIG REQUIRED)   # CGAL::CGAL
 find_package(Eigen3 CONFIG REQUIRED)
 find_package(exiv2 CONFIG REQUIRED) # exiv2lib exiv2-xmp
 #find_package(GDAL REQUIRED)
-#find_package(geotrans CONFIG REQUIRED)
+#find_package(Geogram CONFIG REQUIRED)
 #find_package(geos CONFIG REQUIRED)
+#find_package(geotrans CONFIG REQUIRED)
 #find_package(geotiff CONFIG REQUIRED)
 #find_package(GETTEXT CONFIG REQUIRED)
 #find_package(gflags CONFIG REQUIRED)
@@ -603,6 +613,7 @@ message(STATUS "CUDA_INCLUDE_DIR: ${CUDA_INCLUDE_DIR}")
 message(STATUS "EIGEN3_INCLUDE_DIR: ${EIGEN3_INCLUDE_DIR}")
 message(STATUS "exiv2_INCLUDE_DIR: ${exiv2_INCLUDE_DIR}")
 message(STATUS "GDAL_INCLUDE_DIRS: ${GDAL_INCLUDE_DIRS}")
+message(STATUS "Geogram_INCLUDE_DIR: ${Geogram_INCLUDE_DIR}")
 message(STATUS "geos_INCLUDE_DIR: ${geos_INCLUDE_DIR}")
 message(STATUS "geotiff_INCLUDE_DIR: ${geotiff_INCLUDE_DIR}")
 message(STATUS "geotrans_INCLUDE_DIR: ${geotrans_INCLUDE_DIR}")
@@ -660,6 +671,7 @@ include_directories(${EIGEN3_INCLUDE_DIR})
 #include_directories(${EIGEN3LAPACK_INCLUDE_DIR})
 include_directories(${exiv2_INCLUDE_DIR})
 include_directories(${GDAL_INCLUDE_DIRS})
+include_directories(${Geogram_INCLUDE_DIR})
 include_directories(${geos_INCLUDE_DIR})
 include_directories(${geotiff_INCLUDE_DIR})
 include_directories(${geotrans_INCLUDE_DIR})

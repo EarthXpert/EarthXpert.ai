@@ -53,7 +53,7 @@ void CvDelaunay2d::EstimateStatistics() {
 /**
  *  retrieve data structures for GTS
  */
-void CvDelaunay2d::GetGtsInfo(std::vector<Point2f>& vertices,
+void CvDelaunay2d::GetGtsInfo(std::vector<DTVertex2f>& vertices,
   std::vector<DTEdge>& edges, std::vector<DTTriangle>& tris) {
   // each vertex is represented by two coordinates.
   assert(INT_MAX > vtx.size());
@@ -61,7 +61,7 @@ void CvDelaunay2d::GetGtsInfo(std::vector<Point2f>& vertices,
   vertices.reserve(numV);
 
   for (int i = kVE; i < numV; ++i) {
-    vertices.emplace_back(vtx[i].pt + mOrigin);
+    vertices.emplace_back<DTVertex2f>({ vtx[i].pt.x + mOrigin.x, vtx[i].pt.y + mOrigin.y });
   }
   mNumV = int(vertices.size());
 
@@ -144,7 +144,7 @@ void CvDelaunay2d::GetGtsInfo(std::vector<Point2f>& vertices,
 /**
  *  retrieve data structures for PLY
  */
-void CvDelaunay2d::GetPlyInfo(std::vector<Point3f>& vertices,
+void CvDelaunay2d::GetPlyInfo(std::vector<DTVertex3f>& vertices,
   std::vector<DTTriangle>& tris) {
   // each vertex is represented by two coordinates.
   assert(INT_MAX > vtx.size());
@@ -152,7 +152,8 @@ void CvDelaunay2d::GetPlyInfo(std::vector<Point3f>& vertices,
   vertices.reserve(numV - kVE);
 
   for (int i = kVE; i < numV; ++i) {
-    vertices.emplace_back(vtx[i].pt + mOrigin);
+    vertices.emplace_back<DTVertex3f>({ vtx[i].pt.x + mOrigin.x,
+      vtx[i].pt.y + mOrigin.y, 0.f });
   }
 
   mNumV = int(vertices.size());

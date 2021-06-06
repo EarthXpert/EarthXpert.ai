@@ -13,7 +13,7 @@ namespace bpo = boost::program_options;
 
 void AddOptions(bpo::options_description& optDesc) {
   optDesc.add_options()
-    ("backend", bpo::value<std::string>()->required(), "engine: cv|gts")
+    ("backend", bpo::value<std::string>()->required(), "engine: cv|gg|gts")
     ("lasf", bpo::value<std::string>()->required(), ".las file")
     ("tinf", bpo::value<std::string>()->required(), ".gts/.ply file")
     ("memsize,m", bpo::value<int>()->default_value(4000), "memory size in MB")
@@ -27,7 +27,7 @@ void AddOptions(bpo::options_description& optDesc) {
  *  \detail 
  *
  *  usage:  las2gts.exe [options]
- *      --backend     <cv|gnu>              // "cv"
+ *      --backend     <cv|gg|gnu>              // "cv"
  *      --lasf        [path_of_las_file]    // ".las"
  *      --tinf        [path_of_gts_file]    // ".gts", ".ply"
  *      --memsize     [memory_size_in_MB]   // 4000
@@ -80,6 +80,23 @@ int main(int argc, char** argv) {
       assert(false && "unsupported format");
     }
   }    // OpenCV Subdiv2D
+  else if (std::string::npos != dlOpt.backend.find("gg")) {
+    GEO::initialize();
+    if (dlOpt.tinf.empty()) {
+      dlOpt.tinf = filePath.parent_path().string() +
+        utils::PathReplaceExt(dlOpt.lasf, ".ply");
+    }
+    GeogramOptions ggOpt;
+    if (std::string::npos != dlOpt.tinf.find(".gts")) {
+      Las2Gts(dlOpt.lasf, dlOpt.tinf, ggOpt);
+    }
+    else if (std::string::npos != dlOpt.tinf.find(".ply")) {
+      Las2Ply(dlOpt.lasf, dlOpt.tinf, ggOpt);
+    }
+    else {
+      assert(false && "unsupported format");
+    }
+  }    // Geogram Delaunay2d
   else if (std::string::npos != dlOpt.backend.find("gts")) {
     if (dlOpt.tinf.empty()) {
       dlOpt.tinf = filePath.parent_path().string() +

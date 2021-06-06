@@ -7,7 +7,7 @@
 
 using namespace earthxpert;
 
-void GtsDelaunay2d::GetPlyInfo(std::vector<DTVertex>& vertices, 
+void GtsDelaunay2d::GetPlyInfo(std::vector<DTVertex3f>& vertices, 
   std::vector<DTTriangle>& tris) {
 
 }

@@ -13,7 +13,7 @@ using namespace tinyply;
 namespace earthxpert {
 namespace detail {
   // GNU triangulated surface format .gts
-  void WriteGtsFile(const std::string& gtsFile, const std::vector<Point2f>& vertices,
+  void WriteGtsFile(const std::string& gtsFile, const std::vector<DTVertex2f>& vertices,
     const std::vector<DTEdge>& edges, const std::vector<DTTriangle>& tris) {
     WallClock wclock;
 
@@ -37,7 +37,7 @@ namespace detail {
 
   // Polygon file format .ply
   void WritePlyFileEX(const std::string& plyFile, 
-    const std::vector<Point3f>& vertices, const std::vector<DTTriangle>& tris) {
+    const std::vector<DTVertex3f>& vertices, const std::vector<DTTriangle>& tris) {
     WallClock wclock;
 
     std::ofstream ofs(plyFile.c_str());
@@ -59,11 +59,11 @@ namespace detail {
   }
 
   void WritePlyFile(const std::string& plyFile, 
-    const std::vector<Point3f>& vertices, const std::vector<DTTriangle>& tris) {
+    const std::vector<DTVertex3f>& vertices, const std::vector<DTTriangle>& tris) {
     WallClock wclock;
 
     PlyFile ply;
-    auto vd = reinterpret_cast<uint8_t*>(const_cast<Point3f*>(vertices.data()));
+    auto vd = reinterpret_cast<uint8_t*>(const_cast<DTVertex3f*>(vertices.data()));
     ply.add_properties_to_element("vertex", { "x", "y", "z" }, 
       Type::FLOAT32, vertices.size(), vd, Type::INVALID, 0);
     auto td = reinterpret_cast<uint8_t*>(const_cast<DTTriangle*>(tris.data()));
@@ -88,7 +88,7 @@ void Las2Gts(const std::string& lasFile,
 
   WallClock wclock;
 
-  std::vector<Point2f> vertices;
+  std::vector<DTVertex2f> vertices;
   std::vector<DTEdge> edges;
   std::vector<DTTriangle> tris;
   dt->GetGtsInfo(vertices, edges, tris);
@@ -96,6 +96,8 @@ void Las2Gts(const std::string& lasFile,
   if (cvOpt.verbose) {
     std::cerr << "          GetGtsInfo time " << wclock.TimeSinceStart() << " s" << std::endl;
   }
+  dt.reset();
+
   detail::WriteGtsFile(gtsFile, vertices, edges, tris);
 }
 
@@ -108,13 +110,53 @@ void Las2Ply(const std::string& lasFile,
 
   WallClock wclock;
 
-  std::vector<Point3f> vertices;
+  std::vector<DTVertex3f> vertices;
   std::vector<DTTriangle> tris;
   dt->GetPlyInfo(vertices, tris);
 
   if (cvOpt.verbose) {
     std::cerr << "          GetPlyInfo time " << wclock.TimeSinceStart() << " s" << std::endl;
   }
+  dt.reset();
+
+  detail::WritePlyFile(plyFile, vertices, tris);
+}
+
+/**
+ *  \brief pointcloud format conversion from .las to .gts
+ */
+void Las2Gts(const std::string& lasFile,
+  const std::string& gtsFile, const GeogramOptions& ggOpt) {
+  auto dt = GeogramDelaunay(lasFile, ggOpt);
+
+  WallClock wclock;
+
+  if (ggOpt.verbose) {
+    std::cerr << "          GetGtsInfo time " << wclock.TimeSinceStart() << " s" << std::endl;
+  }
+  dt.reset();
+
+  // WriteGtsFile
+}
+
+/**
+ *  \brief pointcloud format conversion from .las to .ply
+ */
+void Las2Ply(const std::string& lasFile,
+  const std::string& plyFile, const GeogramOptions& ggOpt) {
+  auto dt = GeogramDelaunay(lasFile, ggOpt);
+
+  WallClock wclock;
+
+  std::vector<DTVertex3f> vertices;
+  std::vector<DTTriangle> tris;
+  dt->GetPlyInfo(vertices, tris);
+
+  if (ggOpt.verbose) {
+    std::cerr << "          GetPlyInfo time " << wclock.TimeSinceStart() << " s" << std::endl;
+  }
+  dt.reset();
+
   detail::WritePlyFile(plyFile, vertices, tris);
 }
 
@@ -127,9 +169,8 @@ void Las2Gts(const std::string& lasFile,
 
   WallClock wclock;
 
-  // WriteGtsFile
   UPFile fp{ fopen(gtsFile.c_str(), "wt"), fclose };
-  gts_surface_write(surface, fp.get());
+  gts_surface_write(surface, fp.get());  // WriteGtsFile
 
   if (gtsOpt.verbose) {
     std::cerr << "          WriteGtsFile time " << wclock.TimeSinceStart() << " s" << std::endl;
@@ -145,13 +186,15 @@ void Las2Ply(const std::string& lasFile,
 
   //WallClock wclock;
 
-  //std::vector<Point3f> vertices;
+  //std::vector<DTVertex3f> vertices;
   //std::vector<DTTriangle> tris;
   //dt->GetPlyInfo(vertices, tris);
 
   //if (gtsOpt.verbose) {
   //  std::cerr << "          GetPlyInfo time " << wclock.TimeSinceStart() << " s" << std::endl;
   //}
+  //dt.reset()
+  
   //detail::WritePlyFile(plyFile, vertices, tris);
 }
 }
