@@ -6,6 +6,7 @@
 
 #include "3rdparty/ex3rdparty.h"
 #include <geogram/delaunay/delaunay_2d.h>
+#include <geogram/delaunay/delaunay_3d.h>
 
 namespace earthxpert::thirdparty {
 } // namespace earthxpert::thirdparty

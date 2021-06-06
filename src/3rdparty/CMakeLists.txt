@@ -48,6 +48,7 @@ set(ex3rdparty_srcs
   "gdal/exgdal.cpp"
   "geogram/exgeogram.cpp"
   "geogram/delaunay2d.cpp"
+  "geogram/delaunay3d.cpp"
   "geos/exgeos.cpp"
   "geos/delaunay2d.cpp"
   "geotiff/exgeotiff.cpp"
