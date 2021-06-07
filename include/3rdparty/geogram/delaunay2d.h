@@ -5,7 +5,7 @@
 #pragma once
 
 #include "3rdparty/geogram/exgeogram.h"
-#include "3rdparty/types.h"
+#include "3rdparty/idelaunay2d.h"
 #include <memory>
 #include <vector>
 
@@ -13,7 +13,8 @@ namespace earthxpert {
 /**
  *  Class GeogramDelaunay2d encapsulates .
  */
-class EX3RDPARTY_EXPORTS GeogramDelaunay2d : public GEO::Delaunay2d {
+class EX3RDPARTY_EXPORTS GeogramDelaunay2d 
+  : public GEO::Delaunay2d, public IDelaunay2d {
 public:
   //GeogramDelaunay2d() : GEO::Delaunay2d() {}
   ~GeogramDelaunay2d() = default;
@@ -23,10 +24,12 @@ public:
     set_vertices((unsigned)mVertices.size()/2, mVertices.data());
   }
 
-  void GetPlyInfo(std::vector<DTVertex3f>& vertices, std::vector<DTTriangle>& tris);
+  void GetGtsInfo(std::vector<DTVertex2f>& vertices,
+    std::vector<DTEdge>& edges, std::vector<DTTriangle>& tris) override;
+  void GetPlyInfo(std::vector<DTVertex3f>& vertices, 
+    std::vector<DTTriangle>& tris) override;
 
 private:
-  DTVertex2f mOrigin;
   std::vector<double> mVertices;  // sequence of xy coordinates
 };
 

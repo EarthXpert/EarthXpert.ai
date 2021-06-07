@@ -7,6 +7,11 @@
 
 using namespace earthxpert;
 
+void GeogramDelaunay2d::GetGtsInfo(std::vector<DTVertex2f>& vertices,
+  std::vector<DTEdge>& edges, std::vector<DTTriangle>& tris) {
+
+}
+
 void GeogramDelaunay2d::GetPlyInfo(std::vector<DTVertex3f>& vertices, 
   std::vector<DTTriangle>& tris) {
   const int numV = int(mVertices.size()) / 2;
