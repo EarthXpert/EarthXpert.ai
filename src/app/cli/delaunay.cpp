@@ -27,7 +27,7 @@ void AddOptions(bpo::options_description& optDesc) {
  *  \detail 
  *
  *  usage:  las2gts.exe [options]
- *      --backend     <cv|gg|gnu>              // "cv"
+ *      --backend     <cv|gg|gs|gts>        // "cv"
  *      --lasf        [path_of_las_file]    // ".las"
  *      --tinf        [path_of_gts_file]    // ".gts", ".ply"
  *      --memsize     [memory_size_in_MB]   // 4000
@@ -64,6 +64,11 @@ int main(int argc, char** argv) {
 
   fs::path filePath(dlOpt.lasf);
 
+  // \todo refactor by template method
+  // 1. read point cloud
+  // 2. triangulation
+  // 3. get .gts/.ply info and write
+
   if (std::string::npos != dlOpt.backend.find("cv")) {
     if (dlOpt.tinf.empty()) {
       dlOpt.tinf = filePath.parent_path().string() +
@@ -92,6 +97,23 @@ int main(int argc, char** argv) {
     }
     else if (std::string::npos != dlOpt.tinf.find(".ply")) {
       Las2Ply(dlOpt.lasf, dlOpt.tinf, ggOpt);
+    }
+    else {
+      assert(false && "unsupported format");
+    }
+  }    // Geogram Delaunay2d
+  else if (std::string::npos != dlOpt.backend.find("gs")) {
+    GEO::initialize();
+    if (dlOpt.tinf.empty()) {
+      dlOpt.tinf = filePath.parent_path().string() +
+        utils::PathReplaceExt(dlOpt.lasf, ".ply");
+    }
+    GeosOptions gsOpt;
+    if (std::string::npos != dlOpt.tinf.find(".gts")) {
+      Las2Gts(dlOpt.lasf, dlOpt.tinf, gsOpt);
+    }
+    else if (std::string::npos != dlOpt.tinf.find(".ply")) {
+      Las2Ply(dlOpt.lasf, dlOpt.tinf, gsOpt);
     }
     else {
       assert(false && "unsupported format");

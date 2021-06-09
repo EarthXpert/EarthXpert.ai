@@ -13,7 +13,7 @@ namespace earthxpert {
 /**
  *  Class GtsDelaunay2d encapsulates GTS Surface.
  */
-class EX3RDPARTY_EXPORTS GtsDelaunay2d : public IDelaunay2d {
+class EX3RDPARTY_EXPORTS GtsDelaunay2d final : public IDelaunay2d {
 public:
   ~GtsDelaunay2d() = default;
 
@@ -23,7 +23,7 @@ public:
     std::vector<DTTriangle>& tris) override;
 
 private:
-  GtsSurface* mSurface{};
+  GtsSurface* mTin{};
 };
 
 using UPGtsDelaunay2d = std::unique_ptr<GtsDelaunay2d>;

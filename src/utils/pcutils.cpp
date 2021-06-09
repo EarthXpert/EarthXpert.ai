@@ -164,6 +164,44 @@ void Las2Ply(const std::string& lasFile,
  *  \brief pointcloud format conversion from .las to .gts
  */
 void Las2Gts(const std::string& lasFile,
+  const std::string& gtsFile, const GeosOptions& gsOpt) {
+  auto dt = GeosDelaunay(lasFile, gsOpt);
+
+  WallClock wclock;
+
+  if (gsOpt.verbose) {
+    std::cerr << "          GetGtsInfo time " << wclock.TimeSinceStart() << " s" << std::endl;
+  }
+  dt.reset();
+
+  // WriteGtsFile
+}
+
+/**
+ *  \brief pointcloud format conversion from .las to .ply
+ */
+void Las2Ply(const std::string& lasFile,
+  const std::string& plyFile, const GeosOptions& gsOpt) {
+  auto dt = GeosDelaunay(lasFile, gsOpt);
+
+  WallClock wclock;
+
+  std::vector<DTVertex3f> vertices;
+  std::vector<DTTriangle> tris;
+  dt->GetPlyInfo(vertices, tris);
+
+  if (gsOpt.verbose) {
+    std::cerr << "          GetPlyInfo time " << wclock.TimeSinceStart() << " s" << std::endl;
+  }
+  dt.reset();
+
+  detail::WritePlyFile(plyFile, vertices, tris);
+}
+
+/**
+ *  \brief pointcloud format conversion from .las to .gts
+ */
+void Las2Gts(const std::string& lasFile,
   const std::string& gtsFile, const GtsOptions& gtsOpt) {
   auto surface = GtsDelaunay(lasFile, gtsOpt);
 

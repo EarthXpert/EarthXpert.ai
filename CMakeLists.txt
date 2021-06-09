@@ -123,15 +123,7 @@ if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
                           optimized "${Geogram_LIBRARY_DIR}/geogram.lib"
                           optimized "${Geogram_LIBRARY_DIR}/geogram_num_3rdparty.lib")
     
-    set(geotiff_ROOT "${EX_THIRD_PARTY}/libgeotiff_1.4.2")
-    set(geotiff_BIN_DIR "${geotiff_ROOT}/bin/${CDEGREL}")
-    set(geotiff_DIR "${geotiff_ROOT}/share/libgeotiff")
-    set(geotiff_INCLUDE_DIR "${geotiff_ROOT}/include")
-    set(geotiff_LIBRARY_DIR "${geotiff_ROOT}/lib/${CDEGREL}")
-    set(geotiff_LIBRARIES debug "${geotiff_LIBRARY_DIR}/geotiff_d_i.lib"
-                          optimized "${geotiff_LIBRARY_DIR}/geotiff_i.lib")
-    
-    set(geos_ROOT "${EX_THIRD_PARTY}/geos_3.6.3")
+    set(geos_ROOT "${EX_THIRD_PARTY}/geos_3.9.0")
     set(geos_BIN_DIR "${geos_ROOT}/bin/${CDEGREL}")
     set(geos_INCLUDE_DIR "${geos_ROOT}/include")
     set(geos_LIBRARY_DIR "${geos_ROOT}/lib/${CDEGREL}")
@@ -139,6 +131,14 @@ if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
                        debug "${geos_LIBRARY_DIR}/geosd.lib"
                        optimized "${geos_LIBRARY_DIR}/geos.lib"
                        optimized "${geos_LIBRARY_DIR}/geos_c.lib")
+    
+    set(geotiff_ROOT "${EX_THIRD_PARTY}/libgeotiff_1.4.2")
+    set(geotiff_BIN_DIR "${geotiff_ROOT}/bin/${CDEGREL}")
+    set(geotiff_DIR "${geotiff_ROOT}/share/libgeotiff")
+    set(geotiff_INCLUDE_DIR "${geotiff_ROOT}/include")
+    set(geotiff_LIBRARY_DIR "${geotiff_ROOT}/lib/${CDEGREL}")
+    set(geotiff_LIBRARIES debug "${geotiff_LIBRARY_DIR}/geotiff_d_i.lib"
+                          optimized "${geotiff_LIBRARY_DIR}/geotiff_i.lib")
     
     set(geotrans_ROOT "${EX_THIRD_PARTY}/geotrans_3.8.0")
     set(geotrans_BIN_DIR "${geotrans_ROOT}/bin/${CDEGREL}")
@@ -513,8 +513,8 @@ find_package(exiv2 CONFIG REQUIRED) # exiv2lib exiv2-xmp
 #find_package(GDAL REQUIRED)
 #find_package(Geogram CONFIG REQUIRED)
 #find_package(geos CONFIG REQUIRED)
-#find_package(geotrans CONFIG REQUIRED)
 #find_package(geotiff CONFIG REQUIRED)
+#find_package(geotrans CONFIG REQUIRED)
 #find_package(GETTEXT CONFIG REQUIRED)
 #find_package(gflags CONFIG REQUIRED)
 #find_package(glib REQUIRED)

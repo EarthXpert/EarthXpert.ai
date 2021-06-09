@@ -52,7 +52,8 @@ VectorWriter::VectorWriter(const fs::path& vecFile, const std::string format,
  *  \param [in] layers an array of 1-based layer indices
  */
 void VectorWriter::Initialize(GDALDataset* dataset, const std::vector<LayerInfo>& layersInfo) {
-  mReader = std::make_unique<VectorReader>(dataset, layersInfo);
+  std::vector<int> layers;
+  mReader = std::make_unique<VectorReader>(dataset, layers);
   ObtainDatasetInfo();
 }
 

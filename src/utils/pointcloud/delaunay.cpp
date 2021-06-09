@@ -6,6 +6,7 @@
 #include "core/system/clock.h"
 #include "io/pointcloud/pointcloudreader.h"
 
+#include <geos/geom/CoordinateArraySequenceFactory.h>
 #include <boost/format.hpp>
 #include <array>
 #include <cassert>
@@ -99,8 +100,37 @@ GeogramDelaunay(const std::string& lasFile, const GeogramOptions& ggOpt) {
  *  \brief Delaunay triangualtion by GEOS lib.
  */
 std::unique_ptr<GeosDelaunay2d>
-GeosDelaunay(const std::string& lasFile, const GeosOptions& cvOpt) {
-  return {};
+GeosDelaunay(const std::string& lasFile, const GeosOptions& gsOpt) {
+  PointcloudReader reader(lasFile, { fgt::kBITXYZ });
+  auto pc = reader.ReadPointcloud();
+  const auto& XYZ = pc->GetField<XYZF>();
+
+  const size_t count = pc->GetPointCount();
+  std::vector<gsg::Coordinate> coords(count);
+
+  for (size_t i = 0; i < count; ++i) {
+    coords[i].x = XYZ[i].x;
+    coords[i].y = XYZ[i].y;
+  }
+  pc.reset();
+
+  auto csFac = gsg::CoordinateArraySequenceFactory::instance();
+  auto cs = csFac->create(std::move(coords), 2);
+
+  WallClock wclock;
+
+  auto dt = std::make_unique<GeosDelaunay2d>();
+  //dt->SetOrigin(origin);
+
+  // add vertices into triangulation
+  dt->Insert(*cs);
+  cs.reset();
+
+  if (gsOpt.verbose) {
+    std::cerr << "delaunay: " << count << " vertices\n"
+      << "          Triangulation time " << wclock.TimeSinceStart() << " s" << std::endl;
+  }
+  return dt;
 }
 
 /**

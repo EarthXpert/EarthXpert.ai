@@ -24,9 +24,9 @@ namespace earthxpert {
  */
 class EXIO_EXPORTS VectorReader final : public IVectorReader {
 public:
-  VectorReader(const std::string& vecFile, const std::vector<LayerInfo>& layersInfo = {});
-  VectorReader(const fs::path& vecFile, const std::vector<LayerInfo>& layersInfo = {});
-  VectorReader(GDALDataset* dataset, const std::vector<LayerInfo>& layersInfo = {});
+  VectorReader(const std::string& vecFile, const std::vector<int>& layers = {});
+  VectorReader(const fs::path& vecFile, const std::vector<int>& layers = {});
+  VectorReader(GDALDataset* dataset, const std::vector<int>& layers = {});
   VectorReader(const VectorReader&) = delete;
   VectorReader(VectorReader&&) = delete;
   ~VectorReader() = default;
@@ -110,11 +110,13 @@ private:
   void Initialize(GDALDataset* dataset);
 
   GDALDatasetUniquePtr mDataset;  // pointer to GDALDataset object
-  std::vector<LayerInfo> mLayersInfo;  // list of layers to read from
+  std::vector<int> mLayers;  // list of layers to read from
 
   mutable std::mutex mMutex;  // OGR thread unsafe?
 
   // cached information & metadata
+  int mFileNumLayers{};  // total number of layers of vector file
+  std::vector<LayerInfo> mLayersInfo;  // list of layers to read from
 
   void ObtainDatasetInfo();
 };

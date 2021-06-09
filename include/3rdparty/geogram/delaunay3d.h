@@ -13,7 +13,7 @@ namespace earthxpert {
 /**
  *  Class GeogramDelaunay3d encapsulates .
  */
-class EX3RDPARTY_EXPORTS GeogramDelaunay3d : public GEO::Delaunay3d {
+class EX3RDPARTY_EXPORTS GeogramDelaunay3d final : public GEO::Delaunay3d {
 public:
   ~GeogramDelaunay3d() = default;
 

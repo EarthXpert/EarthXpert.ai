@@ -13,7 +13,7 @@ namespace earthxpert {
 /**
  *  Class CvDelaunay2d extends Subdiv2D.
  */
-class EX3RDPARTY_EXPORTS CvDelaunay2d 
+class EX3RDPARTY_EXPORTS CvDelaunay2d final
   : public cv::Subdiv2D, public IDelaunay2d {
 public:
   CvDelaunay2d(const cv::Rect& rect);
