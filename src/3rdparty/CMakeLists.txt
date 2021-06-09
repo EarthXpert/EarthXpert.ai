@@ -66,6 +66,7 @@ set(ex3rdparty_srcs
   "interpolate/exinterpolate.cpp"
   "lapack/exlapack.cpp"
   "laslib/exlaslib.cpp"
+  "matplotlib/exmatplotlib.cpp"
   "mpfr/exmpfr.cpp"
   "mpir/exmpir.cpp"
   "nsimd/exnsimd.cpp"
