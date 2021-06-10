@@ -4,13 +4,14 @@
  */
 #include "3rdparty/gtest/gtest_main.h"
 #include "testconfig.h"
+#include "3rdparty/eigen/exeigen.h"
 #include "3rdparty/matplotlib/exmatplotlib.h"
 
-#include <Eigen/Dense>
 #include <cmath>
 #include <iostream>
 
 namespace plt = matplotlibcpp;
+using namespace earthxpert;
 
 constexpr int n = 5000;
 
@@ -40,16 +41,18 @@ TEST(matplotlib, plot) {
 
 /**
  *  TestCase 1:
+ */
 TEST(matplotlib, eigen) {
   Eigen::VectorXd x = Eigen::VectorXd::LinSpaced(200, 0, 6);
   Eigen::VectorXd y = x.array().sin().exp().matrix();  // exp(sin(x))
   Eigen::VectorXd z = x.array().cos().exp().matrix();  // exp(cos(x))
+  
+  std::vector<double> vx = VecEigen2Std(x);
+  std::vector<double> vy = VecEigen2Std(y);
+  std::vector<double> vz = VecEigen2Std(z);
 
-  plt::figure();
-
-  plt::plot(x, y, std::string("tab:red")); // semilogx
-  //plt::plot(x, z, std::string("tab:blue"), 
-  //  std::map<std::string, std::string>{ {"linestyle", "--"} });
+  plt::semilogx(vx, vy, std::string("tab:red")); 
+  plt::semilogx(vx, vz, std::string("tab:blue"));
 
   plt::xlabel("Time in lecture");
   plt::ylabel("Student confusion");
@@ -57,4 +60,3 @@ TEST(matplotlib, eigen) {
   plt::grid(true);
   plt::show();
 }
- */
