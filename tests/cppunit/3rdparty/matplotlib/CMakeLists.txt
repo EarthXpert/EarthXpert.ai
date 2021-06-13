@@ -1,7 +1,8 @@
 project(tests_cppunit_3rdparty_matplotlib CXX)
 
 add_3rdparty_cppunit_test(matplotlib_tests
-  ex3rdparty)
+  ex3rdparty
+  ${PYTHON_LIBRARIES})
 
 if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
   get_filename_component(BOOST_BIN_DIR "${Boost_DIR}/../.." ABSOLUTE)
