@@ -34,20 +34,17 @@ std::pair<int, int> EstimateTileSize(const size_t memSize,
   const size_t numPix = memSize / bpp;
   int tileNumCols{}, tileNumRows{};
 
-  if (eLK_FULLHEIGHT == kind)
-  {
+  if (eLK_FULLHEIGHT == kind) {
     tileNumCols = int(numPix / (size_t(numRows) + size_t(marginRows) * 2)) - marginCols * 2;
     tileNumCols = std::max(1, (tileNumCols / kTile)) * kTile;
     tileNumRows = numRows;
   }
-  else if (eLK_FULLWIDTH == kind)
-  {
+  else if (eLK_FULLWIDTH == kind) {
     tileNumCols = numCols;
     tileNumRows = int(numPix / (size_t(numCols) + size_t(marginCols) * 2)) - marginRows * 2;
     tileNumRows = std::max(1, (tileNumRows / kTile)) * kTile;
   }
-  else if (eLK_SQUARE == kind)
-  {
+  else if (eLK_SQUARE == kind) {
     //const int tileDim = int(sqrt(numPix));
     //tileNumCols = std::max(1, ((tileDim - marginCols * 2) / kTile)) * kTile;
     //tileNumRows = std::max(1, ((tileDim - marginRows * 2) / kTile)) * kTile;
@@ -56,8 +53,7 @@ std::pair<int, int> EstimateTileSize(const size_t memSize,
       (marginCols + marginRows);
     tileNumCols = tileNumRows = std::max(1, (tileDim / kTile)) * kTile;
   }
-  else
-  {
+  else {
     assert(false && "Unsupported LayoutKind");
   }
   assert(0 < tileNumCols && 0 < tileNumRows);

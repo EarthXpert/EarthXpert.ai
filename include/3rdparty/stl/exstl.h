@@ -9,6 +9,7 @@
 #include <algorithm>
 #include <cassert>
 #include <chrono>
+#include <cstdio>
 #include <iostream>
 #include <memory>
 #include <numeric>
@@ -34,8 +35,8 @@ std::ostream& operator<<(std::ostream& s, const std::vector<Ty>& v) {
  *
  *  \return Returns indexes if being sorted
  *
- *  \remark using std::stable_sort instead of std::sort to avoid possible 
- *  index re-orderings of elements having equal values 
+ *  \remark using std::stable_sort instead of std::sort to avoid possible
+ *  index re-orderings of elements having equal values
  */
 template <typename Ty>
 inline std::vector<size_t> GetSortIndex(const std::vector<Ty>& v) {
@@ -59,7 +60,7 @@ inline void SortUnique(std::vector<Ty>& v) {
 /**
  *  Convert two vectors of the same length into one vector of pairs
  */
-template<typename Ty1, typename Ty2 = Ty1> std::vector<std::pair<Ty1, Ty2>> 
+template<typename Ty1, typename Ty2 = Ty1> std::vector<std::pair<Ty1, Ty2>>
 inline MakeVecOfPairs(const std::vector<Ty1>& v1, const std::vector<Ty1>& v2) {
   assert(v1.size() = v2.size());
   std::vector<std::pair<Ty1, Ty2>> vp(v1.size());
@@ -70,9 +71,11 @@ inline MakeVecOfPairs(const std::vector<Ty1>& v1, const std::vector<Ty1>& v2) {
   return vp;
 }
 
+template<class Ty, class Deleter = std::default_delete<Ty>>
+using UP = class std::unique_ptr<Ty, Deleter>;
+
 template <class Ty>
 using SP = std::shared_ptr<Ty>;
 
-template<class Ty, class Deleter = std::default_delete<Ty>>
-using UP = class std::unique_ptr<Ty, Deleter>;
+using UPFile = UP<FILE, decltype(&fclose)>;
 } // namespace earthxpert

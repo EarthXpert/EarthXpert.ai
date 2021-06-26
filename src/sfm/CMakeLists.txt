@@ -11,7 +11,8 @@ set(sfm_srcs
   "sparsematch/featdetectperf.cpp"
   "sparsematch/featuredetect.cpp"
   "sparsematch/featuredetect_layout.cpp"
-  "sparsematch/sparsematch.cpp")
+  "sparsematch/sparsematch.cpp"
+  "utils/utils.cpp")
 set(sfm_items ex3rdparty core dataio epipolarmodel frameworks sensormodel
   ${GDAL_LIBRARIES} ${geotrans_LIBRARIES} ${OpenCV_LIBS})
 exai_add_library(sfm "api"

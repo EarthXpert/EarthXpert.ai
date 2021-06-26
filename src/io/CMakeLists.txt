@@ -18,6 +18,7 @@ set(dataio_srcs
   "terrain/demwriter.cpp"
   "terrain/tileddemreader.cpp"
   "terrain/tileddemwriter.cpp"
+  "utils/utils.cpp"
   "vector/tiledvectorreader.cpp"
   "vector/tiledvectorwriter.cpp"
   "vector/vectorreader.cpp"

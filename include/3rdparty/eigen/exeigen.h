@@ -60,4 +60,8 @@ void SpMat_Insert(Eigen::SparseMatrix<_Scalar, Eigen::RowMajor, _StorageIndex>& 
     spMat.insert(row, col->first) = col->second;
   }
 }
+
+inline std::vector<double> VecEigen2Std(const Eigen::VectorXd& v) {
+  return std::vector<double>(v.data(), v.data() + v.cols() * v.rows());
+}
 } // namespace earthxpert

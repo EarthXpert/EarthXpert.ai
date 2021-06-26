@@ -90,9 +90,11 @@ void RasterLayout::LayoutWindows() {
 
   const int numWins = numHoriWins * numVertWins;
   
+  mIdxs.resize(numWins);
   mWins.resize(numWins);
   for (int w = 0; w < numWins; ++w) {
-    int c{}, r{};
+    int& c = mIdxs[w].first;
+    int& r = mIdxs[w].second;
     if (LayoutDir::eLD_HORIZONTAL == mLayoutDir) {
       std::tie(c, r) = IndexToCR(w, numHoriWins);
     }

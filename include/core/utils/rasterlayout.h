@@ -45,6 +45,8 @@ public:
     return mWins[index];
   }
 
+  const auto& GetWindowIndices() const { return mIdxs; }
+
   /**
    *  \return Returns const reference to the array of RasterWindow objects.
    */
@@ -55,6 +57,7 @@ private:
   int mWinNumCols{};  // width of window
   int mWinNumRows{};  // height of window
   LayoutDir mLayoutDir{LayoutDir::eLD_HORIZONTAL};  // major direction
+  std::vector<std::pair<int, int>> mIdxs;  // array of window index (horizontal & vertical)
   std::vector<RasterWindow> mWins;  // array of raster windows formulating the layout
 
   void LayoutWindows();

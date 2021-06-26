@@ -18,8 +18,8 @@ using namespace earthxpert;
  *  \param [in] vecFile full path of the vector data source
  *  \param [in] layersInfo an array of 1-based layer information
  */
-VectorReader::VectorReader(const std::string& vecFile, const std::vector<LayerInfo>& layersInfo)
-  : mLayersInfo(layersInfo) {
+VectorReader::VectorReader(const std::string& vecFile, const std::vector<int>& layers)
+  : mLayers(layers) {
   auto dataset = GDALOpenEx(vecFile.c_str(), GDAL_OF_VECTOR, nullptr, nullptr, nullptr);
   if (!dataset) 
     throw IOError(_("OGR failed to open vector data source for read access."));
@@ -27,8 +27,8 @@ VectorReader::VectorReader(const std::string& vecFile, const std::vector<LayerIn
   Initialize(static_cast<GDALDataset*>(dataset));
 }
 
-VectorReader::VectorReader(const fs::path& vecFile, const std::vector<LayerInfo>& layersInfo)
-  : VectorReader(vecFile.string(), layersInfo) {}
+VectorReader::VectorReader(const fs::path& vecFile, const std::vector<int>& layers)
+  : VectorReader(vecFile.string(), layers) {}
 
 /**
  *  \brief Construct reader object.
@@ -36,8 +36,8 @@ VectorReader::VectorReader(const fs::path& vecFile, const std::vector<LayerInfo>
  *  \param [in] dataset an opened dataset for reading
  *  \param [in] layers an array of 1-based layer indices
  */
-VectorReader::VectorReader(GDALDataset* dataset, const std::vector<LayerInfo>& layersInfo)
-  : mLayersInfo(layersInfo) {
+VectorReader::VectorReader(GDALDataset* dataset, const std::vector<int>& layers)
+  : mLayers(layers) {
   assert(dataset);
   Initialize(dataset);
 }
@@ -112,4 +112,7 @@ void VectorReader::ReadLayer(OgrLayer* const layer) {
  *  \brief obtain dataset information.
  */
 void VectorReader::ObtainDatasetInfo() {
+  mFileNumLayers = mDataset->GetLayerCount();
+  if (1 > mFileNumLayers)
+    throw IOError(_("The vector file contains no vector layers."));
 }
