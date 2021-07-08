@@ -6,6 +6,8 @@
 #include "3rdparty/stl/bitvector.h"
 
 //#include "algo.hpp"
+#include "regex.hpp"
+
 #include <iostream>
 #include <map>
 #include <string>
