@@ -32,6 +32,10 @@ public:
   void GetPlyInfo(std::vector<DTVertex3f>& vertices, 
     std::vector<DTTriangle>& tris) override;
 
+  size_t GetNumBytes() const override {
+    return 0;
+  }
+
 private:
   DTVertex2d mOrigin;
   gst::DelaunayTriangulationBuilder mTin;

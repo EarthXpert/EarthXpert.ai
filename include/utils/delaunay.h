@@ -5,6 +5,7 @@
 #pragma once
 
 #include "utils/exutils.h"
+#include "3rdparty/cgal/excgal.h"
 #include "3rdparty/geogram/delaunay2d.h"
 #include "3rdparty/geos/delaunay2d.h"
 #include "3rdparty/gts/delaunay2d.h"
@@ -21,6 +22,10 @@ struct DelaunayOptions {
   std::string lasf;
   std::string tinf;
   size_t memSize;  // [unit: bytes]
+};
+
+struct CgOptions {
+  bool verbose{ true };
 };
 
 struct CvOptions {
