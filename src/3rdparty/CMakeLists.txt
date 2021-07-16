@@ -45,6 +45,7 @@ set(ex3rdparty_srcs
   "cuda/excuda.cpp"
   "eigen/exeigen.cpp"
   "exiv2/exexiv2.cpp"
+  "fmt/exfmt.cpp"
   "gdal/exgdal.cpp"
   "geogram/exgeogram.cpp"
   "geogram/delaunay2d.cpp"
