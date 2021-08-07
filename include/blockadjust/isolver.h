@@ -15,6 +15,11 @@ namespace earthxpert {
   class EXBBA_EXPORTS ISolver {
   public:
     virtual ~ISolver() = default;
+    ISolver(const ISolver&) = delete;
+    ISolver(ISolver&&) = delete;
+
+    ISolver& operator=(const ISolver&) = delete;
+    ISolver& operator=(ISolver&&) = delete;
 
     bool operator==(const ISolver& rhs) const = delete;
     bool operator!=(const ISolver& rhs) const = delete;
