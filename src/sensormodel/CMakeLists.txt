@@ -37,6 +37,7 @@ set(sensormodel_srcs
   "utils/frameip.cpp"
   "utils/imagemodel.cpp"
   "utils/intersecti2g.cpp"
+  "utils/linetime.cpp"
   "utils/satellitedp.cpp"
   "utils/sensorcube.cpp"
   "utils/smutils.cpp"

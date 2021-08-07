@@ -30,11 +30,6 @@ public:
    *  \return Returns pointer to a coordinate system
    */
   virtual UPSpatialRefSys GetCoordinateSystem() const = 0;
-
-  /**
-   *  \brief Fetch the geocoding information of the DEM.
-   */
-  virtual UPGeocoding GetGeocoding() const = 0;
 };
 
 using UPIDem = std::unique_ptr<IDem>;

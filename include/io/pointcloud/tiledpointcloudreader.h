@@ -39,5 +39,7 @@ private:
 
   // cached information
   int mNumTiles{};
+
+  UPIPointcloudReader mTileReader;   // currently active reader
 };
 }

@@ -19,6 +19,13 @@ public:
   ~RasterDem() = default;
 
   /**
+   *  \return Returns pointer to the raster reader.
+   */
+  IRasterReader* GetDemReader() const {
+    return mDemReader.get();
+  }
+
+  /**
    *  \brief set the SRS of the interface
    */
   //void SetSrsIF();
@@ -33,7 +40,7 @@ public:
    *
    *  \return Returns pointer to a coordinate system
    */
-  UPSpatialRefSys GetCoordinateSystem() const;
+  UPSpatialRefSys GetCoordinateSystem() const override;
 
   /**
    *  \brief Fetch the geocoding information of the DEM.

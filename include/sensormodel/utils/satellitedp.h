@@ -13,11 +13,7 @@ namespace earthxpert {
  */
 class EXSENSORMODEL_EXPORTS SatelliteDP {
 public:
-  /**
-   * Constructor
-   */
   SatelliteDP();
-
   ~SatelliteDP() {}
 
 private:

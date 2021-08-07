@@ -10,6 +10,7 @@
 #include "sensormodel/scannerepcorr.h"
 #include "sensormodel/scannerimagemodel.h"
 #include "sensormodel/scannerip.h"
+#include "sensormodel/utils/linetime.h"
 #include "sensormodel/utils/satellitedp.h"
 
 #include <array>
@@ -26,20 +27,25 @@ template <typename CraftPolicy>
 class EXSENSORMODEL_EXPORTS PushbroomModel final : public SensorModel {
 public:
   enum CcdUnit {
-    eCU_ANGLE,
-    eCU_METRIC
+    eCU_ANGLE,     // line of sight degree
+    eCU_METRIC,    // metric mm
+    eCU_PIXEL      // non-metric pixel
   };
 
   /**
    *  \brief Construct an aerial pushbroom geometry model.
    *
    *  \param [in] imgModel image model defining raster vs focal plane
-   * relationship \param [in] scannerIP intrinsic parameters defining scanner
-   * interior orientation \param [in] scannerEP extrinsic parameters defining
-   * scanner exterior orientation \param [in] groundSRS ground coordinate system
+   * relationship 
+   *  \param [in] scannerIP intrinsic parameters defining scanner
+   * interior orientation 
+   *  \param [in] scannerEP extrinsic parameters defining
+   * scanner exterior orientation 
+   *  \param [in] groundSRS ground coordinate system
    */
   PushbroomModel(std::shared_ptr<ScannerImageModel> imgModel,
                  std::unique_ptr<ScannerIP> &&scannerIP,
+                 //LineTime lineTime,
                  std::shared_ptr<ScannerEP> scannerEP,
                  std::shared_ptr<OGRSpatialRef> groundSRS);
 
@@ -47,13 +53,17 @@ public:
    *  \brief Construct a satellite pushbroom geometry model.
    *
    *  \param [in] imgModel image model defining raster vs focal plane
-   * relationship \param [in] scannerIP intrinsic parameters defining scanner
-   * interior orientation \param [in] scannerEP extrinsic parameters defining
-   * scanner exterior orientation \param [in] satelliteDP distortion parameters
-   * defining external effects \param [in] groundSRS ground coordinate system
+   * relationship 
+   *  \param [in] scannerIP intrinsic parameters defining scanner
+   * interior orientation 
+   *  \param [in] scannerEP extrinsic parameters defining
+   * scanner exterior orientation 
+   *  \param [in] satelliteDP distortion parameters defining external effects 
+   *  \param [in] groundSRS ground coordinate system
    */
   PushbroomModel(std::shared_ptr<ScannerImageModel> imgModel,
                  std::unique_ptr<ScannerIP> &&scannerIP,
+                 //LineTime lineTime,
                  std::shared_ptr<ScannerEP> scannerEP,
                  std::shared_ptr<SatelliteDP> satelliteDP,
                  std::shared_ptr<OGRSpatialRef> groundSRS);
@@ -138,6 +148,7 @@ private:
       mImgModel{}; // image model defining raster vs focal plane relationship
   std::unique_ptr<ScannerIP> mScannerIP{}; // intrinsic parameters defining
                                            // scanner interior orientation
+  // LineTime mLineTime;
   std::shared_ptr<ScannerEP> mScannerEP{}; // extrinsic parameters defining
                                            // scanner exterior orientation
   std::shared_ptr<SatelliteDP>

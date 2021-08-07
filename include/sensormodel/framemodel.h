@@ -47,6 +47,7 @@ public:
 
   // unit of IO parameters
   enum IoUnit {
+    eIU_ANGLE,     // line of sight degree
     eIU_METRIC,    // metric mm
     eIU_PIXEL      // non-metric pixel
   };
