@@ -40,6 +40,8 @@ private:
   std::vector<int> mBands;    // list of bands to write into
   GDALDataType mGdalDT{ GDT_Byte };     // GDAL data type of image file
   int mWriteNumBands{};   // number of bands to write
+
+  UPIRasterWriter mTileWriter;   // currently active writer
 };
 
 using UPTiledRasterWriter = std::unique_ptr<TiledRasterWriter>;

@@ -44,6 +44,8 @@ private:
   std::vector<double> mNodataValues;
   GDALDataType mGdalDT{};
   int mCvDT{};
+
+  UPIRasterReader mTileReader;   // Currently active reader
 };
 
 using UPTiledRasterReader = std::unique_ptr<TiledRasterReader>;

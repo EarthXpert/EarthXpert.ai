@@ -48,5 +48,7 @@ private:
   // cache
   int mNumTiles{};
   int mCurTile{};   // id of current tile
+
+  UPIPointcloudWriter mTileWriter;   // currently active writer
 };
 }

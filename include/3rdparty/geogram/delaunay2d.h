@@ -29,6 +29,10 @@ public:
   void GetPlyInfo(std::vector<DTVertex3f>& vertices, 
     std::vector<DTTriangle>& tris) override;
 
+  size_t GetNumBytes() const override {
+    return 0;
+  }
+
 private:
   std::vector<double> mVertices;  // sequence of xy coordinates
 };

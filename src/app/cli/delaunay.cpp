@@ -13,7 +13,7 @@ namespace bpo = boost::program_options;
 
 void AddOptions(bpo::options_description& optDesc) {
   optDesc.add_options()
-    ("backend", bpo::value<std::string>()->required(), "engine: cv|gg|gts")
+    ("backend", bpo::value<std::string>()->required(), "engine: cv|gg|gs|gts")
     ("lasf", bpo::value<std::string>()->required(), ".las file")
     ("tinf", bpo::value<std::string>()->required(), ".gts/.ply file")
     ("memsize,m", bpo::value<int>()->default_value(4000), "memory size in MB")

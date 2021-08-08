@@ -13,12 +13,14 @@ using namespace earthxpert;
  *
  *  \param [in] imgModel image model defining raster vs focal plane relationship
  *  \param [in] scannerIP intrinsic parameters defining scanner interior
- * orientation \param [in] scannerEP extrinsic parameters defining scanner
- * exterior orientation \param [in] groundSRS ground coordinate reference system
+ * orientation 
+ *  \param [in] scannerEP extrinsic parameters defining scanner exterior orientation 
+ *  \param [in] groundSRS ground coordinate reference system
  */
 template <typename CraftPolicy> PushbroomModel<CraftPolicy>::PushbroomModel(
     std::shared_ptr<ScannerImageModel> imgModel,
     std::unique_ptr<ScannerIP> &&scannerIP,
+    //LineTime lineTime,
     std::shared_ptr<ScannerEP> scannerEP,
     SPSpatialRefSys groundSRS) {}
 
@@ -27,13 +29,16 @@ template <typename CraftPolicy> PushbroomModel<CraftPolicy>::PushbroomModel(
  *
  *  \param [in] imgModel image model defining raster vs focal plane relationship
  *  \param [in] scannerIP intrinsic parameters defining scanner interior
- * orientation \param [in] scannerEP extrinsic parameters defining scanner
- * exterior orientation \param [in] satelliteDP distortion parameters defining
- * external effects \param [in] groundSRS ground coordinate reference system
+ * orientation 
+ *  \param [in] scannerEP extrinsic parameters defining scanner
+ * exterior orientation 
+ *  \param [in] satelliteDP distortion parameters defining external effects 
+ *  \param [in] groundSRS ground coordinate reference system
  */
 template <typename CraftPolicy> PushbroomModel<CraftPolicy>::PushbroomModel(
     std::shared_ptr<ScannerImageModel> imgModel,
     std::unique_ptr<ScannerIP> &&scannerIP,
+    //LineTime lineTime,
     std::shared_ptr<ScannerEP> scannerEP,
     std::shared_ptr<SatelliteDP> satelliteDP,
     SPSpatialRefSys groundSRS) {}

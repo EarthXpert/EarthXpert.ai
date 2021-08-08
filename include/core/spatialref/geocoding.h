@@ -8,7 +8,9 @@
 #include "3rdparty/opencv/exopencv.h"
 
 namespace earthxpert {
-
+/**
+ *  \todo rotation
+ */
 class EXCORE_EXPORTS Geocoding {
 public:
   Point2d mOrigin{};    // coordinate at upper-left corner of the UL pixel

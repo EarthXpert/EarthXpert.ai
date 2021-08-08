@@ -25,6 +25,9 @@ public:
   virtual void GetPlyInfo(std::vector<DTVertex3f>& vertices, 
     std::vector<DTTriangle>& tris) = 0;
 
+  //  \return Number of bytes used by the constructed TIN
+  virtual size_t GetNumBytes() const = 0;
+
 protected:
   DTVertex2f mOrigin{};
 

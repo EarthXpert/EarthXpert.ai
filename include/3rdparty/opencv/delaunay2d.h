@@ -31,6 +31,12 @@ public:
   void GetPlyInfo(std::vector<DTVertex3f>& vertices, 
     std::vector<DTTriangle>& tris) override;
 
+  size_t GetNumBytes() const override {
+    const size_t memSize = sizeof(Vertex) * vtx.size() + 
+      sizeof(QuadEdge) * qedges.size();
+    return memSize;
+  }
+
 private:
   static constexpr int kVE = 4;
 

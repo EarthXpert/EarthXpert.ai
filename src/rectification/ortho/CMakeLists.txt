@@ -3,6 +3,7 @@ project(ortho CXX)
 add_definitions(-DEXORTHO_API)
 set(ortho_srcs 
   "./ortho.cpp"
+  "./orthorect.cpp"
   "./orthorectifier.cpp"
   "./orthotask.cpp")
 set(ortho_items ex3rdparty core dataio exdem frameworks sensormodel marshaller 

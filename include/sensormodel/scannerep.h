@@ -14,11 +14,7 @@ namespace earthxpert {
  */
 class EXSENSORMODEL_EXPORTS ScannerEP {
 public:
-  /**
-   * Constructor
-   */
   ScannerEP();
-
   ~ScannerEP() {}
 
 private:

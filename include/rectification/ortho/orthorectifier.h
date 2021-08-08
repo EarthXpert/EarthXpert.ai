@@ -5,6 +5,7 @@
 #pragma once
 
 #include "rectification/ortho/orthotask.h"
+#include "rectification/ortho/orthorect.h"
 
 namespace earthxpert {
 class IRasterReader;
@@ -27,6 +28,9 @@ public:
 
 private:
   void Initialize();
+
+  //std::unique_ptr<uchar[]> mImgMaskBuf;   // image mask
+  //std::unique_ptr<uchar[]> mOrthoMaskBuf;   // ortho mask
 };
 
 using UPOrthoRectifier = std::unique_ptr<OrthoRectifier>;
