@@ -20,6 +20,7 @@ public:
   ~CvDelaunay2d() = default;
 
   int Insert(const float x, const float y) { return insert(Point2f{x, y}); }
+  int Delete(float x, float y);
 
   int Locate(const Point2f& p, DTTriangle& tri);
 

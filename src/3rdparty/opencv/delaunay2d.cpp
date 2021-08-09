@@ -13,11 +13,15 @@ CvDelaunay2d::CvDelaunay2d(const cv::Rect& rect)
   : Subdiv2D(rect) {
 }
 
+int CvDelaunay2d::Delete(const float x, const float y) {
+  return 0;
+}
+
 /**
  *  Locate the triangle containing the given point.
  * 
  *  \param [in] p the point to locate
- *  \param [out] tri three verices indices if inside, the first two
+ *  \param [out] tri indices of three verices if inside, the first two
  *               vertices if on edge, the fist vertex if coincide.
  * 
  *  \return Return 
