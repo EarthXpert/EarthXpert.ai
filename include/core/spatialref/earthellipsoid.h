@@ -38,6 +38,7 @@ public:
   std::unique_ptr<EarthEllipsoid> Clone() const;
 
   double GetSemiMajor() const noexcept;
+  double GetSemiMinor() const noexcept;
   double GetEccSquared() const noexcept;
 
   inline Point3d LPHToXYZ(const Point3d& lph) const;

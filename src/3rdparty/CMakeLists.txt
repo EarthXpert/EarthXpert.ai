@@ -60,6 +60,7 @@ set(ex3rdparty_srcs
   "glog/exglog.cpp"
   "gnu_gsl/exgnu_gsl.cpp"
   "gsl/exgsl.cpp"
+  "gte/exgte.cpp"
   "gtest/exgtest.cpp"
   "gts/exgts.cpp"
   "gts/delaunay2d.cpp"

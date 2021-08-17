@@ -22,15 +22,20 @@ public:
   int Insert(const float x, const float y) { return insert(Point2f{x, y}); }
   int Delete(float x, float y);
 
+  void EstimateStatistics();
+
   int Locate(const Point2f& p, DTTriangle& tri);
 
-  void EstimateStatistics();
-  std::vector<int> GetVoronoi(std::vector<std::vector<int>>& voronoi) const;
+  int GetEdges(int vi, std::vector<int>& ei);
+  int GetVertices(int ei, DTEdge& e);
+  int GetVertices(DTTriangle& etri, DTTriangle& vtri);
 
   void GetGtsInfo(std::vector<DTVertex2f>& vertices,
     std::vector<DTEdge>& edges, std::vector<DTTriangle>& tris) override;
   void GetPlyInfo(std::vector<DTVertex3f>& vertices, 
     std::vector<DTTriangle>& tris) override;
+
+  std::vector<int> GetVoronoi(std::vector<std::vector<int>>& voronoi) const;
 
   size_t GetNumBytes() const override {
     const size_t memSize = sizeof(Vertex) * vtx.size() + 

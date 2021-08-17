@@ -17,6 +17,13 @@ int CvDelaunay2d::Delete(const float x, const float y) {
   return 0;
 }
 
+void CvDelaunay2d::EstimateStatistics() {
+  mNumV = int(vtx.size()) - kVE;
+  mNumE = std::max(int(qedges.size()) - kVE, mNumV * 3);
+  mNumT = std::max(mNumV * 2, mNumE * 2 / 3);
+  mNumP = mNumV;
+}
+
 /**
  *  Locate the triangle containing the given point.
  * 
@@ -47,11 +54,28 @@ int CvDelaunay2d::Locate(const Point2f& p, DTTriangle& tri) {
   return loc;
 }
 
-void CvDelaunay2d::EstimateStatistics() {
-  mNumV = int(vtx.size()) - kVE;
-  mNumE = std::max(int(qedges.size()) - kVE, mNumV * 3);
-  mNumT = std::max(mNumV * 2, mNumE * 2 / 3);
-  mNumP = mNumV;
+/**
+ *  \brief retrieve edges connecting to a vertex
+ */
+int CvDelaunay2d::GetEdges(const int vi, std::vector<int>& ei) {
+  return int(ei.size());
+}
+
+/**
+ *  \brief retrieve the two vertices of an edge
+ */
+int CvDelaunay2d::GetVertices(const int ei, DTEdge& e) {
+  return 0;
+}
+
+/**
+ *  \brief retrieve three vertices of a triangle
+ * 
+ *  \param [in] etri the triangle represented by edges
+ *  \param [out] vtri the triangle represented by vertices
+ */
+int CvDelaunay2d::GetVertices(DTTriangle& etri, DTTriangle& vtri) {
+  return 0;
 }
 
 /**

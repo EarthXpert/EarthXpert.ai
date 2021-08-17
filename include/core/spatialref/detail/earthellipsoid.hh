@@ -14,6 +14,7 @@ inline std::unique_ptr<EarthEllipsoid> EarthEllipsoid::Clone() const {
 }
 
 inline double EarthEllipsoid::GetSemiMajor() const noexcept { return mA; }
+inline double EarthEllipsoid::GetSemiMinor() const noexcept { return mB; }
 inline double EarthEllipsoid::GetEccSquared() const noexcept { return mEccSq; }
 
 inline Point3d EarthEllipsoid::LPHToXYZ(const Point3d& lph) const {

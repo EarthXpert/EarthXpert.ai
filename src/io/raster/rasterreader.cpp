@@ -58,6 +58,7 @@ void RasterReader::Initialize(GDALDataset* dataset) {
  *  \return Returns metadata tags
  */
 std::unique_ptr<RasterMetadata> RasterReader::GetMetadata() const {
+  //mDataset->GetMetadata();
   return {};
 }
 

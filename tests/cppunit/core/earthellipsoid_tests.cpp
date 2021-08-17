@@ -7,6 +7,7 @@
 
 #include "core/spatialref/earthellipsoid.h"
 #include "core/utils/typehelper.h"
+#include <cmath>
 
 using namespace earthxpert;
 
@@ -111,4 +112,42 @@ TEST(earthellipsoid, LSR) {
   ASSERT_TRUE(EqA(lph.x, lphN.x)) << "Longitude difference > 10 um";
   ASSERT_TRUE(EqA(lph.y, lphN.y)) << "Latitude difference > 10 um";
   ASSERT_TRUE(EqM(lph.z, lphN.z)) << "Height difference > 10 um";
+}
+
+/**
+ *  Test 4: estimate errors of the inflated ellipsoids for
+ *          height range [-2000, 9000]
+ */
+TEST(earthellipsoid, Inflate_Octant) {
+  EqualD EqM(kTol);
+  EarthEllipsoid ee;
+
+  const double a = ee.GetSemiMajor();
+  const double b = ee.GetSemiMinor();
+
+  double lon = 0.0;
+  for (double hgt = -2000.0; hgt < 10000.0; hgt += 1000.0) {
+    const double ah = a + hgt;
+    const double bh = b + hgt;
+
+    double maxDist{}, maxLat;
+    for (double lat = 0.0; lat < 90.0; lat += 1.0) {
+      const Point3d lph(Deg2Rad(lon), Deg2Rad(lat), hgt);
+      const Point3d xyz = ee.LPHToXYZ(lph);
+      ASSERT_TRUE(EqM(0, xyz.y)) << "Y difference > 10 um";
+
+      const double xah = xyz.x / ah;
+      const double zbh = xyz.z / bh;
+      const double t = sqrt(1.0 / (xah * xah + zbh * zbh));
+
+      const double dist = sqrt(xyz.x * xyz.x + xyz.z * xyz.z) * fabs(t - 1.0);
+      if (maxDist < dist) {
+        maxDist = dist;
+        maxLat = lat;
+      }
+    }
+
+    std::cout << "max distance at height " << hgt << " & lat " << maxLat 
+      << ": " << maxDist << std::endl;
+  }
 }
