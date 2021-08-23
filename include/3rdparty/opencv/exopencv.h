@@ -20,7 +20,7 @@ constexpr size_t kNumDepth = 8;
 
 template<typename Ty> inline
 cv::Point_<Ty> operator+(const cv::Point_<Ty>& p, const Ty v) {
-  return {p.x + v, p.y + v};
+  return { p.x + v, p.y + v };
 }
 
 template<typename Ty> inline

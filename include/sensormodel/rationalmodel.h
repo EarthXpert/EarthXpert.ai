@@ -132,11 +132,11 @@ public:
    *
    *  \param [in] numCols Image width [pixel], specifying as 0 if unknown.
    *  \param [in] numRows Image height [pixel], specifying as 0 if unknown.
-   *  \param [in] normalization factors including offsets & scales
-   *  \param [in] numerator polynomial of line formulae
-   *  \param [in] denominator polynomial of line formulae
-   *  \param [in] numerator polynomial of sample formulae
-   *  \param [in] denominator polynomial of sample formulae
+   *  \param [in] normalFators normalization factors including offsets & scales
+   *  \param [in] lineNumCoef numerator polynomial of line formulae
+   *  \param [in] lineDenCoef denominator polynomial of line formulae
+   *  \param [in] sampNumCoef numerator polynomial of sample formulae
+   *  \param [in] sampDenCoef denominator polynomial of sample formulae
    *  \param [in] groundSRS ground coordinate system
    */
   RationalModel(int numCols, int numRows,
@@ -313,8 +313,7 @@ private:
   std::array<double, NumCoef>
       mSampDenCoef{}; // denominator polynomial of sample formulae
 
-  std::shared_ptr<OGRSpatialRef>
-      mGroundSRS{}; // Ground coordinate system
+  std::shared_ptr<OGRSpatialRef> mGroundSRS{}; // Ground coordinate system
 
   int mNumCols{}; // number of columns of the image product
   int mNumRows{}; // number of rows of the image product

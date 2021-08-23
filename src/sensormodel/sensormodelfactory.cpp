@@ -45,10 +45,9 @@ SensorModelFactory::CreateFilmFrameModel() {
  */
 std::unique_ptr<RationalModel> 
 SensorModelFactory::CreateRationalModel(const ISensorModel* sensorModel) {
-  std::array<double, rnf::NumFact> normalFators;
   int numHoriz{ kNUMINT }, numVert{ kNUMINT }, numLayers{ kNUMINT };
   CubeType cubeType{ CubeType::eMODEL };
-  SensorCube sensorCube(normalFators, numHoriz, numVert, numLayers, cubeType);
+  SensorCube sensorCube(numHoriz, numVert, numLayers, cubeType);
 
   std::vector<Point2f> images;
   std::vector<Point3d> grounds;

@@ -65,6 +65,8 @@ int CvDelaunay2d::GetEdges(const int vi, std::vector<int>& ei) {
  *  \brief retrieve the two vertices of an edge
  */
 int CvDelaunay2d::GetVertices(const int ei, DTEdge& e) {
+  e.v0 = edgeOrg(ei);
+  e.v1 = edgeDst(ei);
   return 0;
 }
 

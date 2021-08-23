@@ -28,14 +28,9 @@ public:
     // for geographic SRS, flat for local SRS, pseudo-flat for map projection
   };
 
-  SensorCube(const std::array<double, NumFact>& normalFators,
-    int numHoriz, int numVert, int numLayers, LayerType layerType);
+  SensorCube(int numHoriz, int numVert,
+    int numLayers, LayerType layerType);
   ~SensorCube() = default;
-
-  void SetNormalFators(const std::array<double, NumFact>& normalFators) {
-    mNormalFators = normalFators;
-    Initialize();
-  }
 
   void SetLayout(const int numHoriz, const int numVert, 
     const int numLayers, const LayerType layerType) {
@@ -44,6 +39,24 @@ public:
     mNumLayers = numLayers;
     mLayerType = layerType;
     Initialize();
+  }
+
+  /**
+   *  \brief Set the margin size and kind.
+   *
+   *  \param [in] marginCols the horizontal margin size
+   *  \param [in] marginRows the vertical margin size
+   */
+  void SetMargins(const int marginCols, const int marginRows) {
+    mMarginCols = marginCols;
+    mMarginRows = marginRows;
+  }
+
+  /**
+ *  \return Returns margin size.
+ */
+  std::pair<int, int> GetMargins() const noexcept {
+    return { mMarginCols, mMarginRows };
   }
 
   int CreateCube(const ISensorModel* sensorModel,
@@ -60,11 +73,13 @@ public:
 private:
   static constexpr double kMarginRatio = 0.1;  // ratio of margin to extend beyound the image scene
 
-  std::array<double, NumFact> mNormalFators{}; // normalization factors including offsets & scales
-  int mNumHoriz{10};
-  int mNumVert{10};
-  int mNumLayers{10};
+  int mNumHoriz{10};  // number of points in column of image grid 
+  int mNumVert{10};   // number of points in row of image grid 
+  int mNumLayers{10}; // number of layers in height of ground cube 
   LayerType mLayerType{ eMODEL };
+
+  int mMarginCols{};
+  int mMarginRows{};
 
   void Initialize();
 
