@@ -20,7 +20,7 @@ set(sensormodel_srcs
   "pushbroom/scannerepcorr.cpp"
   "pushbroom/scannerimagemodel.cpp"
   "pushbroom/scannerip.cpp"
-  #"rational/rationalfit.cpp"
+  "rational/rationalfit.cpp"
   "rational/rationalmodel.cpp"
   "rational/rationalmodel_cuda.cpp"
   "rational/rationalmodel_opencl.cpp"

@@ -149,8 +149,12 @@ public:
   /**
    *  \return Returns the middle height
    */
-  double GetMeanHeight() const noexcept override {
-    return 0.0;
+  float GetMeanHeight() const noexcept override {
+    return 0.0f;
+  }
+
+  std::pair<float, float> GetHeightRange() const noexcept override {
+    return {0.0f, 0.0f};
   }
 
   // block adjustment helpers

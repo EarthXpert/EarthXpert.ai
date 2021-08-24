@@ -4,9 +4,11 @@
  */
 #pragma once
 
+#include "core/excore.h"
 #include "3rdparty/opencv/exopencv.h"
 #include "core/math/math.h"
 
+#include <cmath>
 #include <type_traits>
 
 namespace earthxpert {
@@ -63,4 +65,10 @@ template<> inline void MinMax<Point3d>(Point3d& sval, Point3d& lval, const Point
   MinMax(sval.y, lval.y, val.y);
   MinMax(sval.z, lval.z, val.z);
 }
+
+double EXCORE_EXPORTS TruncateOffsetDigits(double off, int nunDigits);
+double EXCORE_EXPORTS TruncateScaleDigits(double off, int nunDigits);
+
+std::pair<double, double> EXCORE_EXPORTS 
+CalcOffsetScale(const std::vector<double>& arr, int offDigits, int sclDigits);
 }

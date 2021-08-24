@@ -7,6 +7,7 @@ function(add_sensormodel_cppunit_test name)
 endfunction()
 
 add_sensormodel_cppunit_test(framemodel_tests)
+add_sensormodel_cppunit_test(rationalfit_tests)
 add_sensormodel_cppunit_test(rationalmodel_tests)
 add_sensormodel_cppunit_test(stereomodel_tests)
 
@@ -19,12 +20,13 @@ ${GTEST_BIN_DIR};${BOOST_BIN_DIR};${GDAL_BIN_DIR};${OpenCV_BIN_DIR};${OPENNI_BIN
 ${TESTS_BIN_DIR};$ENV{PATH}")
   string(REPLACE ";" "\\;" TESTS_SENSORMODEL_PATH "${TESTS_SENSORMODEL_PATH}")
   message(STATUS "Tests_Sensormodel_Path: ${TESTS_SENSORMODEL_PATH}")
-  set_tests_properties(framemodel_tests rationalmodel_tests stereomodel_tests
+  set_tests_properties(framemodel_tests rationalfit_tests rationalmodel_tests stereomodel_tests
     PROPERTIES ENVIRONMENT "${TESTS_SENSORMODEL_PATH}")
 endif()
 
 if(EXAI_INSTALL_TESTS_CPPUNIT)
   exai_install_test(framemodel_tests)
+  exai_install_test(rationalfit_tests)
   exai_install_test(rationalmodel_tests)
   exai_install_test(stereomodel_tests)
 endif()

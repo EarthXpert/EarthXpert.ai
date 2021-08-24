@@ -154,7 +154,9 @@ public:
   /**
    *  \return Returns the middle height
    */
-  virtual double GetMeanHeight() const noexcept = 0;
+  virtual float GetMeanHeight() const noexcept = 0;
+
+  virtual std::pair<float, float> GetHeightRange() const noexcept = 0;
 };
 
 using SensorType = ISensorModel::ModelType;

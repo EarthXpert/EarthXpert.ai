@@ -15,7 +15,7 @@ class IRasterWriter;
 /**
  *  The class OrthoRectifier completes the ortho generation.
  */
-class EXORTHO_EXPORTS OrthoRectifier {
+class EXORTHO_EXPORTS OrthoRectifier final {
 public:
   ~OrthoRectifier() = default;
 

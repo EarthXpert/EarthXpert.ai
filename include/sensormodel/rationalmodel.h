@@ -68,8 +68,7 @@ public:
     eModelType = ModelType::eMT_RATIONAL
   };
 
-  // index of normalization factors
-  using NormalizationFactor = NormalizationFactor;
+  using NormalFactorIndex = NormalFactorIndex;  // index of normalization factors
 
   // index of inversed scale factors
   enum InvScaleFactor {
@@ -232,7 +231,14 @@ public:
   /**
    *  \return Returns the middle height
    */
-  double GetMeanHeight() const noexcept { return mNormalFactors[eOHGT]; }
+  float GetMeanHeight() const noexcept override { 
+    return float(mNormalFactors[eOHGT]); 
+  }
+
+  std::pair<float, float> GetHeightRange() const noexcept override {
+    return { float(mNormalFactors[eOHGT] - mNormalFactors[eSHGT]),
+      float(mNormalFactors[eOHGT] + mNormalFactors[eSHGT]) };
+  }
 
   /**
    *  \brief Get normalization factors including offsets & scales.
@@ -444,7 +450,7 @@ private:
   void BuildCubeS2G();
 };
 
-using rnf = NormalizationFactor;
+using rnf = NormalFactorIndex;
 using risf = RationalModel::InvScaleFactor;
 using rpc = RationalModel::PolyCoeff3rd;
 using rcc = RationalModel::CorrCoeff;

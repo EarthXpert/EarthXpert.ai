@@ -32,6 +32,10 @@ TEST(earthellipsoid, ECEF_LPH) {
   ASSERT_TRUE(EqM(xyz.x, xyzN.x)) << "X difference > 10 um";
   ASSERT_TRUE(EqM(xyz.y, xyzN.y)) << "Y difference > 10 um";
   ASSERT_TRUE(EqM(xyz.z, xyzN.z)) << "Z difference > 10 um";
+
+  //const Point3d lph1(Deg2Rad(-1.209795130836728e+02), Deg2Rad(4.690621990064444e+01), 4.892377904755995e+02);
+  //const Point3d xyz1 = ee.LPHToXYZ(lph1);
+  //std::cout << std::setprecision(10) << xyz1.x << ", " << xyz1.y << ", " << xyz1.z << std::endl;
 }
 
 TEST(earthellipsoid, ECEF_LPH_Cube) {

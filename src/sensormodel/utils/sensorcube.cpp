@@ -5,6 +5,7 @@
 #include "sensormodel/utils/sensorcube.h"
 #include "core/exceptions/exexcept.h"
 #include "sensormodel/isensormodel.h"
+#include "sensormodel/rationalmodel.h"
 
 using namespace earthxpert;
 
@@ -30,6 +31,17 @@ void SensorCube::Initialize() {
  */
 int SensorCube::CreateCube(const ISensorModel* sensorModel,
   std::vector<Point2f>& images, std::vector<Point3d>& grounds) const {
+  switch (mLayerType) {
+  case eFLAT:
+    CreateCubeFlat(sensorModel, images, grounds);
+    break;
+  case eMODEL:
+    CreateCubeModel(sensorModel, images, grounds);
+    break;
+  default:
+    assert(false);
+  }
+
   return 0;
 }
 
@@ -48,5 +60,25 @@ int SensorCube::CreateCubeFlat(const ISensorModel* sensorModel,
 
 int SensorCube::CreateCubeModel(const ISensorModel* sensorModel,
   std::vector<Point2f>& images, std::vector<Point3d>& grounds) const {
+  const auto [numCols, numRows] = sensorModel->GetImageSize();
+  const auto [minHgt, maxHgt] = sensorModel->GetHeightRange();
+
+  const auto stepCols = (numCols + mMarginCols * 2) / mNumHoriz;
+  const auto stepRows = (numRows + mMarginRows * 2) / mNumVert;
+  const auto stepHgt = (maxHgt - minHgt) / mNumLayers;
+
+  for (auto col = -mMarginCols; col <= numCols+mMarginCols; col += stepCols) {
+    for (auto row = -mMarginRows; row <= numRows+mMarginRows; row += stepRows) {
+      Point2d image{ double(col), double(row) };
+      
+      for (auto hgt = minHgt; hgt <= maxHgt; hgt += stepHgt) {
+        Point3d ground{ 0, 0, hgt };
+        sensorModel->ImageToGround(image, ground);
+
+        images.emplace_back(float(col), float(row));
+        grounds.emplace_back(ground);
+      }
+    }
+  }
   return 0;
 }

@@ -258,6 +258,14 @@ Polygon2d CalcFootprint(const ISensorModel* sensorModel, const double height) {
   return fp;
 }
 
+/**
+ *  \brief compute statistics (mean, rms, min, max)
+ */
+void CalcStatitics(const ISensorModel* sensorModel,
+  const std::vector<Point2f>& images, const std::vector<Point3d>& grounds) {
+
+}
+
 std::string ToString(const RationalModel* ratModel) {
   std::stringstream ss;
   return ss.str();

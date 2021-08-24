@@ -19,7 +19,7 @@ class ISensorModel;
  *  \brief the class SensorCube creates a 2d grid of image positions and
  *  corresponding 3d cube of ground positions at multiple elevation layers.
  */
-class EXSENSORMODEL_EXPORTS SensorCube {
+class EXSENSORMODEL_EXPORTS SensorCube final {
 public:
   // option of layers in ground
   enum LayerType {
@@ -29,7 +29,7 @@ public:
   };
 
   SensorCube(int numHoriz, int numVert,
-    int numLayers, LayerType layerType);
+    int numLayers, LayerType layerType=eMODEL);
   ~SensorCube() = default;
 
   void SetLayout(const int numHoriz, const int numVert, 

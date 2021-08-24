@@ -4,7 +4,9 @@
  */
 #include "sensormodel/sensormodelfactory.h"
 #include "core/exceptions/exexcept.h"
+#include "sensormodel/rationalfit.h"
 #include "sensormodel/utils/sensorcube.h"
+#include "sensormodel/utils/smutils.h"
 
 using namespace earthxpert;
 
@@ -48,19 +50,24 @@ SensorModelFactory::CreateRationalModel(const ISensorModel* sensorModel) {
   int numHoriz{ kNUMINT }, numVert{ kNUMINT }, numLayers{ kNUMINT };
   CubeType cubeType{ CubeType::eMODEL };
   SensorCube sensorCube(numHoriz, numVert, numLayers, cubeType);
+  sensorCube.SetMargins(100, 100);
 
   std::vector<Point2f> images;
   std::vector<Point3d> grounds;
   sensorCube.CreateCube(sensorModel, images, grounds);
 
-  //RationalFit ratFit;
+  RationalFit ratFit;
+  auto ratModel = ratFit.CreateRationalModel(images, grounds);
 
   // Fit accuracy
+  CalcStatitics(ratModel.get(), images, grounds);
 
   // QC accuracy
   std::vector<Point2f> imagesQC;
   std::vector<Point3d> groundsQC;
   sensorCube.CreateCubeQC(sensorModel, imagesQC, groundsQC);
 
-  return std::unique_ptr<RationalModel>();
+  CalcStatitics(ratModel.get(), imagesQC, groundsQC);
+
+  return ratModel;
 }
