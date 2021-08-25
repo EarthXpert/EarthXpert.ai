@@ -206,9 +206,9 @@ Tuple6d RationalStereoModel::CalcJacobianA(RationalModel const* ratModel,
   const auto dFr_duvw = (Point3d(dLn_du, dLn_dv, dLn_dw) - \
     img.y * Point3d(dLd_du, dLd_dv, dLd_dw)) * invLd;  // dFr_du, dFr_dv, dFr_dw
 
-  const double du_dL = ratModel->mInvScale[risf::eISLON];    // 1.0 / nfc[rnf::eSLON]; u = (Lon - nfc[rnf::eOLON]) / nfc[rnf::eSLON]
-  const double dv_dP = ratModel->mInvScale[risf::eISLAT];    // 1.0 / nfc[rnf::eSLAT]; v = (Lat - nfc[rnf::eOLAT])/ nfc[rnf::eSLAT]
-  const double dw_dH = ratModel->mInvScale[risf::eISHGT];    // 1.0 / nfc[rnf::eSHGT]; w = (Hgt - nfc[rnf::eOHGT]) / nfc[rnf::eSHGT]
+  const double du_dL = ratModel->mInvScale[eLON];    // 1.0 / nfc[rnf::eSLON]; u = (Lon - nfc[rnf::eOLON]) / nfc[rnf::eSLON]
+  const double dv_dP = ratModel->mInvScale[eLAT];    // 1.0 / nfc[rnf::eSLAT]; v = (Lat - nfc[rnf::eOLAT])/ nfc[rnf::eSLAT]
+  const double dw_dH = ratModel->mInvScale[eHGT];    // 1.0 / nfc[rnf::eSHGT]; w = (Hgt - nfc[rnf::eOHGT]) / nfc[rnf::eSHGT]
 
   return { dFc_duvw.x * du_dL, dFc_duvw.y * dv_dP, dFc_duvw.z * dw_dH, 
            dFr_duvw.x * du_dL, dFr_duvw.y * dv_dP, dFr_duvw.z * dw_dH };

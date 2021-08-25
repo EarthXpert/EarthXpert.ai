@@ -26,6 +26,9 @@ enum NormalFactorIndex {
   eSLAT = 7,    // latitude scale
   eSLON = 8,    // longitude scale
   eSHGT = 9,    // height scale
+
+  NumOffFact = 5,
+  NumSclFact = 5,
   NumFact = 10  // number of factors
 };
 }

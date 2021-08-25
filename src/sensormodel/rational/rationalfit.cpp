@@ -32,7 +32,9 @@ void RationalFit::SetCoefGroup(const int coefGroup) {
     flag = kEqDenom | kNoQuad | kNoCubic | kNoHgt;
   }
 
-  mEqDenom = flag & kEqDenom;
+  if (flag & kEqDenom)
+    mRfmType = kEqDenom;
+
   std::vector<rpc> noIdxs;
 
   if (flag & kNoQuad) {  // No quadratic terms
@@ -60,7 +62,16 @@ void RationalFit::SetCoefGroup(const int coefGroup) {
   }
 
   mNumCoefs = int(mCoefFlags.count());  // number of non-masked coefficients
-  mNumUnks = mEqDenom ? (mNumCoefs + (mNumCoefs - 1) / 2) : (mNumCoefs * 2 - 1);
+  switch (mRfmType) {
+  case kStandard:
+    mNumUnks = mNumCoefs * 2 - 1;
+    break;
+  case kEqDenom:
+    mNumUnks = mNumCoefs + (mNumCoefs - 1) / 2;
+    break;
+  case kUnitDenom:
+    break;
+  }
 }
 
 /**
@@ -140,20 +151,46 @@ void RationalFit::GetCoefWeights(double& wtOff,
  */
 UPRationalModel RationalFit::CreateRationalModel(
   const std::vector<Point2f>& images, const std::vector<Point3d>& grounds) {
-  if (images.size() != grounds.size()) {
+  const size_t count = grounds.size();
+  if (count != images.size()) {
     throw std::invalid_argument(_("image grid and ground cube are different in size."));
   }
 
   // Convert row/col coordinates from raster CS to indices.
   // The RPCs internally uses the pixel centre as the origin.                                                         */
-  std::vector<Point2d> imgs;
-  std::transform(images.cbegin(), images.cend(), std::back_inserter(imgs),
+  std::vector<Point2d> imgs0;
+  std::transform(images.cbegin(), images.cend(), std::back_inserter(imgs0),
     [](const Point2f& img) -> Point2d { return (img - 0.5f); });
 
-  std::array<double, rpc::NumCoef> lineNumCoef{}, lineDenCoef{};
-  std::array<double, rpc::NumCoef> sampNumCoef{}, sampDenCoef{};
-  CalcCoefficients(imgs, grounds,
-    lineNumCoef, lineDenCoef, sampNumCoef, sampDenCoef);
+  CalcNormalFactors(imgs0, grounds);
+
+  std::vector<Point2d> imgs(count);  // normalized image coordinates
+  std::vector<Point3d> grds(count); // normalized ground coordinates
+  for (size_t i = 0; i < count; ++i) {
+    imgs[i].y = (imgs0[i].y - mOffFactors[eLINE]) * mInvSclFactors[eLINE];
+    imgs[i].x = (imgs0[i].x - mOffFactors[eSAMP]) * mInvSclFactors[eSAMP];
+    grds[i].y = (grounds[i].y - mOffFactors[eLAT]) * mInvSclFactors[eLAT];
+    grds[i].x = (grounds[i].x - mOffFactors[eLON]) * mInvSclFactors[eLON];
+    grds[i].z = (grounds[i].z - mOffFactors[eHGT]) * mInvSclFactors[eHGT];
+  }
+
+  std::array<double, rpc::NumCoef> lineNumCoef{}, lineDenCoef{1.0, 0.0};
+  std::array<double, rpc::NumCoef> sampNumCoef{}, sampDenCoef{1.0, 0.0};
+  switch (mRfmType) {
+  case kStandard:
+    SolveStandard(imgs, grds,
+      lineNumCoef, lineDenCoef, sampNumCoef, sampDenCoef);
+    break;
+  case kEqDenom:
+    SolveEqualDenom(imgs, grds,
+      lineNumCoef, lineDenCoef, sampNumCoef, sampDenCoef);
+    break;
+  case kUnitDenom:
+    SolveUnitDenom(imgs, grds, lineNumCoef, sampNumCoef);
+    break;
+  default:
+    assert(false);
+  }
 
   std::array<double, rnf::NumFact> nfc{};
   GetNormalFactors(nfc);
@@ -164,8 +201,28 @@ UPRationalModel RationalFit::CreateRationalModel(
   return ratModel;
 }
 
+void RationalFit::CalcNormalFactors(const std::vector<Point2d>& images,
+  const std::vector<Point3d>& grounds) {
+  if (NumOffScl > int(mOffFlags.count()) || NumOffScl > int(mSclFlags.count())) {
+    // update normalization factors
+    std::array<std::function<double(const Point2d&)>, 2> imgGetters{
+      [](const Point2d& img) { return img.y; },
+      [](const Point2d& img) { return img.x; } };
+    CalcNormalFactors(images, imgGetters, 0);
+
+    std::array<std::function<double(const Point3d&)>, 3> grdGetters{
+      [](const Point3d& grd) { return grd.y; },
+      [](const Point3d& grd) { return grd.x; },
+      [](const Point3d& grd) { return grd.z; } };
+    CalcNormalFactors(grounds, grdGetters, 2);
+  }
+
+  std::transform(mSclFactors.cbegin(), mSclFactors.cend(),
+    mInvSclFactors.begin(), [](const double val) { return 1.0 / val; });
+}
+
 /**
- *  \brief calculate coefficients from given points.
+ *  \brief solve coefficients from given points.
  *  
  *  \param [in] images an array of image grid points. 
  *    The line/sample coordinate system has the origin (0.0, 0.0) 
@@ -176,29 +233,27 @@ UPRationalModel RationalFit::CreateRationalModel(
  *  \param [in] sampNumCoef numerator polynomial of sample formulae
  *  \param [in] sampDenCoef denominator polynomial of sample formulae
  */
-void RationalFit::CalcCoefficients(
-  const std::vector<Point2d>& images, const std::vector<Point3d>& grounds,
+void RationalFit::SolveStandard(const std::vector<Point2d>& images,
+  const std::vector<Point3d>& grounds,
   std::array<double, rpc::NumCoef>& lineNumCoef,
   std::array<double, rpc::NumCoef>& lineDenCoef,
   std::array<double, rpc::NumCoef>& sampNumCoef,
   std::array<double, rpc::NumCoef>& sampDenCoef) {
-  // update normalization factors
-  if (NumOffScl > int(mOffFlags.count()) || NumOffScl > int(mSclFlags.count())) {
-    std::array<std::function<double(const Point2d&)>, 2> imgGetters {
-      [](const Point2d& img) { return img.y; },
-      [](const Point2d& img) { return img.x; } };
-    CalcNormalFactors(images, imgGetters, 0);
 
-    std::array<std::function<double(const Point3d&)>, 3> grdGetters {
-      [](const Point3d& grd) { return grd.y; },
-      [](const Point3d& grd) { return grd.x; },
-      [](const Point3d& grd) { return grd.z; } };
-    CalcNormalFactors(grounds, grdGetters, 2);
-  }
+}
 
-  // solve for coefficients
-  if (!mEqDenom) {
-  }
-  else {
-  }
+void RationalFit::SolveEqualDenom(const std::vector<Point2d>& images,
+  const std::vector<Point3d>& grounds,
+  std::array<double, rpc::NumCoef>& lineNumCoef,
+  std::array<double, rpc::NumCoef>& lineDenCoef,
+  std::array<double, rpc::NumCoef>& sampNumCoef,
+  std::array<double, rpc::NumCoef>& sampDenCoef) {
+
+}
+
+void RationalFit::SolveUnitDenom(const std::vector<Point2d>& images,
+  const std::vector<Point3d>& grounds,
+  std::array<double, rpc::NumCoef>& lineNumCoef,
+  std::array<double, rpc::NumCoef>& sampNumCoef) {
+
 }

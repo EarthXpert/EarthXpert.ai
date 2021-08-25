@@ -65,8 +65,8 @@ private:
   std::bitset<rpc::NumCoef> mCoefFlags; // flag indicating which polynomial coefficients to estimate
 
   // normalization factors: line, samp, lat, lon, hgt
-  std::array<double, NumOffScl> mOffFactors{0, 0, 0, 0, 0}; // offsets
-  std::array<double, NumOffScl> mSclFactors{1.0, 1.0, 1.0, 1.0, 1.0}; // scales
+  std::array<double, NumOffScl> mOffFactors{0}; // offsets
+  std::array<double, NumOffScl> mSclFactors{1.0}; // scales
   std::bitset<NumOffScl> mOffFlags; // flag indicating known offsets
   std::bitset<NumOffScl> mSclFlags; // flag indicating known scales
   std::array<int, NumOffScl> mOffDigits{ 0, 0, 4, 4, 0}; // number of digits past decimal place
@@ -81,10 +81,11 @@ private:
   double mTol{ 1.0e-10 };  // tolerance for convergence of coefficients
 
   // cached 
-  bool mEqDenom{ false };  // flag indicating common line and sample denominator terms
-  bool mUnitDenom{ false };  // flag indicating eliminated line and pixel denominator terms
+  int mRfmType{kStandard}; // flag indicating type of denominator terms
+  std::array<double, NumOffScl> mInvSclFactors{1.0}; // inverse scales
   int mNumCoefs{ 20 }; // number of polynomial coefficeints to estimate
   int mNumUnks{ 39 };  // number of line or sample coefficeints to estimate
+  
   void Initialize();
 
   /**
@@ -93,7 +94,7 @@ private:
    *  If not normalized, the estimation could have numerical difficulties 
    *  for 3rd-order polynomials when the coordinate values are large.
    *  
-   *  \tparam Ty1 point type
+   *  \tparam Ty point type
    *
    *  \param [in] points an array of grid/cube points.
    *  \param [in] arrGetters an array of the corresponding ground cube points
@@ -119,11 +120,25 @@ private:
     }
   }
 
-  void CalcCoefficients(const std::vector<Point2d>& images, 
+  void CalcNormalFactors(const std::vector<Point2d>& images, 
+    const std::vector<Point3d>& grounds);
+
+  // SolveCoefficients
+  void SolveStandard(const std::vector<Point2d>& images,
     const std::vector<Point3d>& grounds,
     std::array<double, rpc::NumCoef>& lineNumCoef,
     std::array<double, rpc::NumCoef>& lineDenCoef,
     std::array<double, rpc::NumCoef>& sampNumCoef,
     std::array<double, rpc::NumCoef>& sampDenCoef);
+  void SolveEqualDenom(const std::vector<Point2d>& images,
+    const std::vector<Point3d>& grounds,
+    std::array<double, rpc::NumCoef>& lineNumCoef,
+    std::array<double, rpc::NumCoef>& lineDenCoef,
+    std::array<double, rpc::NumCoef>& sampNumCoef,
+    std::array<double, rpc::NumCoef>& sampDenCoef);
+  void SolveUnitDenom(const std::vector<Point2d>& images,
+    const std::vector<Point3d>& grounds,
+    std::array<double, rpc::NumCoef>& lineNumCoef,
+    std::array<double, rpc::NumCoef>& sampNumCoef);
 };
 } // namespace earthxpert

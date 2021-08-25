@@ -68,18 +68,7 @@ public:
     eModelType = ModelType::eMT_RATIONAL
   };
 
-  using NormalFactorIndex = NormalFactorIndex;  // index of normalization factors
-
-  // index of inversed scale factors
-  enum InvScaleFactor {
-    eISLINE = 0,   // line inversed scale
-    eISSAMP = 1,   // sample inversed scale
-    eISLAT = 2,    // latitude inversed scale
-    eISLON = 3,    // longitude inversed scale
-    eISHGT = 4,    // height inversed scale
-    NumInvScl = 5  // number of inversed scales
-  };
-  using isf = InvScaleFactor;
+  using nfi = NormalFactorIndex;  // index of normalization factors
 
   // index of 3rd-order polynomial coefficients
   // The order of terms is from NITF RPC00B standard (STDI-0002).
@@ -443,7 +432,7 @@ private:
   const double* const lnc{ mLineNumCoef.data() };
   const double* const ldc{ mLineDenCoef.data() };
 
-  std::array<double, NumInvScl> mInvScale{1.0}; // reciprocal of scale factors
+  std::array<double, NumSclFact> mInvScale{1.0}; // reciprocal of scale factors
   
   // interpolation cube to provide approximate X, Y coordinates for ImageToGround()
   std::unique_ptr<InterpCubeD> mCubeS2G; 
@@ -451,7 +440,6 @@ private:
 };
 
 using rnf = NormalFactorIndex;
-using risf = RationalModel::InvScaleFactor;
 using rpc = RationalModel::PolyCoeff3rd;
 using rcc = RationalModel::CorrCoeff;
 using rca = RationalModel::CorrAlgo;

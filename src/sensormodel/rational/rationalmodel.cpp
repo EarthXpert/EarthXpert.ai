@@ -47,14 +47,11 @@ RationalModel::RationalModel(const int numCols, const int numRows,
 
   CheckModel();
 
-  mInvScale[eISLINE] = 1.0 / nfc[eSLINE];
-  mInvScale[eISSAMP] = 1.0 / nfc[eSSAMP];
-  mInvScale[eISLAT] = 1.0 / nfc[eSLAT];
-  mInvScale[eISLON] = 1.0 / nfc[eSLON];
-  mInvScale[eISHGT] = 1.0 / nfc[eSHGT];
+  std::transform(nfc+eSLINE, nfc+NumFact, mInvScale.begin(), 
+    [](const double val) { return 1.0 / val; });
 
-  mTol_c = mInvScale[eISSAMP] * kRatio;
-  mTol_r = mInvScale[eISLINE] * kRatio;
+  mTol_c = mInvScale[eSAMP] * kRatio;
+  mTol_r = mInvScale[eLINE] * kRatio;
 
   EnableCubeS2G(false);
 }
@@ -206,7 +203,7 @@ bool RationalModel::EqualTo(const ISensorModel &rhs) const {
 bool RationalModel::ImageToGround(const Point2d &image, Point3d &ground) const {
   const auto sensor = ImageToSensor(image);
 
-  Point3d uvw{0.0, 0.0, (ground.z - nfc[eOHGT]) * mInvScale[eISHGT]}; // lph
+  Point3d uvw{0.0, 0.0, (ground.z - nfc[eOHGT]) * mInvScale[eHGT]}; // lph
   if (!SensorToVirtual(sensor, uvw))
     return false;
 
@@ -370,7 +367,7 @@ void RationalModel::Clear() noexcept {
   mSampCorr.fill(0.0);
   mCorrAlgo = eCA_IMAGE;
 
-  mInvScale.fill(0.0);
+  mInvScale.fill(1.0);
 }
 
 /**
@@ -614,7 +611,7 @@ bool RationalModel::SensorToVirtual(const double x, const double y,
     const double dy = yp - y; // Normalized row misclosure
 
     // do not re-compute the partial derivatives within 1 pixel
-    if (fabs(dx) < mInvScale[eISSAMP] && fabs(dy) < mInvScale[eISLINE]) {
+    if (fabs(dx) < mInvScale[eSAMP] && fabs(dy) < mInvScale[eLINE]) {
       recalcFlag = false;
     }
 
