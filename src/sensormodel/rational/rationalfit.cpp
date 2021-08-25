@@ -150,10 +150,8 @@ UPRationalModel RationalFit::CreateRationalModel(
   std::transform(images.cbegin(), images.cend(), std::back_inserter(imgs),
     [](const Point2f& img) -> Point2d { return (img - 0.5f); });
 
-  std::array<double, rpc::NumCoef> lineNumCoef{};
-  std::array<double, rpc::NumCoef> lineDenCoef{};
-  std::array<double, rpc::NumCoef> sampNumCoef{};
-  std::array<double, rpc::NumCoef> sampDenCoef{};
+  std::array<double, rpc::NumCoef> lineNumCoef{}, lineDenCoef{};
+  std::array<double, rpc::NumCoef> sampNumCoef{}, sampDenCoef{};
   CalcCoefficients(imgs, grounds,
     lineNumCoef, lineDenCoef, sampNumCoef, sampDenCoef);
 
