@@ -31,4 +31,22 @@ std::pair<double, double> CalcOffsetScale(const std::vector<double>& arr,
 
   return std::make_pair(off, scl);
 }
+
+void CalcStatistics(const std::vector<double>& arr, std::array<double, 4>& stats) {
+  assert(!arr.empty());
+
+  const double inv = 1.0 / double(arr.size());
+  stats[0] = std::accumulate(arr.cbegin(), arr.cend(), 0.0) * inv;  // mean
+
+  struct SqSum {
+    double result{};
+    void operator()(const double val) { result += val * val; }
+  };
+  auto sqSum = std::for_each(arr.cbegin(), arr.cend(), SqSum());
+  stats[1] = sqrt(sqSum.result * inv);  // rms
+
+  auto [min, max] = std::minmax_element(arr.cbegin(), arr.cend());
+  stats[2] = *min;
+  stats[3] = *max;
+}
 }

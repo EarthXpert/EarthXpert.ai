@@ -4,6 +4,7 @@
  */
 #include "sensormodel/utils/smutils.h"
 #include "core/exceptions/exexcept.h"
+#include "core/math/mutils.h"
 #include "core/utils/layoututils.h"
 #include "core/utils/unitutils.h"
 #include "core/spatialref/earthellipsoid.h"
@@ -262,8 +263,21 @@ Polygon2d CalcFootprint(const ISensorModel* sensorModel, const double height) {
  *  \brief compute statistics (mean, rms, min, max)
  */
 void CalcStatitics(const ISensorModel* sensorModel,
-  const std::vector<Point2f>& images, const std::vector<Point3d>& grounds) {
+  const std::vector<Point2f>& images, const std::vector<Point3d>& grounds,
+  std::array<double, 4>& xstats, std::array<double, 4>& ystats) {
+  const size_t count = images.size();
+  assert(count == grounds.size());
 
+  std::vector<double> xerr(count), yerr(count);
+  for (size_t i = 0; i < count; ++i) {
+    Point2d img{};
+    sensorModel->GroundToImage(grounds[i], img);
+    xerr[i] = img.x - images[i].x;
+    yerr[i] = img.y - images[i].y;
+  }
+
+  CalcStatistics(xerr, xstats);  // samp
+  CalcStatistics(yerr, ystats);  // line
 }
 
 std::string ToString(const RationalModel* ratModel) {

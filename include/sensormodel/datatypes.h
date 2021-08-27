@@ -5,6 +5,7 @@
 #pragma once
 
 #include "sensormodel/exsensormodel.h"
+#include <array>
 
 namespace earthxpert {
 // index of normalization factors: offset and scale
@@ -31,4 +32,6 @@ enum NormalFactorIndex {
   NumSclFact = 5,
   NumFact = 10  // number of factors
 };
+
+using NormalFactorArray = std::array<double, NumFact>;
 }

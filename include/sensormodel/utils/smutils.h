@@ -39,7 +39,8 @@ Polygon2d EXSENSORMODEL_EXPORTS
 CalcFootprint(const ISensorModel* sensorModel, double height);
 
 void EXSENSORMODEL_EXPORTS CalcStatitics(const ISensorModel* sensorModel,
-  const std::vector<Point2f>& images, const std::vector<Point3d>& grounds);
+  const std::vector<Point2f>& images, const std::vector<Point3d>& grounds,
+  std::array<double, 4>& xstats, std::array<double, 4>& ystats);
 
 std::string EXSENSORMODEL_EXPORTS ToString(const RationalModel* ratModel);
 }

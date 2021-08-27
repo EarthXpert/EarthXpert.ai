@@ -8,6 +8,12 @@
 
 #include <Eigen/Eigen>
 
+template<typename Ty>
+using EigMatX = Eigen::Matrix<Ty, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor>;
+
+template<typename Ty>
+using EigVecX = Eigen::Matrix<Ty, Eigen::Dynamic, 1>;
+
 using EigTri = Eigen::Triplet<double>;
 
 namespace earthxpert {

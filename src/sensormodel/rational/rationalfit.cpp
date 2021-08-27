@@ -3,10 +3,24 @@
  * -----------------------------------------------------------------------------
  */
 #include "sensormodel/rationalfit.h"
+#include "3rdparty/eigen/exeigen.h"
 #include "core/exceptions/exexcept.h"
 #include "core/math/mutils.h"
+#include "sensormodel/rmutils.h"
 
 using namespace earthxpert;
+using namespace ::Eigen;
+
+namespace {
+std::array<std::function<double(const Point2d&)>, 2> imgGetters {
+  [](const Point2d& img) { return img.y; },
+  [](const Point2d& img) { return img.x; } };
+
+std::array<std::function<double(const Point3d&)>, 3> grdGetters {
+  [](const Point3d& grd) { return grd.y; },
+  [](const Point3d& grd) { return grd.x; },
+  [](const Point3d& grd) { return grd.z; } };
+}
 
 RationalFit::RationalFit(const int coefGroup) : mCoefGroup(coefGroup) {
   Initialize();
@@ -78,14 +92,14 @@ void RationalFit::SetCoefGroup(const int coefGroup) {
  *  \brief specify normalization factors (offsets + scales),                            
  *  which are desired and useful in certain situations (stereo).                                                  
  */
-void RationalFit::SetNormalFactors(const std::array<double, NumFact>& normalFators) {
+void RationalFit::SetNormalFactors(const NormalFactorArray& normalFators) {
   std::copy_n(normalFators.cbegin(), NumOffScl, mOffFactors.begin());
   mOffFlags.set();
   std::copy_n(normalFators.cbegin() + NumOffScl, NumOffScl, mSclFactors.begin());
   mSclFlags.set();
 }
 
-void RationalFit::GetNormalFactors(std::array<double, NumFact>& normalFators) const {
+void RationalFit::GetNormalFactors(NormalFactorArray& normalFators) const {
   std::copy_n(mOffFactors.cbegin(), NumOffScl, normalFators.begin());
   std::copy_n(mSclFactors.cbegin(), NumOffScl, normalFators.begin()+NumOffScl);
 }
@@ -167,15 +181,15 @@ UPRationalModel RationalFit::CreateRationalModel(
   std::vector<Point2d> imgs(count);  // normalized image coordinates
   std::vector<Point3d> grds(count); // normalized ground coordinates
   for (size_t i = 0; i < count; ++i) {
-    imgs[i].y = (imgs0[i].y - mOffFactors[eLINE]) * mInvSclFactors[eLINE];
     imgs[i].x = (imgs0[i].x - mOffFactors[eSAMP]) * mInvSclFactors[eSAMP];
-    grds[i].y = (grounds[i].y - mOffFactors[eLAT]) * mInvSclFactors[eLAT];
+    imgs[i].y = (imgs0[i].y - mOffFactors[eLINE]) * mInvSclFactors[eLINE];
     grds[i].x = (grounds[i].x - mOffFactors[eLON]) * mInvSclFactors[eLON];
+    grds[i].y = (grounds[i].y - mOffFactors[eLAT]) * mInvSclFactors[eLAT];
     grds[i].z = (grounds[i].z - mOffFactors[eHGT]) * mInvSclFactors[eHGT];
   }
 
-  std::array<double, rpc::NumCoef> lineNumCoef{}, lineDenCoef{1.0, 0.0};
-  std::array<double, rpc::NumCoef> sampNumCoef{}, sampDenCoef{1.0, 0.0};
+  PolyCoefArray lineNumCoef{}, lineDenCoef{1.0, 0.0};
+  PolyCoefArray sampNumCoef{}, sampDenCoef{1.0, 0.0};
   switch (mRfmType) {
   case kStandard:
     SolveStandard(imgs, grds,
@@ -192,7 +206,7 @@ UPRationalModel RationalFit::CreateRationalModel(
     assert(false);
   }
 
-  std::array<double, rnf::NumFact> nfc{};
+  std::array<double, rfi::NumFact> nfc{};
   GetNormalFactors(nfc);
 
   auto groundSRS = std::make_shared<OGRSpatialRef>("WGS84");
@@ -205,15 +219,8 @@ void RationalFit::CalcNormalFactors(const std::vector<Point2d>& images,
   const std::vector<Point3d>& grounds) {
   if (NumOffScl > int(mOffFlags.count()) || NumOffScl > int(mSclFlags.count())) {
     // update normalization factors
-    std::array<std::function<double(const Point2d&)>, 2> imgGetters{
-      [](const Point2d& img) { return img.y; },
-      [](const Point2d& img) { return img.x; } };
     CalcNormalFactors(images, imgGetters, 0);
 
-    std::array<std::function<double(const Point3d&)>, 3> grdGetters{
-      [](const Point3d& grd) { return grd.y; },
-      [](const Point3d& grd) { return grd.x; },
-      [](const Point3d& grd) { return grd.z; } };
     CalcNormalFactors(grounds, grdGetters, 2);
   }
 
@@ -224,10 +231,10 @@ void RationalFit::CalcNormalFactors(const std::vector<Point2d>& images,
 /**
  *  \brief solve coefficients from given points.
  *  
- *  \param [in] images an array of image grid points. 
+ *  \param [in] images an array of normalized image grid points. 
  *    The line/sample coordinate system has the origin (0.0, 0.0) 
  *    corresponding to the center of the upper-left pixel.
- *  \param [in] grounds an array of the corresponding ground cube points
+ *  \param [in] grounds an array of the corresponding normalized ground cube points
  *  \param [in] lineNumCoef numerator polynomial of line formulae
  *  \param [in] lineDenCoef denominator polynomial of line formulae
  *  \param [in] sampNumCoef numerator polynomial of sample formulae
@@ -235,25 +242,160 @@ void RationalFit::CalcNormalFactors(const std::vector<Point2d>& images,
  */
 void RationalFit::SolveStandard(const std::vector<Point2d>& images,
   const std::vector<Point3d>& grounds,
-  std::array<double, rpc::NumCoef>& lineNumCoef,
-  std::array<double, rpc::NumCoef>& lineDenCoef,
-  std::array<double, rpc::NumCoef>& sampNumCoef,
-  std::array<double, rpc::NumCoef>& sampDenCoef) {
+  PolyCoefArray& lineNumCoef, PolyCoefArray& lineDenCoef,
+  PolyCoefArray& sampNumCoef, PolyCoefArray& sampDenCoef) {
+  constexpr int numUnks = 39;
+  const size_t count = images.size();
 
+  // weights of 39 unkown coefs
+  std::array<double, numUnks> P{};
+  GetWeights(P.data());
+  std::copy_n(P.begin() + 1, rpc::NumCoef - 1, P.begin() + rpc::NumCoef);
+
+  // solve (N + P + r) * dx = t + P * (x - x0) + r * dx
+  EigMatX<double> N(numUnks, numUnks);  // normal matrix
+  EigVecX<double> x(numUnks); // unkowns
+  EigVecX<double> t(numUnks); // normal misclosure
+  EigVecX<double> dx(numUnks); // correction to unkowns
+
+  PolyCoefArray uvw{};  // combinations of u, v, w for polynomial terms
+  std::array<double, numUnks> A{};  // dF_dx
+
+  int ci = 0;
+  std::vector<double> arr(count);
+
+  for (auto& arrGetter : imgGetters) {
+    std::transform(images.cbegin(), images.cend(), arr.begin(), arrGetter);
+
+    N.setZero();
+    x.setZero();
+    t.setZero();
+
+    for (size_t k = 0; k < count; ++k) {
+      CalcTerms(grounds[k], uvw.data());
+
+      // Jacobian
+      A[0] = -uvw[0];  // must use constant term
+      for (int i = 1; i < rpc::NumCoef; ++i) {
+        if (!mCoefFlags.test(i)) continue;
+        A[i] = -uvw[i];
+        A[i + 19] = arr[k] * uvw[i];
+      }
+
+      // add AtA to N (upper triangle)
+      for (int i = 0; i < numUnks; ++i) {
+        for (int j = i; j < numUnks; ++j) {
+          N(i, j) += A[i] * A[j];
+        }
+      }
+
+      double w = arr[k];   // misclosure
+      for (int i = 0; i < numUnks; ++i) {
+        w += x[i] * A[i];
+      }
+
+      // add Atw to t
+      for (int i = 0; i < numUnks; ++i) {
+        t[i] += A[i] * w;
+      }
+    }
+
+    // fill lower triangle
+    for (int i = 0; i < numUnks; ++i) {
+      for (int j = 0; j < i; ++j) {
+        N(i, j) = N(j, i);
+      }
+    }
+
+    // add weights and unbiased regularization
+    for (int i = 0; i < numUnks; ++i) {
+      N(i, i) += P[i] + mR;
+      t[i] += P[i] * x[i];
+    }
+
+    const auto& ldlt = N.ldlt();
+    const double rcnNm = ldlt.rcond();
+
+    dx = ldlt.solve(t);
+    x -= dx;
+
+    for (int it = 1; it < mMaxIter; ++it) {
+      t.setZero();
+
+      for (size_t k = 0; k < count; ++k) {
+        CalcTerms(grounds[k], uvw.data());
+
+        // Jacobian
+        A[0] = -uvw[0];  // must use constant term
+        for (int i = 1; i < rpc::NumCoef; ++i) {
+          if (!mCoefFlags.test(i)) continue;
+          A[i] = -uvw[i];
+          A[i + 19] = arr[k] * uvw[i];
+        }
+
+        double w = arr[k];   // misclosure
+        for (int i = 0; i < numUnks; ++i) {
+          w += x[i] * A[i];
+        }
+
+        // add Atw to t
+        for (int i = 0; i < numUnks; ++i) {
+          t[i] += A[i] * w;
+        }
+      }
+
+      // add weights and unbiased regularization
+      for (int i = 0; i < numUnks; ++i) {
+        t[i] += P[i] * x[i] + mR * dx[i];
+      }
+
+      dx = ldlt.solve(t);
+      x -= dx;
+
+      const double err = dx.lpNorm<Eigen::Infinity>();
+      if (mTol > err)
+        break;
+    }
+
+    if (0 == ci++) {
+      std::copy_n(x.data(), rpc::NumCoef, lineNumCoef.begin());
+      std::copy_n(x.data() + rpc::NumCoef, rpc::NumCoef - 1, lineDenCoef.begin() + 1);
+    }
+    else {
+      std::copy_n(x.data(), rpc::NumCoef, sampNumCoef.begin());
+      std::copy_n(x.data() + rpc::NumCoef, rpc::NumCoef - 1, sampDenCoef.begin() + 1);
+    }
+  }
 }
 
 void RationalFit::SolveEqualDenom(const std::vector<Point2d>& images,
   const std::vector<Point3d>& grounds,
-  std::array<double, rpc::NumCoef>& lineNumCoef,
-  std::array<double, rpc::NumCoef>& lineDenCoef,
-  std::array<double, rpc::NumCoef>& sampNumCoef,
-  std::array<double, rpc::NumCoef>& sampDenCoef) {
+  PolyCoefArray& lineNumCoef, PolyCoefArray& lineDenCoef,
+  PolyCoefArray& sampNumCoef, PolyCoefArray& sampDenCoef) {
 
 }
 
 void RationalFit::SolveUnitDenom(const std::vector<Point2d>& images,
   const std::vector<Point3d>& grounds,
-  std::array<double, rpc::NumCoef>& lineNumCoef,
-  std::array<double, rpc::NumCoef>& sampNumCoef) {
+  PolyCoefArray& lineNumCoef, PolyCoefArray& sampNumCoef) {
 
+}
+
+void RationalFit::GetWeights(double* const weights) const {
+  weights[rpc::eC] = mCoefWts[eWtOff];
+  for (std::underlying_type_t<rpc> idx = rpc::eL; idx <= rpc::eH; ++idx) {
+    weights[idx] = mCoefWts[eWtLin];
+  }
+  for (std::underlying_type_t<rpc> idx = rpc::eLP; idx <= rpc::eHH; ++idx) {
+    weights[idx] = mCoefWts[eWtQuad];
+  }
+  for (std::underlying_type_t<rpc> idx = rpc::ePLH; idx <= rpc::eHHH; ++idx) {
+    weights[idx] = mCoefWts[eWtCub];
+  }
+
+  // implicitly disable the un-used coefficients
+  for (int idx = 1; idx < rpc::NumCoef; ++idx) {
+    if (!mCoefFlags.test(idx)) 
+      weights[idx] = 1.0;
+  }
 }

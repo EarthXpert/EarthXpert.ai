@@ -29,12 +29,10 @@ using namespace earthxpert;
  * If not known, good approx. values are estimated from offset & scale factors.
  */
 RationalModel::RationalModel(const int numCols, const int numRows,
-                             const std::array<double, NumFact> &normalFators,
-                             const std::array<double, NumCoef> &lineNumCoef,
-                             const std::array<double, NumCoef> &lineDenCoef,
-                             const std::array<double, NumCoef> &sampNumCoef,
-                             const std::array<double, NumCoef> &sampDenCoef,
-                             SPSpatialRefSys groundSRS)
+  const NormalFactorArray &normalFators,
+  const PolyCoefArray &lineNumCoef, const PolyCoefArray &lineDenCoef,
+  const PolyCoefArray &sampNumCoef, const PolyCoefArray &sampDenCoef,
+  SPSpatialRefSys groundSRS)
   : mNumCols(numCols), mNumRows(numRows),
     mNormalFactors(normalFators), mLineNumCoef(lineNumCoef),
     mLineDenCoef(lineDenCoef), mSampNumCoef(sampNumCoef),
@@ -56,12 +54,10 @@ RationalModel::RationalModel(const int numCols, const int numRows,
   EnableCubeS2G(false);
 }
 
-RationalModel::RationalModel(const std::array<double, NumFact> &normalFators,
-                             const std::array<double, NumCoef> &lineNumCoef,
-                             const std::array<double, NumCoef> &lineDenCoef,
-                             const std::array<double, NumCoef> &sampNumCoef,
-                             const std::array<double, NumCoef> &sampDenCoef,
-                             SPSpatialRefSys groundSRS)
+RationalModel::RationalModel(const NormalFactorArray &normalFators,
+  const PolyCoefArray &lineNumCoef, const PolyCoefArray &lineDenCoef,
+  const PolyCoefArray &sampNumCoef, const PolyCoefArray &sampDenCoef,
+  SPSpatialRefSys groundSRS)
   : RationalModel(0, 0, normalFators, lineNumCoef, lineDenCoef,
     sampNumCoef, sampDenCoef, groundSRS) {
 }
@@ -434,39 +430,6 @@ Point2d RationalModel::CalcCorrection(const Point2d& cam) const {
     scc[eCS2] * CR[0] + scc[eCSL] * CR[1] + scc[eCL2] * CR[2],
            lcc[eCO] + lcc[eCS] * cam.x + lcc[eCL] * cam.y +
     lcc[eCS2] * CR[0] + lcc[eCSL] * CR[1] + lcc[eCL2] * CR[2] };
-}
-
-/**
- *  \brief Compute the combinations of normalized longitude, latitude,
- *  and height that go along with the rational function.
- *
- *  \param [in] u normalized longitude
- *  \param [in] v normalized latitude
- *  \param [in] w normalized height
- *  \param [out] uvw array of combined terms.
- */
-void RationalModel::CalcTerms(const double u, const double v,
-                              const double w, double *uvw) const {
-  uvw[eC] = 1.0;
-  uvw[eL] = u;
-  uvw[eP] = v;
-  uvw[eH] = w;
-  uvw[eLP] = u * v;
-  uvw[eLH] = u * w;
-  uvw[ePH] = v * w;
-  uvw[eLL] = u * u;
-  uvw[ePP] = v * v;
-  uvw[eHH] = w * w;
-  uvw[ePLH] = uvw[eLP] * w; // L * P * H
-  uvw[eLLL] = uvw[eLL] * u; // L * L * L
-  uvw[eLPP] = u * uvw[ePP]; // L * P * P
-  uvw[eLHH] = u * uvw[eHH]; // L * H * H
-  uvw[eLLP] = uvw[eLL] * v; // L * L * P
-  uvw[ePPP] = uvw[ePP] * v; // P * P * P
-  uvw[ePHH] = v * uvw[eHH]; // P * H * H
-  uvw[eLLH] = uvw[eLL] * w; // L * L * H
-  uvw[ePPH] = uvw[ePP] * w; // P * P * H
-  uvw[eHHH] = uvw[eHH] * w; // H * H * H
 }
 
 /**

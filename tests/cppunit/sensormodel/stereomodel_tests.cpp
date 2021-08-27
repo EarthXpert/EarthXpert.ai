@@ -182,20 +182,20 @@ void TestI2G_Cube(const std::string& leftMdlFile, const std::string& rightMdlFil
 void TestI2G_Cube(const RationalModel* leftModel, const RationalModel* rightModel, 
   const int num, const Point2d* leftImg, const Point2d* rightImg) {
   auto nfcL = leftModel->GetNormalFactors();
-  const auto minLonL = nfcL[rnf::eOLON] - nfcL[rnf::eSLON] * kFactor;
-  const auto maxLonL = nfcL[rnf::eOLON] + nfcL[rnf::eSLON] * kFactor;
-  const auto minLatL = nfcL[rnf::eOLAT] - nfcL[rnf::eSLAT] * kFactor;
-  const auto maxLatL = nfcL[rnf::eOLAT] + nfcL[rnf::eSLAT] * kFactor;
-  const auto minHgtL = nfcL[rnf::eOHGT] - nfcL[rnf::eSHGT] * kFactor;
-  const auto maxHgtL = nfcL[rnf::eOHGT] + nfcL[rnf::eSHGT] * kFactor;
+  const auto minLonL = nfcL[rfi::eOLON] - nfcL[rfi::eSLON] * kFactor;
+  const auto maxLonL = nfcL[rfi::eOLON] + nfcL[rfi::eSLON] * kFactor;
+  const auto minLatL = nfcL[rfi::eOLAT] - nfcL[rfi::eSLAT] * kFactor;
+  const auto maxLatL = nfcL[rfi::eOLAT] + nfcL[rfi::eSLAT] * kFactor;
+  const auto minHgtL = nfcL[rfi::eOHGT] - nfcL[rfi::eSHGT] * kFactor;
+  const auto maxHgtL = nfcL[rfi::eOHGT] + nfcL[rfi::eSHGT] * kFactor;
 
   auto nfcR = rightModel->GetNormalFactors();
-  const auto minLonR = nfcR[rnf::eOLON] - nfcR[rnf::eSLON] * kFactor;
-  const auto maxLonR = nfcR[rnf::eOLON] + nfcR[rnf::eSLON] * kFactor;
-  const auto minLatR = nfcR[rnf::eOLAT] - nfcR[rnf::eSLAT] * kFactor;
-  const auto maxLatR = nfcR[rnf::eOLAT] + nfcR[rnf::eSLAT] * kFactor;
-  const auto minHgtR = nfcR[rnf::eOHGT] - nfcR[rnf::eSHGT] * kFactor;
-  const auto maxHgtR = nfcR[rnf::eOHGT] + nfcR[rnf::eSHGT] * kFactor;
+  const auto minLonR = nfcR[rfi::eOLON] - nfcR[rfi::eSLON] * kFactor;
+  const auto maxLonR = nfcR[rfi::eOLON] + nfcR[rfi::eSLON] * kFactor;
+  const auto minLatR = nfcR[rfi::eOLAT] - nfcR[rfi::eSLAT] * kFactor;
+  const auto maxLatR = nfcR[rfi::eOLAT] + nfcR[rfi::eSLAT] * kFactor;
+  const auto minHgtR = nfcR[rfi::eOHGT] - nfcR[rfi::eSHGT] * kFactor;
+  const auto maxHgtR = nfcR[rfi::eOHGT] + nfcR[rfi::eSHGT] * kFactor;
 
   const auto minLon = std::max(minLonL, minLonR);
   const auto maxLon = std::min(maxLonL, maxLonR);
@@ -312,18 +312,18 @@ void TestCurveI2G(const std::string& leftMdlFile, const std::string& rightMdlFil
 void TestCurveI2G(const RationalModel* leftModel, const RationalModel* rightModel,
   const int num, const Point2d* leftImg, const Point2d* rightImg, const std::string& txtFile) {
   auto nfcL = leftModel->GetNormalFactors();
-  const auto minHgtL = nfcL[rnf::eOHGT] - nfcL[rnf::eSHGT] * kFactor;
-  const auto maxHgtL = nfcL[rnf::eOHGT] + nfcL[rnf::eSHGT] * kFactor;
+  const auto minHgtL = nfcL[rfi::eOHGT] - nfcL[rfi::eSHGT] * kFactor;
+  const auto maxHgtL = nfcL[rfi::eOHGT] + nfcL[rfi::eSHGT] * kFactor;
 
   auto nfcR = rightModel->GetNormalFactors();
-  const auto minHgtR = nfcR[rnf::eOHGT] - nfcR[rnf::eSHGT] * kFactor;
-  const auto maxHgtR = nfcR[rnf::eOHGT] + nfcR[rnf::eSHGT] * kFactor;
+  const auto minHgtR = nfcR[rfi::eOHGT] - nfcR[rfi::eSHGT] * kFactor;
+  const auto maxHgtR = nfcR[rfi::eOHGT] + nfcR[rfi::eSHGT] * kFactor;
 
   const auto minHgt = std::min(minHgtL, minHgtR); // -30. - 50
   const auto maxHgt = std::max(maxHgtL, maxHgtR); // -30. + 50
   const auto stepHgt = (maxHgt - minHgt) / kNH - DBL_EPSILON;
 
-  Point3d origin((nfcL[rnf::eOLON] + nfcR[rnf::eOLON]) / 2, (nfcL[rnf::eOLAT] + nfcR[rnf::eOLAT]) / 2, (minHgt + maxHgt) / 2);
+  Point3d origin((nfcL[rfi::eOLON] + nfcR[rfi::eOLON]) / 2, (nfcL[rfi::eOLAT] + nfcR[rfi::eOLAT]) / 2, (minHgt + maxHgt) / 2);
   EarthEllipsoid ee;
   ee.SetLsrOrigin(Deg2Rad(origin));
 
@@ -351,7 +351,7 @@ void TestCurveI2G(const RationalModel* leftModel, const RationalModel* rightMode
  * Create an instance of rational model of left image
  */
 std::unique_ptr<RationalModel> CreateRationalModelALeft() {
-  std::array<double, rnf::NumFact> normalFators{
+  std::array<double, rfi::NumFact> normalFators{
     11086, 9371, 34.6557, 109.2114, 396, 11524, 9637, 0.0508, 0.0522, 501 };
   std::array<double, rfm::NumCoef> lineNumCoef{
     +1.521921E-03, +1.474600E-02, -9.778159E-01, +3.780369E-02,
@@ -390,7 +390,7 @@ std::unique_ptr<RationalModel> CreateRationalModelALeft() {
  * Create an instance of rational model of right image
  */
 std::unique_ptr<RationalModel> CreateRationalModelARight() {
-  std::array<double, rnf::NumFact> normalFators{
+  std::array<double, rfi::NumFact> normalFators{
       11064, 9370, 34.6557, 109.2114, 396, 11596, 9879, 0.0508, 0.0522, 501 };
   std::array<double, rfm::NumCoef> lineNumCoef{
     +3.735476E-03, +1.464924E-02, -9.717309E-01, -4.376065E-02,
@@ -430,7 +430,7 @@ std::unique_ptr<RationalModel> CreateRationalModelARight() {
  * Create an instance of rational model of left image
  */
 std::unique_ptr<RationalModel> CreateRationalModelBLeft() {
-  std::array<double, rnf::NumFact> normalFators{
+  std::array<double, rfi::NumFact> normalFators{
     15069, 13790, 43.8664, -79.5300, 196, 15210, 13930, 0.0900, 0.1109, 500 };
   std::array<double, rfm::NumCoef> lineNumCoef{ 
     -2.283325E-03, -3.637293E-02, -1.028037E+00, +8.541168E-03,
@@ -469,7 +469,7 @@ std::unique_ptr<RationalModel> CreateRationalModelBLeft() {
  * Create an instance of rational model of right image
  */
 std::unique_ptr<RationalModel> CreateRationalModelBRight() {
-  std::array<double, rnf::NumFact> normalFators{
+  std::array<double, rfi::NumFact> normalFators{
       15073, 13790, 43.7319, -79.5313, 110, 15198, 13940, 0.0893, 0.1106, 500 };
   std::array<double, rfm::NumCoef> lineNumCoef{
     -1.736510E-03, -3.255581E-02, -1.024674E+00, +7.518102E-03,

@@ -71,4 +71,6 @@ double EXCORE_EXPORTS TruncateScaleDigits(double off, int nunDigits);
 
 std::pair<double, double> EXCORE_EXPORTS 
 CalcOffsetScale(const std::vector<double>& arr, int offDigits, int sclDigits);
+
+void EXCORE_EXPORTS CalcStatistics(const std::vector<double>& arr, std::array<double, 4>& stats);
 }

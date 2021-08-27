@@ -210,7 +210,7 @@ void RationalModelMarshaller::SerializeRpc(std::ostream& outS,
 std::unique_ptr<RationalModel>
 RationalModelMarshaller::DeserializeRpb(std::istream& inS) {
   double errBias{}, errRand{};
-  std::array<double, rnf::NumFact> nfc{};
+  std::array<double, rfi::NumFact> nfc{};
   std::array<double, rpc::NumCoef> lineNumCoef{}, lineDenCoef{};
   std::array<double, rpc::NumCoef> sampNumCoef{}, sampDenCoef{};
 
@@ -293,7 +293,7 @@ RationalModelMarshaller::DeserializeRpb(std::istream& inS) {
  */
 std::unique_ptr<RationalModel>
 RationalModelMarshaller::DeserializeRpc(std::istream& inS) {
-  std::array<double, rnf::NumFact> nfc{};
+  std::array<double, rfi::NumFact> nfc{};
   std::array<double, rpc::NumCoef> lineNumCoef{}, lineDenCoef{};
   std::array<double, rpc::NumCoef> sampNumCoef{}, sampDenCoef{};
   

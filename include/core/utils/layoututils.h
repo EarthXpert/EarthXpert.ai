@@ -157,22 +157,32 @@ FillCornersByStride(const Ty dim, const Ty stride, std::vector<Ty>& corners) {
  *  \brief fill grid node positions at a given stride
  *  \return Returns number of nodes
  */
-template <typename Ty> inline int 
-FillNodesByStride(const Ty dim, const Ty stride, std::vector<Ty>& nodes) {
-  for (Ty i = 0; i < dim; i += stride) {
+template <typename Ty> inline int
+FillNodesByStride(const Ty start, const Ty end, const Ty stride, std::vector<Ty>& nodes) {
+  for (Ty i = start; i < end; i += stride) {
     nodes.push_back(i);
   }
-  nodes.push_back(dim);
+  nodes.push_back(end);
   return int(nodes.size());
 }
 
-template <> inline int 
-FillNodesByStride(const int dim, const int stride, std::vector<int>& nodes) {
-  for (int i = 0; i < dim - 1; i += stride) {
+template <typename Ty> inline int 
+FillNodesByStride(const Ty dim, const Ty stride, std::vector<Ty>& nodes) {
+  return FillNodesByStride(Ty(0), dim, nodes);
+}
+
+template <> inline int
+FillNodesByStride(const int start, const int end, const int stride, std::vector<int>& nodes) {
+  for (int i = start; i < end - 1; i += stride) {
     nodes.push_back(i);
   }
-  nodes.push_back(dim - 1);
+  nodes.push_back(end - 1);
   return int(nodes.size());
+}
+
+template <> inline int
+FillNodesByStride(const int dim, const int stride, std::vector<int>& nodes) {
+  return FillNodesByStride<int>(0, dim, nodes);
 }
 
 /**

@@ -11,12 +11,6 @@
 using namespace earthxpert;
 using namespace Eigen;
 
-template<typename Ty>
-using EigMatX = Matrix<Ty, Dynamic, Dynamic, RowMajor>;
-
-template<typename Ty>
-using EigVecX = Matrix<Ty, Dynamic, 1>;
-
 constexpr int kR = 60;
 constexpr int kC = 18;
 using EigMatS = Matrix<double, kR, kC, RowMajor>;
@@ -42,8 +36,8 @@ DenseFill_Rnd(EigMatX<Ty>& A, EigVecX<Ty>& b) {
   //std::cout << "rhs b:\n" << b << std::endl;
 }
 
-template<typename EigMatX, typename EigVecX>
-void DenseFill(EigMatX& A, EigVecX& b) {
+template<typename EigMat, typename EigVec>
+void DenseFill(EigMat& A, EigVec& b) {
   A << 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0.55525,\
        1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0.31049,   \
        1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0.214481,  \
@@ -122,8 +116,8 @@ void DenseFill(EigMatX& A, EigVecX& b) {
     0.00290875, 0.00297966, -0.00414365, -0.00234431, -0.000410536;
 }
 
-template<typename EigMatX>
-void RCondNums(const EigMatX& A) {
+template<typename EigMat>
+void RCondNums(const EigMat& A) {
   // design matrix
   const double rcnSvd = RCondSvd(A);
   std::cout << "Reciprocal condition number SVD: " << rcnSvd << std::endl;
@@ -138,8 +132,8 @@ void RCondNums(const EigMatX& A) {
   std::cout << "Reciprocal condition number NE: " << rcnNm << " " << ldlt.info() << std::endl;
 }
 
-template<typename EigMatX, typename EigVecX>
-void DenseSolve_Direct(const EigMatX& A, const EigVecX& b) {
+template<typename EigMat, typename EigVec>
+void DenseSolve_Direct(const EigMat& A, const EigVec& b) {
   // singular value decomposition
   //const auto& xSvd = A.bdcSvd(ComputeFullU | ComputeFullV).solve(b);  // not stable?
   //std::cout << "SVD solution:\n" << xSvd << std::endl;
@@ -178,10 +172,10 @@ void DenseSolve_Direct(const EigMatX& A, const EigVecX& b) {
   std::cout << "LS relative error: " << errNe << std::endl;
 }
 
-template<typename EigMatX, typename EigVecX>
-void DenseSolve_Iterative(const EigMatX& A, const EigVecX& b) {
+template<typename EigMat, typename EigVec>
+void DenseSolve_Iterative(const EigMat& A, const EigVec& b) {
   // LSCG
-  LeastSquaresConjugateGradient<EigMatX> lscg;
+  LeastSquaresConjugateGradient<EigMat> lscg;
   lscg.compute(A);
   VectorXd xLscg = lscg.solve(b);
   //std::cout << "LS solution:\n" << xNe << std::endl;

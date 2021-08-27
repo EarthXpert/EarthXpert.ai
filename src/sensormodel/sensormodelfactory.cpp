@@ -52,22 +52,34 @@ SensorModelFactory::CreateRationalModel(const ISensorModel* sensorModel) {
   SensorCube sensorCube(numHoriz, numVert, numLayers, cubeType);
   sensorCube.SetMargins(100, 100);
 
+  // fit cube
   std::vector<Point2f> images;
   std::vector<Point3d> grounds;
   sensorCube.CreateCube(sensorModel, images, grounds);
 
   RationalFit ratFit;
-  auto ratModel = ratFit.CreateRationalModel(images, grounds);
+  auto ratModelF = ratFit.CreateRationalModel(images, grounds);
+
+  // original accuracy
+  std::array<double, 4> sstats{}, lstats{};
+  CalcStatitics(sensorModel, images, grounds, sstats, lstats);
 
   // Fit accuracy
-  CalcStatitics(ratModel.get(), images, grounds);
+  std::array<double, 4> sstatsF{}, lstatsF{};
+  CalcStatitics(ratModelF.get(), images, grounds, sstatsF, lstatsF);
 
-  // QC accuracy
+  // QC cube
   std::vector<Point2f> imagesQC;
   std::vector<Point3d> groundsQC;
   sensorCube.CreateCubeQC(sensorModel, imagesQC, groundsQC);
 
-  CalcStatitics(ratModel.get(), imagesQC, groundsQC);
+  // original accuracy QC
+  std::array<double, 4> sstatsQC{}, lstatsQC{};
+  CalcStatitics(sensorModel, imagesQC, groundsQC, sstatsQC, lstatsQC);
 
-  return ratModel;
+  // Fit accuracy QC
+  std::array<double, 4> sstatsFQC{}, lstatsFQC{};
+  CalcStatitics(ratModelF.get(), imagesQC, groundsQC, sstatsFQC, lstatsFQC);
+
+  return ratModelF;
 }

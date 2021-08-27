@@ -5,9 +5,16 @@
 #pragma once
 
 #include "sensormodel/exsensormodel.h"
+#include "3rdparty/opencv/exopencv.h"
 #include "core/utils/typehelper.h"
 
 namespace earthxpert {
+void EXSENSORMODEL_EXPORTS CalcTerms(double u, double v, double w, double* const uvw);
+
+inline void CalcTerms(const Point3d& uvw, double* const LPH) {
+  CalcTerms(uvw.x, uvw.y, uvw.z, LPH);
+}
+
 // Partial derivatives of the polynomial terms w.r.t u, v, w.
 // \todo
 inline void Duvw_du(const double u, const double v, const double w, double* duvw_du) {

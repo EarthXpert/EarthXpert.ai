@@ -64,12 +64,13 @@ namespace earthxpert {
  */
 class EXSENSORMODEL_EXPORTS RationalModel /*final*/ : public SensorModel {
 public:
+  using nfi = NormalFactorIndex;  // index of normalization factors
+  using nfa = NormalFactorArray;
+
   enum {
     eModelType = ModelType::eMT_RATIONAL
   };
-
-  using nfi = NormalFactorIndex;  // index of normalization factors
-
+  
   // index of 3rd-order polynomial coefficients
   // The order of terms is from NITF RPC00B standard (STDI-0002).
   enum PolyCoeff3rd {
@@ -95,6 +96,8 @@ public:
     eHHH = 19,   // H * H * H
     NumCoef = 20 // number of coefficients of 3rd-order polynomial
   };
+
+  using PolyCoefArray = std::array<double, NumCoef>;
 
   // index of 2nd-order corrrection polynomial coefficients
   enum CorrCoeff {
@@ -127,19 +130,14 @@ public:
    *  \param [in] sampDenCoef denominator polynomial of sample formulae
    *  \param [in] groundSRS ground coordinate system
    */
-  RationalModel(int numCols, int numRows,
-    const std::array<double, NumFact> &normalFators,
-    const std::array<double, NumCoef> &lineNumCoef,
-    const std::array<double, NumCoef> &lineDenCoef,
-    const std::array<double, NumCoef> &sampNumCoef,
-    const std::array<double, NumCoef> &sampDenCoef,
+  RationalModel(int numCols, int numRows, const NormalFactorArray &normalFators,
+    const PolyCoefArray &lineNumCoef, const PolyCoefArray &lineDenCoef,
+    const PolyCoefArray &sampNumCoef, const PolyCoefArray &sampDenCoef,
     std::shared_ptr<OGRSpatialRef> groundSRS);
 
-  RationalModel(const std::array<double, NumFact> &normalFators,
-    const std::array<double, NumCoef> &lineNumCoef,
-    const std::array<double, NumCoef> &lineDenCoef,
-    const std::array<double, NumCoef> &sampNumCoef,
-    const std::array<double, NumCoef> &sampDenCoef,
+  RationalModel(const NormalFactorArray &normalFators,
+    const PolyCoefArray &lineNumCoef, const PolyCoefArray &lineDenCoef,
+    const PolyCoefArray &sampNumCoef, const PolyCoefArray &sampDenCoef,
     std::shared_ptr<OGRSpatialRef> groundSRS);
 
   RationalModel(const RationalModel &rhs);
@@ -297,16 +295,11 @@ private:
   static constexpr double kTol_d = 0.1; // tolerance proportional to visual ground range
 
   // rational polynomial coefficients
-  std::array<double, NumFact>
-      mNormalFactors{}; // normalization factors including offsets & scales
-  std::array<double, NumCoef>
-      mLineNumCoef{}; // numerator polynomial of line formulae
-  std::array<double, NumCoef>
-      mLineDenCoef{}; // denominator polynomial of line formulae
-  std::array<double, NumCoef>
-      mSampNumCoef{}; // numerator polynomial of sample formulae
-  std::array<double, NumCoef>
-      mSampDenCoef{}; // denominator polynomial of sample formulae
+  NormalFactorArray mNormalFactors{}; // normalization factors including offsets & scales
+  PolyCoefArray mLineNumCoef{}; // numerator polynomial of line formulae
+  PolyCoefArray mLineDenCoef{}; // denominator polynomial of line formulae
+  PolyCoefArray mSampNumCoef{}; // numerator polynomial of sample formulae
+  PolyCoefArray mSampDenCoef{}; // denominator polynomial of sample formulae
 
   std::shared_ptr<OGRSpatialRef> mGroundSRS{}; // Ground coordinate system
 
@@ -400,11 +393,6 @@ private:
     return VirtualToSensor(uvw, sensor);
   }
 
-  void CalcTerms(const Point3d &uvw, double *const LPH) const {
-    CalcTerms(uvw.x, uvw.y, uvw.z, LPH);
-  }
-  void CalcTerms(double u, double v, double w, double *const uvw) const;
-
   Tuple4d CalcPolynomials(const Point3d &uvw) const {
     return CalcPolynomials(uvw.x, uvw.y, uvw.z);
   }
@@ -439,8 +427,10 @@ private:
   void BuildCubeS2G();
 };
 
-using rnf = NormalFactorIndex;
+using rfi = NormalFactorIndex;
+using rfa = NormalFactorArray;
 using rpc = RationalModel::PolyCoeff3rd;
+using rpa = RationalModel::PolyCoefArray;
 using rcc = RationalModel::CorrCoeff;
 using rca = RationalModel::CorrAlgo;
 using UPRationalModel = std::unique_ptr<RationalModel>;

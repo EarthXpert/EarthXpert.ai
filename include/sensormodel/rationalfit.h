@@ -12,6 +12,8 @@
 #include <type_traits>
 
 namespace earthxpert {
+using PolyCoefArray = RationalModel::PolyCoefArray;
+
 /**
  *  The class RationalFit solves the rational function model coefficients
  *  (RPCs) from points composed of a 2D image grid and a 3D ground cube.
@@ -38,8 +40,8 @@ public:
 
   void SetCoefGroup(int coefGroup);
 
-  void SetNormalFactors(const std::array<double, NumFact>& normalFators);
-  void GetNormalFactors(std::array<double, NumFact>& normalFators) const;
+  void SetNormalFactors(const NormalFactorArray& normalFators);
+  void GetNormalFactors(NormalFactorArray& normalFators) const;
 
   void SetCoefWeights(double wtOff, double wtLin, 
     double wtQuad, double wtCub);
@@ -75,16 +77,16 @@ private:
   // a priori weights of coefficients group are set to values that work well in practice
   // (no theoretical justification). In general, the contribution of higher-order terms
   // (given larger weights) is expected to be less than of lower-order ones. 
-  std::array<double, 4> mCoefWts{0.0, 0.0, 0.001, 0.01};  // constant offset, linear, quadratic, cubic
-
+  std::array<double, 4> mCoefWts{0.0, 0.0, 0.001, 0.1};  // constant offset, linear, quadratic, cubic
+  double mR{1.0e-6};  // Tikhonov regularization 
   int mMaxIter{ 10 }; // max. number of iterations allowed for CalcCoefficients
   double mTol{ 1.0e-10 };  // tolerance for convergence of coefficients
 
   // cached 
   int mRfmType{kStandard}; // flag indicating type of denominator terms
-  std::array<double, NumOffScl> mInvSclFactors{1.0}; // inverse scales
   int mNumCoefs{ 20 }; // number of polynomial coefficeints to estimate
   int mNumUnks{ 39 };  // number of line or sample coefficeints to estimate
+  std::array<double, NumOffScl> mInvSclFactors{1.0}; // inverse scales
   
   void Initialize();
 
@@ -126,19 +128,16 @@ private:
   // SolveCoefficients
   void SolveStandard(const std::vector<Point2d>& images,
     const std::vector<Point3d>& grounds,
-    std::array<double, rpc::NumCoef>& lineNumCoef,
-    std::array<double, rpc::NumCoef>& lineDenCoef,
-    std::array<double, rpc::NumCoef>& sampNumCoef,
-    std::array<double, rpc::NumCoef>& sampDenCoef);
+    PolyCoefArray& lineNumCoef, PolyCoefArray& lineDenCoef,
+    PolyCoefArray& sampNumCoef, PolyCoefArray& sampDenCoef);
   void SolveEqualDenom(const std::vector<Point2d>& images,
     const std::vector<Point3d>& grounds,
-    std::array<double, rpc::NumCoef>& lineNumCoef,
-    std::array<double, rpc::NumCoef>& lineDenCoef,
-    std::array<double, rpc::NumCoef>& sampNumCoef,
-    std::array<double, rpc::NumCoef>& sampDenCoef);
+    PolyCoefArray& lineNumCoef, PolyCoefArray& lineDenCoef,
+    PolyCoefArray& sampNumCoef, PolyCoefArray& sampDenCoef);
   void SolveUnitDenom(const std::vector<Point2d>& images,
     const std::vector<Point3d>& grounds,
-    std::array<double, rpc::NumCoef>& lineNumCoef,
-    std::array<double, rpc::NumCoef>& sampNumCoef);
+    PolyCoefArray& lineNumCoef, PolyCoefArray& sampNumCoef);
+
+  void GetWeights(double* const weights) const;
 };
 } // namespace earthxpert

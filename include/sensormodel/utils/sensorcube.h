@@ -70,6 +70,11 @@ public:
   int CreateCubeModel(const ISensorModel* sensorModel,
     std::vector<Point2f>& images, std::vector<Point3d>& grounds) const;
 
+  int CreateCubeFlatQC(const ISensorModel* sensorModel,
+    std::vector<Point2f>& images, std::vector<Point3d>& grounds) const;
+  int CreateCubeModelQC(const ISensorModel* sensorModel,
+    std::vector<Point2f>& images, std::vector<Point3d>& grounds) const;
+
 private:
   static constexpr double kMarginRatio = 0.1;  // ratio of margin to extend beyound the image scene
 
@@ -82,6 +87,9 @@ private:
   int mMarginRows{};
 
   void Initialize();
+
+  std::pair<int, int> CreateImageGrid(const ISensorModel* sensorModel,
+    std::vector<Point2d>& images) const;
 
   // cached 
 };

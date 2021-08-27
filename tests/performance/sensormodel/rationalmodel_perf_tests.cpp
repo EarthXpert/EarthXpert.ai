@@ -35,7 +35,7 @@ void RationalModel_CubeS2GOMP() {
 }
 
 std::unique_ptr<RationalModel> CreateRationalModelLeft() {
-  std::array<double, rnf::NumFact> normalFators{
+  std::array<double, rfi::NumFact> normalFators{
     11086, 9371, 34.6557, 109.2114, 396, 11524, 9637, 0.0508, 0.0522, 501 };
   std::array<double, rfm::NumCoef> lineNumCoef{
     +1.521921E-03, +1.474600E-02, -9.778159E-01, +3.780369E-02,
@@ -71,7 +71,7 @@ std::unique_ptr<RationalModel> CreateRationalModelLeft() {
 }
 
 std::unique_ptr<RationalModel> CreateRationalModelRight() {
-  std::array<double, rnf::NumFact> normalFators{
+  std::array<double, rfi::NumFact> normalFators{
       11064, 9370, 34.6557, 109.2114, 396, 11596, 9879, 0.0508, 0.0522, 501 };
   std::array<double, rfm::NumCoef> lineNumCoef{
     +3.735476E-03, +1.464924E-02, -9.717309E-01, -4.376065E-02,

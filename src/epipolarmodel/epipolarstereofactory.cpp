@@ -60,17 +60,16 @@ EpiModelPair EpipolarStereoFactory::CreateFrameEpiStereo(
  *  \return Returns pointer to epipolar model objects.
  */
 EpiModelPair EpipolarStereoFactory::CreateRationalEpiStereo(
-  std::shared_ptr<RationalModel> leftModel,
-  std::shared_ptr<RationalModel> rightModel, const int sample,
-  const float epiHgt, const float rotAngle) {
+  SPRationalModel leftModel, SPRationalModel rightModel, 
+  const int sample, const float epiHgt, const float rotAngle) {
   if (leftModel->GetModelType() != rightModel->GetModelType())
     throw std::exception(_("The stereo pair should be of the same sensor type."));
   auto lnfc = leftModel->GetNormalFactors();
   auto rnfc = rightModel->GetNormalFactors();
 
   // \todo across anti-meridian; unit literal
-  const double LonOrig = Deg2Rad((lnfc[rnf::eOLON] + rnfc[rnf::eOLON]) / 2);
-  const double LatOrig = Deg2Rad((lnfc[rnf::eOLAT] + rnfc[rnf::eOLAT]) / 2);
+  const double LonOrig = Deg2Rad((lnfc[rfi::eOLON] + rnfc[rfi::eOLON]) / 2);
+  const double LatOrig = Deg2Rad((lnfc[rfi::eOLAT] + rnfc[rfi::eOLAT]) / 2);
   const Point3d origin(LonOrig, LatOrig, 0);
 
   auto earthEllip = std::make_unique<EarthEllipsoid>();
@@ -86,7 +85,7 @@ EpiModelPair EpipolarStereoFactory::CreateRationalEpiStereo(
   // \todo determine the rectification height so that the average
   // resolution of epipolar is 1:1 before considering the sample
   const double height = 
-    (0 != epiHgt) ? epiHgt : (lnfc[rnf::eOHGT] + rnfc[rnf::eOHGT]) / 2;
+    (0 != epiHgt) ? epiHgt : (lnfc[rfi::eOHGT] + rnfc[rfi::eOHGT]) / 2;
 
   const double invScale = EpiGsd(leftModel.get(), rightModel.get(), height) * sample;
   const double scale{ 1.0 / invScale };
