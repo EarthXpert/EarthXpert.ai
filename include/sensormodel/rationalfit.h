@@ -60,19 +60,20 @@ private:
     NumWts = 4
   };
 
-  static constexpr int NumOffScl = NumFact / 2;
+  static constexpr int kNumOffScl = NumFact / 2;
+  static constexpr int kNumUnks_STD = 39;
 
   // estimation parameters
   int mCoefGroup{kStandard}; // coefficients group
   std::bitset<rpc::NumCoef> mCoefFlags; // flag indicating which polynomial coefficients to estimate
 
   // normalization factors: line, samp, lat, lon, hgt
-  std::array<double, NumOffScl> mOffFactors{0}; // offsets
-  std::array<double, NumOffScl> mSclFactors{1.0}; // scales
-  std::bitset<NumOffScl> mOffFlags; // flag indicating known offsets
-  std::bitset<NumOffScl> mSclFlags; // flag indicating known scales
-  std::array<int, NumOffScl> mOffDigits{ 0, 0, 4, 4, 0}; // number of digits past decimal place
-  std::array<int, NumOffScl> mSclDigits{ 0, 0, 4, 4, 0 };
+  std::array<double, kNumOffScl> mOffFactors{0}; // offsets
+  std::array<double, kNumOffScl> mSclFactors{1.0}; // scales
+  std::bitset<kNumOffScl> mOffFlags; // flag indicating known offsets
+  std::bitset<kNumOffScl> mSclFlags; // flag indicating known scales
+  std::array<int, kNumOffScl> mOffDigits{ 0, 0, 4, 4, 0}; // number of digits past decimal place
+  std::array<int, kNumOffScl> mSclDigits{ 0, 0, 4, 4, 0 };
 
   // a priori weights of coefficients group are set to values that work well in practice
   // (no theoretical justification). In general, the contribution of higher-order terms
@@ -86,7 +87,7 @@ private:
   int mRfmType{kStandard}; // flag indicating type of denominator terms
   int mNumCoefs{ 20 }; // number of polynomial coefficeints to estimate
   int mNumUnks{ 39 };  // number of line or sample coefficeints to estimate
-  std::array<double, NumOffScl> mInvSclFactors{1.0}; // inverse scales
+  std::array<double, kNumOffScl> mInvSclFactors{1.0}; // inverse scales
   
   void Initialize();
 

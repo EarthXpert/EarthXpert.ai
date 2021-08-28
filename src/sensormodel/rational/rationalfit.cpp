@@ -93,15 +93,15 @@ void RationalFit::SetCoefGroup(const int coefGroup) {
  *  which are desired and useful in certain situations (stereo).                                                  
  */
 void RationalFit::SetNormalFactors(const NormalFactorArray& normalFators) {
-  std::copy_n(normalFators.cbegin(), NumOffScl, mOffFactors.begin());
+  std::copy_n(normalFators.cbegin(), kNumOffScl, mOffFactors.begin());
   mOffFlags.set();
-  std::copy_n(normalFators.cbegin() + NumOffScl, NumOffScl, mSclFactors.begin());
+  std::copy_n(normalFators.cbegin() + kNumOffScl, kNumOffScl, mSclFactors.begin());
   mSclFlags.set();
 }
 
 void RationalFit::GetNormalFactors(NormalFactorArray& normalFators) const {
-  std::copy_n(mOffFactors.cbegin(), NumOffScl, normalFators.begin());
-  std::copy_n(mSclFactors.cbegin(), NumOffScl, normalFators.begin()+NumOffScl);
+  std::copy_n(mOffFactors.cbegin(), kNumOffScl, normalFators.begin());
+  std::copy_n(mSclFactors.cbegin(), kNumOffScl, normalFators.begin()+kNumOffScl);
 }
 
 /**
@@ -217,7 +217,7 @@ UPRationalModel RationalFit::CreateRationalModel(
 
 void RationalFit::CalcNormalFactors(const std::vector<Point2d>& images,
   const std::vector<Point3d>& grounds) {
-  if (NumOffScl > int(mOffFlags.count()) || NumOffScl > int(mSclFlags.count())) {
+  if (kNumOffScl > int(mOffFlags.count()) || kNumOffScl > int(mSclFlags.count())) {
     // update normalization factors
     CalcNormalFactors(images, imgGetters, 0);
 
@@ -244,16 +244,15 @@ void RationalFit::SolveStandard(const std::vector<Point2d>& images,
   const std::vector<Point3d>& grounds,
   PolyCoefArray& lineNumCoef, PolyCoefArray& lineDenCoef,
   PolyCoefArray& sampNumCoef, PolyCoefArray& sampDenCoef) {
-  constexpr int numUnks = 39;
   const size_t count = images.size();
 
   // solve (N + P + r) * dx = t + P * (x - x0) + r * dx
-  EigMatXR<double> N(numUnks, numUnks);  // normal matrix
-  EigVecX<double> P(numUnks); // weights of 39 unkown coefs
-  EigVecX<double> dx(numUnks); // correction to unkowns
-  EigVecX<double> t(numUnks); // normal misclosure
-  EigVecX<double> x(numUnks); // unkowns
-  EigVecXR<double> A(numUnks);  // dF_dx
+  EigMatXR<double> N(kNumUnks_STD, kNumUnks_STD);  // normal matrix
+  EigVecX<double> P(kNumUnks_STD); // weights of 39 unkown coefs
+  EigVecX<double> dx(kNumUnks_STD); // correction to unkowns
+  EigVecX<double> t(kNumUnks_STD); // normal misclosure
+  EigVecX<double> x(kNumUnks_STD); // unkowns
+  EigVecXR<double> A(kNumUnks_STD);  // dF_dx
   PolyCoefArray uvw{};  // combinations of u, v, w for polynomial terms
 
   GetWeights(P.data());
@@ -281,6 +280,11 @@ void RationalFit::SolveStandard(const std::vector<Point2d>& images,
 
     // add weights and unbiased regularization
     N.diagonal() += (P.array() + mR).matrix();
+
+    // \todo analysis of coefficients correlation
+    // mCoefFlags: deactivate higher-order strongly correlated coefficients, 
+    // and re-form the normal matrix N 
+
     const auto& ldlt = N.selfadjointView<Upper>().ldlt();
     //std::cout << std::setprecision(10) << "rcond: " << ldlt.rcond() << std::endl;
     x = -ldlt.solve(t);   // x0 initial solution
