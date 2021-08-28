@@ -3,7 +3,6 @@
  * -----------------------------------------------------------------------------
  */
 #include "sensormodel/rmutils.h"
-#include "sensormodel/rationalmodel.h"
 
 namespace earthxpert {
  /**
@@ -36,5 +35,15 @@ void CalcTerms(const double u, const double v, const double w, double* uvw) {
   uvw[rpc::eLLH] = uvw[rpc::eLL] * w; // L * L * H
   uvw[rpc::ePPH] = uvw[rpc::ePP] * w; // P * P * H
   uvw[rpc::eHHH] = uvw[rpc::eHH] * w; // H * H * H
+}
+
+void CalcTerms(const Point3d& uvw, double* const LPH,
+  const std::bitset<rpc::NumCoef>& coefFlags) {
+  CalcTerms(uvw.x, uvw.y, uvw.z, LPH);
+
+  for (int i = 0; i < rpc::NumCoef; ++i) {
+    if (!coefFlags.test(i))
+      LPH[i] = 0.0;
+  }
 }
 }

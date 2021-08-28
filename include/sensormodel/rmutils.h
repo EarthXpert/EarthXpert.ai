@@ -7,6 +7,9 @@
 #include "sensormodel/exsensormodel.h"
 #include "3rdparty/opencv/exopencv.h"
 #include "core/utils/typehelper.h"
+#include "sensormodel/rationalmodel.h"
+
+#include <bitset>
 
 namespace earthxpert {
 void EXSENSORMODEL_EXPORTS CalcTerms(double u, double v, double w, double* const uvw);
@@ -14,6 +17,9 @@ void EXSENSORMODEL_EXPORTS CalcTerms(double u, double v, double w, double* const
 inline void CalcTerms(const Point3d& uvw, double* const LPH) {
   CalcTerms(uvw.x, uvw.y, uvw.z, LPH);
 }
+
+void EXSENSORMODEL_EXPORTS CalcTerms(const Point3d& uvw, 
+  double* const LPH, const std::bitset<rpc::NumCoef>& coefFlags);
 
 // Partial derivatives of the polynomial terms w.r.t u, v, w.
 // \todo

@@ -247,113 +247,65 @@ void RationalFit::SolveStandard(const std::vector<Point2d>& images,
   constexpr int numUnks = 39;
   const size_t count = images.size();
 
-  // weights of 39 unkown coefs
-  std::array<double, numUnks> P{};
-  GetWeights(P.data());
-  std::copy_n(P.begin() + 1, rpc::NumCoef - 1, P.begin() + rpc::NumCoef);
-
   // solve (N + P + r) * dx = t + P * (x - x0) + r * dx
-  EigMatX<double> N(numUnks, numUnks);  // normal matrix
-  EigVecX<double> x(numUnks); // unkowns
-  EigVecX<double> t(numUnks); // normal misclosure
+  EigMatXR<double> N(numUnks, numUnks);  // normal matrix
+  EigVecX<double> P(numUnks); // weights of 39 unkown coefs
   EigVecX<double> dx(numUnks); // correction to unkowns
-
+  EigVecX<double> t(numUnks); // normal misclosure
+  EigVecX<double> x(numUnks); // unkowns
+  EigVecXR<double> A(numUnks);  // dF_dx
   PolyCoefArray uvw{};  // combinations of u, v, w for polynomial terms
-  std::array<double, numUnks> A{};  // dF_dx
+
+  GetWeights(P.data());
+  std::copy_n(P.data() + 1, rpc::NumCoef - 1, P.data() + rpc::NumCoef);
 
   int ci = 0;
   std::vector<double> arr(count);
-
   for (auto& arrGetter : imgGetters) {
     std::transform(images.cbegin(), images.cend(), arr.begin(), arrGetter);
 
     N.setZero();
-    x.setZero();
     t.setZero();
+    x.setZero();
 
     for (size_t k = 0; k < count; ++k) {
-      CalcTerms(grounds[k], uvw.data());
+      CalcTerms(grounds[k], uvw.data(), mCoefFlags);  // 
 
-      // Jacobian
-      A[0] = -uvw[0];  // must use constant term
-      for (int i = 1; i < rpc::NumCoef; ++i) {
-        if (!mCoefFlags.test(i)) continue;
-        A[i] = -uvw[i];
-        A[i + 19] = arr[k] * uvw[i];
-      }
+      // A Jacobian
+      std::transform(uvw.cbegin(), uvw.cend(), A.data(), std::negate());
+      std::transform(uvw.cbegin()+1, uvw.cend(), A.data() + rpc::NumCoef, 
+        [s = arr[k]](const double val) { return s * val; });
 
-      // add AtA to N (upper triangle)
-      for (int i = 0; i < numUnks; ++i) {
-        for (int j = i; j < numUnks; ++j) {
-          N(i, j) += A[i] * A[j];
-        }
-      }
-
-      double w = arr[k];   // misclosure
-      for (int i = 0; i < numUnks; ++i) {
-        w += x[i] * A[i];
-      }
-
-      // add Atw to t
-      for (int i = 0; i < numUnks; ++i) {
-        t[i] += A[i] * w;
-      }
-    }
-
-    // fill lower triangle
-    for (int i = 0; i < numUnks; ++i) {
-      for (int j = 0; j < i; ++j) {
-        N(i, j) = N(j, i);
-      }
+      N += A.transpose() * A; // add AtA to N (upper triangle)
+      t += A.transpose() * arr[k];      // add Atw to t
     }
 
     // add weights and unbiased regularization
-    for (int i = 0; i < numUnks; ++i) {
-      N(i, i) += P[i] + mR;
-      t[i] += P[i] * x[i];
-    }
-
-    const auto& ldlt = N.ldlt();
-    const double rcnNm = ldlt.rcond();
-
+    N.diagonal() += (P.array() + mR).matrix();
+    const auto& ldlt = N.selfadjointView<Upper>().ldlt();
+    //std::cout << std::setprecision(10) << "rcond: " << ldlt.rcond() << std::endl;
     dx = ldlt.solve(t);
-    x -= dx;
+    x -= dx;   // x0 initial solution
 
     for (int it = 1; it < mMaxIter; ++it) {
       t.setZero();
 
       for (size_t k = 0; k < count; ++k) {
-        CalcTerms(grounds[k], uvw.data());
+        CalcTerms(grounds[k], uvw.data(), mCoefFlags);  // 
 
-        // Jacobian
-        A[0] = -uvw[0];  // must use constant term
-        for (int i = 1; i < rpc::NumCoef; ++i) {
-          if (!mCoefFlags.test(i)) continue;
-          A[i] = -uvw[i];
-          A[i + 19] = arr[k] * uvw[i];
-        }
+        std::transform(uvw.cbegin(), uvw.cend(), A.data(), std::negate());
+        std::transform(uvw.cbegin() + 1, uvw.cend(), A.data() + rpc::NumCoef,
+          [s = arr[k]](const double val) { return s * val; });
 
-        double w = arr[k];   // misclosure
-        for (int i = 0; i < numUnks; ++i) {
-          w += x[i] * A[i];
-        }
-
-        // add Atw to t
-        for (int i = 0; i < numUnks; ++i) {
-          t[i] += A[i] * w;
-        }
+        const double w = arr[k] + A.dot(x); // misclosure
+        t += A.transpose() * w;
       }
 
-      // add weights and unbiased regularization
-      for (int i = 0; i < numUnks; ++i) {
-        t[i] += P[i] * x[i] + mR * dx[i];
-      }
-
+      t += P.cwiseProduct(x) + dx * mR; 
       dx = ldlt.solve(t);
       x -= dx;
 
-      const double err = dx.lpNorm<Eigen::Infinity>();
-      if (mTol > err)
+      if (mTol > dx.lpNorm<Eigen::Infinity>())
         break;
     }
 

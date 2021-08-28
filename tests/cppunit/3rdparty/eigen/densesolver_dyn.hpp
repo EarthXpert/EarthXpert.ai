@@ -22,7 +22,7 @@ using EigVecS = Matrix<double, kR, 1>;
  *  \param [in] n the dimension of square matrix
  */
 template<typename Ty> void
-DenseFill_Rnd(EigMatX<Ty>& A, EigVecX<Ty>& b) {
+DenseFill_Rnd(EigMatXR<Ty>& A, EigVecX<Ty>& b) {
   const int n = A.rows();
   const int m = A.cols();
 
@@ -190,7 +190,7 @@ void DenseSolve_Iterative(const EigMat& A, const EigVec& b) {
  *  \tparam Ty number type
  */
 TEST(eigen, DenseSolve_Rnd_dynamic) {
-  EigMatX<double> A = EigMatX<double>::Random(kR, kC);
+  EigMatXR<double> A = EigMatXR<double>::Random(kR, kC);
   EigVecX<double> b = EigVecX<double>::Random(kR);
   DenseFill_Rnd<double>(A, b);
 
@@ -200,7 +200,7 @@ TEST(eigen, DenseSolve_Rnd_dynamic) {
 }
 
 TEST(eigen, DenseSolve_dynamic) {
-  EigMatX<double> A = EigMatX<double>::Zero(kR, kC);
+  EigMatXR<double> A = EigMatXR<double>::Zero(kR, kC);
   EigVecX<double> b = EigVecX<double>::Zero(kR);
   DenseFill(A, b);
 

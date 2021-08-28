@@ -8,11 +8,17 @@
 
 #include <Eigen/Eigen>
 
+//template<typename Ty>
+//using EigMatX = Eigen::Matrix<Ty, Eigen::Dynamic, Eigen::Dynamic>;
+
 template<typename Ty>
-using EigMatX = Eigen::Matrix<Ty, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor>;
+using EigMatXR = Eigen::Matrix<Ty, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor>;
 
 template<typename Ty>
 using EigVecX = Eigen::Matrix<Ty, Eigen::Dynamic, 1>;
+
+template<typename Ty>
+using EigVecXR = Eigen::Matrix<Ty, 1, Eigen::Dynamic>;
 
 using EigTri = Eigen::Triplet<double>;
 
