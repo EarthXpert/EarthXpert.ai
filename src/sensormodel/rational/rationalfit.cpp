@@ -266,7 +266,6 @@ void RationalFit::SolveStandard(const std::vector<Point2d>& images,
 
     N.setZero();
     t.setZero();
-    x.setZero();
 
     for (size_t k = 0; k < count; ++k) {
       CalcTerms(grounds[k], uvw.data(), mCoefFlags);  // 
@@ -284,9 +283,9 @@ void RationalFit::SolveStandard(const std::vector<Point2d>& images,
     N.diagonal() += (P.array() + mR).matrix();
     const auto& ldlt = N.selfadjointView<Upper>().ldlt();
     //std::cout << std::setprecision(10) << "rcond: " << ldlt.rcond() << std::endl;
-    dx = ldlt.solve(t);
-    x -= dx;   // x0 initial solution
+    x = -ldlt.solve(t);   // x0 initial solution
 
+    dx.setZero();
     for (int it = 1; it < mMaxIter; ++it) {
       t.setZero();
 
