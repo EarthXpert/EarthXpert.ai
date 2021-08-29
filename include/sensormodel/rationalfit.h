@@ -81,6 +81,7 @@ private:
   std::array<double, 4> mCoefWts{0.0, 0.0, 0.001, 0.1};  // constant offset, linear, quadratic, cubic
   double mR{1.0e-6};  // Tikhonov regularization 
   int mMaxIter{ 10 }; // max. number of iterations allowed for CalcCoefficients
+  double mCCTol{ 0.8 };  // tolerance for correlation coefficient
   double mTol{ 1.0e-10 };  // tolerance for convergence of coefficients
 
   // cached 

@@ -7,12 +7,17 @@
 #include "testconfig.h"
 #include "testutils.h"
 
+#include "core/utils/fsutils.h"
 #include "marshaller/sensormodel/rationalmodelmarshaller.h"
 #include "sensormodel/rationalfit.h"
 #include "sensormodel/utils/sensorcube.h"
 #include "sensormodel/utils/smutils.h"
 
+#include <filesystem>
+
 using namespace earthxpert;
+using namespace earthxpert::utils;
+namespace fs = std::filesystem;
 
 UPRationalModel CreateRationalModel(const ISensorModel* sensorModel);
 
@@ -23,8 +28,11 @@ TEST(rationalfit, CalcCoefs) {
   ASSERT_TRUE(ratModel);
 
   auto ratModelF = CreateRationalModel(ratModel.get()); // 1st fit
-
   //CreateRationalModel(ratModelF.get());   // 2nd fit
+
+  fs::path fitPath(TestConfig::OutputPath("KhalifaSat_20190704093359_03703_UAE 15_11121_Radio_P_rpc.txt"));
+  RemoveFile(fitPath);
+  rmMarshaller.Serialize(fitPath.string(), ratModelF.get());
 }
 
 UPRationalModel CreateRationalModel(const ISensorModel* sensorModel) {

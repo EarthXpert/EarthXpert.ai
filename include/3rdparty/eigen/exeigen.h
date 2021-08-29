@@ -6,6 +6,8 @@
 
 #include "3rdparty/ex3rdparty.h"
 
+#include <cassert>
+#include <tuple>
 #include <Eigen/Eigen>
 
 //template<typename Ty>
@@ -57,6 +59,31 @@ template<typename MatTy, typename VecTy1, typename VecTy2>
 inline auto RelativeErr(const MatTy& A, const VecTy1& x, 
   const VecTy2& b) -> typename MatTy::Scalar {
   return (A * x - b).norm() / b.norm();
+}
+
+/**
+ *  \return (max_correlation_coef, row_loc, col_loc)
+ */
+template<typename MatTy>
+inline std::tuple<double, int, int> LocateMaxCorrelation(const MatTy& N) {
+  const int dim = N.rows();
+  assert(dim == N.cols());
+  EigMatXR<double> cf = N.inverse().eval();   // cofactor
+  const EigVecX<double> cfd = cf.diagonal().array().sqrt();
+
+  int rl{}, cl{};
+  double mcc{};
+  for (int i = 0; i < dim; ++i) {
+    for (int j = i + 1; j < dim; ++j) { // strict upper triangle
+      cf(i, j) /= cfd[i] * cfd[j];
+      if (mcc >= cf(i, j)) continue;
+      mcc = cf(i, j);
+      rl = i;
+      cl = j;
+    }
+  }
+  //std::cout << cf << std::endl;
+  return std::make_tuple(mcc, rl, cl);
 }
 
 /**
