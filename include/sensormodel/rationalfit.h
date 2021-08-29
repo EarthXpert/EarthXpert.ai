@@ -5,6 +5,7 @@
 #pragma once
 
 #include "sensormodel/rationalmodel.h"
+#include "3rdparty/eigen/exeigen.h"
 
 #include <array>
 #include <bitset>
@@ -140,6 +141,8 @@ private:
     const std::vector<Point3d>& grounds,
     PolyCoefArray& lineNumCoef, PolyCoefArray& sampNumCoef);
 
-  void GetWeights(double* const weights) const;
+  void GetCoefWeights(double* const weights) const;
+  void CalcJacobian(const Point3d& grd, double obs, 
+    const std::bitset<kNumUnks_STD>& coefFlags, EigVecXR<double>& A) const;
 };
 } // namespace earthxpert

@@ -62,6 +62,8 @@ inline auto RelativeErr(const MatTy& A, const VecTy1& x,
 }
 
 /**
+ *  \param [in] N a symetric square matrix
+ * 
  *  \return (max_correlation_coef, row_loc, col_loc)
  */
 template<typename MatTy>

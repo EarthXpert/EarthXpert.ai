@@ -11,6 +11,7 @@
 #include <opencv2/core/mat.hpp>
 #include <cmath>
 #include <type_traits>
+#include <vector>
 
 namespace x2d = cv::xfeatures2d;
 

@@ -3,7 +3,6 @@
  * -----------------------------------------------------------------------------
  */
 #include "sensormodel/rationalfit.h"
-#include "3rdparty/eigen/exeigen.h"
 #include "core/exceptions/exexcept.h"
 #include "core/math/mutils.h"
 #include "sensormodel/rmutils.h"
@@ -28,6 +27,7 @@ RationalFit::RationalFit(const int coefGroup) : mCoefGroup(coefGroup) {
 
 void RationalFit::Initialize() {
   SetCoefGroup(mCoefGroup);
+  std::cout << std::setprecision(10);
 }
 
 /**
@@ -56,13 +56,11 @@ void RationalFit::SetCoefGroup(const int coefGroup) {
       noIdxs.push_back(static_cast<rpc>(idx));
     }
   }
-
   if (flag & kNoCubic) {  // No cubic terms
     for (std::underlying_type_t<rpc> idx = rpc::ePLH; idx <= rpc::eHHH; ++idx) {
       noIdxs.push_back(static_cast<rpc>(idx));
     }
   }
-
   if (flag & kNoHgt) {  // No height terms: single layer for ortho
     noIdxs.insert(noIdxs.cbegin(), { rpc::eH, rpc::eLH, rpc::ePH,
       rpc::eHH, rpc::ePLH, rpc::eLHH, rpc::ePHH, rpc::eHHH });
@@ -215,12 +213,14 @@ UPRationalModel RationalFit::CreateRationalModel(
   return ratModel;
 }
 
+/**
+ *  \brief update normalization factors
+ */
 void RationalFit::CalcNormalFactors(const std::vector<Point2d>& images,
   const std::vector<Point3d>& grounds) {
-  if (kNumOffScl > int(mOffFlags.count()) || kNumOffScl > int(mSclFlags.count())) {
-    // update normalization factors
+  if (kNumOffScl > int(mOffFlags.count()) || 
+      kNumOffScl > int(mSclFlags.count())) {
     CalcNormalFactors(images, imgGetters, 0);
-
     CalcNormalFactors(grounds, grdGetters, 2);
   }
 
@@ -229,7 +229,9 @@ void RationalFit::CalcNormalFactors(const std::vector<Point2d>& images,
 }
 
 /**
- *  \brief solve coefficients from given points.
+ *  \brief solve coefficients from given points using iterative weighted LS.
+ * 
+ *    (N + P + r) * dx = t + P * (x - x0) + r * dx
  *  
  *  \param [in] images an array of normalized image grid points. 
  *    The line/sample coordinate system has the origin (0.0, 0.0) 
@@ -248,18 +250,16 @@ void RationalFit::SolveStandard(const std::vector<Point2d>& images,
   PolyCoefArray& sampNumCoef, PolyCoefArray& sampDenCoef) {
   const size_t count = images.size();
 
-  // solve (N + P + r) * dx = t + P * (x - x0) + r * dx
-  EigMatXR<double> N(kNumUnks_STD, kNumUnks_STD);  // normal matrix
   EigVecX<double> P(kNumUnks_STD); // weights of 39 unkown coefs
-  EigVecX<double> dx(kNumUnks_STD); // correction to unkowns
-  EigVecX<double> t(kNumUnks_STD); // normal misclosure
-  EigVecX<double> x(kNumUnks_STD); // unkowns
   EigVecXR<double> A(kNumUnks_STD);  // dF_dx
-  PolyCoefArray uvw{};  // combinations of u, v, w for polynomial terms
+  EigMatXR<double> N(kNumUnks_STD, kNumUnks_STD);  // normal matrix
+  EigVecX<double> t(kNumUnks_STD); // normal misclosure
+  EigVecX<double> dx(kNumUnks_STD); // correction to unkowns
+  EigVecX<double> x(kNumUnks_STD); // unkowns
 
   int ci = 0;
   std::vector<double> arr(count);
-
+  
   for (auto& arrGetter : imgGetters) {
     std::transform(images.cbegin(), images.cend(), arr.begin(), arrGetter);
 
@@ -270,27 +270,14 @@ void RationalFit::SolveStandard(const std::vector<Point2d>& images,
       coefFlags[i+rpc::NumCoef-1] = mCoefFlags[i];
     }
 
-    GetWeights(P.data());
-    std::copy_n(P.data() + 1, rpc::NumCoef - 1, P.data() + rpc::NumCoef);
+    GetCoefWeights(P.data());
 
     for (int it = 0; it < mMaxIter; ++it) {
       N.setZero();
-      t.setZero();
 
       for (size_t k = 0; k < count; ++k) {
-        CalcTerms(grounds[k], uvw.data());  // 
-
-        // Jacobian A
-        std::transform(uvw.cbegin(), uvw.cend(), A.data(), std::negate());
-        std::transform(uvw.cbegin() + 1, uvw.cend(), A.data() + rpc::NumCoef,
-          [s = arr[k]](const double val) { return s * val; });
-       
-        for (int i = 0; i < kNumUnks_STD; ++i) {
-          if (!coefFlags.test(i))
-            A[i] = 0.0;
-        }
-        N += A.transpose() * A; // add AtA to N (upper triangle)
-        t += A.transpose() * arr[k];      // add Atw to t
+        CalcJacobian(grounds[k], arr[k], coefFlags, A);
+        N += A.transpose() * A; // add AtA (\todo upper triangle)
       }
 
       // add weights and unbiased regularization
@@ -301,10 +288,9 @@ void RationalFit::SolveStandard(const std::vector<Point2d>& images,
       // mCoefFlags: deactivate higher-order strongly correlated coefficients, 
       // and re-form the normal matrix N 
       const auto [mcc, rl, cl] = LocateMaxCorrelation(N);
-      std::cout << "max correlation " << mcc << ": " << rl << ", " << cl << std::endl;
 
-      const auto& ldlt = N.ldlt();
-      std::cout << std::setprecision(10) << "rcond: " << ldlt.rcond() << std::endl;
+      //const auto& ldlt = N.ldlt();
+      //std::cout << "rcond: " << ldlt.rcond() << std::endl;
 
       // deactivate the strongly correlated higher-order term
       if (mCCTol >= mcc) break;
@@ -318,33 +304,27 @@ void RationalFit::SolveStandard(const std::vector<Point2d>& images,
       }
       coefFlags.reset(idx);
       P[idx] = 1.0;
-      std::cout << idx << std::endl;
+      std::cout << "max cross-correlation " << mcc << ": " 
+        << rl << ", " << cl << " (" << idx << ")" << std::endl;
     }
 
     const auto& ldlt = N.ldlt();
-    x = -ldlt.solve(t);   // x0 initial solution
+    std::cout << "rcond: " << ldlt.rcond() << std::endl;
 
     dx.setZero();
-    for (int it = 1; it < mMaxIter; ++it) {
+    x.setZero();
+
+    for (int it = 0; it < mMaxIter; ++it) {
       t.setZero();
 
       for (size_t k = 0; k < count; ++k) {
-        CalcTerms(grounds[k], uvw.data());  // 
-
-        std::transform(uvw.cbegin(), uvw.cend(), A.data(), std::negate());
-        std::transform(uvw.cbegin() + 1, uvw.cend(), A.data() + rpc::NumCoef,
-          [s = arr[k]](const double val) { return s * val; });
-
-        for (int i = 0; i < kNumUnks_STD; ++i) {
-          if (!coefFlags.test(i))
-            A[i] = 0.0;
-        }
+        CalcJacobian(grounds[k], arr[k], coefFlags, A);
         const double w = arr[k] + A.dot(x); // misclosure
-        t += A.transpose() * w;
+        t += A.transpose() * w;   // add Atw
       }
 
-      t += P.cwiseProduct(x) + dx * mR; 
-      dx = ldlt.solve(t);
+      t += P.cwiseProduct(x) + dx * mR; // add weights and unbiased regularization
+      dx = ldlt.solve(t); // correction to coefficients
       x -= dx;
 
       if (mTol > dx.lpNorm<Eigen::Infinity>())
@@ -375,7 +355,10 @@ void RationalFit::SolveUnitDenom(const std::vector<Point2d>& images,
 
 }
 
-void RationalFit::GetWeights(double* const weights) const {
+/**
+ *  \brief get weights of 39 unknown coefficients
+ */
+void RationalFit::GetCoefWeights(double* const weights) const {
   weights[rpc::eC] = mCoefWts[eWtOff];
   for (std::underlying_type_t<rpc> idx = rpc::eL; idx <= rpc::eH; ++idx) {
     weights[idx] = mCoefWts[eWtLin];
@@ -391,5 +374,24 @@ void RationalFit::GetWeights(double* const weights) const {
   for (int idx = 1; idx < rpc::NumCoef; ++idx) {
     if (!mCoefFlags.test(idx)) 
       weights[idx] = 1.0;
+  }
+  std::copy_n(weights + 1, rpc::NumCoef - 1, weights + rpc::NumCoef);
+}
+
+/**
+ *  \brief calculate Jacobian of rational functions.
+ */
+void RationalFit::CalcJacobian(const Point3d& grd, const double obs,
+  const std::bitset<kNumUnks_STD>& coefFlags, EigVecXR<double>& A) const {
+  PolyCoefArray uvw{};  // combinations of u, v, w for polynomial terms
+  CalcTerms(grd, uvw.data());  
+
+  std::transform(uvw.cbegin(), uvw.cend(), A.data(), std::negate());
+  std::transform(uvw.cbegin() + 1, uvw.cend(), A.data() + rpc::NumCoef,
+    [obs](const double val) { return obs * val; });
+
+  for (int i = 0; i < kNumUnks_STD; ++i) {
+    if (!coefFlags.test(i))
+      A[i] = 0.0;
   }
 }
