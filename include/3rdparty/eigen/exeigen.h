@@ -62,6 +62,25 @@ inline auto RelativeErr(const MatTy& A, const VecTy1& x,
 }
 
 /**
+ *  N.triangularView<Upper>() = A.transpose() * A;
+ */
+template<typename Ty, Eigen::UpLoType upLo=Eigen::Upper>
+EigMatXR<Ty> AtA(const EigMatXR<Ty>& A) {
+  const int nrows = A.rows();
+  const int ncols = A.cols();
+  EigMatXR<Ty> N = EigMatXR<Ty>::zeros(ncols, ncols);
+
+  for (int i = 0; i < ncols; ++i) {
+    for (int j = i; j < ncols; ++j) {
+      for (int k = 0; k < nrows; ++k) {
+        N(i, j) += A(k, i) * A(k, j);
+      }
+    }
+  }
+  return N;
+}
+
+/**
  *  \param [in] N a symetric square matrix
  * 
  *  \return (max_correlation_coef, row_loc, col_loc)

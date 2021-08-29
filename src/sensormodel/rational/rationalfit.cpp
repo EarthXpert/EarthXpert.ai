@@ -243,6 +243,7 @@ void RationalFit::CalcNormalFactors(const std::vector<Point2d>& images,
  *  \param [in] sampDenCoef denominator polynomial of sample formulae
  * 
  *  \todo Levenberg-Marquad
+ *  \todo constrain 3rd-order coefficients that is 1.0e-3
  */
 void RationalFit::SolveStandard(const std::vector<Point2d>& images,
   const std::vector<Point3d>& grounds,
@@ -278,11 +279,12 @@ void RationalFit::SolveStandard(const std::vector<Point2d>& images,
       for (size_t k = 0; k < count; ++k) {
         CalcJacobian(grounds[k], arr[k], coefFlags, A);
         N += A.transpose() * A; // add AtA (\todo upper triangle)
+        //N.triangularView<Upper>() += A.transpose() * A;
       }
 
       // add weights and unbiased regularization
       N.diagonal() += (P.array() + mR).matrix();
-      N.triangularView<Lower>() = N.transpose();  // selfadjointView<Upper>()
+      //N.triangularView<StrictlyLower>() = N.transpose();  // selfadjointView<Upper>()
 
       // \todo analysis of coefficients correlation
       // mCoefFlags: deactivate higher-order strongly correlated coefficients, 
