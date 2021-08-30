@@ -139,17 +139,22 @@ private:
     const std::vector<Point3d>& grounds);
 
   // SolveCoefficients
-  void SolveStandard(const std::vector<Point2d>& images,
+  void SolveStandardEigen(const std::vector<Point2d>& images,
     const std::vector<Point3d>& grounds,
     PolyCoefArray& lineNumCoef, PolyCoefArray& lineDenCoef,
     PolyCoefArray& sampNumCoef, PolyCoefArray& sampDenCoef);
-  void SolveEqualDenom(const std::vector<Point2d>& images,
+  void SolveEqualDenomEigen(const std::vector<Point2d>& images,
     const std::vector<Point3d>& grounds,
     PolyCoefArray& lineNumCoef, PolyCoefArray& lineDenCoef,
     PolyCoefArray& sampNumCoef, PolyCoefArray& sampDenCoef);
-  void SolveUnitDenom(const std::vector<Point2d>& images,
+  void SolveUnitDenomEigen(const std::vector<Point2d>& images,
     const std::vector<Point3d>& grounds,
     PolyCoefArray& lineNumCoef, PolyCoefArray& sampNumCoef);
+
+  void SolveStandardCeres(const std::vector<Point2d>& images,
+    const std::vector<Point3d>& grounds,
+    PolyCoefArray& lineNumCoef, PolyCoefArray& lineDenCoef,
+    PolyCoefArray& sampNumCoef, PolyCoefArray& sampDenCoef);
 
   void GetCoefWeights(double* const weights) const;
   void GetCoefTrustRegions(double* const regions) const;

@@ -178,29 +178,33 @@ UPRationalModel RationalFit::CreateRationalModel(
 
   CalcNormalFactors(imgs0, grounds);
 
+  auto offsetScale = [this](const double val, const int idx) {
+    return (val - mOffFactors[idx]) * mInvSclFactors[idx];
+  };
+
   std::vector<Point2d> imgs(count);  // normalized image coordinates
   std::vector<Point3d> grds(count); // normalized ground coordinates
   for (size_t i = 0; i < count; ++i) {
-    imgs[i].x = (imgs0[i].x - mOffFactors[eSAMP]) * mInvSclFactors[eSAMP];
-    imgs[i].y = (imgs0[i].y - mOffFactors[eLINE]) * mInvSclFactors[eLINE];
-    grds[i].x = (grounds[i].x - mOffFactors[eLON]) * mInvSclFactors[eLON];
-    grds[i].y = (grounds[i].y - mOffFactors[eLAT]) * mInvSclFactors[eLAT];
-    grds[i].z = (grounds[i].z - mOffFactors[eHGT]) * mInvSclFactors[eHGT];
+    imgs[i].x = offsetScale(imgs0[i].x, eSAMP);
+    imgs[i].y = offsetScale(imgs0[i].y, eLINE);
+    grds[i].x = offsetScale(grounds[i].x, eLON);
+    grds[i].y = offsetScale(grounds[i].y, eLAT);
+    grds[i].z = offsetScale(grounds[i].z, eHGT);
   }
 
   PolyCoefArray lineNumCoef{}, lineDenCoef{1.0, 0.0};
   PolyCoefArray sampNumCoef{}, sampDenCoef{1.0, 0.0};
   switch (mRfmType) {
   case kStandard:
-    SolveStandard(imgs, grds,
+    SolveStandardEigen(imgs, grds,
       lineNumCoef, lineDenCoef, sampNumCoef, sampDenCoef);
     break;
   case kEqDenom:
-    SolveEqualDenom(imgs, grds,
+    SolveEqualDenomEigen(imgs, grds,
       lineNumCoef, lineDenCoef, sampNumCoef, sampDenCoef);
     break;
   case kUnitDenom:
-    SolveUnitDenom(imgs, grds, lineNumCoef, sampNumCoef);
+    SolveUnitDenomEigen(imgs, grds, lineNumCoef, sampNumCoef);
     break;
   default:
     assert(false);
@@ -247,7 +251,7 @@ void RationalFit::CalcNormalFactors(const std::vector<Point2d>& images,
  *  \todo Levenberg-Marquad
  *  \todo constrain 3rd-order coefficients that is 1.0e-3
  */
-void RationalFit::SolveStandard(const std::vector<Point2d>& images,
+void RationalFit::SolveStandardEigen(const std::vector<Point2d>& images,
   const std::vector<Point3d>& grounds,
   PolyCoefArray& lineNumCoef, PolyCoefArray& lineDenCoef,
   PolyCoefArray& sampNumCoef, PolyCoefArray& sampDenCoef) {
@@ -348,16 +352,23 @@ void RationalFit::SolveStandard(const std::vector<Point2d>& images,
   }
 }
 
-void RationalFit::SolveEqualDenom(const std::vector<Point2d>& images,
+void RationalFit::SolveEqualDenomEigen(const std::vector<Point2d>& images,
   const std::vector<Point3d>& grounds,
   PolyCoefArray& lineNumCoef, PolyCoefArray& lineDenCoef,
   PolyCoefArray& sampNumCoef, PolyCoefArray& sampDenCoef) {
 
 }
 
-void RationalFit::SolveUnitDenom(const std::vector<Point2d>& images,
+void RationalFit::SolveUnitDenomEigen(const std::vector<Point2d>& images,
   const std::vector<Point3d>& grounds,
   PolyCoefArray& lineNumCoef, PolyCoefArray& sampNumCoef) {
+
+}
+
+void RationalFit::SolveStandardCeres(const std::vector<Point2d>& images,
+  const std::vector<Point3d>& grounds,
+  PolyCoefArray& lineNumCoef, PolyCoefArray& lineDenCoef,
+  PolyCoefArray& sampNumCoef, PolyCoefArray& sampDenCoef) {
 
 }
 
