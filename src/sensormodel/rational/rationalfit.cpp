@@ -7,6 +7,8 @@
 #include "core/math/mutils.h"
 #include "sensormodel/rmutils.h"
 
+#include <cmath>
+
 using namespace earthxpert;
 using namespace ::Eigen;
 
@@ -252,6 +254,7 @@ void RationalFit::SolveStandard(const std::vector<Point2d>& images,
   const size_t count = images.size();
 
   EigVecX<double> P(kNumUnks_STD); // weights of 39 unkown coefs
+  EigVecX<double> T(kNumUnks_STD); // trust regions of 39 unkown coefs
   EigVecXR<double> A(kNumUnks_STD);  // dF_dx
   EigMatXR<double> N(kNumUnks_STD, kNumUnks_STD);  // normal matrix
   EigVecX<double> t(kNumUnks_STD); // normal misclosure
@@ -272,6 +275,7 @@ void RationalFit::SolveStandard(const std::vector<Point2d>& images,
     }
 
     GetCoefWeights(P.data());
+    GetCoefTrustRegions(T.data());
 
     for (int it = 0; it < mMaxIter; ++it) {
       N.setZero();
@@ -286,16 +290,14 @@ void RationalFit::SolveStandard(const std::vector<Point2d>& images,
       N.diagonal() += (P.array() + mR).matrix();
       //N.triangularView<StrictlyLower>() = N.transpose();  // selfadjointView<Upper>()
 
-      // \todo analysis of coefficients correlation
-      // mCoefFlags: deactivate higher-order strongly correlated coefficients, 
-      // and re-form the normal matrix N 
-      const auto [mcc, rl, cl] = LocateMaxCorrelation(N);
-
       //const auto& ldlt = N.ldlt();
       //std::cout << "rcond: " << ldlt.rcond() << std::endl;
 
-      // deactivate the strongly correlated higher-order term
+      // correlation analysis of coefficients 
+      const auto [mcc, rl, cl] = LocateMaxCorrelation(N);
       if (mCCTol >= mcc) break;
+
+      // deactivate the strongly correlated higher-order term
       int idx{};
       if ((rpc::NumCoef > rl && rpc::NumCoef > cl) ||   // numerator
           (rpc::NumCoef <= rl && rpc::NumCoef <= cl)) { // denominator
@@ -325,10 +327,12 @@ void RationalFit::SolveStandard(const std::vector<Point2d>& images,
         t += A.transpose() * w;   // add Atw
       }
 
-      t += P.cwiseProduct(x) + dx * mR; // add weights and unbiased regularization
+      // add weights and unbiased regularization
+      t += P.cwiseProduct(x); // dx * mR 
       dx = ldlt.solve(t); // correction to coefficients
       x -= dx;
 
+      EnforceTrustRegions(T, x);
       if (mTol > dx.lpNorm<Eigen::Infinity>())
         break;
     }
@@ -374,10 +378,33 @@ void RationalFit::GetCoefWeights(double* const weights) const {
 
   // implicitly disable the un-used coefficients
   for (int idx = 1; idx < rpc::NumCoef; ++idx) {
-    if (!mCoefFlags.test(idx)) 
+    if (!mCoefFlags.test(idx))
       weights[idx] = 1.0;
   }
   std::copy_n(weights + 1, rpc::NumCoef - 1, weights + rpc::NumCoef);
+}
+
+/**
+ *  \brief get trust regions of 39 unknown coefficients
+ */
+void RationalFit::GetCoefTrustRegions(double* const regions) const {
+  regions[rpc::eC] = mCoefTrs[eWtOff];
+  for (std::underlying_type_t<rpc> idx = rpc::eL; idx <= rpc::eH; ++idx) {
+    regions[idx] = mCoefTrs[eWtLin];
+  }
+  for (std::underlying_type_t<rpc> idx = rpc::eLP; idx <= rpc::eHH; ++idx) {
+    regions[idx] = mCoefTrs[eWtQuad];
+  }
+  for (std::underlying_type_t<rpc> idx = rpc::ePLH; idx <= rpc::eHHH; ++idx) {
+    regions[idx] = mCoefTrs[eWtCub];
+  }
+
+  // implicitly disable the un-used coefficients
+  for (int idx = 1; idx < rpc::NumCoef; ++idx) {
+    if (!mCoefFlags.test(idx))
+      regions[idx] = 0.0;
+  }
+  std::copy_n(regions + 1, rpc::NumCoef - 1, regions + rpc::NumCoef);
 }
 
 /**
@@ -395,5 +422,20 @@ void RationalFit::CalcJacobian(const Point3d& grd, const double obs,
   for (int i = 0; i < kNumUnks_STD; ++i) {
     if (!coefFlags.test(i))
       A[i] = 0.0;
+  }
+}
+
+/**
+ *  \brief clamp coefficients within trust regions.
+ */
+void RationalFit::EnforceTrustRegions(const EigVecX<double>& T,
+  EigVecX<double>& x) const {
+  const int n = x.rows();
+  assert(n == T.rows());
+
+  for (int i = 0; i < n; ++i) {
+    if (fabs(x[i]) > T[i]) {
+      x[i] = std::copysign(T[i], x[i]);
+    }
   }
 }

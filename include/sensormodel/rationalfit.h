@@ -53,6 +53,11 @@ public:
     const std::vector<Point3d>& grounds);
 
 private:
+  enum ReguMethod {
+    eLevenberg = 0, // add ratio of diagonal to normal diagonal
+    eMarquad = 1    // add value to normal diagonal
+  };
+
   enum CoefWeight {
     eWtOff = 0,   // constant offset coefficients
     eWtLin = 1,   // linear coefficients
@@ -73,16 +78,21 @@ private:
   std::array<double, kNumOffScl> mSclFactors{1.0}; // scales
   std::bitset<kNumOffScl> mOffFlags; // flag indicating known offsets
   std::bitset<kNumOffScl> mSclFlags; // flag indicating known scales
-  std::array<int, kNumOffScl> mOffDigits{ 0, 0, 4, 4, 0}; // number of digits past decimal place
-  std::array<int, kNumOffScl> mSclDigits{ 0, 0, 4, 4, 0 };
+  std::array<int, kNumOffScl> mOffDigits{0, 0, 4, 4, 0}; // number of digits past decimal place
+  std::array<int, kNumOffScl> mSclDigits{0, 0, 4, 4, 0};
 
-  // a priori weights of coefficients group are set to values that work well in practice
-  // (no theoretical justification). In general, the contribution of higher-order terms
+  // a priori weights and value ranges of coefficient groups 
+  // (constant offset, linear, quadratic, cubic)
+  // are set to values that work well in practice (no theoretical justification).
+  // In general, the contribution of higher-order terms
   // (given larger weights) is expected to be less than of lower-order ones. 
-  std::array<double, 4> mCoefWts{0.0, 0.0, 0.001, 0.1};  // constant offset, linear, quadratic, cubic
-  double mR{1.0e-6};  // Tikhonov regularization 
+  std::array<double, 4> mCoefWts{0.0, 0.0, 0.001, 0.01};  // weights 
+  std::array<double, 4> mCoefTrs{0.1, 2.0, 0.1, 0.1};  // +/- trust regions
+
+  ReguMethod mReguMethod{ eMarquad };
+  double mR{1.0e-6};  // Tikhonov regularization: ratio as Levenberg, value as Marquad
   int mMaxIter{ 10 }; // max. number of iterations allowed for CalcCoefficients
-  double mCCTol{ 0.8 };  // tolerance for correlation coefficient
+  double mCCTol{ 0.9 };  // tolerance for correlation coefficient
   double mTol{ 1.0e-10 };  // tolerance for convergence of coefficients
 
   // cached 
@@ -142,7 +152,9 @@ private:
     PolyCoefArray& lineNumCoef, PolyCoefArray& sampNumCoef);
 
   void GetCoefWeights(double* const weights) const;
-  void CalcJacobian(const Point3d& grd, double obs, 
+  void GetCoefTrustRegions(double* const regions) const;
+  void CalcJacobian(const Point3d& grd, double obs,
     const std::bitset<kNumUnks_STD>& coefFlags, EigVecXR<double>& A) const;
+  void EnforceTrustRegions(const EigVecX<double>& T, EigVecX<double>& x) const;
 };
 } // namespace earthxpert
