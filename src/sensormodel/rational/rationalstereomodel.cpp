@@ -250,7 +250,7 @@ Tuple6d RationalStereoModel::CalcJacobianNf(RationalModel const* ratModel,
  *  \param [out] img estimated normalized col/row
  *  \return Return {dFc_dL, dFc_dP, dFc_dH, dFr_dL, dFr_dP, dFr_dH}
  *
- *  \remark 25% faster than CalcJacobianA
+ *  \remark 25% faster than CalcJacobianNf
  */
 Tuple6d RationalStereoModel::CalcJacobianNc(RationalModel const* ratModel,
   const Point3d& grd, Point2d& img) const {

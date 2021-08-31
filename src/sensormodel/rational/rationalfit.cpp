@@ -281,7 +281,8 @@ void RationalFit::SolveStandardEigen(const std::vector<Point2d>& images,
     GetCoefWeights(P.data());
     GetCoefTrustRegions(T.data());
 
-    for (int it = 0; it < mMaxIter; ++it) {
+    int it{};
+    for (it = 0; it < mMaxCC; ++it) {
       N.setZero();
 
       for (size_t k = 0; k < count; ++k) {
@@ -297,7 +298,7 @@ void RationalFit::SolveStandardEigen(const std::vector<Point2d>& images,
       //const auto& ldlt = N.ldlt();
       //std::cout << "rcond: " << ldlt.rcond() << std::endl;
 
-      // correlation analysis of coefficients 
+      // cross-correlation analysis \todo denominator
       const auto [mcc, rl, cl] = LocateMaxCorrelation(N);
       if (mCCTol >= mcc) break;
 
@@ -310,19 +311,40 @@ void RationalFit::SolveStandardEigen(const std::vector<Point2d>& images,
       else {
         idx = (rl > (cl - rpc::NumCoef + 1)) ? rl : cl;
       }
+
+      if ((rpc::eC <=idx && idx <= rpc::eH) || 
+          (rpc::NumCoef-1+rpc::eL <= idx && idx <= rpc::NumCoef-1+rpc::eH)) {
+        std::cout << "Do not deactivate constant or linear term: " << idx << std::endl;
+        break;
+      }
+
       coefFlags.reset(idx);
       P[idx] = 1.0;
       std::cout << "max cross-correlation " << mcc << ": " 
         << rl << ", " << cl << " (" << idx << ")" << std::endl;
     }
 
+    // reach allowed max. number of deactivated coefficients
+    if (it == mMaxCC) {   
+      N.setZero();
+
+      for (size_t k = 0; k < count; ++k) {
+        CalcJacobian(grounds[k], arr[k], coefFlags, A);
+        N += A.transpose() * A; // add AtA (\todo upper triangle)
+        //N.triangularView<Upper>() += A.transpose() * A;
+      }
+
+      // add weights and unbiased regularization
+      N.diagonal() += (P.array() + mR).matrix();
+      //N.triangularView<StrictlyLower>() = N.transpose();  // selfadjointView<Upper>()
+    }
     const auto& ldlt = N.ldlt();
     std::cout << "rcond: " << ldlt.rcond() << std::endl;
 
     dx.setZero();
     x.setZero();
 
-    for (int it = 0; it < mMaxIter; ++it) {
+    for (it = 0; it < mMaxIter; ++it) {
       t.setZero();
 
       for (size_t k = 0; k < count; ++k) {
@@ -332,11 +354,14 @@ void RationalFit::SolveStandardEigen(const std::vector<Point2d>& images,
       }
 
       // add weights and unbiased regularization
-      t += P.cwiseProduct(x); // dx * mR 
-      dx = ldlt.solve(t); // correction to coefficients
-      x -= dx;
+      t += P.cwiseProduct(x) + dx * mR;
 
+      dx = ldlt.solve(t); // correction to coefficients
+      EnforceTrustRegions(T, dx);
+
+      x -= dx;
       EnforceTrustRegions(T, x);
+
       if (mTol > dx.lpNorm<Eigen::Infinity>())
         break;
     }

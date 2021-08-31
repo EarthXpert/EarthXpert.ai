@@ -5,6 +5,7 @@
 #pragma once
 
 #include "sensormodel/rationalmodel.h"
+#include "3rdparty/ceres/exceres.h"
 #include "3rdparty/eigen/exeigen.h"
 
 #include <array>
@@ -13,7 +14,31 @@
 #include <type_traits>
 
 namespace earthxpert {
+using thirdparty::IResidual;
 using PolyCoefArray = RationalModel::PolyCoefArray;
+
+/**
+ *  \brief AnalyticDiff cost functors implements CostFunction
+ */
+class AnalyticRationalCostFunc final : ceres::DynamicCostFunction {
+
+};
+
+/**
+ *  \brief NumericDiff cost functors implements IResidual
+ */
+struct NumericRationalResidual final : IResidual {
+  NumericRationalResidual() = default;
+  ~NumericRationalResidual() = default;
+
+  bool operator()(const double* const pb, double* residual) const {
+    return true;
+  }
+
+private:
+  const Point2d* image{};
+  const Point3d* ground{};
+};
 
 /**
  *  The class RationalFit solves the rational function model coefficients
@@ -91,8 +116,9 @@ private:
 
   ReguMethod mReguMethod{ eMarquad };
   double mR{1.0e-6};  // Tikhonov regularization: ratio as Levenberg, value as Marquad
-  int mMaxIter{ 10 }; // max. number of iterations allowed for CalcCoefficients
+  int mMaxCC{ 10 }; // max. number of coefficients allowed to deactivate for cross-correlation
   double mCCTol{ 0.9 };  // tolerance for correlation coefficient
+  int mMaxIter{ 10 }; // max. number of iterations allowed for solution
   double mTol{ 1.0e-10 };  // tolerance for convergence of coefficients
 
   // cached 

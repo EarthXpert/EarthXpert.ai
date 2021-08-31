@@ -38,7 +38,7 @@ struct NumericG2IResidual final : IResidual {
    *  \param [in] sensorModel.
    *  \param [in] image
    */
-  NumericG2IResidual() {}
+  NumericG2IResidual() = default;
   NumericG2IResidual(const Point2d* const image, const ISensorModel* const sensorModel)
     : image(image), sensorModel(sensorModel) {}
   ~NumericG2IResidual() = default;
@@ -61,8 +61,8 @@ struct NumericG2IResidual final : IResidual {
   }
 
 private:
-  const Point2d* image;
-  const ISensorModel* sensorModel;
+  const Point2d* image{};
+  const ISensorModel* sensorModel{};
 };
 
 /**
