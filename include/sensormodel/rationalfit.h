@@ -185,7 +185,9 @@ private:
   void GetCoefWeights(double* const weights) const;
   void GetCoefTrustRegions(double* const regions) const;
   void CalcJacobian(const Point3d& grd, double obs,
-    const std::bitset<kNumUnks_STD>& coefFlags, EigVecXR<double>& A) const;
-  void EnforceTrustRegions(const EigVecX<double>& T, EigVecX<double>& x) const;
+    const std::bitset<kNumUnks_STD>& coefFlags, 
+    EigVecR<double, kNumUnks_STD>& A) const;
+  void EnforceTrustRegions(const EigVec<double, kNumUnks_STD>& T, 
+    EigVec<double, kNumUnks_STD>& x) const;
 };
 } // namespace earthxpert

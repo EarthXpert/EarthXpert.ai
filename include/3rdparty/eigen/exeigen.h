@@ -10,17 +10,23 @@
 #include <tuple>
 #include <Eigen/Eigen>
 
-//template<typename Ty>
-//using EigMatX = Eigen::Matrix<Ty, Eigen::Dynamic, Eigen::Dynamic>;
+template<typename Ty, int nrows, int ncols>
+using EigMat = Eigen::Matrix<Ty, nrows, ncols>;
+template<typename Ty, int nrows, int ncols>
+using EigMatR = Eigen::Matrix<Ty, nrows, ncols, Eigen::RowMajor>;
+template<typename Ty, int nrows>
+using EigVec = Eigen::Matrix<Ty, nrows, 1>;
+template<typename Ty, int ncols>
+using EigVecR = Eigen::Matrix<Ty, 1, ncols, Eigen::RowMajor>;
 
+template<typename Ty>
+using EigMatX = Eigen::Matrix<Ty, Eigen::Dynamic, Eigen::Dynamic>;
 template<typename Ty>
 using EigMatXR = Eigen::Matrix<Ty, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor>;
-
 template<typename Ty>
 using EigVecX = Eigen::Matrix<Ty, Eigen::Dynamic, 1>;
-
 template<typename Ty>
-using EigVecXR = Eigen::Matrix<Ty, 1, Eigen::Dynamic>;
+using EigVecXR = Eigen::Matrix<Ty, 1, Eigen::Dynamic, Eigen::RowMajor>;
 
 using EigTri = Eigen::Triplet<double>;
 

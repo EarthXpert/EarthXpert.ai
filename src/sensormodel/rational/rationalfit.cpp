@@ -235,7 +235,8 @@ void RationalFit::CalcNormalFactors(const std::vector<Point2d>& images,
 }
 
 /**
- *  \brief solve coefficients from given points using iterative weighted LS.
+ *  \brief solve coefficients from given points using the
+ *  weighted and regularized total least squares:
  * 
  *    (N + P + r) * dx = t + P * (x - x0) + r * dx
  *  
@@ -257,13 +258,13 @@ void RationalFit::SolveStandardEigen(const std::vector<Point2d>& images,
   PolyCoefArray& sampNumCoef, PolyCoefArray& sampDenCoef) {
   const size_t count = images.size();
 
-  EigVecX<double> P(kNumUnks_STD); // weights of 39 unkown coefs
-  EigVecX<double> T(kNumUnks_STD); // trust regions of 39 unkown coefs
-  EigVecXR<double> A(kNumUnks_STD);  // dF_dx
-  EigMatXR<double> N(kNumUnks_STD, kNumUnks_STD);  // normal matrix
-  EigVecX<double> t(kNumUnks_STD); // normal misclosure
-  EigVecX<double> dx(kNumUnks_STD); // correction to unkowns
-  EigVecX<double> x(kNumUnks_STD); // unkowns
+  EigVec<double, kNumUnks_STD> P; // weights of 39 unkown coefs
+  EigVec<double, kNumUnks_STD> T; // trust regions of 39 unkown coefs
+  EigVecR<double, kNumUnks_STD> A;  // dF_dx
+  EigMatR<double, kNumUnks_STD, kNumUnks_STD> N;  // normal matrix
+  EigVec<double, kNumUnks_STD> t; // normal misclosure
+  EigVec<double, kNumUnks_STD> dx; // correction to unkowns
+  EigVec<double, kNumUnks_STD> x; // unkowns
 
   int ci = 0;
   std::vector<double> arr(count);
@@ -294,9 +295,7 @@ void RationalFit::SolveStandardEigen(const std::vector<Point2d>& images,
       // add weights and unbiased regularization
       N.diagonal() += (P.array() + mR).matrix();
       //N.triangularView<StrictlyLower>() = N.transpose();  // selfadjointView<Upper>()
-
-      //const auto& ldlt = N.ldlt();
-      //std::cout << "rcond: " << ldlt.rcond() << std::endl;
+      //std::cout << "rcond: " << N.ldlt().rcond() << std::endl;
 
       // cross-correlation analysis \todo denominator
       const auto [mcc, rl, cl] = LocateMaxCorrelation(N);
@@ -447,7 +446,8 @@ void RationalFit::GetCoefTrustRegions(double* const regions) const {
  *  \brief calculate Jacobian of rational functions.
  */
 void RationalFit::CalcJacobian(const Point3d& grd, const double obs,
-  const std::bitset<kNumUnks_STD>& coefFlags, EigVecXR<double>& A) const {
+  const std::bitset<kNumUnks_STD>& coefFlags, 
+  EigVecR<double, kNumUnks_STD>& A) const {
   PolyCoefArray uvw{};  // combinations of u, v, w for polynomial terms
   CalcTerms(grd, uvw.data());  
 
@@ -464,8 +464,8 @@ void RationalFit::CalcJacobian(const Point3d& grd, const double obs,
 /**
  *  \brief clamp coefficients within trust regions.
  */
-void RationalFit::EnforceTrustRegions(const EigVecX<double>& T,
-  EigVecX<double>& x) const {
+void RationalFit::EnforceTrustRegions(const EigVec<double, kNumUnks_STD>& T,
+  EigVec<double, kNumUnks_STD>& x) const {
   const int n = x.rows();
   assert(n == T.rows());
 
