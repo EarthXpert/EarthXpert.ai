@@ -295,7 +295,7 @@ void RationalFit::SolveStandardEigen(const std::vector<Point2d>& images,
       // add weights and unbiased regularization
       N.diagonal() += (P.array() + mR).matrix();
       //N.triangularView<StrictlyLower>() = N.transpose();  // selfadjointView<Upper>()
-      //std::cout << "rcond: " << N.ldlt().rcond() << std::endl;
+      std::cout << "rcond: " << N.ldlt().rcond() << std::endl;
 
       // cross-correlation analysis \todo denominator
       const auto [mcc, rl, cl] = LocateMaxCorrelation(N);
@@ -338,7 +338,7 @@ void RationalFit::SolveStandardEigen(const std::vector<Point2d>& images,
       //N.triangularView<StrictlyLower>() = N.transpose();  // selfadjointView<Upper>()
     }
     const auto& ldlt = N.ldlt();
-    std::cout << "rcond: " << ldlt.rcond() << std::endl;
+    std::cout << "final rcond: " << ldlt.rcond() << std::endl;
 
     dx.setZero();
     x.setZero();

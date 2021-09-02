@@ -7,6 +7,7 @@
 #include "sensormodel/rationalmodel.h"
 #include "3rdparty/ceres/exceres.h"
 #include "3rdparty/eigen/exeigen.h"
+#include "core/math/algebra.h"
 
 #include <array>
 #include <bitset>
@@ -65,6 +66,20 @@ public:
   RationalFit& operator=(RationalFit&&) = delete;
 
   void SetCoefGroup(int coefGroup);
+  void SetRegularization(const ReguMethod method, const double r) {
+    mReguMethod = method;
+    mR = r;
+  }
+
+  void SetCrossCorelation(const int maxIter, const double tol) {
+    mMaxCC = maxIter;
+    mCCTol = tol;
+  }
+
+  void SetConvergeCondition(const int maxIter, const double tol) {
+    mMaxIter = maxIter;
+    mTol = tol;
+  }
 
   void SetNormalFactors(const NormalFactorArray& normalFators);
   void GetNormalFactors(NormalFactorArray& normalFators) const;
@@ -78,11 +93,6 @@ public:
     const std::vector<Point3d>& grounds);
 
 private:
-  enum ReguMethod {
-    eLevenberg = 0, // add ratio of diagonal to normal diagonal
-    eMarquad = 1    // add value to normal diagonal
-  };
-
   enum CoefWeight {
     eWtOff = 0,   // constant offset coefficients
     eWtLin = 1,   // linear coefficients
@@ -114,6 +124,7 @@ private:
   std::array<double, 4> mCoefWts{0.0, 0.0, 0.001, 0.01};  // weights 
   std::array<double, 4> mCoefTrs{0.1, 2.0, 0.1, 0.1};  // +/- trust regions
 
+  // algorithm control parameters
   ReguMethod mReguMethod{ eMarquad };
   double mR{1.0e-6};  // Tikhonov regularization: ratio as Levenberg, value as Marquad
   int mMaxCC{ 10 }; // max. number of coefficients allowed to deactivate for cross-correlation
