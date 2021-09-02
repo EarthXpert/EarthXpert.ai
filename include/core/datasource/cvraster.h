@@ -8,6 +8,7 @@
 
 #include <opencv2/core.hpp>
 #include <array>
+#include <utility>
 
 namespace earthxpert {
 /**
@@ -196,6 +197,8 @@ public:
   template<typename Ty, typename Functor> inline void 
   ForEachPixel(const Functor& func) { mMat.forEach<Ty>(func); }
 
+  void Swap(CvRaster& rhs) noexcept;
+
 private:
   //RasterWindow mRasWin;       // focusing pixel block 
   int mNumCols{};               // number of image columns
@@ -229,3 +232,10 @@ using SPCvRaster = std::shared_ptr<CvRaster>;
 } // namespace earthxpert
 
 #include "detail/cvraster.hh"
+
+namespace std {
+template<>
+inline void swap(earthxpert::CvRaster& lhs, earthxpert::CvRaster& rhs) noexcept {
+  lhs.Swap(rhs);
+}
+}

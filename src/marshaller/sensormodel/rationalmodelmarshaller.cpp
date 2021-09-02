@@ -176,29 +176,24 @@ void RationalModelMarshaller::SerializeRpc(std::ostream& outS,
   outS << std::setprecision(15) 
     << std::setiosflags(std::ios::scientific | std::ios::showpos);
 
+  auto printCoef = [&outS](const std::string& name,
+    const double* coefs, const int len) {
+      for (int i = 0; i < len; ++i) {
+        outS << name << std::to_string(i + 1) << ": " << coefs[i] << "\n";
+      }
+  };
+
   // rpc coefficients
-  for (int i = 0; i < rpc::NumCoef; ++i) {
-    outS << "LINE_NUM_COEFF_" << i + 1 << ": " << ratModel->lnc[i] << "\n";
-  }
-  for (int i = 0; i < rpc::NumCoef; ++i) {
-    outS << "LINE_DEN_COEFF_" << i + 1 << ": " << ratModel->ldc[i] << "\n";
-  }
-  for (int i = 0; i < rpc::NumCoef; ++i) {
-    outS << "SAMP_NUM_COEFF_" << i + 1 << ": " << ratModel->snc[i] << "\n";
-  }
-  for (int i = 0; i < rpc::NumCoef; ++i) {
-    outS << "SAMP_DEN_COEFF_" << i + 1 << ": " << ratModel->sdc[i] << "\n";
-  }
+  printCoef("LINE_NUM_COEFF_", ratModel->lnc, rpc::NumCoef);
+  printCoef("LINE_DEN_COEFF_", ratModel->ldc, rpc::NumCoef);
+  printCoef("SAMP_NUM_COEFF_", ratModel->snc, rpc::NumCoef);
+  printCoef("SAMP_DEN_COEFF_", ratModel->sdc, rpc::NumCoef);
 
   if (!ratModel->mCorrFlag) return;
 
   // correction coeffcients
-  for (int i = 0; i < rcc::NumCorr; ++i) {
-    outS << "LINE_COR_COEFF_" << i + 1 << ": " << ratModel->mLineCorr[i] << "\n";
-  }
-  for (int i = 0; i < rcc::NumCorr; ++i) {
-    outS << "SAMP_COR_COEFF_" << i + 1 << ": " << ratModel->mSampCorr[i] << "\n";
-  }
+  printCoef("LINE_COR_COEFF_", ratModel->mLineCorr.data(), rcc::NumCorr);
+  printCoef("SAMP_COR_COEFF_", ratModel->mSampCorr.data(), rcc::NumCorr);
 }
 
 /**

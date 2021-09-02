@@ -230,6 +230,11 @@ void InterpGrid<Ty>::GetVal(const Ty x, const Ty y,
   }
 }
 
+template <typename Ty>
+void InterpGrid<Ty>::Swap(InterpGrid<Ty>& rhs) noexcept {
+  assert(false && "not implemented");
+}
+
 /**
  * Copy values from another object
  *
