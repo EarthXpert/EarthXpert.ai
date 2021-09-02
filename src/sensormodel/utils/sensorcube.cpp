@@ -105,9 +105,11 @@ int SensorCube::CreateCubeModelQC(const ISensorModel* sensorModel,
   std::vector<Point2d> imgGrid;
   const auto [stepCols, stepRows] = CreateImageGrid(sensorModel, imgGrid);
 
-  // three QC locations
-  const std::array<Point2d, 3> qcLoc{ Point2d{stepCols/2.0, 0.0}, 
-    Point2d{0.0, stepRows/2.0}, Point2d{stepCols/2.0, stepRows/2.0} };
+  // seven QC locations
+  const std::array<Point2d, 7> qcLoc{ Point2d{stepCols/2.0, 0.0}, 
+    Point2d{0.0, stepRows/2.0}, Point2d{stepCols/2.0, stepRows/2.0},
+    Point2d{stepCols/4.0, stepRows/4.0}, Point2d{stepCols*0.75, stepRows/4.0},
+    Point2d{stepCols/4.0, stepRows*0.75}, Point2d{stepCols*0.75, stepRows*0.75} };
 
   const auto [minHgt, maxHgt] = sensorModel->GetHeightRange();
   const auto stepHgt = double(maxHgt - minHgt) / (mNumLayers*2 - 1) - DBL_EPSILON;

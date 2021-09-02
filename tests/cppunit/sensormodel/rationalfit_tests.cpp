@@ -19,37 +19,34 @@ using namespace earthxpert;
 using namespace earthxpert::utils;
 namespace fs = std::filesystem;
 
-UPRationalModel CreateRationalModel(const ISensorModel* sensorModel);
+UPRationalModel CreateRationalModel(const ISensorModel* sensorModel, bool cc=true);
+void TestRationalFit(const std::string& inRpc, const std::string& outRpc, bool cc=true);
+
+TEST(rationalfit, Khalifasat0) {
+  std::string inRpc{ "Imagery/Satellite/Khalifasat/KhalifaSat_20190704093359_03703_UAE 15_11121_Radio_P_rpc.txt" };
+  std::string outRpc{ "KhalifaSat_20190704093359_03703_UAE 15_11121_Radio_P0_rpc.txt" };
+  TestRationalFit(inRpc, outRpc, false);
+}
 
 TEST(rationalfit, Khalifasat) {
-  std::string mdlFile = TestConfig::DataPath("Imagery/Satellite/Khalifasat/KhalifaSat_20190704093359_03703_UAE 15_11121_Radio_P_rpc.txt");
-  RationalModelMarshaller rmMarshaller;
-  auto ratModel = rmMarshaller.Deserialize(mdlFile);
-  ASSERT_TRUE(ratModel);
+  std::string inRpc{ "Imagery/Satellite/Khalifasat/KhalifaSat_20190704093359_03703_UAE 15_11121_Radio_P_rpc.txt"};
+  std::string outRpc{ "KhalifaSat_20190704093359_03703_UAE 15_11121_Radio_P_rpc.txt" };
+  TestRationalFit(inRpc, outRpc);
+}
 
-  auto ratModelF = CreateRationalModel(ratModel.get()); // 1st fit
-  //CreateRationalModel(ratModelF.get());   // 2nd fit
-
-  fs::path fitPath(TestConfig::OutputPath("KhalifaSat_20190704093359_03703_UAE 15_11121_Radio_P_rpc.txt"));
-  RemoveFile(fitPath);
-  rmMarshaller.Serialize(fitPath.string(), ratModelF.get());
+TEST(rationalfit, WV2_Stereo1B_XJ0) {
+  std::string inRpc{"Imagery/Satellite/WV2_Stereo1B_XJ/15AUG02052758-1BS_R1C1-054355223040_05_P003_RAW_PAN_rpc.txt" };
+  std::string outRpc{ "15AUG02052758-1BS_R1C1-054355223040_05_P003_RAW_PAN0_rpc.txt" };
+  TestRationalFit(inRpc, outRpc, false);
 }
 
 TEST(rationalfit, WV2_Stereo1B_XJ) {
-  std::string mdlFile = TestConfig::DataPath("Imagery/Satellite/WV2_Stereo1B_XJ/15AUG02052758-1BS_R1C1-054355223040_05_P003_RAW_PAN_rpc.txt");
-  RationalModelMarshaller rmMarshaller;
-  auto ratModel = rmMarshaller.Deserialize(mdlFile);
-  ASSERT_TRUE(ratModel);
-
-  auto ratModelF = CreateRationalModel(ratModel.get()); // 1st fit
-  //CreateRationalModel(ratModelF.get());   // 2nd fit
-
-  fs::path fitPath(TestConfig::OutputPath("15AUG02052758-1BS_R1C1-054355223040_05_P003_RAW_PAN_rpc.txt"));
-  RemoveFile(fitPath);
-  rmMarshaller.Serialize(fitPath.string(), ratModelF.get());
+  std::string inRpc{ "Imagery/Satellite/WV2_Stereo1B_XJ/15AUG02052758-1BS_R1C1-054355223040_05_P003_RAW_PAN_rpc.txt" };
+  std::string outRpc{ "15AUG02052758-1BS_R1C1-054355223040_05_P003_RAW_PAN_rpc.txt" };
+  TestRationalFit(inRpc, outRpc);
 }
 
-UPRationalModel CreateRationalModel(const ISensorModel* sensorModel) {
+UPRationalModel CreateRationalModel(const ISensorModel* sensorModel, const bool cc) {
   std::vector<Point2f> images;
   std::vector<Point3d> grounds;
 
@@ -57,6 +54,8 @@ UPRationalModel CreateRationalModel(const ISensorModel* sensorModel) {
   sensorCube.CreateCube(sensorModel, images, grounds);
 
   RationalFit ratFit;
+  if (!cc)
+    ratFit.SetCrossCorelation(0, 0.0);
   auto ratModelF = ratFit.CreateRationalModel(images, grounds);
 
   auto print = [](const std::array<double, 4>& stats, const std::string& name) {
@@ -94,4 +93,24 @@ UPRationalModel CreateRationalModel(const ISensorModel* sensorModel) {
   print(sstatsFQC, "fitted model samp QC -");
 
   return ratModelF;
+}
+
+void TestRationalFit(const std::string& inRpc,
+  const std::string& outRpc, const bool cc) {
+  std::string mdlFile = TestConfig::DataPath(inRpc);
+  RationalModelMarshaller rmMarshaller;
+  auto ratModel = rmMarshaller.Deserialize(mdlFile);
+  ASSERT_TRUE(ratModel);
+
+  if (cc)
+    std::cout << "*** cross-correlation method ***\n";
+  else
+    std::cout << "*** standard method ***\n";
+
+  auto ratModelF = CreateRationalModel(ratModel.get(), cc); // 1st fit
+  //CreateRationalModel(ratModelF.get());   // 2nd fit
+
+  fs::path fitPath(TestConfig::OutputPath(outRpc));
+  RemoveFile(fitPath);
+  rmMarshaller.Serialize(fitPath.string(), ratModelF.get());
 }
