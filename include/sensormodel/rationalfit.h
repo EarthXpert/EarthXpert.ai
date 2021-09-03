@@ -66,19 +66,19 @@ public:
   RationalFit& operator=(RationalFit&&) = delete;
 
   void SetCoefGroup(int coefGroup);
-  void SetRegularization(const ReguMethod method, const double r) {
+  void SetRegularization(const ReguMethod method, const double regu) {
     mReguMethod = method;
-    mR = r;
+    mRegu = regu;
   }
 
   void SetCrossCorelation(const int maxIter, const double tol) {
     mMaxCC = maxIter;
-    mCCTol = tol;
+    mTolCC = tol;
   }
 
-  void SetConvergeCondition(const int maxIter, const double tol) {
-    mMaxIter = maxIter;
-    mTol = tol;
+  void SetTerminateCondition(const int maxIter, const double tol) {
+    mMaxTC = maxIter;
+    mTolTC = tol;
   }
 
   void SetNormalFactors(const NormalFactorArray& normalFators);
@@ -126,11 +126,11 @@ private:
 
   // algorithm control parameters
   ReguMethod mReguMethod{ eMarquad };
-  double mR{1.0e-6};  // Tikhonov regularization: ratio as Levenberg, value as Marquad
+  double mRegu{1.0e-6};  // Tikhonov regularization: ratio as Levenberg, value as Marquad
   int mMaxCC{ 10 }; // max. number of coefficients allowed to deactivate for cross-correlation
-  double mCCTol{ 0.9 };  // tolerance for correlation coefficient
-  int mMaxIter{ 10 }; // max. number of iterations allowed for solution
-  double mTol{ 1.0e-10 };  // tolerance for convergence of coefficients
+  double mTolCC{ 0.9 };  // tolerance for correlation coefficient
+  int mMaxTC{ 10 }; // max. number of iterations allowed for solution
+  double mTolTC{ 1.0e-10 };  // tolerance for convergence of coefficients
 
   // cached 
   int mRfmType{kStandard}; // flag indicating type of denominator terms

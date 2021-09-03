@@ -78,9 +78,9 @@ public:
 private:
   static constexpr double kMarginRatio = 0.1;  // ratio of margin to extend beyound the image scene
 
-  int mNumHoriz{10};  // number of points in column of image grid 
-  int mNumVert{10};   // number of points in row of image grid 
-  int mNumLayers{10}; // number of layers in height of ground cube 
+  int mNumHoriz{20};  // number of points in column of image grid 
+  int mNumVert{20};   // number of points in row of image grid 
+  int mNumLayers{20}; // number of layers in height of ground cube 
   LayerType mLayerType{ eMODEL };
 
   int mMarginCols{};

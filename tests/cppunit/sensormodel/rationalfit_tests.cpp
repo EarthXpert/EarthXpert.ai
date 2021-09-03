@@ -19,38 +19,75 @@ using namespace earthxpert;
 using namespace earthxpert::utils;
 namespace fs = std::filesystem;
 
-UPRationalModel CreateRationalModel(const ISensorModel* sensorModel, bool cc=true);
-void TestRationalFit(const std::string& inRpc, const std::string& outRpc, bool cc=true);
+UPRationalModel CreateRationalModel(const ISensorModel* sensorModel, int dim, bool cc=true);
+void TestRationalFit(const std::string& inRpc, const std::string& outRpc, int dim, bool cc=true);
 
-TEST(rationalfit, Khalifasat0) {
+TEST(rationalfit, Khalifasat5) {
   std::string inRpc{ "Imagery/Satellite/Khalifasat/KhalifaSat_20190704093359_03703_UAE 15_11121_Radio_P_rpc.txt" };
-  std::string outRpc{ "KhalifaSat_20190704093359_03703_UAE 15_11121_Radio_P0_rpc.txt" };
-  TestRationalFit(inRpc, outRpc, false);
+  std::string outRpc{ "KhalifaSat_20190704093359_03703_UAE 15_11121_Radio_P0_5_rpc.txt" };
+  TestRationalFit(inRpc, outRpc, 5, false);
+
+  inRpc = "Imagery/Satellite/Khalifasat/KhalifaSat_20190704093359_03703_UAE 15_11121_Radio_P_rpc.txt";
+  outRpc = "KhalifaSat_20190704093359_03703_UAE 15_11121_Radio_P_5_rpc.txt";
+  TestRationalFit(inRpc, outRpc, 5);
 }
 
-TEST(rationalfit, Khalifasat) {
-  std::string inRpc{ "Imagery/Satellite/Khalifasat/KhalifaSat_20190704093359_03703_UAE 15_11121_Radio_P_rpc.txt"};
-  std::string outRpc{ "KhalifaSat_20190704093359_03703_UAE 15_11121_Radio_P_rpc.txt" };
-  TestRationalFit(inRpc, outRpc);
+TEST(rationalfit, Khalifasat10) {
+  std::string inRpc{ "Imagery/Satellite/Khalifasat/KhalifaSat_20190704093359_03703_UAE 15_11121_Radio_P_rpc.txt" };
+  std::string outRpc{ "KhalifaSat_20190704093359_03703_UAE 15_11121_Radio_P0_10_rpc.txt" };
+  TestRationalFit(inRpc, outRpc, 10, false);
+
+  inRpc = "Imagery/Satellite/Khalifasat/KhalifaSat_20190704093359_03703_UAE 15_11121_Radio_P_rpc.txt";
+  outRpc = "KhalifaSat_20190704093359_03703_UAE 15_11121_Radio_P_10_rpc.txt";
+  TestRationalFit(inRpc, outRpc, 10);
 }
 
-TEST(rationalfit, WV2_Stereo1B_XJ0) {
-  std::string inRpc{"Imagery/Satellite/WV2_Stereo1B_XJ/15AUG02052758-1BS_R1C1-054355223040_05_P003_RAW_PAN_rpc.txt" };
-  std::string outRpc{ "15AUG02052758-1BS_R1C1-054355223040_05_P003_RAW_PAN0_rpc.txt" };
-  TestRationalFit(inRpc, outRpc, false);
+TEST(rationalfit, Khalifasat20) {
+  std::string inRpc{ "Imagery/Satellite/Khalifasat/KhalifaSat_20190704093359_03703_UAE 15_11121_Radio_P_rpc.txt" };
+  std::string outRpc{ "KhalifaSat_20190704093359_03703_UAE 15_11121_Radio_P0_20_rpc.txt" };
+  TestRationalFit(inRpc, outRpc, 20, false);
+
+  inRpc = "Imagery/Satellite/Khalifasat/KhalifaSat_20190704093359_03703_UAE 15_11121_Radio_P_rpc.txt";
+  outRpc = "KhalifaSat_20190704093359_03703_UAE 15_11121_Radio_P_20_rpc.txt";
+  TestRationalFit(inRpc, outRpc, 20);
 }
 
-TEST(rationalfit, WV2_Stereo1B_XJ) {
+TEST(rationalfit, WV2_Stereo1B_XJ5) {
   std::string inRpc{ "Imagery/Satellite/WV2_Stereo1B_XJ/15AUG02052758-1BS_R1C1-054355223040_05_P003_RAW_PAN_rpc.txt" };
-  std::string outRpc{ "15AUG02052758-1BS_R1C1-054355223040_05_P003_RAW_PAN_rpc.txt" };
-  TestRationalFit(inRpc, outRpc);
+  std::string outRpc{ "15AUG02052758-1BS_R1C1-054355223040_05_P003_RAW_PAN0_5_rpc.txt" };
+  TestRationalFit(inRpc, outRpc, 5, false);
+
+  inRpc = "Imagery/Satellite/WV2_Stereo1B_XJ/15AUG02052758-1BS_R1C1-054355223040_05_P003_RAW_PAN_rpc.txt";
+  outRpc = "15AUG02052758-1BS_R1C1-054355223040_05_P003_RAW_PAN_5_rpc.txt";
+  TestRationalFit(inRpc, outRpc, 5);
 }
 
-UPRationalModel CreateRationalModel(const ISensorModel* sensorModel, const bool cc) {
+TEST(rationalfit, WV2_Stereo1B_XJ10) {
+  std::string inRpc{ "Imagery/Satellite/WV2_Stereo1B_XJ/15AUG02052758-1BS_R1C1-054355223040_05_P003_RAW_PAN_rpc.txt" };
+  std::string outRpc{ "15AUG02052758-1BS_R1C1-054355223040_05_P003_RAW_PAN0_10_rpc.txt" };
+  TestRationalFit(inRpc, outRpc, 10, false);
+
+  inRpc = "Imagery/Satellite/WV2_Stereo1B_XJ/15AUG02052758-1BS_R1C1-054355223040_05_P003_RAW_PAN_rpc.txt";
+  outRpc = "15AUG02052758-1BS_R1C1-054355223040_05_P003_RAW_PAN_10_rpc.txt";
+  TestRationalFit(inRpc, outRpc, 10);
+}
+
+TEST(rationalfit, WV2_Stereo1B_XJ20) {
+  std::string inRpc{ "Imagery/Satellite/WV2_Stereo1B_XJ/15AUG02052758-1BS_R1C1-054355223040_05_P003_RAW_PAN_rpc.txt" };
+  std::string outRpc{ "15AUG02052758-1BS_R1C1-054355223040_05_P003_RAW_PAN0_20_rpc.txt" };
+  TestRationalFit(inRpc, outRpc, 20, false);
+
+  inRpc = "Imagery/Satellite/WV2_Stereo1B_XJ/15AUG02052758-1BS_R1C1-054355223040_05_P003_RAW_PAN_rpc.txt";
+  outRpc = "15AUG02052758-1BS_R1C1-054355223040_05_P003_RAW_PAN_20_rpc.txt";
+  TestRationalFit(inRpc, outRpc, 20);
+}
+
+UPRationalModel CreateRationalModel(const ISensorModel* sensorModel, 
+  const int dim, const bool cc) {
   std::vector<Point2f> images;
   std::vector<Point3d> grounds;
 
-  SensorCube sensorCube(12, 12, 12);
+  SensorCube sensorCube(dim, dim, dim);
   sensorCube.CreateCube(sensorModel, images, grounds);
 
   RationalFit ratFit;
@@ -96,7 +133,7 @@ UPRationalModel CreateRationalModel(const ISensorModel* sensorModel, const bool 
 }
 
 void TestRationalFit(const std::string& inRpc,
-  const std::string& outRpc, const bool cc) {
+  const std::string& outRpc, const int dim, const bool cc) {
   std::string mdlFile = TestConfig::DataPath(inRpc);
   RationalModelMarshaller rmMarshaller;
   auto ratModel = rmMarshaller.Deserialize(mdlFile);
@@ -107,7 +144,7 @@ void TestRationalFit(const std::string& inRpc,
   else
     std::cout << "*** standard method ***\n";
 
-  auto ratModelF = CreateRationalModel(ratModel.get(), cc); // 1st fit
+  auto ratModelF = CreateRationalModel(ratModel.get(), dim, cc); // 1st fit
   //CreateRationalModel(ratModelF.get());   // 2nd fit
 
   fs::path fitPath(TestConfig::OutputPath(outRpc));

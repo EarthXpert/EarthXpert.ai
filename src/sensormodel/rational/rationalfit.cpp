@@ -293,13 +293,13 @@ void RationalFit::SolveStandardEigen(const std::vector<Point2d>& images,
       }
 
       // add weights and unbiased regularization
-      N.diagonal() += (P.array() + mR).matrix();
+      N.diagonal() += (P.array() + mRegu).matrix();
       //N.triangularView<StrictlyLower>() = N.transpose();  // selfadjointView<Upper>()
       std::cout << "rcond: " << N.ldlt().rcond() << std::endl;
 
       // cross-correlation analysis \todo denominator
       const auto [mcc, rl, cl] = LocateMaxCorrelation(N);
-      if (mCCTol >= mcc) break;
+      if (mTolCC >= mcc) break;
 
       // deactivate the strongly correlated higher-order term
       int idx{};
@@ -334,7 +334,7 @@ void RationalFit::SolveStandardEigen(const std::vector<Point2d>& images,
       }
 
       // add weights and unbiased regularization
-      N.diagonal() += (P.array() + mR).matrix();
+      N.diagonal() += (P.array() + mRegu).matrix();
       //N.triangularView<StrictlyLower>() = N.transpose();  // selfadjointView<Upper>()
     }
     const auto& ldlt = N.ldlt();
@@ -343,7 +343,7 @@ void RationalFit::SolveStandardEigen(const std::vector<Point2d>& images,
     dx.setZero();
     x.setZero();
 
-    for (it = 0; it < mMaxIter; ++it) {
+    for (it = 0; it < mMaxTC; ++it) {
       t.setZero();
 
       for (size_t k = 0; k < count; ++k) {
@@ -353,7 +353,7 @@ void RationalFit::SolveStandardEigen(const std::vector<Point2d>& images,
       }
 
       // add weights and unbiased regularization
-      t += P.cwiseProduct(x) + dx * mR;
+      t += P.cwiseProduct(x) + dx * mRegu;
 
       dx = ldlt.solve(t); // correction to coefficients
       EnforceTrustRegions(T, dx);
@@ -361,7 +361,7 @@ void RationalFit::SolveStandardEigen(const std::vector<Point2d>& images,
       x -= dx;
       EnforceTrustRegions(T, x);
 
-      if (mTol > dx.lpNorm<Eigen::Infinity>())
+      if (mTolTC > dx.lpNorm<Eigen::Infinity>())
         break;
     }
 

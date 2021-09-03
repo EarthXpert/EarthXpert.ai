@@ -8,6 +8,8 @@
 #include "sensormodel/isensormodel.h"
 #include "sensormodel/rationalmodel.h"
 
+#include <algorithm>
+
 using namespace earthxpert;
 
 SensorCube::SensorCube(const int numHoriz, const int numVert, 
@@ -147,6 +149,23 @@ std::pair<int, int> SensorCube::CreateImageGrid(
   FillNodesByStride<double>(-mMarginCols, numCols + mMarginCols, stepCols, gridCols);
   FillNodesByStride<double>(-mMarginRows, numRows + mMarginRows, stepRows, gridRows);
 
+  // ensure the grid contains the boundary
+  auto insertValue = [](std::vector<double>& grid, const double val) {
+    auto it = std::lower_bound(grid.begin(), grid.end(), val);
+    if (val != *it)
+      grid.insert(it, val);
+  };
+
+  if (0 != mMarginCols) {
+    insertValue(gridCols, 0.0);
+    insertValue(gridCols, double(numCols));
+  }
+  if (0 != mMarginRows) {
+    insertValue(gridRows, 0.0);
+    insertValue(gridRows, double(numRows));
+  }
+
+  // mesh grid
   for (auto col : gridCols) {
     for (auto row : gridRows) {
       images.emplace_back(col, row);
