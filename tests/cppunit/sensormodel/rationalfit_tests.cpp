@@ -19,8 +19,28 @@ using namespace earthxpert;
 using namespace earthxpert::utils;
 namespace fs = std::filesystem;
 
-UPRationalModel CreateRationalModel(const ISensorModel* sensorModel, int dim, bool cc=true);
-void TestRationalFit(const std::string& inRpc, const std::string& outRpc, int dim, bool cc=true);
+UPRationalModel CreateRationalModel(const ISensorModel* sensorModel, int dim, bool cc=false);
+void TestRationalFit(const std::string& inRpc, const std::string& outRpc, int dim, bool cc=false);
+
+TEST(rationalfit, Khalifasat3) {
+  std::string inRpc{ "Imagery/Satellite/Khalifasat/KhalifaSat_20190704093359_03703_UAE 15_11121_Radio_P_rpc.txt" };
+  std::string outRpc{ "KhalifaSat_20190704093359_03703_UAE 15_11121_Radio_P0_3_rpc.txt" };
+  TestRationalFit(inRpc, outRpc, 3, false);
+
+  inRpc = "Imagery/Satellite/Khalifasat/KhalifaSat_20190704093359_03703_UAE 15_11121_Radio_P_rpc.txt";
+  outRpc = "KhalifaSat_20190704093359_03703_UAE 15_11121_Radio_P_3_rpc.txt";
+  TestRationalFit(inRpc, outRpc, 3, true);
+}
+
+TEST(rationalfit, Khalifasat4) {
+  std::string inRpc{ "Imagery/Satellite/Khalifasat/KhalifaSat_20190704093359_03703_UAE 15_11121_Radio_P_rpc.txt" };
+  std::string outRpc{ "KhalifaSat_20190704093359_03703_UAE 15_11121_Radio_P0_4_rpc.txt" };
+  TestRationalFit(inRpc, outRpc, 4, false);
+
+  inRpc = "Imagery/Satellite/Khalifasat/KhalifaSat_20190704093359_03703_UAE 15_11121_Radio_P_rpc.txt";
+  outRpc = "KhalifaSat_20190704093359_03703_UAE 15_11121_Radio_P_4_rpc.txt";
+  TestRationalFit(inRpc, outRpc, 4);
+}
 
 TEST(rationalfit, Khalifasat5) {
   std::string inRpc{ "Imagery/Satellite/Khalifasat/KhalifaSat_20190704093359_03703_UAE 15_11121_Radio_P_rpc.txt" };
@@ -29,7 +49,7 @@ TEST(rationalfit, Khalifasat5) {
 
   inRpc = "Imagery/Satellite/Khalifasat/KhalifaSat_20190704093359_03703_UAE 15_11121_Radio_P_rpc.txt";
   outRpc = "KhalifaSat_20190704093359_03703_UAE 15_11121_Radio_P_5_rpc.txt";
-  TestRationalFit(inRpc, outRpc, 5);
+  TestRationalFit(inRpc, outRpc, 5, true);
 }
 
 TEST(rationalfit, Khalifasat10) {
@@ -39,7 +59,7 @@ TEST(rationalfit, Khalifasat10) {
 
   inRpc = "Imagery/Satellite/Khalifasat/KhalifaSat_20190704093359_03703_UAE 15_11121_Radio_P_rpc.txt";
   outRpc = "KhalifaSat_20190704093359_03703_UAE 15_11121_Radio_P_10_rpc.txt";
-  TestRationalFit(inRpc, outRpc, 10);
+  TestRationalFit(inRpc, outRpc, 10, true);
 }
 
 TEST(rationalfit, Khalifasat20) {
@@ -49,7 +69,7 @@ TEST(rationalfit, Khalifasat20) {
 
   inRpc = "Imagery/Satellite/Khalifasat/KhalifaSat_20190704093359_03703_UAE 15_11121_Radio_P_rpc.txt";
   outRpc = "KhalifaSat_20190704093359_03703_UAE 15_11121_Radio_P_20_rpc.txt";
-  TestRationalFit(inRpc, outRpc, 20);
+  TestRationalFit(inRpc, outRpc, 20, true);
 }
 
 TEST(rationalfit, WV2_Stereo1B_XJ5) {
@@ -59,7 +79,7 @@ TEST(rationalfit, WV2_Stereo1B_XJ5) {
 
   inRpc = "Imagery/Satellite/WV2_Stereo1B_XJ/15AUG02052758-1BS_R1C1-054355223040_05_P003_RAW_PAN_rpc.txt";
   outRpc = "15AUG02052758-1BS_R1C1-054355223040_05_P003_RAW_PAN_5_rpc.txt";
-  TestRationalFit(inRpc, outRpc, 5);
+  TestRationalFit(inRpc, outRpc, 5, true);
 }
 
 TEST(rationalfit, WV2_Stereo1B_XJ10) {
@@ -69,7 +89,7 @@ TEST(rationalfit, WV2_Stereo1B_XJ10) {
 
   inRpc = "Imagery/Satellite/WV2_Stereo1B_XJ/15AUG02052758-1BS_R1C1-054355223040_05_P003_RAW_PAN_rpc.txt";
   outRpc = "15AUG02052758-1BS_R1C1-054355223040_05_P003_RAW_PAN_10_rpc.txt";
-  TestRationalFit(inRpc, outRpc, 10);
+  TestRationalFit(inRpc, outRpc, 10, true);
 }
 
 TEST(rationalfit, WV2_Stereo1B_XJ20) {
@@ -79,7 +99,7 @@ TEST(rationalfit, WV2_Stereo1B_XJ20) {
 
   inRpc = "Imagery/Satellite/WV2_Stereo1B_XJ/15AUG02052758-1BS_R1C1-054355223040_05_P003_RAW_PAN_rpc.txt";
   outRpc = "15AUG02052758-1BS_R1C1-054355223040_05_P003_RAW_PAN_20_rpc.txt";
-  TestRationalFit(inRpc, outRpc, 20);
+  TestRationalFit(inRpc, outRpc, 20, true);
 }
 
 UPRationalModel CreateRationalModel(const ISensorModel* sensorModel, 
@@ -91,8 +111,10 @@ UPRationalModel CreateRationalModel(const ISensorModel* sensorModel,
   sensorCube.CreateCube(sensorModel, images, grounds);
 
   RationalFit ratFit;
-  if (!cc)
-    ratFit.SetCrossCorelation(0, 0.0);
+  if (cc)
+    ratFit.SetCrossCorelation(10, 0.9);
+  else
+    ratFit.SetCrossCorelation(0, 0.9);
   auto ratModelF = ratFit.CreateRationalModel(images, grounds);
 
   auto print = [](const std::array<double, 4>& stats, const std::string& name) {
@@ -147,6 +169,7 @@ void TestRationalFit(const std::string& inRpc,
   auto ratModelF = CreateRationalModel(ratModel.get(), dim, cc); // 1st fit
   //CreateRationalModel(ratModelF.get());   // 2nd fit
 
+  if (outRpc.empty()) return;
   fs::path fitPath(TestConfig::OutputPath(outRpc));
   RemoveFile(fitPath);
   rmMarshaller.Serialize(fitPath.string(), ratModelF.get());

@@ -127,7 +127,7 @@ private:
   // algorithm control parameters
   ReguMethod mReguMethod{ eMarquad };
   double mRegu{1.0e-6};  // Tikhonov regularization: ratio as Levenberg, value as Marquad
-  int mMaxCC{ 10 }; // max. number of coefficients allowed to deactivate for cross-correlation
+  int mMaxCC{ 0 }; // max. number of coefficients allowed to deactivate for cross-correlation
   double mTolCC{ 0.9 };  // tolerance for correlation coefficient
   int mMaxTC{ 10 }; // max. number of iterations allowed for solution
   double mTolTC{ 1.0e-10 };  // tolerance for convergence of coefficients
