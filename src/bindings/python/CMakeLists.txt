@@ -21,6 +21,7 @@ endfunction()
 
 add_definitions(-DEXPYEXT_API)
 set(expyext_srcs
+  "ai.cpp"
   "blockadjust.cpp"
   "core.cpp"
   "epipolar.cpp"
@@ -32,7 +33,7 @@ set(expyext_srcs
   "sensormodel.cpp"
   "sfm.cpp"
   "utils.cpp")
-set(expyext_items ex3rdparty blockadjust colorbal core dataio 
+set(expyext_items ex3rdparty ai blockadjust colorbal core dataio 
   epipolar epipolarmodel exproject exutils frameworks imageproc 
   marshaller ortho pcproc sensormodel sfm tortho
   Boost::boost Boost::numpy Boost::python 
