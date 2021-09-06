@@ -6,7 +6,7 @@
 
 #ifdef EXGIS_API
 #if (defined _WIN32 || defined WINCE || defined __CYGWIN__)
-#define EXGUIIS_EXPORTS __declspec(dllexport)
+#define EXGIS_EXPORTS __declspec(dllexport)
 #elif defined __GNUC__ && __GNUC__ >= 4
 #define EXGIS_EXPORTS __attribute__((visibility("default")))
 #endif

@@ -75,6 +75,7 @@ add_definitions(-D_USE_MATH_DEFINES -DBOOST_ALL_DYN_LINK -DLIBXML_STATIC)
 add_definitions(-DMPFR_USE_FILE -DMPFR_USE_INTMAX_T -DMPFR_USE_VA_LIST)
 
 add_subdirectory(3rdparty)
+add_subdirectory(ai)
 add_subdirectory(app)
 add_subdirectory(bindings)
 add_subdirectory(blockadjust)
