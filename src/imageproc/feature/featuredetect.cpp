@@ -2,7 +2,7 @@
  *  Copyright (c) 2018.  All rights reserved.
  * -----------------------------------------------------------------------------
  */
-#include "sfm/sparsematch/featuredetect.h"
+#include "imageproc/feature/featuredetect.h"
 #include "3rdparty/utils/constants.h"
 #include "core/datasource/cvraster.h"
 #include "core/exceptions/exexcept.h"
@@ -16,7 +16,7 @@
 
 using namespace earthxpert;
 
-FeatureDetect::FeatureDetect(FeatureType featType, const size_t memSize) 
+FeatureDetect::FeatureDetect(const FeatureType featType, const size_t memSize) 
   : mFeatureType(featType), mMemSize(memSize) {
   Initialize();
 }

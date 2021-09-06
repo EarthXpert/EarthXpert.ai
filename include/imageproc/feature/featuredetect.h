@@ -4,11 +4,11 @@
  */
 #pragma once
 
-#include "sfm/sparsematch/ifeaturedetect.h"
+#include "imageproc/feature/ifeaturedetect.h"
 #include "3rdparty/opencv/exopencv.h"
 #include "core/system/clock.h"
 #include "core/utils/rasterwindow.h"
-#include "sfm/sparsematch/featdetectperf.h"
+#include "imageproc/feature/featdetectperf.h"
 
 namespace earthxpert {
 class IRasterReader;
@@ -17,7 +17,7 @@ class RasterReader;
 /**
  *  The class FeatureDetect implements the template methods.
  */
-class EXSFM_EXPORTS FeatureDetect : public IFeatureDetect {
+class EXIMAGEPROC_EXPORTS FeatureDetect : public IFeatureDetect {
 public:
   FeatureDetect(FeatureType featType, size_t memSize);
   FeatureDetect(const FeatureDetect&) = delete;

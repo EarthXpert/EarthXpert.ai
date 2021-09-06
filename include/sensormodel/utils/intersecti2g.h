@@ -8,6 +8,7 @@
 #include "3rdparty/ceres/exceres.h"
 #include "3rdparty/opencv/exopencv.h"
 #include "core/coretypes.h"
+#include "sensormodel/isensormodel.h"
 
 using ceres::Solver;
 

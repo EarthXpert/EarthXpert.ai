@@ -4,7 +4,7 @@
  */
 #pragma once
 
-#include "sfm/exsfm.h"
+#include "imageproc/eximageproc.h"
 
 #include <algorithm>
 #include <array>
@@ -49,5 +49,5 @@ struct FeatDetectPerf {
   }
 };
 
-std::string EXSFM_EXPORTS ToString(const FeatDetectPerf* perf);
+std::string EXIMAGEPROC_EXPORTS ToString(const FeatDetectPerf* perf);
 }
