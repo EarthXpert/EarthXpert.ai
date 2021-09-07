@@ -445,20 +445,23 @@ Tuple4d RationalModel::CalcPolynomials(const double u,
   double uvw[NumCoef];  // combinations of u, v, w for polynomial terms
   CalcTerms(u, v, w, uvw);
 
-  double Ln{}, Ld{}; // Line numerator/denominator
-  double Sn{}, Sd{}; // Sample numerator/denominator
+  auto calcPolynomial = [&uvw](const double* coefs) {
+    double p{};
+    for (int i = 0; i < NumCoef; ++i) {
+      p += coefs[i] * uvw[i];
+    }
+    return p;
+  };
 
-  for (int i = 0; i < NumCoef; ++i) {
-    Ln += lnc[i] * uvw[i];
-    Ld += ldc[i] * uvw[i];
-    Sn += snc[i] * uvw[i];
-    Sd += sdc[i] * uvw[i];
-  }
+  const double Ln = calcPolynomial(lnc); // Line numerator/denominator
+  const double Ld = calcPolynomial(ldc);
+  const double Sn = calcPolynomial(snc); // Sample numerator/denominator
+  const double Sd = calcPolynomial(sdc);
 
   if (fabs(Ld) < kTol || fabs(Sd) < kTol) 
     throw std::underflow_error(_("RationalModel: denominator is 0"));
 
-  return { Ln, Ld, Sn, Sd };
+  return std::make_tuple(Ln, Ld, Sn, Sd);
 }
 
 /**
