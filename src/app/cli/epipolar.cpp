@@ -2,6 +2,7 @@
  *  Copyright (c) 2020.  All rights reserved.
  * -----------------------------------------------------------------------------
  */
+#include "3rdparty/glog/exglog.h"
 #include "packages/exai/exaiepipolar.h"
 
 /**
@@ -36,8 +37,10 @@
  *    exepipolar.exe --sensorname="rational" --leftimg="D:/home/workspace/TestData/Imagery/Satellite/po_162796_pan/po_162796_pan_0000000.tif" --leftmdl="D:/home/workspace/TestData/Imagery/Satellite/po_162796_pan/po_162796_pan_0000000_rpc.txt" --rightimg="D:/home/workspace/TestData/Imagery/Satellite/po_162796_pan/po_162796_pan_0010000.tif" --rightmdl="D:/home/workspace/TestData/Imagery/Satellite/po_162796_pan/po_162796_pan_0010000_rpc.txt" --bands=1 --sample=1 --resample="cubic" --outdir="D:/home/workspace/build/windows/vs2019/tests/output/" --memsize=4000
  */
 int main(int argc, char** argv) {
-  earthxpert::ExaiEpipolar cmd;
+  google::InitGoogleLogging(argv[0]);
+  LOG(INFO) << "ExaiEpipolar\n";
 
+  earthxpert::ExaiEpipolar cmd;
   cmd.SetCmdArgs(argc, argv);
   cmd.Execute();
   return 0;

@@ -168,7 +168,7 @@ FillNodesByStride(const Ty start, const Ty end, const Ty stride, std::vector<Ty>
 
 template <typename Ty> inline int 
 FillNodesByStride(const Ty dim, const Ty stride, std::vector<Ty>& nodes) {
-  return FillNodesByStride(Ty(0), dim, nodes);
+  return FillNodesByStride(Ty(0), dim, stride, nodes);
 }
 
 template <> inline int
@@ -182,7 +182,7 @@ FillNodesByStride(const int start, const int end, const int stride, std::vector<
 
 template <> inline int
 FillNodesByStride(const int dim, const int stride, std::vector<int>& nodes) {
-  return FillNodesByStride<int>(0, dim, nodes);
+  return FillNodesByStride<int>(0, dim, stride, nodes);
 }
 
 /**

@@ -2,6 +2,7 @@
  *  Copyright (c) 2020.  All rights reserved.
  * -----------------------------------------------------------------------------
  */
+#include "3rdparty/glog/exglog.h"
 #include "utils/pcutils.h"
 #include "core/utils/fsutils.h"
 
@@ -37,6 +38,7 @@ void AddOptions(bpo::options_description& optDesc) {
  *    exlas2gts.exe 
  */
 int main(int argc, char** argv) {
+  google::InitGoogleLogging(argv[0]);
   bpo::options_description optDesc{ "Options" };
   AddOptions(optDesc);
 

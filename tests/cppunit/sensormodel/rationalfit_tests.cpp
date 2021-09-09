@@ -21,7 +21,7 @@ namespace fs = std::filesystem;
 
 UPRationalModel CreateRationalModel(const ISensorModel* sensorModel, int dim, bool cc=false);
 void TestRationalFit(const std::string& inRpc, const std::string& outRpc, int dim, bool cc=false);
-
+/*
 TEST(rationalfit, Khalifasat3) {
   std::string inRpc{ "Imagery/Satellite/Khalifasat/KhalifaSat_20190704093359_03703_UAE 15_11121_Radio_P_rpc.txt" };
   std::string outRpc{ "KhalifaSat_20190704093359_03703_UAE 15_11121_Radio_P0_3_rpc.txt" };
@@ -61,7 +61,7 @@ TEST(rationalfit, Khalifasat10) {
   outRpc = "KhalifaSat_20190704093359_03703_UAE 15_11121_Radio_P_10_rpc.txt";
   TestRationalFit(inRpc, outRpc, 10, true);
 }
-
+*/
 TEST(rationalfit, Khalifasat20) {
   std::string inRpc{ "Imagery/Satellite/Khalifasat/KhalifaSat_20190704093359_03703_UAE 15_11121_Radio_P_rpc.txt" };
   std::string outRpc{ "KhalifaSat_20190704093359_03703_UAE 15_11121_Radio_P0_20_rpc.txt" };
@@ -71,7 +71,7 @@ TEST(rationalfit, Khalifasat20) {
   outRpc = "KhalifaSat_20190704093359_03703_UAE 15_11121_Radio_P_20_rpc.txt";
   TestRationalFit(inRpc, outRpc, 20, true);
 }
-
+/*
 TEST(rationalfit, WV2_Stereo1B_XJ5) {
   std::string inRpc{ "Imagery/Satellite/WV2_Stereo1B_XJ/15AUG02052758-1BS_R1C1-054355223040_05_P003_RAW_PAN_rpc.txt" };
   std::string outRpc{ "15AUG02052758-1BS_R1C1-054355223040_05_P003_RAW_PAN0_5_rpc.txt" };
@@ -91,7 +91,6 @@ TEST(rationalfit, WV2_Stereo1B_XJ10) {
   outRpc = "15AUG02052758-1BS_R1C1-054355223040_05_P003_RAW_PAN_10_rpc.txt";
   TestRationalFit(inRpc, outRpc, 10, true);
 }
-
 TEST(rationalfit, WV2_Stereo1B_XJ20) {
   std::string inRpc{ "Imagery/Satellite/WV2_Stereo1B_XJ/15AUG02052758-1BS_R1C1-054355223040_05_P003_RAW_PAN_rpc.txt" };
   std::string outRpc{ "15AUG02052758-1BS_R1C1-054355223040_05_P003_RAW_PAN0_20_rpc.txt" };
@@ -101,6 +100,7 @@ TEST(rationalfit, WV2_Stereo1B_XJ20) {
   outRpc = "15AUG02052758-1BS_R1C1-054355223040_05_P003_RAW_PAN_20_rpc.txt";
   TestRationalFit(inRpc, outRpc, 20, true);
 }
+*/
 
 UPRationalModel CreateRationalModel(const ISensorModel* sensorModel, 
   const int dim, const bool cc) {
@@ -123,15 +123,15 @@ UPRationalModel CreateRationalModel(const ISensorModel* sensorModel,
   };
 
   // original accuray
-  std::array<double, 4> sstats{}, lstats{};
-  CalcStatitics(sensorModel, images, grounds, sstats, lstats);
-  print(lstats, "original model line -");
-  print(sstats, "original model samp -");
+  //std::array<double, 4> sstats{}, lstats{};
+  //CalcStatitics(sensorModel, images, grounds, sstats, lstats);
+  //print(lstats, "original model line -");
+  //print(sstats, "original model samp -");
 
   // fit accuray
   std::array<double, 4> sstatsF{}, lstatsF{};
   CalcStatitics(ratModelF.get(), images, grounds, sstatsF, lstatsF);
-  print(lstatsF, "fitted model line -");
+  print(lstatsF, "\nfitted model line -");
   print(sstatsF, "fitted model samp -");
 
   // QC cube
@@ -140,15 +140,15 @@ UPRationalModel CreateRationalModel(const ISensorModel* sensorModel,
   sensorCube.CreateCubeQC(sensorModel, imagesQC, groundsQC);
 
   // original accuracy QC
-  std::array<double, 4> sstatsQC{}, lstatsQC{};
-  CalcStatitics(sensorModel, imagesQC, groundsQC, sstatsQC, lstatsQC);
-  print(lstatsQC, "original model line QC -");
-  print(sstatsQC, "original model samp QC -");
+  //std::array<double, 4> sstatsQC{}, lstatsQC{};
+  //CalcStatitics(sensorModel, imagesQC, groundsQC, sstatsQC, lstatsQC);
+  //print(lstatsQC, "original model line QC -");
+  //print(sstatsQC, "original model samp QC -");
 
   // Fit accuracy QC
   std::array<double, 4> sstatsFQC{}, lstatsFQC{};
   CalcStatitics(ratModelF.get(), imagesQC, groundsQC, sstatsFQC, lstatsFQC);
-  print(lstatsFQC, "fitted model line QC -");
+  print(lstatsFQC, "\nfitted model line QC -");
   print(sstatsFQC, "fitted model samp QC -");
 
   return ratModelF;
@@ -162,9 +162,9 @@ void TestRationalFit(const std::string& inRpc,
   ASSERT_TRUE(ratModel);
 
   if (cc)
-    std::cout << "*** cross-correlation method ***\n";
+    std::cout << "\n*** cross-correlation method ***\n";
   else
-    std::cout << "*** standard method ***\n";
+    std::cout << "\n*** standard method ***\n";
 
   auto ratModelF = CreateRationalModel(ratModel.get(), dim, cc); // 1st fit
   //CreateRationalModel(ratModelF.get());   // 2nd fit

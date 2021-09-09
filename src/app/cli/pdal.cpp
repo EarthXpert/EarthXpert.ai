@@ -2,6 +2,7 @@
  *  Copyright (c) 2019.  All rights reserved.
  * -----------------------------------------------------------------------------
  */
+#include "3rdparty/glog/exglog.h"
 #include "packages/pdal/pdaljob.h"
 
 /**
@@ -43,6 +44,7 @@
  *    expdal pipeline D:/home/workspace/TestData/PointClouds/points_small_pdal_pipeline.json
  */
 int main(int argc, char* argv[]) {
+  google::InitGoogleLogging(argv[0]);
   earthxpert::PdalJob job;
 
   job.SetCmdArgs(argc, argv);

@@ -5,6 +5,7 @@
 #include "srcconfig.h"
 #include "3rdparty/boost/exboost.h"
 #include "3rdparty/gdal/exgdal.h"
+#include "3rdparty/glog/exglog.h"
 #include "3rdparty/utils/constants.h"
 #include "core/exceptions/exexcept.h"
 #include "core/math/rotation.h"
@@ -25,6 +26,7 @@ using namespace earthxpert::math;
 namespace bpo = boost::program_options;
 
 int main(int argc, char** argv) {
+  google::InitGoogleLogging(argv[0]);
   // get full path of command line app by name
   std::string exe_path = SdkConfig::BinPath("exgeoinfo");
   std::cerr << "Full path: " << exe_path << std::endl;

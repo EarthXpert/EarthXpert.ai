@@ -18,7 +18,7 @@ set(marshaller_srcs
   "support/supportmarshaller.cpp"
   "utils/utils.cpp")
 set(marshaller_items ex3rdparty core epipolarmodel exproject sensormodel
-  ${GDAL_LIBRARIES} ${ICONV_LIBRARIES} ${LIBXML2_LIBRARIES})
+  ${GDAL_LIBRARIES} glog::glog ${ICONV_LIBRARIES} ${LIBXML2_LIBRARIES})
 exai_add_library(marshaller "api"
   SRCS ${marshaller_srcs}
   ITEMS ${marshaller_items})
