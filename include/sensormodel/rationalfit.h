@@ -71,7 +71,7 @@ public:
     mRegu = regu;
   }
 
-  void SetCrossCorelation(const int maxIter, const double tol) {
+  void SetCrossCorelation(const int maxIter, const double tol=0.9) {
     mMaxCC = maxIter;
     mTolCC = tol;
   }

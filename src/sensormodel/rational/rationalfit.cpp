@@ -171,7 +171,7 @@ UPRationalModel RationalFit::CreateRationalModel(
   }
 
   // Convert row/col coordinates from raster CS to indices.
-  // The RPCs internally uses the pixel centre as the origin.                                                         */
+  // The RPCs internally uses the pixel centre as the origin.
   std::vector<Point2d> imgs0;
   std::transform(images.cbegin(), images.cend(), std::back_inserter(imgs0),
     [](const Point2f& img) -> Point2d { return (img - 0.5f); });
@@ -470,8 +470,7 @@ void RationalFit::EnforceTrustRegions(const EigVec<double, kNumUnks_STD>& T,
   assert(n == T.rows());
 
   for (int i = 0; i < n; ++i) {
-    if (fabs(x[i]) > T[i]) {
+    if (fabs(x[i]) > T[i]) 
       x[i] = std::copysign(T[i], x[i]);
-    }
   }
 }
