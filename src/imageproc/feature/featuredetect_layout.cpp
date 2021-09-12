@@ -2,7 +2,7 @@
  *  Copyright (c) 2018.  All rights reserved.
  * -----------------------------------------------------------------------------
  */
-#include "sfm/sparsematch/featuredetect.h"
+#include "imageproc/feature/featuredetect.h"
 #include "3rdparty/utils/constants.h"
 #include "core/exceptions/exexcept.h"
 #include "core/math/math.h"

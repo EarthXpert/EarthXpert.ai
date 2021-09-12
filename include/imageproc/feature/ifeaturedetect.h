@@ -4,7 +4,7 @@
  */
 #pragma once
 
-#include "sfm/exsfm.h"
+#include "imageproc/eximageproc.h"
 
 #include <memory>
 
@@ -12,7 +12,7 @@ namespace earthxpert {
 /**
  *  The interface IFeatureDetect defines the behaviours of feature detection algorithms.
  */
-class EXSFM_EXPORTS IFeatureDetect {
+class EXIMAGEPROC_EXPORTS IFeatureDetect {
 public:
   enum FeatureType {
     eHARRIS,

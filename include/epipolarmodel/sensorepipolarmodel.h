@@ -240,8 +240,12 @@ public:
   /**
    *  \return Returns the middle height
    */
-  virtual double GetMeanHeight() const noexcept override { 
+  virtual float GetMeanHeight() const noexcept override { 
     return mSensorModel->GetMeanHeight(); 
+  }
+
+  std::pair<float, float> GetHeightRange() const noexcept override {
+    return { 0.0f, 0.0f };
   }
 
 protected:

@@ -119,6 +119,10 @@ bool CvRaster::operator!=(const CvRaster& rhs) const {
   return !(operator==(rhs));
 }
 
+void CvRaster::Swap(CvRaster& rhs) noexcept {
+  assert(false && "not implemneted");
+}
+
 void CvRaster::ObtainMatInfo() {
   mNumBands = CV_MAT_CN(mDataType);
   mBpb = CV_ELEM_SIZE1(mDataType);

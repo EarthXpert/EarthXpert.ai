@@ -21,6 +21,8 @@ set(core_srcs
   "formats/support/wv/wvsupportdata.cpp"
   "formats/support/zy3/zy3supportdata.cpp"
   "log/exlog.cpp"
+  "math/math.cpp"
+  "math/mutils.cpp"
   "math/graphics/graphfit.cpp"
   "math/graphics/intersect.cpp"
   "math/graphics/rotation.cpp"

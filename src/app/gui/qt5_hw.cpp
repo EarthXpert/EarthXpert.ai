@@ -48,6 +48,7 @@
 **
 ****************************************************************************/
 
+#include "3rdparty/glog/exglog.h"
 #include "mainwindow.h"
 #include "gui/qt/singleinstance.h"
 #include <QApplication>
@@ -55,6 +56,7 @@
 using earthxpert::SingleInstanceQt;
 
 int main(int argc, char *argv[]) {
+  google::InitGoogleLogging(argv[0]);
   SingleInstanceQt instance("exai.qt5_hw");
   if (!instance.TryToRun())
     return 0;

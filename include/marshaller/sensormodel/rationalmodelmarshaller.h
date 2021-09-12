@@ -94,9 +94,9 @@ private:
   std::unique_ptr<RationalModel> DeserializeRpc(std::istream& inStream);
 
   void InsertCoefs(std::ostream& outStream,
-    const std::array<double, RationalModel::NumCoef>& coefs);
+    const std::array<double, rpc::NumCoef>& coefs);
   void ExtractCoefs(std::istream& inStream,
-    std::array<double, RationalModel::NumCoef>& coefs);
+    std::array<double, rpc::NumCoef>& coefs);
 };
 
 using RMFormat = RationalModelMarshaller::RMFormat;

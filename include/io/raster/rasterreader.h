@@ -196,6 +196,12 @@ public:
    */
    //std::unique_ptr<IPyramidReader> GetPyramidReader();
 
+  int GetNumPyramidLevels() const {
+    return 0; //mDataset->GetOverviewCount();
+  }
+
+  //void ReadPyramid();
+
 private:
   void Initialize(GDALDataset* dataset);
 

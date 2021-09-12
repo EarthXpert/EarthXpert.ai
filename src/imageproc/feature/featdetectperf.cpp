@@ -2,7 +2,7 @@
  *  Copyright (c) 2020.  All rights reserved.
  * -----------------------------------------------------------------------------
  */
-#include "sfm/sparsematch/featdetectperf.h"
+#include "imageproc/feature/featdetectperf.h"
 
 #include <boost/format.hpp>
 #include <numeric>

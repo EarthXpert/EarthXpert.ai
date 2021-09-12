@@ -142,7 +142,7 @@ void StereoModel_I2G_IntersectOMP() {
   auto cube = CreateCube(leftModel.get(), rightModel.get());
 
   auto nfcL = leftModel->GetNormalFactors();
-  Point3d origin(nfcL[rnf::eOLON], nfcL[rnf::eOLAT], nfcL[rnf::eOHGT]);
+  Point3d origin(nfcL[rfi::eOLON], nfcL[rfi::eOLAT], nfcL[rfi::eOHGT]);
   auto ee = std::make_shared<EarthEllipsoid>();
   ee->SetLsrOrigin(Deg2Rad(origin));
 
@@ -258,20 +258,20 @@ void I2G_CubeOMP(const StereoModel& sm, const std::vector<Point3d>& cube) {
 
 std::vector<Point3d> CreateCube(const RationalModel* leftModel, const RationalModel* rightModel) {
   auto nfcL = leftModel->GetNormalFactors();
-  const auto minLonL = nfcL[rnf::eOLON] - nfcL[rnf::eSLON] * kFactor;
-  const auto maxLonL = nfcL[rnf::eOLON] + nfcL[rnf::eSLON] * kFactor;
-  const auto minLatL = nfcL[rnf::eOLAT] - nfcL[rnf::eSLAT] * kFactor;
-  const auto maxLatL = nfcL[rnf::eOLAT] + nfcL[rnf::eSLAT] * kFactor;
-  const auto minHgtL = nfcL[rnf::eOHGT] - nfcL[rnf::eSHGT] * kFactor;
-  const auto maxHgtL = nfcL[rnf::eOHGT] + nfcL[rnf::eSHGT] * kFactor;
+  const auto minLonL = nfcL[rfi::eOLON] - nfcL[rfi::eSLON] * kFactor;
+  const auto maxLonL = nfcL[rfi::eOLON] + nfcL[rfi::eSLON] * kFactor;
+  const auto minLatL = nfcL[rfi::eOLAT] - nfcL[rfi::eSLAT] * kFactor;
+  const auto maxLatL = nfcL[rfi::eOLAT] + nfcL[rfi::eSLAT] * kFactor;
+  const auto minHgtL = nfcL[rfi::eOHGT] - nfcL[rfi::eSHGT] * kFactor;
+  const auto maxHgtL = nfcL[rfi::eOHGT] + nfcL[rfi::eSHGT] * kFactor;
 
   auto nfcR = rightModel->GetNormalFactors();
-  const auto minLonR = nfcR[rnf::eOLON] - nfcR[rnf::eSLON] * kFactor;
-  const auto maxLonR = nfcR[rnf::eOLON] + nfcR[rnf::eSLON] * kFactor;
-  const auto minLatR = nfcR[rnf::eOLAT] - nfcR[rnf::eSLAT] * kFactor;
-  const auto maxLatR = nfcR[rnf::eOLAT] + nfcR[rnf::eSLAT] * kFactor;
-  const auto minHgtR = nfcR[rnf::eOHGT] - nfcR[rnf::eSHGT] * kFactor;
-  const auto maxHgtR = nfcR[rnf::eOHGT] + nfcR[rnf::eSHGT] * kFactor;
+  const auto minLonR = nfcR[rfi::eOLON] - nfcR[rfi::eSLON] * kFactor;
+  const auto maxLonR = nfcR[rfi::eOLON] + nfcR[rfi::eSLON] * kFactor;
+  const auto minLatR = nfcR[rfi::eOLAT] - nfcR[rfi::eSLAT] * kFactor;
+  const auto maxLatR = nfcR[rfi::eOLAT] + nfcR[rfi::eSLAT] * kFactor;
+  const auto minHgtR = nfcR[rfi::eOHGT] - nfcR[rfi::eSHGT] * kFactor;
+  const auto maxHgtR = nfcR[rfi::eOHGT] + nfcR[rfi::eSHGT] * kFactor;
 
   const auto minLon = std::max(minLonL, minLonR);
   const auto maxLon = std::min(maxLonL, maxLonR);
@@ -299,7 +299,7 @@ std::vector<Point3d> CreateCube(const RationalModel* leftModel, const RationalMo
 }
 
 std::unique_ptr<RationalModel> CreateRationalModelLeft() {
-  std::array<double, rnf::NumFact> normalFators{
+  std::array<double, rfi::NumFact> normalFators{
     11086, 9371, 34.6557, 109.2114, 396, 11524, 9637, 0.0508, 0.0522, 501 };
   std::array<double, rfm::NumCoef> lineNumCoef{
     +1.521921E-03, +1.474600E-02, -9.778159E-01, +3.780369E-02,
@@ -335,7 +335,7 @@ std::unique_ptr<RationalModel> CreateRationalModelLeft() {
 }
 
 std::unique_ptr<RationalModel> CreateRationalModelRight() {
-  std::array<double, rnf::NumFact> normalFators{
+  std::array<double, rfi::NumFact> normalFators{
       11064, 9370, 34.6557, 109.2114, 396, 11596, 9879, 0.0508, 0.0522, 501 };
   std::array<double, rfm::NumCoef> lineNumCoef{
     +3.735476E-03, +1.464924E-02, -9.717309E-01, -4.376065E-02,

@@ -20,11 +20,11 @@ set(sensormodel_srcs
   "pushbroom/scannerepcorr.cpp"
   "pushbroom/scannerimagemodel.cpp"
   "pushbroom/scannerip.cpp"
+  "rational/rationalfit.cpp"
   "rational/rationalmodel.cpp"
   "rational/rationalmodel_cuda.cpp"
   "rational/rationalmodel_opencl.cpp"
   "rational/rationalmodel_simd.cpp"
-  "rational/rationalmodelfactory.cpp"
   "rational/rationalstereomodel.cpp"
   "rational/rmutils.cpp"
   "rollingshutter/rollingshuttermodel.cpp"
@@ -48,7 +48,7 @@ set(sensormodel_srcs
   "./sensormodel.cpp"
   "./sensormodelfactory.cpp")
 set(sensormodel_items ex3rdparty core
-  ${GDAL_LIBRARIES} ${geotrans_LIBRARIES} ${OpenCV_LIBS})
+  ${GDAL_LIBRARIES} ${geotrans_LIBRARIES} glog::glog ${OpenCV_LIBS})
 exai_add_library(sensormodel "api"
   SRCS ${sensormodel_srcs}
   ITEMS ${sensormodel_items})

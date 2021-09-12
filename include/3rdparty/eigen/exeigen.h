@@ -6,7 +6,27 @@
 
 #include "3rdparty/ex3rdparty.h"
 
+#include <cassert>
+#include <tuple>
 #include <Eigen/Eigen>
+
+template<typename Ty, int nrows, int ncols>
+using EigMat = Eigen::Matrix<Ty, nrows, ncols>;
+template<typename Ty, int nrows, int ncols>
+using EigMatR = Eigen::Matrix<Ty, nrows, ncols, Eigen::RowMajor>;
+template<typename Ty, int nrows>
+using EigVec = Eigen::Matrix<Ty, nrows, 1>;
+template<typename Ty, int ncols>
+using EigVecR = Eigen::Matrix<Ty, 1, ncols, Eigen::RowMajor>;
+
+template<typename Ty>
+using EigMatX = Eigen::Matrix<Ty, Eigen::Dynamic, Eigen::Dynamic>;
+template<typename Ty>
+using EigMatXR = Eigen::Matrix<Ty, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor>;
+template<typename Ty>
+using EigVecX = Eigen::Matrix<Ty, Eigen::Dynamic, 1>;
+template<typename Ty>
+using EigVecXR = Eigen::Matrix<Ty, 1, Eigen::Dynamic, Eigen::RowMajor>;
 
 using EigTri = Eigen::Triplet<double>;
 
@@ -45,6 +65,52 @@ template<typename MatTy, typename VecTy1, typename VecTy2>
 inline auto RelativeErr(const MatTy& A, const VecTy1& x, 
   const VecTy2& b) -> typename MatTy::Scalar {
   return (A * x - b).norm() / b.norm();
+}
+
+/**
+ *  N.triangularView<Upper>() = A.transpose() * A;
+ */
+template<typename Ty, Eigen::UpLoType upLo=Eigen::Upper>
+EigMatXR<Ty> AtA(const EigMatXR<Ty>& A) {
+  const int nrows = A.rows();
+  const int ncols = A.cols();
+  EigMatXR<Ty> N = EigMatXR<Ty>::zeros(ncols, ncols);
+
+  for (int i = 0; i < ncols; ++i) {
+    for (int j = i; j < ncols; ++j) {
+      for (int k = 0; k < nrows; ++k) {
+        N(i, j) += A(k, i) * A(k, j);
+      }
+    }
+  }
+  return N;
+}
+
+/**
+ *  \param [in] N a symetric square matrix
+ * 
+ *  \return (max_correlation_coef, row_loc, col_loc)
+ */
+template<typename MatTy>
+inline std::tuple<double, int, int> LocateMaxCorrelation(const MatTy& N) {
+  const int dim = N.rows();
+  assert(dim == N.cols());
+  EigMatXR<double> cf = N.inverse().eval();   // cofactor
+  const EigVecX<double> cfd = cf.diagonal().array().sqrt();
+
+  int rl{}, cl{};
+  double mcc{};
+  for (int i = 0; i < dim; ++i) {
+    for (int j = i + 1; j < dim; ++j) { // strict upper triangle
+      cf(i, j) /= cfd[i] * cfd[j];
+      if (mcc >= cf(i, j)) continue;
+      mcc = cf(i, j);
+      rl = i;
+      cl = j;
+    }
+  }
+  //std::cout << cf << std::endl;
+  return std::make_tuple(mcc, rl, cl);
 }
 
 /**

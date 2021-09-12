@@ -16,7 +16,7 @@ namespace earthxpert {
  *  \tparam Ty value type such as float, double
  *  \todo represent node position suing Point_<Ty>
  */
-template <typename Ty> class EXSENSORMODEL_EXPORTS DistortionGrid {
+template <typename Ty> class EXSENSORMODEL_EXPORTS DistortionGrid final {
   static_assert(std::is_floating_point_v<Ty>, "Requires that template argument be floating data type");
 
 public:

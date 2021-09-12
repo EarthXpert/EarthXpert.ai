@@ -81,6 +81,7 @@ void RasterWriter::Initialize(GDALDataset* dataset, const std::vector<int>& band
  */
 void RasterWriter::SetMetadata(const RasterMetadata* metaData) {
   std::unique_lock<std::shared_mutex> lock(mMutex);
+  //mDataset->SetMetadata();
 }
 
 /**
@@ -248,7 +249,8 @@ void RasterWriter::WriteBand(GDALRasterBand* band, const RasterWindow& writeWin,
  *  \brief Generate downsampled image overviews.
  */
 void RasterWriter::BuildPyramids() {
-
+  std::unique_lock<std::shared_mutex> lock(mMutex);
+  //mDataset->BuildOverviews();
 }
 
 /**

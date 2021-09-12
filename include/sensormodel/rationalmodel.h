@@ -64,24 +64,13 @@ namespace earthxpert {
  */
 class EXSENSORMODEL_EXPORTS RationalModel /*final*/ : public SensorModel {
 public:
+  using nfi = NormalFactorIndex;  // index of normalization factors
+  using nfa = NormalFactorArray;
+
   enum {
     eModelType = ModelType::eMT_RATIONAL
   };
-
-  // index of normalization factors
-  using NormalizationFactor = NormalizationFactor;
-
-  // index of inversed scale factors
-  enum InvScaleFactor {
-    eISLINE = 0,   // line inversed scale
-    eISSAMP = 1,   // sample inversed scale
-    eISLAT = 2,    // latitude inversed scale
-    eISLON = 3,    // longitude inversed scale
-    eISHGT = 4,    // height inversed scale
-    NumInvScl = 5  // number of inversed scales
-  };
-  using isf = InvScaleFactor;
-
+  
   // index of 3rd-order polynomial coefficients
   // The order of terms is from NITF RPC00B standard (STDI-0002).
   enum PolyCoeff3rd {
@@ -108,6 +97,8 @@ public:
     NumCoef = 20 // number of coefficients of 3rd-order polynomial
   };
 
+  using PolyCoefArray = std::array<double, NumCoef>;
+
   // index of 2nd-order corrrection polynomial coefficients
   enum CorrCoeff {
     eCO = 0,    // correction offset
@@ -132,26 +123,21 @@ public:
    *
    *  \param [in] numCols Image width [pixel], specifying as 0 if unknown.
    *  \param [in] numRows Image height [pixel], specifying as 0 if unknown.
-   *  \param [in] normalization factors including offsets & scales
-   *  \param [in] numerator polynomial of line formulae
-   *  \param [in] denominator polynomial of line formulae
-   *  \param [in] numerator polynomial of sample formulae
-   *  \param [in] denominator polynomial of sample formulae
+   *  \param [in] normalFators normalization factors including offsets & scales
+   *  \param [in] lineNumCoef numerator polynomial of line formulae
+   *  \param [in] lineDenCoef denominator polynomial of line formulae
+   *  \param [in] sampNumCoef numerator polynomial of sample formulae
+   *  \param [in] sampDenCoef denominator polynomial of sample formulae
    *  \param [in] groundSRS ground coordinate system
    */
-  RationalModel(int numCols, int numRows,
-    const std::array<double, NumFact> &normalFators,
-    const std::array<double, NumCoef> &lineNumCoef,
-    const std::array<double, NumCoef> &lineDenCoef,
-    const std::array<double, NumCoef> &sampNumCoef,
-    const std::array<double, NumCoef> &sampDenCoef,
+  RationalModel(int numCols, int numRows, const NormalFactorArray &normalFators,
+    const PolyCoefArray &lineNumCoef, const PolyCoefArray &lineDenCoef,
+    const PolyCoefArray &sampNumCoef, const PolyCoefArray &sampDenCoef,
     std::shared_ptr<OGRSpatialRef> groundSRS);
 
-  RationalModel(const std::array<double, NumFact> &normalFators,
-    const std::array<double, NumCoef> &lineNumCoef,
-    const std::array<double, NumCoef> &lineDenCoef,
-    const std::array<double, NumCoef> &sampNumCoef,
-    const std::array<double, NumCoef> &sampDenCoef,
+  RationalModel(const NormalFactorArray &normalFators,
+    const PolyCoefArray &lineNumCoef, const PolyCoefArray &lineDenCoef,
+    const PolyCoefArray &sampNumCoef, const PolyCoefArray &sampDenCoef,
     std::shared_ptr<OGRSpatialRef> groundSRS);
 
   RationalModel(const RationalModel &rhs);
@@ -232,7 +218,14 @@ public:
   /**
    *  \return Returns the middle height
    */
-  double GetMeanHeight() const noexcept { return mNormalFactors[eOHGT]; }
+  float GetMeanHeight() const noexcept override { 
+    return float(mNormalFactors[eOHGT]); 
+  }
+
+  std::pair<float, float> GetHeightRange() const noexcept override {
+    return { float(mNormalFactors[eOHGT] - mNormalFactors[eSHGT]),
+      float(mNormalFactors[eOHGT] + mNormalFactors[eSHGT]) };
+  }
 
   /**
    *  \brief Get normalization factors including offsets & scales.
@@ -302,19 +295,13 @@ private:
   static constexpr double kTol_d = 0.1; // tolerance proportional to visual ground range
 
   // rational polynomial coefficients
-  std::array<double, NumFact>
-      mNormalFactors{}; // normalization factors including offsets & scales
-  std::array<double, NumCoef>
-      mLineNumCoef{}; // numerator polynomial of line formulae
-  std::array<double, NumCoef>
-      mLineDenCoef{}; // denominator polynomial of line formulae
-  std::array<double, NumCoef>
-      mSampNumCoef{}; // numerator polynomial of sample formulae
-  std::array<double, NumCoef>
-      mSampDenCoef{}; // denominator polynomial of sample formulae
+  NormalFactorArray mNormalFactors{}; // normalization factors including offsets & scales
+  PolyCoefArray mLineNumCoef{}; // numerator polynomial of line formulae
+  PolyCoefArray mLineDenCoef{}; // denominator polynomial of line formulae
+  PolyCoefArray mSampNumCoef{}; // numerator polynomial of sample formulae
+  PolyCoefArray mSampDenCoef{}; // denominator polynomial of sample formulae
 
-  std::shared_ptr<OGRSpatialRef>
-      mGroundSRS{}; // Ground coordinate system
+  std::shared_ptr<OGRSpatialRef> mGroundSRS{}; // Ground coordinate system
 
   int mNumCols{}; // number of columns of the image product
   int mNumRows{}; // number of rows of the image product
@@ -406,11 +393,6 @@ private:
     return VirtualToSensor(uvw, sensor);
   }
 
-  void CalcTerms(const Point3d &uvw, double *const LPH) const {
-    CalcTerms(uvw.x, uvw.y, uvw.z, LPH);
-  }
-  void CalcTerms(double u, double v, double w, double *const uvw) const;
-
   Tuple4d CalcPolynomials(const Point3d &uvw) const {
     return CalcPolynomials(uvw.x, uvw.y, uvw.z);
   }
@@ -438,16 +420,17 @@ private:
   const double* const lnc{ mLineNumCoef.data() };
   const double* const ldc{ mLineDenCoef.data() };
 
-  std::array<double, NumInvScl> mInvScale{1.0}; // reciprocal of scale factors
+  std::array<double, NumSclFact> mInvScale{1.0}; // reciprocal of scale factors
   
   // interpolation cube to provide approximate X, Y coordinates for ImageToGround()
   std::unique_ptr<InterpCubeD> mCubeS2G; 
   void BuildCubeS2G();
 };
 
-using rnf = NormalizationFactor;
-using risf = RationalModel::InvScaleFactor;
+using rfi = NormalFactorIndex;
+using rfa = NormalFactorArray;
 using rpc = RationalModel::PolyCoeff3rd;
+using rpa = RationalModel::PolyCoefArray;
 using rcc = RationalModel::CorrCoeff;
 using rca = RationalModel::CorrAlgo;
 using UPRationalModel = std::unique_ptr<RationalModel>;

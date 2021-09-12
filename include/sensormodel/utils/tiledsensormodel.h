@@ -99,7 +99,9 @@ public:
    /**
     *  \return Returns the middle height
     */
-  double GetMeanHeight() const noexcept override;
+  float GetMeanHeight() const noexcept override;
+
+  std::pair<float, float> GetHeightRange() const noexcept override;
 
   int GetNumTiles() const noexcept { return mNumTiles; }
 

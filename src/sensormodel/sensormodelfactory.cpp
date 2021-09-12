@@ -4,7 +4,9 @@
  */
 #include "sensormodel/sensormodelfactory.h"
 #include "core/exceptions/exexcept.h"
+#include "sensormodel/rationalfit.h"
 #include "sensormodel/utils/sensorcube.h"
+#include "sensormodel/utils/smutils.h"
 
 using namespace earthxpert;
 
@@ -45,23 +47,39 @@ SensorModelFactory::CreateFilmFrameModel() {
  */
 std::unique_ptr<RationalModel> 
 SensorModelFactory::CreateRationalModel(const ISensorModel* sensorModel) {
-  std::array<double, rnf::NumFact> normalFators;
   int numHoriz{ kNUMINT }, numVert{ kNUMINT }, numLayers{ kNUMINT };
   CubeType cubeType{ CubeType::eMODEL };
-  SensorCube sensorCube(normalFators, numHoriz, numVert, numLayers, cubeType);
+  SensorCube sensorCube(numHoriz, numVert, numLayers, cubeType);
+  sensorCube.SetMargins(100, 100);
 
+  // fit cube
   std::vector<Point2f> images;
   std::vector<Point3d> grounds;
   sensorCube.CreateCube(sensorModel, images, grounds);
 
-  //RationalFit ratFit;
+  RationalFit ratFit;
+  auto ratModelF = ratFit.CreateRationalModel(images, grounds);
+
+  // original accuracy
+  std::array<double, 4> sstats{}, lstats{};
+  CalcStatitics(sensorModel, images, grounds, sstats, lstats);
 
   // Fit accuracy
+  std::array<double, 4> sstatsF{}, lstatsF{};
+  CalcStatitics(ratModelF.get(), images, grounds, sstatsF, lstatsF);
 
-  // QC accuracy
+  // QC cube
   std::vector<Point2f> imagesQC;
   std::vector<Point3d> groundsQC;
   sensorCube.CreateCubeQC(sensorModel, imagesQC, groundsQC);
 
-  return std::unique_ptr<RationalModel>();
+  // original accuracy QC
+  std::array<double, 4> sstatsQC{}, lstatsQC{};
+  CalcStatitics(sensorModel, imagesQC, groundsQC, sstatsQC, lstatsQC);
+
+  // Fit accuracy QC
+  std::array<double, 4> sstatsFQC{}, lstatsFQC{};
+  CalcStatitics(ratModelF.get(), imagesQC, groundsQC, sstatsFQC, lstatsFQC);
+
+  return ratModelF;
 }

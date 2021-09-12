@@ -148,6 +148,8 @@ public:
    */
   size_t GetSizeBytes() const { return sizeof(Ty) * mNumX * mNumY * mDim; }
 
+  void Swap(InterpGrid& rhs) noexcept;
+
 private:
   unsigned mDim{1};   // Dimension of node points stored in the grid.
   unsigned mNumX{0};  // Number of grid nodes in the x-dimension
@@ -189,3 +191,11 @@ using InterpGridD = InterpGrid<double>;
 
 #include "detail/interpgrid.hh"
 } // namespace earthxpert
+
+namespace std {
+template<typename Ty>
+void swap(earthxpert::InterpGrid<Ty>& lhs, 
+  earthxpert::InterpGrid<Ty>& rhs) noexcept {
+  lhs.Swap(rhs);
+}
+}

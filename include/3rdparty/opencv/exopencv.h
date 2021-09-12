@@ -11,6 +11,7 @@
 #include <opencv2/core/mat.hpp>
 #include <cmath>
 #include <type_traits>
+#include <vector>
 
 namespace x2d = cv::xfeatures2d;
 
@@ -20,7 +21,7 @@ constexpr size_t kNumDepth = 8;
 
 template<typename Ty> inline
 cv::Point_<Ty> operator+(const cv::Point_<Ty>& p, const Ty v) {
-  return {p.x + v, p.y + v};
+  return { p.x + v, p.y + v };
 }
 
 template<typename Ty> inline
@@ -35,6 +36,9 @@ using Point3d = cv::Point3d;
 using Point2i = cv::Point2i;
 using Point3i = cv::Point3i;
 using Rect2i = cv::Rect2i;
+
+template<typename Ty>
+constexpr int kPointDim = sizeof(Ty) / sizeof(Ty::value_type);
 
 inline Point2d xabs(const Point2d& p) {
   return Point2d(fabs(p.x), fabs(p.y));

@@ -15,7 +15,7 @@ function(exai_add_test name tests_dir)
       CXX_STANDARD 17
       DEBUG_POSTFIX "${EXAI_DEBUG_POSTFIX}")
   target_link_libraries(${name}
-    ${GETTEXT_LIBRARY} ${GTEST_BOTH_LIBRARIES} ${SLTBENCH_LIBRARIES} ${vld_LIBRARIES}
+    ${GETTEXT_LIBRARY} glog::glog ${GTEST_BOTH_LIBRARIES} ${SLTBENCH_LIBRARIES} ${vld_LIBRARIES}
     ${ARGN})
   add_test(NAME ${name} 
     COMMAND $<TARGET_FILE:${name}>)

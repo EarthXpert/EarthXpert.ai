@@ -18,8 +18,7 @@ namespace earthxpert {
  * The class EarthEllipsoid implements coordinate conversion of the ellipsoids
  * for ECEF/ECF coordinate frame.
  */
-class EXCORE_EXPORTS EarthEllipsoid
-{
+class EXCORE_EXPORTS EarthEllipsoid final {
 public:
   EarthEllipsoid(const std::string& wkt, const Point3d& origin=Point3d());
   EarthEllipsoid(double semiMajor = kWGS84_A, 
@@ -38,6 +37,7 @@ public:
   std::unique_ptr<EarthEllipsoid> Clone() const;
 
   double GetSemiMajor() const noexcept;
+  double GetSemiMinor() const noexcept;
   double GetEccSquared() const noexcept;
 
   inline Point3d LPHToXYZ(const Point3d& lph) const;

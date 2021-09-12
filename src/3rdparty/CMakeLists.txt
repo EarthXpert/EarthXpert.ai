@@ -60,6 +60,7 @@ set(ex3rdparty_srcs
   "glog/exglog.cpp"
   "gnu_gsl/exgnu_gsl.cpp"
   "gsl/exgsl.cpp"
+  "gte/exgte.cpp"
   "gtest/exgtest.cpp"
   "gts/exgts.cpp"
   "gts/delaunay2d.cpp"
@@ -67,6 +68,7 @@ set(ex3rdparty_srcs
   "interpolate/exinterpolate.cpp"
   "lapack/exlapack.cpp"
   "laslib/exlaslib.cpp"
+  "magic_enum/exmagic_enum.cpp"
   "matplotlib/exmatplotlib.cpp"
   "mpfr/exmpfr.cpp"
   "mpir/exmpir.cpp"
@@ -107,8 +109,8 @@ set(ex3rdparty_items Boost::boost Boost::date_time Boost::filesystem
   ${CERES_LIBRARY} ${CGAL_LIBRARIES} ${CUDA_LIBRARIES} ${exiv2_LIBRARIES} ${GDAL_LIBRARIES}
   ${Geogram_LIBRARIES} ${geos_LIBRARIES} ${geotiff_LIBRARIES} ${geotrans_LIBRARIES} ${GLIB_LIBRARIES} glog::glog 
   ${gsl_LIBRARIES} ${GTEST_BOTH_LIBRARIES} ${GTS_LIBRARIES} ${ICONV_LIBRARIES} 
-  ${lapack_LIBRARIES} ${LASLIB_LIBRARY} 
-  libInterpolate::Interpolate ${LIBXML2_LIBRARIES} ${MPFR4_LIBRARIES} ${MPIR_LIBRARIES} 
+  ${lapack_LIBRARIES} ${LASLIB_LIBRARY} libInterpolate::Interpolate ${LIBXML2_LIBRARIES}
+  magic_enum::magic_enum ${MPFR4_LIBRARIES} ${MPIR_LIBRARIES} 
   ${OpenBLAS_LIBRARIES} ${OpenCL_LIBRARIES} ${OpenCV_LIBS} ${OpenEXR_LIBS} 
   OpenImageIO::OpenImageIO OpenImageIO::OpenImageIO_Util 
   ${nsimd_LIBRARIES} ${PCRE_LIBRARIES} ${PDAL_LIBRARIES} ${proj_LIBRARIES} ${Protobuf_LIBRARIES} 

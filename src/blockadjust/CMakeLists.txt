@@ -34,7 +34,7 @@ set(blockadjust_srcs
   "sar/sarbbaparam.cpp")
 set(blockadjust_items ex3rdparty core exproject sensormodel
   Boost::boost Boost::filesystem Boost::iostreams
-  ${CERES_LIBRARY} ${CGAL_LIBRARIES} ${GDAL_LIBRARIES} ${geotrans_LIBRARIES} 
+  ${CERES_LIBRARY} ${CGAL_LIBRARIES} ${GDAL_LIBRARIES} ${geotrans_LIBRARIES} glog::glog
   ${ICONV_LIBRARIES} ${LIBXML2_LIBRARIES} 
   ${MPFR4_LIBRARIES} ${MPIR_LIBRARIES} ${OpenCV_LIBS})
 exai_add_library(blockadjust "api"

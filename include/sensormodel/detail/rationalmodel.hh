@@ -23,8 +23,8 @@ inline Point2d RationalModel::ImageApparantToActual(const Point2d& image) const 
 }
 
 inline Point2d RationalModel::ImageApparantToSensor(const Point2d& image) const {
-  return { (image.x - nfc[eOSAMP]) * mInvScale[eISSAMP],
-           (image.y - nfc[eOLINE]) * mInvScale[eISLINE] };
+  return { (image.x - nfc[eOSAMP]) * mInvScale[eSAMP],
+           (image.y - nfc[eOLINE]) * mInvScale[eLINE] };
 }
 
 inline Point2d RationalModel::ImageToSensor(const Point2d& image) const {
@@ -44,9 +44,9 @@ inline Point2d RationalModel::SensorToImageActual(const Point2d& sensor) const {
 }
 
 inline Point3d RationalModel::GroundToVirtual(const Point3d& ground) const {
-  return { (ground.x - nfc[eOLON]) * mInvScale[eISLON],
-           (ground.y - nfc[eOLAT]) * mInvScale[eISLAT],
-           (ground.z - nfc[eOHGT]) * mInvScale[eISHGT] };
+  return { (ground.x - nfc[eOLON]) * mInvScale[eLON],
+           (ground.y - nfc[eOLAT]) * mInvScale[eLAT],
+           (ground.z - nfc[eOHGT]) * mInvScale[eHGT] };
 }
 
 inline bool RationalModel::VirtualToSensor(const Point3d& uvw, Point2d& sensor) const {

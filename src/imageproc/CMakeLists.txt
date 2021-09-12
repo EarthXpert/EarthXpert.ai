@@ -8,10 +8,15 @@ set(imageproc_srcs
   "algorithm/wallisfilter.cpp"
   "algorithm/waterbodydetect.cpp"
   "algorithm/superres.cpp"
+  "feature/buildingdetect.cpp"
+  "feature/featdetectperf.cpp"
+  "feature/featuredetect.cpp"
+  "feature/featuredetect_layout.cpp"
+  "feature/roaddetect.cpp"
   "filter/atcomp.cpp"
   "filter/imagefilter.cpp"
   "utils/utils.cpp")
-set(imageproc_items ex3rdparty core  
+set(imageproc_items ex3rdparty core dataio 
         ${GDAL_LIBRARIES} ${OpenCL_LIBS} ${OpenCV_LIBS})
 exai_add_library(imageproc "api"
   SRCS ${imageproc_srcs}

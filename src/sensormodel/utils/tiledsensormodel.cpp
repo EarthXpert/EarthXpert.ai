@@ -167,8 +167,12 @@ SPSpatialRefSys TiledSensorModel::GetCoordinateSystem() const noexcept {
  /**
   *  \return Returns the middle height
   */
-double TiledSensorModel::GetMeanHeight() const noexcept {
+float TiledSensorModel::GetMeanHeight() const noexcept {
   return 0.0;
+}
+
+std::pair<float, float> TiledSensorModel::GetHeightRange() const noexcept {
+  return { 0.0f, 0.0f };
 }
 
 /**
