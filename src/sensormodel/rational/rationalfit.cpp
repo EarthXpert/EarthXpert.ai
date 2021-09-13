@@ -401,15 +401,9 @@ void RationalFit::SolveStandardCeres(const std::vector<Point2d>& images,
  */
 void RationalFit::GetCoefWeights(double* const weights) const {
   weights[rpc::eC] = mCoefWts[eWtOff];
-  for (std::underlying_type_t<rpc> idx = rpc::eL; idx <= rpc::eH; ++idx) {
-    weights[idx] = mCoefWts[eWtLin];
-  }
-  for (std::underlying_type_t<rpc> idx = rpc::eLP; idx <= rpc::eHH; ++idx) {
-    weights[idx] = mCoefWts[eWtQuad];
-  }
-  for (std::underlying_type_t<rpc> idx = rpc::ePLH; idx <= rpc::eHHH; ++idx) {
-    weights[idx] = mCoefWts[eWtCub];
-  }
+  std::fill_n(weights + rpc::eL, rpc::eH - rpc::eL + 1, mCoefWts[eWtLin]);
+  std::fill_n(weights + rpc::eLP, rpc::eHH - rpc::eLP + 1, mCoefWts[eWtQuad]);
+  std::fill_n(weights + rpc::ePLH, rpc::eHHH - rpc::ePLH + 1, mCoefWts[eWtCub]);
 
   // implicitly disable the un-used coefficients
   for (int idx = 1; idx < rpc::NumCoef; ++idx) {
@@ -424,15 +418,9 @@ void RationalFit::GetCoefWeights(double* const weights) const {
  */
 void RationalFit::GetCoefTrustRegions(double* const regions) const {
   regions[rpc::eC] = mCoefTrs[eWtOff];
-  for (std::underlying_type_t<rpc> idx = rpc::eL; idx <= rpc::eH; ++idx) {
-    regions[idx] = mCoefTrs[eWtLin];
-  }
-  for (std::underlying_type_t<rpc> idx = rpc::eLP; idx <= rpc::eHH; ++idx) {
-    regions[idx] = mCoefTrs[eWtQuad];
-  }
-  for (std::underlying_type_t<rpc> idx = rpc::ePLH; idx <= rpc::eHHH; ++idx) {
-    regions[idx] = mCoefTrs[eWtCub];
-  }
+  std::fill_n(regions + rpc::eL, rpc::eH - rpc::eL + 1, mCoefTrs[eWtLin]);
+  std::fill_n(regions + rpc::eLP, rpc::eHH - rpc::eLP + 1, mCoefTrs[eWtQuad]);
+  std::fill_n(regions + rpc::ePLH, rpc::eHHH - rpc::ePLH + 1, mCoefTrs[eWtCub]);
 
   // implicitly disable the un-used coefficients
   for (int idx = 1; idx < rpc::NumCoef; ++idx) {
