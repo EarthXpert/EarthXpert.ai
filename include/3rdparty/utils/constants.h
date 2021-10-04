@@ -8,6 +8,10 @@
 
 namespace earthxpert {
 // \todo units
+constexpr size_t kKB = 1024;
+constexpr size_t kMB = kKB * kKB;
+constexpr size_t kGB = kMB * kKB;
+
 constexpr double kDEG2RAD = M_PI / 180.0;
 constexpr double kRAD2DEG = 180.0 / M_PI;
 constexpr double kGON2RAD = M_PI / 200.0;

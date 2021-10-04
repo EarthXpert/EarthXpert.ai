@@ -19,11 +19,13 @@
 using namespace earthxpert;
 
 namespace {
-  // output option
-  static const std::map<std::string, FacEpiOpt> sOutOptMap = {
-    {"compact", FacEpiOpt::eEO_COMPACT},
-    {"full", FacEpiOpt::eEO_FULL},
-    {"intersect", FacEpiOpt::eEO_INTERSECT} };
+constexpr double kDH = 10.0;  // delta height for estimating epipolar direction
+
+// output option
+static const std::map<std::string, FacEpiOpt> sOutOptMap = {
+  {"compact", FacEpiOpt::eEO_COMPACT},
+  {"full", FacEpiOpt::eEO_FULL},
+  {"intersect", FacEpiOpt::eEO_INTERSECT} };
 }
 
 /**
@@ -226,22 +228,29 @@ double EpipolarStereoFactory::CalcEpiRotation(const ISensorModel* leftModel,
     points.emplace_back((lc.x() + rc.x()) / 2, (lc.y() + rc.y()) / 2);
   }
 
+  // below and above the rectification plane
+  const std::array<double, 2> sgns = {-1.0, 1.0};
+
   std::vector<Point2d> epiDir;  // epipolar direction vectors at corners
   for (auto& point : points) {
-    Point3d lsr{ point.x(), point.y(), height };
-    auto lph = Rad2Deg(ee->LSRToLPH(lsr));
+    for (auto sgn : sgns) {
+      Point3d lsr{ point.x(), point.y(), height + sgn * kDH };
+      auto lph = Rad2Deg(ee->LSRToLPH(lsr));
 
-    Point2d img;
-    leftModel->GroundToImage(lph, img);
-    PointXYd leftRect;
-    ImageToPlane(img, leftModel, ee, height - 10.0, leftRect, 0.01);  // [1cm]
+      Point2d img;
+      leftModel->GroundToImage(lph, img);
+      PointXYd leftRect;
+      ImageToPlane(img, leftModel, ee, height, leftRect, 0.01);  // [1cm]
 
-    rightModel->GroundToImage(lph, img);
-    PointXYd rightRect;
-    ImageToPlane(img, rightModel, ee, height - 10.0, rightRect, 0.01);
+      rightModel->GroundToImage(lph, img);
+      PointXYd rightRect;
+      ImageToPlane(img, rightModel, ee, height, rightRect, 0.01);
 
-    const Point2d dir{ rightRect.x() - leftRect.x(), rightRect.y() - leftRect.y() };
-    epiDir.push_back(dir);
+      // direction on the rectificaion plane
+      const Point2d dir{ sgn * (rightRect.x() - leftRect.x()), 
+                         sgn * (rightRect.y() - leftRect.y()) };
+      epiDir.push_back(dir);
+    }
   }
 
   // \todo plot all directions. select median/average of the three longest vectors?

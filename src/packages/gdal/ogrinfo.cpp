@@ -31,6 +31,7 @@
  * DEALINGS IN THE SOFTWARE.
  ****************************************************************************/
 #include "packages/gdal/ogrinfo.h"
+#include "3rdparty/utils/constants.h"
 
 #include <commonutils.h>
 #include <cpl_conv.h>
@@ -160,7 +161,7 @@ int OgrInfo::Execute() {
       CPLFree(pszWHERE);
       GByte* pabyRet = nullptr;
       if (mArgv[iArg][0] == '@' &&
-        VSIIngestFile(nullptr, mArgv[iArg] + 1, &pabyRet, nullptr, 1024 * 1024)) {
+        VSIIngestFile(nullptr, mArgv[iArg] + 1, &pabyRet, nullptr, kMB)) {
         RemoveBOM(pabyRet);
         pszWHERE = reinterpret_cast<char*>(pabyRet);
       }
@@ -174,7 +175,7 @@ int OgrInfo::Execute() {
       CPLFree(pszSQLStatement);
       GByte* pabyRet = nullptr;
       if (mArgv[iArg][0] == '@' &&
-        VSIIngestFile(nullptr, mArgv[iArg] + 1, &pabyRet, nullptr, 1024 * 1024)) {
+        VSIIngestFile(nullptr, mArgv[iArg] + 1, &pabyRet, nullptr, kMB)) {
         RemoveBOM(pabyRet);
         pszSQLStatement = reinterpret_cast<char*>(pabyRet);
         RemoveSQLComments(pszSQLStatement);
