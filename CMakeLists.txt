@@ -31,6 +31,13 @@ option(EXAI_PACKAGES_3RDPARTY_DYNAMIC "link dynamic 3rdparty packages" ON)
 
 #set(GFLAGS_USE_TARGET_NAMESPACE TRUE)
 
+# section java & packages
+#find_package(Java 1.8 REQUIRED Runtime Development)
+
+# section python & packages
+find_package(Python3 3.7 REQUIRED COMPONENTS Interpreter Development)
+message(STATUS "Python3_EXECUTABLE: ${Python3_EXECUTABLE}")
+
 # configuration & utils
 add_subdirectory(cmake)
 
@@ -347,7 +354,8 @@ if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
     
     set(protobuf_ROOT "${EX_THIRD_PARTY}/protobuf_3.11.3")
     set(protobuf_DIR "${protobuf_ROOT}/share/protobuf")
-    set(Protobuf_INCLUDE_DIRS "${protobuf_ROOT}/include/google")
+    set(Protobuf_INCLUDE_DIRS "${protobuf_ROOT}/include" 
+                              "${protobuf_ROOT}/include/google")
     set(Protobuf_LIBRARY_DIR "${protobuf_ROOT}/lib/${CDEGREL}")
     set(Protobuf_LIBRARIES debug "${Protobuf_LIBRARY_DIR}/libprotobufd.lib"
                            debug "${Protobuf_LIBRARY_DIR}/libprotobuf-lited.lib"
@@ -596,14 +604,9 @@ get_target_property(SLTBENCH_LIBRARY_RELEASE sltbench IMPORTED_LOCATION_RELEASE)
 set(SLTBENCH_LIBRARIES debug ${SLTBENCH_LIBRARY_DEBUG}
                        optimized ${SLTBENCH_LIBRARY_RELEASE})
 
-# section java & packages
-find_package(Java 1.8 REQUIRED Runtime Development)
-
-# section python & packages
-find_package(Python3 REQUIRED COMPONENTS Interpreter Development)
-message(STATUS "Python3_EXECUTABLE: ${Python3_EXECUTABLE}")
-
-set(PYTHON_ROOT "${Python3_STDLIB}/..")
+# python packages
+set(PYTHON_ROOT "${Python3_STDLIB}/..") 
+set(PYTHON_LIBRARY_DIRS "${PYTHON_ROOT}/libs")
 set(PYTHON_SITELIB_DIR "${Python3_SITELIB}")
 set(PYTHON_CUPY_ROOT "${PYTHON_SITELIB_DIR}/cupy")
 set(PYTHON_LXML_ROOT "${PYTHON_SITELIB_DIR}/lxml")
@@ -741,6 +744,9 @@ include_directories("include")
 include_directories("internal/include")
 
 # section link
+message(STATUS "PYTHON_ROOT: ${PYTHON_ROOT}")
+message(STATUS "PYTHON_LIBRARY_DIRS: ${PYTHON_LIBRARY_DIRS}")
+
 #link_directories(${Eigen3_LIBRARY_DIR}/${CDEGREL})
 link_directories(${exiv2_LIBRARY_DIR}/${CDEGREL})
 link_directories(${gsl_LIBRARY_DIR}/${CDEGREL})
