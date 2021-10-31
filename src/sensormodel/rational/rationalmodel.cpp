@@ -208,9 +208,47 @@ bool RationalModel::ImageToGround(const Point2d& image, Point3d& ground) const {
   return true;
 }
 
-// Newton-Raphson via G2I()
+/**
+ *  Newton-Raphson via G2I()
+ * 
+ *    F(x) = G2I() - image
+ *    x -= F(x) / F'(x)
+ */
 bool RationalModel::ImageToGroundNR(const Point2d& image, Point3d& ground) const {
-  return true;
+  int iter{};
+  for (iter = 0; iter < kMaxIterS2G; ++iter) {
+    Point2d img;
+    GroundToImage(ground, img);
+
+    const auto F = img - image;
+    if (fabs(F.x) < kTol_px && fabs(F.y) < kTol_px)
+      break;
+
+    Point3d grds[2] = { {ground.x-kLL, ground.y-kLL, ground.z}, 
+                        {ground.x+kLL, ground.y+kLL, ground.z} };
+    Point2d imgs[2];
+
+    for (int i = 0; i < 2; ++i) {
+      GroundToImage(grds[i], imgs[i]);
+    }
+    const auto dF_dLL = (imgs[1] - imgs[0]) * kFacLL; // F'(x)
+    
+    double dLon{};
+    if (fabs(dF_dLL.x) >= kTol) {
+      dLon = F.x / dF_dLL.x;  // F(x) / F'(x)
+      ground.x -= dLon;
+    }
+
+    double dLat{};
+    if (fabs(dF_dLL.y) >= kTol) {
+      dLat = F.y / dF_dLL.y;
+      ground.y -= dLat;
+    }
+
+    if (fabs(dLon) < kTolLL && fabs(dLat) < kTolLL) 
+      break;
+  }
+  return (iter < kMaxIterS2G);
 }
 
 /**

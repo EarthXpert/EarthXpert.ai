@@ -29,6 +29,16 @@ cv::Point_<Ty> operator-(const cv::Point_<Ty>& p, const Ty v) {
   return { p.x - v, p.y - v };
 }
 
+template<typename Ty> inline
+cv::Point_<Ty> operator*(const cv::Point_<Ty>& p1, const cv::Point_<Ty>& p2) {
+  return { p1.x * p2.x, p1.y * p2.y };
+}
+
+template<typename Ty> inline
+cv::Point_<Ty> operator/(const cv::Point_<Ty>& p1, const cv::Point_<Ty>& p2) {
+  return { p1.x / p2.x, p1.y / p2.y };
+}
+
 using Point2f = cv::Point2f;
 using Point3f = cv::Point3f;
 using Point2d = cv::Point2d;
