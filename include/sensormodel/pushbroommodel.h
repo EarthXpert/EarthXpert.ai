@@ -119,7 +119,8 @@ public:
    *
    *  \details More details
    */
-  bool GroundToImage(const Point3d &ground, Point2d &image) const override;
+  bool GroundToImage(const Point3d& ground, Point2d& image) const override;
+  bool GroundToImageNR(const Point3d& ground, Point2d& image) const;
 
   /**
    * @return type of sensor model

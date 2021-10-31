@@ -165,7 +165,8 @@ public:
    *  \param [in/out] ground 3d ground position (Long, Lat, Height) in ground
    * coordinate system \return Returns true if the operation succeeds
    */
-  bool ImageToGround(const Point2d &image, Point3d &ground) const override;
+  bool ImageToGround(const Point2d& image, Point3d& ground) const override;
+  bool ImageToGroundNR(const Point2d& image, Point3d& ground) const;
 
   /**
    *  Ground-to-image backward projection.

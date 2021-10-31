@@ -196,15 +196,20 @@ bool RationalModel::EqualTo(const ISensorModel &rhs) const {
  *      where Height is known, in ground coordinate system
  *  \return Returns true if the operation succeeds
  */
-bool RationalModel::ImageToGround(const Point2d &image, Point3d &ground) const {
+bool RationalModel::ImageToGround(const Point2d& image, Point3d& ground) const {
   const auto sensor = ImageToSensor(image);
 
-  Point3d uvw{0.0, 0.0, (ground.z - nfc[eOHGT]) * mInvScale[eHGT]}; // lph
+  Point3d uvw{ 0.0, 0.0, (ground.z - nfc[eOHGT]) * mInvScale[eHGT] }; // lph
   if (!SensorToVirtual(sensor, uvw))
     return false;
 
   ground.x = nfc[eOLON] + uvw.x * nfc[eSLON];
   ground.y = nfc[eOLAT] + uvw.y * nfc[eSLAT];
+  return true;
+}
+
+// Newton-Raphson via G2I()
+bool RationalModel::ImageToGroundNR(const Point2d& image, Point3d& ground) const {
   return true;
 }
 

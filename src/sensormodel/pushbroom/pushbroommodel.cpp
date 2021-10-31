@@ -110,9 +110,16 @@ PushbroomModel<CraftPolicy>::ImageToGround(const Point2d &image,
  *  \param [out] image 2d image position (x, y)
  *  \return Returns true if operation succeeds
  */
-template <typename CraftPolicy> bool 
-PushbroomModel<CraftPolicy>::GroundToImage(const Point3d &ground,
-                                   Point2d &image) const {
+template <typename CraftPolicy> bool
+PushbroomModel<CraftPolicy>::GroundToImage(const Point3d& ground,
+  Point2d& image) const {
+  return true;
+}
+
+// Newton-Raphson via I2G()
+template <typename CraftPolicy> bool
+PushbroomModel<CraftPolicy>::GroundToImageNR(const Point3d& ground,
+  Point2d& image) const {
   return true;
 }
 
