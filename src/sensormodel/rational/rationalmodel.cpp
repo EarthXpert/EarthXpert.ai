@@ -374,6 +374,8 @@ bool RationalModel::ImageToGroundA(const Point2d& image, Point3d& ground) const 
  */
 bool RationalModel::ImageToGroundNR(const Point2d& image, Point3d& ground) const {
   // \todo ground initial position
+  ground.x = nfc[eOLON];
+  ground.y = nfc[eOLAT];
 
   int iter{};
   for (iter = 0; iter < kMaxIterS2G; ++iter) {
