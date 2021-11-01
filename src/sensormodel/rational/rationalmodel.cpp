@@ -186,72 +186,6 @@ bool RationalModel::EqualTo(const ISensorModel &rhs) const {
 }
 
 /**
- *  Image-to-ground forward projection.
- *
- *  \brief Given a 2d position in image coordinate system and a height
- *  in ground vertical coordinate system, output the ground horizontal position.
- *
- *  \param [in] image 2d position (col, row) in image coordinate system
- *  \param [in/out] ground 3d ground position (Long, Lat, Height),
- *      where Height is known, in ground coordinate system
- *  \return Returns true if the operation succeeds
- */
-bool RationalModel::ImageToGround(const Point2d& image, Point3d& ground) const {
-  const auto sensor = ImageToSensor(image);
-
-  Point3d uvw{ 0.0, 0.0, (ground.z - nfc[eOHGT]) * mInvScale[eHGT] }; // lph
-  if (!SensorToVirtual(sensor, uvw))
-    return false;
-
-  ground.x = nfc[eOLON] + uvw.x * nfc[eSLON];
-  ground.y = nfc[eOLAT] + uvw.y * nfc[eSLAT];
-  return true;
-}
-
-/**
- *  Newton-Raphson via G2I()
- * 
- *    F(x) = G2I() - image
- *    x -= F(x) / F'(x)
- */
-bool RationalModel::ImageToGroundNR(const Point2d& image, Point3d& ground) const {
-  int iter{};
-  for (iter = 0; iter < kMaxIterS2G; ++iter) {
-    Point2d img;
-    GroundToImage(ground, img);
-
-    const auto F = img - image;
-    if (fabs(F.x) < kTol_px && fabs(F.y) < kTol_px)
-      break;
-
-    Point3d grds[2] = { {ground.x-kLL, ground.y-kLL, ground.z}, 
-                        {ground.x+kLL, ground.y+kLL, ground.z} };
-    Point2d imgs[2];
-
-    for (int i = 0; i < 2; ++i) {
-      GroundToImage(grds[i], imgs[i]);
-    }
-    const auto dF_dLL = (imgs[1] - imgs[0]) * kFacLL; // F'(x)
-    
-    double dLon{};
-    if (fabs(dF_dLL.x) >= kTol) {
-      dLon = F.x / dF_dLL.x;  // F(x) / F'(x)
-      ground.x -= dLon;
-    }
-
-    double dLat{};
-    if (fabs(dF_dLL.y) >= kTol) {
-      dLat = F.y / dF_dLL.y;
-      ground.y -= dLat;
-    }
-
-    if (fabs(dLon) < kTolLL && fabs(dLat) < kTolLL) 
-      break;
-  }
-  return (iter < kMaxIterS2G);
-}
-
-/**
  *  Ground-to-image backward projection.
  *
  *  \brief Given a 3d ground position with reference to the ground coordinate
@@ -407,6 +341,74 @@ void RationalModel::Clear() noexcept {
   mCorrAlgo = eCA_IMAGE;
 
   mInvScale.fill(1.0);
+}
+
+/**
+ *  Image-to-ground forward projection (analytic).
+ *
+ *  \brief Given a 2d position in image coordinate system and a height
+ *  in ground vertical coordinate system, output the ground horizontal position.
+ *
+ *  \param [in] image 2d position (col, row) in image coordinate system
+ *  \param [in/out] ground 3d ground position (Long, Lat, Height),
+ *      where Height is known, in ground coordinate system
+ *  \return Returns true if the operation succeeds
+ */
+bool RationalModel::ImageToGroundA(const Point2d& image, Point3d& ground) const {
+  const auto sensor = ImageToSensor(image);
+
+  Point3d uvw{ 0.0, 0.0, (ground.z - nfc[eOHGT]) * mInvScale[eHGT] }; // lph
+  if (!SensorToVirtual(sensor, uvw))
+    return false;
+
+  ground.x = nfc[eOLON] + uvw.x * nfc[eSLON];
+  ground.y = nfc[eOLAT] + uvw.y * nfc[eSLAT];
+  return true;
+}
+
+/**
+ *  Newton-Raphson via G2I()
+ *
+ *    F(x) = |G2I() - image|_2
+ *    x -= F(x) / F'(x)
+ */
+bool RationalModel::ImageToGroundNR(const Point2d& image, Point3d& ground) const {
+  // \todo ground initial position
+
+  int iter{};
+  for (iter = 0; iter < kMaxIterS2G; ++iter) {
+    Point2d img;
+    GroundToImage(ground, img);
+
+    const auto w = img - image;   // misclosure
+    if (fabs(w.x) < kTol_px && fabs(w.y) < kTol_px)
+      break;
+
+    Point3d grds[4] = { {ground.x - kLL, ground.y, ground.z}, {ground.x + kLL, ground.y, ground.z},
+                        {ground.x, ground.y - kLL, ground.z}, {ground.x, ground.y + kLL, ground.z} };
+    Point2d imgs[4];
+    for (int i = 0; i < 4; ++i) {
+      GroundToImage(grds[i], imgs[i]);
+    }
+
+    const auto dF_dLon = (imgs[1] - imgs[0]) * kFacLL;  // Jacobian
+    const auto dF_dLat = (imgs[3] - imgs[2]) * kFacLL;
+
+    const auto det = dF_dLon.x * dF_dLat.y - dF_dLon.y * dF_dLat.x;
+    if (fabs(det) < kTol)
+      return false;
+
+    const auto invDet = 1.0 / det;
+    const auto dLon = (dF_dLat.y * w.x - dF_dLat.x * w.y) * invDet;
+    const auto dLat = (dF_dLon.x * w.y - dF_dLon.y * w.x) * invDet;
+
+    ground.x -= dLon;
+    ground.y -= dLat;
+
+    if (fabs(dLon) < kTolLL && fabs(dLat) < kTolLL)
+      break;
+  }
+  return (iter < kMaxIterS2G);
 }
 
 /**

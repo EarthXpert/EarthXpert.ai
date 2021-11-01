@@ -15,6 +15,7 @@
 #include "sensormodel/rationalmodel.h"
 
 #include <filesystem>
+#include <iostream>
 
 using namespace earthxpert;
 using namespace earthxpert::utils;
@@ -62,6 +63,8 @@ TEST(rationalmodel, CreateRationalModel) {
  */
 TEST(rationalmodel, CornerI2G) {
   const auto ratModel = CreateRationalModelA();
+  const auto nfc = ratModel->GetNormalFactors();
+  std::cout.precision(15);
 
   std::array<Point3d, 4> grdCorners{
       Point3d{8.225197491999999e+01, 4.511445409000000e+01,
@@ -80,6 +83,8 @@ TEST(rationalmodel, CornerI2G) {
     Point3d grdI2G{ 0, 0, ground.z };
     ratModel->ImageToGround(image, grdI2G);
 
+    std::cout << "Lon " << grdI2G.x << ", " << ground.x << ": " << grdI2G.x - ground.x << std::endl;
+    std::cout << "Lat " << grdI2G.y << ", " << ground.y << ": " << grdI2G.y - ground.y << std::endl;
     ASSERT_NEAR(ground.x, grdI2G.x, kTolDEG) << "Longitude difference > 1 mm";
     ASSERT_NEAR(ground.y, grdI2G.y, kTolDEG) << "Latitude difference > 1 mm";
   }

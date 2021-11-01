@@ -64,4 +64,5 @@ constexpr double kTolMM = 1.0e-3; // [meter] = 1mm
 constexpr double kTolUM = 1.0e-6; // [meter] = 1um
 
 constexpr double kTolPIX = 1.0e-2; // [0.01 pixel]
+constexpr double kTolPIX3 = 1.0e-3; // [0.001 pixel]
 } // namespace earthxpert

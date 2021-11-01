@@ -4,6 +4,7 @@
  */
 #pragma once
 
+#include "3rdparty/utils/constants.h"
 #include "sensormodel/sensormodel.h"
 #include "sensormodel/framecp.h"
 #include "sensormodel/frameep.h"
@@ -118,7 +119,9 @@ public:
    *
    *  \details
    */
-  bool GroundToImage(const Point3d &ground, Point2d &image) const override;
+  bool GroundToImage(const Point3d& ground, Point2d& image) const override {
+    return GroundToImageNR(ground, image);
+  }
 
   /**
    * \return Return type of sensor model
@@ -165,7 +168,12 @@ private:
   friend class FrameStereoModel;
 
   static constexpr int kMaxIterG2I{ 10 };
+  static constexpr double kPIX = kTolPIX; // step used to calculate numerical difference for lon/lat
+  static constexpr double kFacPIX = 0.5 / kPIX;
+  static constexpr double kTol = std::numeric_limits<double>::epsilon();
   static constexpr double kTolFP{ 0.0001 }; // 0.1 um on focal plane
+  static constexpr double kTol_mm = kTolMM; // tolerance in ground
+  static constexpr double kTol_px = kTolPIX3; // tolerance in image [unit: pixel]
 
   ImageModelPolicy mImageModel; // model defining the transformation between
                                 // focal plane and imagery
@@ -263,6 +271,9 @@ private:
   void CopyFrom(const FrameModel &model);
   void MoveFrom(FrameModel &&model) noexcept;
   void Clear() noexcept;
+
+  bool GroundToImageA(const Point3d& ground, Point2d& image) const;
+  bool GroundToImageNR(const Point3d& ground, Point2d& image) const;
 
   // cached calculation for better performance
   double mInvF2{};   // reciprocal of focal length squared
