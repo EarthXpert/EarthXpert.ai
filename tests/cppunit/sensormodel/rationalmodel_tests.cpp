@@ -80,7 +80,7 @@ TEST(rationalmodel, CornerI2G) {
     Point2d image;
     ratModel->GroundToImage(ground, image);
 
-    Point3d grdI2G{ 0, 0, ground.z };
+    Point3d grdI2G{ nfc[rfi::eOLON], nfc[rfi::eOLAT], ground.z };
     ratModel->ImageToGround(image, grdI2G);
 
     std::cout << "Lon " << grdI2G.x << ", " << ground.x << ": " << grdI2G.x - ground.x << std::endl;
@@ -113,6 +113,9 @@ TEST(rationalmodel, KhalifaSat) {
 TEST(rationalmodel, KhalifaSat_PCI) {
   auto ratModel16 = CreateRationalModelFpci();
   auto ratModel17 = CreateRationalModelGpci();
+  const auto nfc16 = ratModel16->GetNormalFactors();
+  const auto nfc17 = ratModel17->GetNormalFactors();
+  
 
   const Point3d gcp04{ 55.192938, 25.0687260, -30 };
   const Point2d ip04_16{ 2133.875, 7343.791 };
@@ -126,11 +129,11 @@ TEST(rationalmodel, KhalifaSat_PCI) {
   ratModel17->GroundToImage(gcp04, ip04_17N);
   std::cout << "ip04_17: " << (ip04_17N - ip04_17) << std::endl;
 
-  Point3d gcp04_16{ 0., 0., -30.0 };
+  Point3d gcp04_16{ nfc16[rfi::eOLON], nfc16[rfi::eOLAT], -30.0 };
   ratModel16->ImageToGround(ip04_16, gcp04_16);
   std::cout << "gcp04_16: " << (gcp04_16 - gcp04) << std::endl;
 
-  Point3d gcp04_17{ 0., 0., -30.0 };
+  Point3d gcp04_17{ nfc17[rfi::eOLON], nfc17[rfi::eOLAT], -30.0 };
   ratModel17->ImageToGround(ip04_17, gcp04_17);
   std::cout << "gcp04_17: " << (gcp04_17 - gcp04) << std::endl;
 
@@ -178,6 +181,7 @@ TEST(rationalmodel, I2G_Curve) {
 
 TEST(rationalmodel, CornerI2G_Functor) {
   const auto ratModel = CreateRationalModelA();
+  const auto nfc = ratModel->GetNormalFactors();
 
   std::array<Point3d, 4> grdCorners{
       Point3d{8.225197491999999e+01, 4.511445409000000e+01,
@@ -193,7 +197,7 @@ TEST(rationalmodel, CornerI2G_Functor) {
     Point2d image;
     (*ratModel)(ground, image);
 
-    Point3d grdI2G{ 0, 0, ground.z };
+    Point3d grdI2G{ nfc[rfi::eOLON], nfc[rfi::eOLAT], ground.z };
     (*ratModel)(image, grdI2G);
 
     ASSERT_NEAR(ground.x, grdI2G.x, kTolDEG) << "Longitude difference > 1 mm";
@@ -241,7 +245,7 @@ void TestCurveI2G(const RationalModel* ratModel,
       Point2d image{double(col), double(row)};
       
       for (auto hgt = minHgt; hgt <= maxHgt; hgt += stepHgt) {
-        Point3d ground{ 0.0, 0.0, hgt };
+        Point3d ground{ nfc[rfi::eOLON], nfc[rfi::eOLAT], hgt };
         ratModel->ImageToGround(image, ground);
         curves.push_back(ee.LPHToLSR(Deg2Rad(ground)));
       }
@@ -273,7 +277,7 @@ void TestCubeI2G(const RationalModel* ratModel) {
         Point2d image;
         ratModel->GroundToImage(ground, image);
 
-        Point3d grdI2G{ 0, 0, ground.z };
+        Point3d grdI2G{ nfc[rfi::eOLON], nfc[rfi::eOLAT], ground.z };
         ratModel->ImageToGround(image, grdI2G);
 
         Larger(maxDiff, xabs(Point3To2(grdI2G - ground)));
@@ -311,7 +315,7 @@ void TestCubeI2G_Functor(const RationalModel* ratModel) {
         Point2d image;
         (*ratModel)(ground, image);
 
-        Point3d grdI2G{ 0, 0, ground.z };
+        Point3d grdI2G{ nfc[rfi::eOLON], nfc[rfi::eOLAT], ground.z };
         (*ratModel)(image, grdI2G);
 
         Larger(maxDiff, xabs(Point3To2(grdI2G - ground)));
