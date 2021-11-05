@@ -144,7 +144,7 @@ bool PushbroomModel<CraftPolicy>::EqualTo(const ISensorModel &rhs) const {
 }
 
 template <typename CraftPolicy>
-void PushbroomModel<CraftPolicy>::BuildCubeG2S() {
+void PushbroomModel<CraftPolicy>::BuildCubeG2I() {
 
 }
 
