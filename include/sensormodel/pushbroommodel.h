@@ -6,6 +6,7 @@
 
 #include "sensormodel/sensormodel.h"
 #include "sensormodel/craftpolicy.h"
+#include "sensormodel/rationalmodel.h"
 #include "sensormodel/scannerep.h"
 #include "sensormodel/scannerepcorr.h"
 #include "sensormodel/scannerimagemodel.h"
@@ -119,7 +120,8 @@ public:
    *
    *  \details More details
    */
-  bool GroundToImage(const Point3d &ground, Point2d &image) const override;
+  bool GroundToImage(const Point3d& ground, Point2d& image) const override;
+  bool GroundToImageNR(const Point3d& ground, Point2d& image) const;
 
   /**
    * @return type of sensor model
@@ -165,7 +167,9 @@ private:
       mFusedScannerEP; // extrinsic parameters combining original extrinsic
                        // parameters and their corrections
 
-  void BuildCubeG2S();
+  // interpolation cube to provide approximate image coordinates for GroundToImage()
+  std::unique_ptr<RationalModel> mCubeG2I;   
+  void BuildCubeG2I();
 };
 
 using AirPushbroomModel = PushbroomModel<AircraftPolicy>;

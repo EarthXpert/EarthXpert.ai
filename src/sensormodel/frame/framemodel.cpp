@@ -134,32 +134,6 @@ bool FrameModel<ImageModelPolicy>::ImageToGround(const Point2d &image,
 }
 
 /**
- *  Ground-to-image backward projection.
- *
- *  \brief Given a 3d ground position with reference to the ground coordinate
- * system, output the 2d image position in the image coordinate system.
- *
- *  \param [in] ground 3d position (X, Y, Z) in ground coordinate system
- *  \param [out] image 2d position (x, y) in imagery raster coordinate system
- *  \return Returns true if operation succeeds
- *
- *  \details
- */
-template <class ImageModelPolicy>
-bool FrameModel<ImageModelPolicy>::GroundToImage(const Point3d &ground,
-                                                 Point2d &image) const {
-  Point2d sensorApp;
-  GroundToSensor(ground, sensorApp);
-
-  Point2d sensorAct;
-  if (!SensorApparantToActual(sensorApp, ground.z, sensorAct))
-    return false;
-
-  image = mImageModel.SensorToImage(sensorAct);
-  return true;
-}
-
-/**
  *  \brief Fetch the ground coordinate system where the sensor model operates.
  *  Use this SRS to construct the coordinate transformations
  *  from results of ImageToGround() or inputs to GroundToImage() methods.
@@ -543,6 +517,79 @@ FrameModel<ImageModelPolicy>::MoveFrom(FrameModel<ImageModelPolicy> &&rhs) noexc
 
 template <class ImageModelPolicy>
 void FrameModel<ImageModelPolicy>::Clear() noexcept {
+}
+
+/**
+ *  Ground-to-image backward projection (analytic).
+ *
+ *  \brief Given a 3d ground position with reference to the ground coordinate
+ * system, output the 2d image position in the image coordinate system.
+ *
+ *  \param [in] ground 3d position (X, Y, Z) in ground coordinate system
+ *  \param [out] image 2d position (x, y) in imagery raster coordinate system
+ *  \return Returns true if operation succeeds
+ *
+ *  \details
+ */
+template <class ImageModelPolicy>
+bool FrameModel<ImageModelPolicy>::GroundToImageA(const Point3d& ground,
+  Point2d& image) const {
+  Point2d sensorApp;
+  GroundToSensor(ground, sensorApp);
+
+  Point2d sensorAct;
+  if (!SensorApparantToActual(sensorApp, ground.z, sensorAct))
+    return false;
+
+  image = mImageModel.SensorToImage(sensorAct);
+  return true;
+}
+
+/**
+ *  Newton-Raphson via I2G()
+ *
+ *    F(x) = |I2G() - ground|_2
+ *    x -= F(x) / F'(x)
+ */
+template <class ImageModelPolicy>
+bool FrameModel<ImageModelPolicy>::GroundToImageNR(const Point3d& ground,
+  Point2d& image) const {
+  // \todo image intial position
+
+  int iter{};
+  for (iter = 0; iter < kMaxIterG2I; ++iter) {
+    Point3d grd{ 0.0, 0.0, ground.z };
+    ImageToGround(image, grd);
+
+    const auto w = grd - ground;   // misclosure
+    if (fabs(w.x) < kTol_mm && fabs(w.y) < kTol_mm)
+      break;
+
+    Point2d imgs[4] = { {image.x - kPIX, image.y}, {image.x + kPIX, image.y},
+                        {image.x, image.y - kPIX}, {image.x, image.y + kPIX} };
+    Point3d grds[4] = { grd, grd, grd, grd };
+    for (int i = 0; i < 4; ++i) {
+      ImageToGround(imgs[i], grds[i]);
+    }
+
+    const auto dF_dCol = (grds[1] - grds[0]) * kFacPIX;  // Jacobian
+    const auto dF_dRow = (grds[3] - grds[2]) * kFacPIX;
+
+    const auto det = dF_dCol.x * dF_dRow.y - dF_dCol.y * dF_dRow.x;
+    if (fabs(det) < kTol)
+      return false;
+
+    const auto invDet = 1.0 / det;
+    const auto dCol = (dF_dRow.y * w.x - dF_dRow.x * w.y) * invDet;
+    const auto dRow = (dF_dCol.x * w.y - dF_dCol.y * w.x) * invDet;
+
+    image.x -= dCol;
+    image.y -= dRow;
+
+    if (fabs(dCol) < kTol_px && fabs(dRow) < kTol_px)
+      break;
+  }
+  return (iter < kMaxIterG2I);
 }
 
 /**

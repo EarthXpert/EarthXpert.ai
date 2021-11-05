@@ -149,3 +149,13 @@ void EarthEllipsoid::SetLsrOrigin(const Point3d& origin) {
   mL2E(2, 1) = cp;
   mL2E(2, 2) = sp;
 }
+
+/**
+ *  Ray-Ellipsoid intersection.
+ * 
+ *  \return Returns Cartesian XYZ coordinates [m]
+ */
+Point3d EarthEllipsoid::RayIntersect(const Point3d& xyz, 
+  const double height) const {
+  return {};
+}

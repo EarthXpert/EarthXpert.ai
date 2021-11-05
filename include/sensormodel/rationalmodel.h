@@ -4,6 +4,7 @@
  */
 #pragma once
 
+#include "3rdparty/utils/constants.h"
 #include "core/math/interpcube.h"
 #include "sensormodel/datatypes.h"
 #include "sensormodel/sensormodel.h"
@@ -165,7 +166,9 @@ public:
    *  \param [in/out] ground 3d ground position (Long, Lat, Height) in ground
    * coordinate system \return Returns true if the operation succeeds
    */
-  bool ImageToGround(const Point2d &image, Point3d &ground) const override;
+  bool ImageToGround(const Point2d& image, Point3d& ground) const override {
+    return ImageToGroundNR(image, ground);
+  }
 
   /**
    *  Ground-to-image backward projection.
@@ -291,8 +294,12 @@ private:
   static constexpr int kMaxIterS2G = 10; // max. number of iterations allowed for SensorToGround
   static constexpr int kMaxIterIAA = 5; // max. number of iterations allowed for ImageActualToApparant
   static constexpr double kRatio = 1.0e-4; // ratio of tolerance proportional to image range
+  static constexpr double kLL = 1.0e-6; // step used to calculate numerical difference for lon/lat
+  static constexpr double kFacLL = 0.5 / kLL;
   static constexpr double kTol = std::numeric_limits<double>::epsilon();
-  static constexpr double kTol_d = 0.1; // tolerance proportional to visual ground range
+  static constexpr double kTolLL = kTolDEG; // 
+  static constexpr double kTol_px = kTolPIX3; // tolerance in unit of pixel
+  static constexpr double kTol_d = 0.1; // tolerance proportional to virtual ground range
 
   // rational polynomial coefficients
   NormalFactorArray mNormalFactors{}; // normalization factors including offsets & scales
@@ -323,6 +330,9 @@ private:
   void CopyFrom(const RationalModel &rhs);
   void MoveFrom(RationalModel &&rhs) noexcept;
   void Clear() noexcept;
+
+  bool ImageToGroundA(const Point2d& image, Point3d& ground) const;
+  bool ImageToGroundNR(const Point2d& image, Point3d& ground) const;
 
   Point2d ImageActualToApparant(const Point2d& image) const;
   Point2d SensorActualToApparant(const Point2d& sensor) const;

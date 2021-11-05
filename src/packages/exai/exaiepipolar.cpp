@@ -4,6 +4,7 @@
  */
 #include "packages/exai/exaiepipolar.h"
 #include "3rdparty/gdal/exgdal.h"
+#include "3rdparty/utils/constants.h"
 #include "core/exceptions/exexcept.h"
 #include "core/utils/rasterresample.h"
 #include "sensormodel/utils/smutils.h"
@@ -53,13 +54,13 @@ int ExaiEpipolar::Execute() {
   epiOpt.sample = vm["sample"].as<int>();
   epiOpt.stride = vm["stride"].as<int>();
   epiOpt.epiHgt = vm["epihgt"].as<float>();
-  epiOpt.rotAngle = vm["rotangle"].as<float>();
+  epiOpt.rotAngle = Deg2Rad(vm["rotangle"].as<float>());
   epiOpt.resample = vm["resample"].as<std::string>();
   epiOpt.outPath = vm["outdir"].as<std::string>();
   epiOpt.oneFile = vm["onefile"].as<bool>();
   epiOpt.grey = vm["grey"].as<bool>();
   epiOpt.outBkgd = vm["outbkgd"].as<int>();
-  epiOpt.memSize = size_t(vm["memsize"].as<int>()) * 1024 * 1024;  // [unit: bytes]
+  epiOpt.memSize = size_t(vm["memsize"].as<int>()) * kMB;  // [unit: bytes]
 
   switch (st) {
   case SensorType::eMT_RATIONAL: {
@@ -106,13 +107,13 @@ void ExaiEpipolar::AddRationalOptions(bpo::options_description& optDesc) {
     ("sample,s", bpo::value<int>()->default_value(1), "downsample factor")
     ("stride,d", bpo::value<int>()->default_value(8), "stride interval")
     ("epihgt,h", bpo::value<float>()->default_value(0), "height of rectification plane")
-    ("rotangle", bpo::value<float>()->default_value(0), "rotation angle of epipolar direction")
+    ("rotangle", bpo::value<float>()->default_value(0), "rotation angle of epipolar direction [degree]")
     ("resample,r", bpo::value<std::string>()->default_value("cubic"), "resample algorithm: bilinear|cubic|gausian")
     ("outdir,o", bpo::value<std::string>()->required(), "output directory")
     ("onefile,f", bpo::value<bool>()->default_value(false), "save two epipolar images in a single file")
     ("grey,g", bpo::value<bool>()->default_value(false), "convert to grey image")
     ("outbkgd", bpo::value<int>()->default_value(0), "output pixel background value")
-    ("memsize,m", bpo::value<int>()->default_value(4000), "memory size in MB")
+    ("memsize,m", bpo::value<int>()->default_value(4000), "memory size [MB]")
     ("help,h", "Usage help");
 }
 

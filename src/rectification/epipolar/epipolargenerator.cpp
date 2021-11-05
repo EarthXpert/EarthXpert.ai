@@ -240,10 +240,8 @@ void EpipolarGenerator::ProcessTilesSQ() {
  *  \brief pipelined overlapping of read, computation, write tasks by TaskFlow
  */
 void EpipolarGenerator::ProcessTilesTF() {
-  tf::Executor executor;
-  tf::Taskflow taskflow;
-
   int t{ -1 };
+  tf::Taskflow taskflow;
 
   auto [ii, cd, rb, rt, pt, wt, sb, lt, dn] = taskflow.emplace(
     [&t]() { t = -1; },
@@ -275,6 +273,7 @@ void EpipolarGenerator::ProcessTilesTF() {
 
   //taskflow.dump(std::cout);
   //assert(8 == taskflow.num_tasks());
+  tf::Executor executor;
   executor.run(taskflow).wait();
 }
 

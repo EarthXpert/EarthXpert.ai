@@ -20,6 +20,51 @@ constexpr double kTol = 1.0e-6; // [um]
 /**
  *  \brief PointcloudReader test cases, zero offsets in .las
  *
+ *  TestCase 0: read XYZ fields in .las
+ */
+TEST(pointcloudreader, ReadPointcloud_LAS_XYZ_LARGE) {
+  const std::string lasFile(TestConfig::DataPath("PointClouds/points_large.las"));
+  PointcloudReader reader(lasFile, { fgt::kBITXYZ });
+
+  auto pc = reader.ReadPointcloud();
+}
+/*
+TEST(pointcloudreader, ReadPointcloud_LAZ_XYZ_LARGE) {
+  const std::string lasFile(TestConfig::DataPath("PointClouds/points_large.laz"));
+  PointcloudReader reader(lasFile, { fgt::kBITXYZ });
+
+  auto pc = reader.ReadPointcloud();
+  std::cout << "number of points: " << pc->GetPointCount() << std::endl;
+}
+*/
+TEST(pointcloudreader, ReadPointcloudOMP_LAS_XYZ_LARGE_CHUNKS) {
+  constexpr size_t filePointCount{ 148'822'403 };
+  const size_t chunkNumPts{ 1'000'000 };
+  const size_t numChunks{ filePointCount / chunkNumPts };
+
+  const std::string lasFile(TestConfig::DataPath("PointClouds/points_large.las"));
+  PointcloudReader reader(lasFile, { fgt::kBITXYZ });
+
+  ASSERT_EQ(filePointCount, reader.GetPointCount()) << "number of points";
+
+#pragma omp parallel num_threads(4)
+  {
+    Pointcloud pc(chunkNumPts, { fgt::kBITXYZ });
+
+#pragma omp for
+    for (int64_t i = 0; i < filePointCount - chunkNumPts; i += chunkNumPts) {
+      reader.ReadPointcloud(i, &pc);
+      //ASSERT_EQ(pc.GetPointCount(), chunkNumPts) << "#points of last chunk";  // fatal error C1001: Internal compiler error
+    }
+  }
+
+  auto pcLast = reader.ReadPointcloud(chunkNumPts * numChunks, 822'403);
+  ASSERT_EQ(pcLast->GetPointCount(), 822'403) << "#points of last chunk";
+}
+
+/**
+ *  \brief PointcloudReader test cases, zero offsets in .las
+ *
  *  TestCase 1: read XYZ fields in .las
  */
 TEST(pointcloudreader, ReadPointcloud_LAS_XYZ) {

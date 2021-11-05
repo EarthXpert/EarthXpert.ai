@@ -3,6 +3,7 @@
  * -----------------------------------------------------------------------------
  */
 #include "3rdparty/glog/exglog.h"
+#include "3rdparty/utils/constants.h"
 #include "utils/pcutils.h"
 #include "core/utils/fsutils.h"
 
@@ -62,7 +63,7 @@ int main(int argc, char** argv) {
   dlOpt.backend = vm["backend"].as<std::string>();
   dlOpt.lasf = vm["lasf"].as<std::string>();
   dlOpt.tinf = vm["tinf"].as<std::string>();
-  dlOpt.memSize = size_t(vm["memsize"].as<int>()) * 1024 * 1024;  // [unit: bytes]
+  dlOpt.memSize = size_t(vm["memsize"].as<int>()) * kMB;  // [unit: bytes]
 
   fs::path filePath(dlOpt.lasf);
 

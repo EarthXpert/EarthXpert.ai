@@ -87,6 +87,8 @@ public:
   void SetLsrOrigin(const Point3d& origin);
   inline Point3d GetLsrOrigin() const { return mLsrOrigin; }
 
+  Point3d RayIntersect(const Point3d& xyz, double height) const;
+
 private:
   static constexpr double kTolH{1.0e-5}; // Height tolerance [10um]
 

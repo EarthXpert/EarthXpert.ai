@@ -25,7 +25,7 @@
  *      --sample      [downsample_factor]           // 1
  *      --stride      [stride interval]             // 1
  *      --height      [height_of_rectification]
- *      --rotangle    [angle_of_rotation]
+ *      --rotangle    [angle_of_rotation]           // [deg]
  *      --resample    [linear|cubic|gaussian|sinc]  // "cubic"
  *      --outdir      [path_of_output_directory]    // "d:/out/"
  *      --grey        [convert_color]               // false
