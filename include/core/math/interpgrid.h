@@ -1,0 +1,201 @@
+/* ----------------------------------------------------------------------
+ *  Copyright (c) 2018.  All rights reserved.                          -
+ * ----------------------------------------------------------------------
+ */
+#pragma once
+
+#include "core/excore.h"
+#include "3rdparty/opencv/exopencv.h"
+#include "core/utils/typehelper.h"
+#include "core/utils/spatialtile.h"
+
+#include <cassert>
+#include <climits>
+#include <memory>
+#include <vector>
+#include <utility>
+
+namespace earthxpert {
+/**
+ * The class InterpGrid stores a 2D grid and performs bilinear
+ * interpolation to provide values at specified locations. If the
+ * requested location falls outside the grid, it will extrapolate from
+ * the nearest points.
+ *
+ * \param Ty A fundamental data type of elements on the grid
+ * \remark The 2D coordinate system
+ */
+template <typename Ty> class EXCORE_EXPORTS InterpGrid {
+  static_assert(std::is_floating_point_v<Ty>, "Requires that template argument be floating data type");
+
+public:
+  using ValueType = Ty;
+
+  InterpGrid(unsigned dim, Ty minX, Ty minY, Ty maxX, Ty maxY, Ty spcX, Ty spcY);
+  InterpGrid(unsigned dim, const cv::Point_<Ty>& min,
+    const cv::Point_<Ty>& max, const cv::Point_<Ty>& spc);
+  InterpGrid(unsigned dim, const SpatialTile<Ty>& range, Ty spcX, Ty spcY);
+  InterpGrid(unsigned dim, const SpatialTile<Ty>& range,
+    const cv::Point_<Ty>& spc);
+  InterpGrid(const InterpGrid &rhs);
+  InterpGrid(InterpGrid &&rhs) noexcept;
+  ~InterpGrid() = default;
+
+  InterpGrid &operator=(const InterpGrid &rhs);
+  InterpGrid &operator=(InterpGrid &&rhs) noexcept;
+
+  bool operator==(const InterpGrid &rhs) const;
+  bool operator!=(const InterpGrid &rhs) const;
+
+  std::unique_ptr<InterpGrid> Clone() const {
+    return std::make_unique<InterpGrid>(*this);
+  }
+
+  /**
+   * Interpolate a value for the given x,y position.
+   */
+  void GetVal(const cv::Point_<Ty>& point, Ty *const z) const {
+    assert(z);
+    GetVal(point.x, point.y, z);
+  }
+  void GetVal(Ty x, Ty y, Ty *const z, uint32_t len=UINT_MAX) const;
+
+  void operator()(cv::Point_<Ty> point, Ty* const z) const {
+    GetVal(point, z);
+  }
+  void operator()(Ty x, Ty y, Ty* const z, uint32_t len = UINT_MAX) const {
+    GetVal(x, y, z, len);
+  }
+
+  // \return Return value of the 1st dimension
+  Ty GetVal1(const cv::Point_<Ty>& point) const {
+    return GetVal1(point.x, point.y);
+  }
+  Ty GetVal1(Ty x, Ty y) const;
+
+  // \return Return values of the beginning two dimensions
+  std::pair<Ty, Ty> GetVal2(const cv::Point_<Ty>& point) const {
+    return GetVal2(point.x, point.y);
+  }
+  std::pair<Ty, Ty> GetVal2(Ty x, Ty y) const;
+
+  // \return Return values of the beginning three dimensions
+  Tuple3<Ty> GetVal3(const cv::Point_<Ty>& point) const {
+    return GetVal3(point.x, point.y);
+  }
+  Tuple3<Ty> GetVal3(Ty x, Ty y) const;
+
+  /**
+   * Get the dimension of points stored in the grid
+   *
+   * \return Point dimension
+   */
+  unsigned GetDimension() const noexcept { return mDim; }
+
+  /**
+   * Get the x- and y-coordinate that are used to compute indices within the
+   * interpolation grid.
+   *
+   * \return Returns {x-offset, y-offset}
+   * \remark The x grid index is computed as (x - offX) / spcX
+   */
+  std::pair<Ty, Ty> GetOffsets() const noexcept { return { mOffX, mOffY }; }
+
+  /**
+   * Get the x- and y-spacing that are used to compute indices within the
+   * interpolation grid.
+   *
+   * \return Returns {x spacing, y spacing}
+   */
+  std::pair<Ty, Ty> GetSpacing(Ty &spcX, Ty &spcY) const noexcept {
+    return { mSpcX, mSpcY };
+  }
+
+  void GetNodes(cv::Point_<Ty> *const gridNodes) const;
+  void GetNodes(Ty *const gridNodes) const;
+
+  /**
+   * Get a pointer to the array storing the values for the grid points.  They
+   * are stored in the same order as the node points populated by
+   * GetNodes().
+   *
+   * return Pointer to data array
+   */
+  Ty *GetArray() noexcept { return mGrid.data(); }
+
+  const Ty *GetArray() const noexcept { return mGrid.data(); }
+
+  /**
+   * Get the number of node points defining the grid.
+   *
+   * \return Number of grid nodes
+   */
+  size_t GetNumNodes() const noexcept {
+    return static_cast<size_t>(mNumX) * static_cast<size_t>(mNumY);
+  }
+
+  /**
+   * Get the number of grid nodes in the x and y directions
+   *
+   * \return Returns Number of grid nodes in x & y directions
+   */
+  std::pair<unsigned, unsigned> GetSize() const { return { mNumX, mNumY }; }
+
+  /**
+   * Get the size of the data array in bytes.
+   *
+   * \return Returns size of the data array in bytes.
+   */
+  size_t GetSizeBytes() const { return sizeof(Ty) * mNumX * mNumY * mDim; }
+
+  void Swap(InterpGrid& rhs) noexcept;
+
+private:
+  unsigned mDim{1};   // Dimension of node points stored in the grid.
+  unsigned mNumX{0};  // Number of grid nodes in the x-dimension
+  unsigned mNumY{0};  // Number of grid nodes in the y-dimension
+  Ty mOffX{0};           // x coordinate offset
+  Ty mOffY{0};           // y coordinate offset
+  Ty mSpcX{1};           // x coordinate spacing of grid points
+  Ty mSpcY{1};           // y coordinate spacing of grid points
+  std::vector<Ty> mGrid; // Array of target coordinates for node points
+
+  /**
+   * Set the dimension of points that are stored in the grid.
+   *
+   * \param [in] dim New dimension of points for the grid
+   */
+  void SetDimension(const unsigned dim) { mDim = dim; }
+
+  void LayoutNodes(Ty minX, Ty minY, Ty width, Ty height, Ty spcX, Ty spcY);
+  inline void LayoutNodes(const cv::Point_<Ty>& min, 
+    const cv::Point_<Ty>& max, const cv::Point_<Ty>& spc) {
+    LayoutNodes(min.x, min.y, max.x-min.x, max.y-min.y, spc.x, spc.y);
+  }
+  inline void LayoutNodes(const SpatialTile<Ty>& range, Ty spcX, Ty spcY) {
+    LayoutNodes(range.minX, range.minY, range.width, range.height, spcX, spcY);
+  }
+
+  void CopyFrom(const InterpGrid &rhs);
+  void MoveFrom(InterpGrid &&rhs) noexcept;
+  void Clear() noexcept;
+
+  // cached temporaries for performance
+  Ty mInvSpcX{1};
+  Ty mInvSpcY{1};
+};
+
+using InterpGridF = InterpGrid<float>;
+using InterpGridD = InterpGrid<double>;
+// using InterpGridLD = InterpGrid<long double>;
+
+#include "detail/interpgrid.hh"
+} // namespace earthxpert
+
+namespace std {
+template<typename Ty>
+void swap(earthxpert::InterpGrid<Ty>& lhs, 
+  earthxpert::InterpGrid<Ty>& rhs) noexcept {
+  lhs.Swap(rhs);
+}
+}

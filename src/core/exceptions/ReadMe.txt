@@ -1,0 +1,1 @@
+specialized exceptions derived from std::exception.

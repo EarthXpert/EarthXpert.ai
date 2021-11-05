@@ -1,0 +1,119 @@
+/* -----------------------------------------------------------------------------
+ *  Copyright (c) 2019.  All rights reserved.
+ * -----------------------------------------------------------------------------
+ */
+#pragma once
+
+#include "io/exio.h"
+#include "3rdparty/gdal/exgdal.h"
+#include "core/datasource/iraster.h"
+#include "core/datasource/metadata.h"
+#include "core/spatialref/geocoding.h"
+#include "core/spatialref/isrs.h"
+#include "core/utils/rasterwindow.h"
+
+namespace earthxpert {
+//class IPyramidReader;
+using RasterType = IRaster::RasterType;
+
+/**
+ *  The interface IRasterReader defines the behaviors for reading an image file
+ *  and deserialize pixle block in an IRaster object.
+ */
+class EXIO_EXPORTS IRasterReader {
+public:
+  virtual ~IRasterReader() = default;
+
+  /**
+   *  \return Returns metadata tags
+   */
+  virtual UPRasterMetadata GetMetadata() const = 0;
+
+  /**
+   *  \return Returns width and height of image file [unit: pixels]
+   */
+  virtual std::pair<int, int> GetSize() const noexcept = 0;
+
+  /**
+   *  \return Return the number of channels contained in the image file
+   */
+  virtual int GetNumBands() const noexcept = 0;
+
+  /**
+   *  \return Returns metadata NODATA_VALUES.
+   */
+  virtual std::vector<double>& GetNodataValues() noexcept = 0;
+
+  /**
+   *  \brief Set the margin size and kind.
+   *
+   *  \param [in] marginCols the horizontal margin size
+   *  \param [in] marginRows the vertical margin size
+   *  \param [in] marginKind the margin kind.
+   */
+  virtual void SetMargins(int marginCols, int marginRows, MarginKind marginKind) = 0;
+
+  /**
+   *  \return Returns margin size.
+   */
+  virtual std::pair<int, int> GetMargins() const noexcept = 0;
+
+  /**
+   *  \return Returns the margin kind.
+   */
+  virtual MarginKind GetMarginKind() const noexcept = 0;
+
+  /**
+   *  \brief Fetch the ground coordinate system where the image file operates.
+   *
+   *  \return Returns pointer to a coordinate system
+   */
+  virtual UPSpatialRefSys GetCoordinateSystem() const = 0;
+
+  /**
+   *  \brief Fetch the geocoding information of the image file.
+   */
+  virtual UPGeocoding GetGeocoding() const = 0;
+
+  /**
+   *  \brief Reads the entire image.
+   *
+   *  \param [in] rasterType type of data structure
+   *  \return Returns pointer to raster object holding the entire image
+   */
+  virtual UPIRaster ReadRaster(RasterType rasterType = RasterType::eRT_CVMAT) = 0;
+
+  /**
+   *  \brief Reads a pixel block defined by offsets, size, internal
+   *  margin size, and kind. the offsets are relative to the upper-left corner
+   *  pixel whose coordinates are (0, 0).
+   *
+   *  \param [in] colOffset starting column
+   *  \param [in] rowOffset starting row
+   *  \param [in] numCols horizontal width
+   *  \param [in] numRows vertical height
+   *  \return Returns pointer to raster object holding a pixel block
+   */
+  virtual UPIRaster ReadRaster(int colOffset, int rowOffset,
+    int numCols, int numRows, RasterType rasterType = RasterType::eRT_CVMAT) = 0;
+
+  virtual UPIRaster ReadRaster(const RasterWindow& win,
+    RasterType rasterType = RasterType::eRT_CVMAT) = 0;
+
+  /**
+   *  \brief Reads a pixel block defined by the passed raster object, populates
+   *  the associated buffer.
+   *
+   *  \param [in/out] raster the raster object to be populated with the pixel block.
+   */
+  virtual void ReadRaster(IRaster* const raster) = 0;
+
+  /**
+   *  \return Returns an IPyramidReader object for accessing downsampled image overviews.
+   */
+  //virtual std::unique_ptr<IPyramidReader> GetPyramidReader() = 0;
+};
+
+using UPIRasterReader = std::unique_ptr<IRasterReader>;
+using SPIRasterReader = std::shared_ptr<IRasterReader>;
+} // namespace earthxpert

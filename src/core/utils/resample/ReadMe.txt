@@ -1,0 +1,1 @@
+image resampling algorithms: NN, Bi-Linear, Bi-Cubic, Gaussian, Symmetric kernel, etc.

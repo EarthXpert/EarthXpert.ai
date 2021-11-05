@@ -1,0 +1,26 @@
+/* -----------------------------------------------------------------------------
+ *  Copyright (c) 2020.  All rights reserved.
+ * -----------------------------------------------------------------------------
+ */
+
+#pragma once
+
+#include <string>
+
+// \todo env
+#ifdef NDEBUG
+  #define SDK_CONFIG_BIN_PATH "@CMAKE_INSTALL_PREFIX@/@EARTHXPERT_BIN_ROOT@/release/"
+  #define SDK_CONFIG_EXT ".exe"
+#else
+  #define SDK_CONFIG_BIN_PATH "@CMAKE_INSTALL_PREFIX@/@EARTHXPERT_BIN_ROOT@/debug/"
+  #define SDK_CONFIG_EXT "d.exe"
+#endif
+
+class SdkConfig {
+public:
+  static std::string BinPath(const std::string &name) {
+    std::string dir_path = SDK_CONFIG_BIN_PATH;
+    std::string exe_ext = SDK_CONFIG_EXT;
+    return dir_path + name + exe_ext;
+  }
+};

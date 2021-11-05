@@ -1,0 +1,199 @@
+/* -----------------------------------------------------------------------------
+ *  Copyright (c) 2019.  All rights reserved.
+ * -----------------------------------------------------------------------------
+ */
+#include <boost/math/interpolators/barycentric_rational.hpp>
+#include <boost/math/interpolators/cardinal_cubic_b_spline.hpp>
+#include <boost/math/tools/roots.hpp>
+#include <boost/random/uniform_real_distribution.hpp>
+#include <boost/range/adaptors.hpp>
+
+#include <iostream>
+#include <random>
+#include <vector>
+
+namespace bm = boost::math;
+namespace bmi = bm::interpolators;
+namespace bmt = bm::tools;
+namespace brd = boost::random;
+
+constexpr double kStep = 0.01;
+constexpr double kTol = 1.0e-8;
+
+/**
+ *  \brief The cardinal cubic B-spline class provided by Boost allows fast and accurate interpolation of a function which is known at equally spaced points.
+ *
+ *  \url https://www.boost.org/doc/libs/master/libs/math/doc/html/math_toolkit/cardinal_cubic_b.html
+ */
+TEST(bmi, cardinal_cubic_b_spline) {
+  std::vector<double> y(500);
+  for (size_t i = 0; i < y.size(); ++i) {
+    y[i] = sin(kStep * i);
+  }
+
+  bmi::cardinal_cubic_b_spline<double> spline(y.data(), y.size(), 0, kStep);
+
+  // extrapolated values are not reliable
+  ASSERT_NE(sin(-0.01), spline(-0.01)) << "extrapolated value";
+  ASSERT_NE(cos(-0.01), spline.prime(-0.01)) << "extrapolated value";
+  ASSERT_NE(sin(5.01), spline(5.01)) << "extrapolated value";
+  ASSERT_NE(cos(5.01), spline.prime(5.01)) << "extrapolated value";
+
+  std::mt19937 gen;
+  brd::uniform_real_distribution<double> abscissa(0, y.size() * kStep);
+  for (size_t i = 0; i < 10; ++i) {
+    const double x = abscissa(gen);
+    ASSERT_NEAR(sin(x), spline(x), kTol) << "interpolated value";
+    ASSERT_NEAR(cos(x), spline.prime(x), kTol) << "interpolated value";
+  }
+
+  // figure out when the population of the United States crossed 100 million.
+  // Since the census is taken every 10 years, the data is equally spaced, so use the cubic b spline.
+  // Data taken from https://en.wikipedia.org/wiki/United_States_Census
+  constexpr double t0 = 1860;  // start year
+  constexpr double time_step = 10;
+  std::vector<double> population{ 31443321,    // 1860
+                                  39818449,    // 1870
+                                  50189209,    // 1880
+                                  62947714,    // 1890
+                                  76212168,    // 1900
+                                  92228496,    // 1910
+                                  106021537,   // 1920
+                                  122775046,   // 1930
+                                  132164569,   // 1940
+                                  150697361,   // 1950
+                                  179323175 }; // 1960
+
+  // An eyeball estimate indicates that the population crossed 100 million around 1915.
+  bmi::cardinal_cubic_b_spline<double> p(population.data(), population.size(), t0, time_step);
+
+  // create a function which has a zero at p = 100,000,000:
+  auto f = [=](const double t) { return p(t) - 100000000; };
+
+  // bisection algorithm
+  auto tol = [](const double left, const double right) {
+    double left_month = std::round((left - std::floor(left)) * 12 + 1);
+    double right_month = std::round((right - std::floor(right)) * 12 + 1);
+    return (left_month == right_month) && (std::floor(left) == std::floor(right)); };
+
+  std::uintmax_t numIters = 1000;
+  auto result = bmt::bisect(f, 1910.0, 1920.0, tol, numIters);
+  auto time = result.first;  // termination condition ensures that both endpoints yield the same result
+  auto month = std::round((time - std::floor(time)) * 12 + 1);
+  auto year = std::floor(time);
+  std::cout << "The population of the United States surpassed 100 million on the "
+    << month << "th month of " << year << std::endl;
+  std::cout << "Found in " << numIters << " iterations" << std::endl;
+
+  // the cubic B spline offers the first derivative, or equally Newton iterations,
+  // this takes "number of bits correct" as a termination condition - 20 should be plenty for what we need,
+  auto f_n = [=](const double t) { return std::make_pair(f(t), p.prime(t)); };
+  numIters = 1000;
+  time = bmt::newton_raphson_iterate(f_n, 1910.0, 1900.0, 2000.0, 20, numIters);
+  month = std::round((time - std::floor(time)) * 12 + 1);
+  year = std::floor(time);
+  std::cout << "The population of the United States surpassed 100 million on the "
+    << month << "th month of " << year << std::endl;
+  std::cout << "Found in " << numIters << " iterations" << std::endl;
+}
+
+/**
+ *  \brief Barycentric rational interpolation is a high-accuracy interpolation method for non-uniformly spaced samples.
+ *
+ *  \url https://www.boost.org/doc/libs/master/libs/math/doc/html/math_toolkit/barycentric.html
+ */
+TEST(bmi, barycentric_rational) {
+  // equally use an unordered_map, a list of tuples or pairs, or a 2D array.
+  std::map<double, double> xy{
+    {0.02, 5.727}, {0.04, 5.544}, {0.06, 5.450}, {0.08, 5.351},
+    {0.10, 5.253}, {0.12, 5.157}, {0.14, 5.058}, {0.16, 4.960},
+    {0.18, 4.862}, {0.20, 4.762}, {0.24, 4.563}, {0.28, 4.360},
+    {0.32, 4.1584}, {0.36, 3.9463}, {0.40, 3.7360}, {0.44, 3.5429},
+    {0.48, 3.3797}, {0.52, 3.2417}, {0.56, 3.1209}, {0.60, 3.0138},
+    {0.68, 2.8342}, {0.76, 2.6881}, {0.84, 2.5662}, {0.92, 2.4242},
+    {1.00, 2.3766}, {1.08, 2.3058}, {1.16, 2.2458}, {1.24, 2.2035},
+    {1.32, 2.1661}, {1.40, 2.1350}, {1.48, 2.1090}, {1.64, 2.0697},
+    {1.80, 2.0466}, {1.96, 2.0325}, {2.12, 2.0288}, {2.28, 2.0292},
+    {2.44, 2.0228}, {2.60, 2.0124}, {2.76, 2.0065}, {2.92, 2.0031},
+    {3.08, 2.0015}, {3.24, 2.0008}, {3.40, 2.0004}, {3.56, 2.0002},
+    {3.72, 2.0001} };
+
+  // the abscissa that will generate a potential of exactly 3.0,
+  auto x_range = boost::adaptors::keys(xy);
+  auto y_range = boost::adaptors::values(xy);
+  bm::barycentric_rational<double> br(x_range.begin(), x_range.end(), y_range.begin());
+
+  // extrapolated values are not reliable
+  ASSERT_NEAR(5.9021148470477067, br(0.01), kTol) << "extrapolated value";
+  ASSERT_NEAR(-21.429414212206055, br.prime(0.01), kTol) << "extrapolated prime";
+  ASSERT_NEAR(2.1613367112861273, br(3.73), kTol) << "extrapolated value";
+  ASSERT_NEAR(18.051802894316154, br.prime(3.73), kTol) << "extrapolated prime";
+
+  // simple bisection to find the root:
+  boost::uintmax_t numIters = (std::numeric_limits<boost::uintmax_t>::max)();
+  double abscissa_3 = bmt::bisect([=](double x) { return br(x) - 3; }, 
+    0.44, 1.24, bmt::eps_tolerance<double>(), numIters).first;
+  std::cout << "Abscissa value that yields a potential of 3 = " << abscissa_3 << std::endl;
+  std::cout << "Root was found in " << numIters << " iterations." << std::endl;
+  
+  // a more efficient root finding algorithm than simple bisection:
+  numIters = (std::numeric_limits<boost::uintmax_t>::max)();
+  abscissa_3 = bmt::bracket_and_solve_root([=](double x) { return br(x) - 3; },
+    0.6, 1.2, false, bmt::eps_tolerance<double>(), numIters).first;
+  std::cout << "Abscissa value that yields a potential of 3 = " << abscissa_3 << std::endl;
+  std::cout << "Root was found in " << numIters << " iterations." << std::endl;
+}
+
+/**
+ *  \brief numpy.roots & scipy.optimize.root_scalar give ?in-accurate? results
+ *
+ *  The 4th-degree polynomial is defined as
+ *
+ *    p = [-111771096449024.0, 217294897152.0, -158545696.0, 90966.953125, -224.7299041748047]
+ *    
+ *  numpy.roots(p) gives
+ *    
+ *    array([ 0.00130425+0.0007497j ,  0.00130425-0.0007497j ,
+ *      -0.0003322 +0.00088209j, -0.0003322 -0.00088209j])
+ *
+ *  sol = optimize.root_scalar(f, x0=0.0, fprime=fp, method='newton') gives
+ *  numpy.polyval(p, -0.0014738052049961723) -> -1926.1301751412711
+ *
+ *  sol = optimize.root_scalar(f, x0=0.0, fprime=fp, fprime2=fp2, method='halley') gives
+ *  numpy.polyval(p, 0.005389882777731355) -> -64645.486852989656
+ *
+ *               x,                     y
+ *    (0.0008800000000000001, -186.40499217782912)
+ *    (0.0009200000000000002, -186.10048214826992)
+ *    (0.0009600000000000003, -186.20112075813955)
+ */
+TEST(bmt, roots) {
+  const std::vector<double> p{ -111771096449024.0, +217294897152.0, -158545696.0, +90966.953125, -224.7299041748047 };
+
+  auto f = [&p](const double x) {
+    const double x2 = x * x;
+    const double x3 = x2 * x;
+    const double x4 = x3 * x;
+    return p[0] * x4 + p[1] * x3 + p[2] * x2 + p[3] * x + p[4];
+  };
+  auto fp = [&p](const double x) {
+    const double x2 = x * x;
+    const double x3 = x2 * x;
+    return p[0] * 4 * x3 + p[1] * 3 * x2 + p[2] * 2 * x + p[3];
+  };
+
+  // bisect
+  boost::uintmax_t numIters = (std::numeric_limits<boost::uintmax_t>::max)();
+  auto r1 = bmt::bisect(f, 0.0, 0.01, bmt::eps_tolerance<double>(), numIters);
+  std::cout << "bisect: root " << r1.first << " in " << numIters << " iterations." << std::endl;
+
+  // newton_raphson_iterate
+  auto f_n = [=](const double x) { return std::make_pair(f(x), fp(x)); };
+  numIters = (std::numeric_limits<boost::uintmax_t>::max)();
+  auto r2 = bmt::newton_raphson_iterate(f_n, 0.0, 0.0, 0.01, 20, numIters);
+  std::cout << "newton_raphson_iterate: root " << r2 << " in " << numIters << " iterations." << std::endl;
+
+  // halley_iterate
+  // schroder_iterate
+  // complex_newton
+}
