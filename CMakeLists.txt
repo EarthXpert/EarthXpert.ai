@@ -44,7 +44,7 @@ add_subdirectory(cmake)
 # section third-party
 if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
   if (MSVC)
-    set(CMAKE_CXX_FLAGS  "${CMAKE_CXX_FLAGS} /W1")
+    set(CMAKE_CXX_FLAGS  "${CMAKE_CXX_FLAGS} /W1 /bigobj")
   endif()
   add_definitions(-D_CRT_SECURE_NO_WARNINGS -DCPL_DISABLE_DLL)
 
