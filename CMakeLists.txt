@@ -8,7 +8,7 @@ if(POLICY CMP0079)
   cmake_policy(SET CMP0079 NEW)
 endif()
 
-project(earthxpert)
+project(mapleaps)
 set(EARTHXPERTAI_VERSION 1.0.0)
 
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
@@ -44,7 +44,7 @@ add_subdirectory(cmake)
 # section third-party
 if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
   if (MSVC)
-    set(CMAKE_CXX_FLAGS  "${CMAKE_CXX_FLAGS} /W1")
+    set(CMAKE_CXX_FLAGS  "${CMAKE_CXX_FLAGS} /W1 /bigobj")
   endif()
   add_definitions(-D_CRT_SECURE_NO_WARNINGS -DCPL_DISABLE_DLL)
 
