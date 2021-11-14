@@ -72,6 +72,11 @@ namespace thirdparty {
 /**
  *  \brief calculate the squared norm of a vector
  */
+template<typename PointTy> inline double normL2(const PointTy& pt) {
+  // requires ddot()
+  return sqrt(pt.ddot(pt));
+}
+
 template<typename PointTy> inline double normL2Sqr(const PointTy& pt) {
   // requires ddot()
   return pt.ddot(pt);
