@@ -109,23 +109,23 @@ Point3d EarthEllipsoid::XYZToLPH(const double X, const double Y,
 
   const double lon = 2.0 * atan2(Y, X + p);
   double lat = atan(Z / (p * (1.0 - mEccSq)));
-  double height{};
+  double hgt{};
 
-  double hgt{ -mA };  // Height from previous iteration, default to earth center.
+  double h{ -mA };  // Height from previous iteration, default to earth center.
   double dh{ 1.0 };
 
   while (kTolH < fabs(dh)) {
     const double cp = cos(lat);
     const double N = RadiusInPrimeVertical(cp);
     
-    height = p / cp - N;
-    lat = atan(Z / (p * (1.0 - (N * mEccSq / (N + height)))));
+    hgt = p / cp - N;
+    lat = atan(Z / (p * (1.0 - (N * mEccSq / (N + hgt)))));
 
-    dh = height - hgt;
-    hgt = height;
+    dh = hgt - h;
+    h = hgt;
   }
 
-  return {lon, lat, height};
+  return {lon, lat, hgt};
 }
 
 /**
@@ -155,7 +155,48 @@ void EarthEllipsoid::SetLsrOrigin(const Point3d& origin) {
  * 
  *  \return Returns Cartesian XYZ coordinates [m]
  */
-Point3d EarthEllipsoid::RayIntersect(const Point3d& xyz, 
-  const double height) const {
-  return {};
+Point3d EarthEllipsoid::RayIntersect(const Point3d& origin,
+  const Point3d& ray, const double height) const {
+  // step 1: closed form at cm
+
+  // check the angle between ray and the vector from earth center to origin
+  // to ensure the ray is pointed at least approximately at the earth
+  const double det = origin.dot(ray);
+  if (0.0 <= det) 
+    return {};
+
+  const Point3d org = origin * 1.0e-3;  // [km]
+  const double ah = (mA + height) * 1.0e-3;  // inflated semi-major axis [km]
+  const double bh = (mB + height) * 1.0e-3;  // inflated semi-minor axis [km]
+
+  const double ah2 = ah * ah;
+  const double eh2 = (bh * bh) / ah2;  // 1.0 - modified eccentricity squared
+
+  // quadratic equation of the form ar^2 + br + c = 0 where r is range
+  const double a = (ray.x * ray.x + ray.y * ray.y) * eh2 + ray.z * ray.z;
+  const double b = ((ray.x * org.x + ray.y * org.y) * eh2 + ray.z * org.z) * 2.0;
+  const double c = (org.x * org.x + org.y * org.y - ah2) * eh2 + org.z * org.z;
+
+  const double d = b * b - 4.0 * a * c;
+  if (0.0 >= d)   //  ensure the quadratic equation has a non-imaginary solution
+    return {};
+
+  const double range = ((-b - sqrt(d)) / (2.0 * a)) * 1000.0;   // [m]
+  assert(0.0 < range);  //  check if in the right direction
+
+  Point3d xyz = origin + ray * range;
+
+  // step 2: refine range at mm
+  int iter{};
+  for (iter = 0; iter < kMaxIterRI; ++iter) {
+    const auto lph = XYZToLPH(xyz);
+    const double dh = lph.z - height;
+
+    xyz += ray * dh;
+
+    if (fabs(dh) < kTolHRI)
+      break;
+  }
+
+  return xyz;
 }

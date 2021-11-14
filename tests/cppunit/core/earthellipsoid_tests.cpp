@@ -8,11 +8,13 @@
 #include "core/spatialref/earthellipsoid.h"
 #include "core/utils/typehelper.h"
 #include <cmath>
+#include <iostream>
 
 using namespace earthxpert;
 
 constexpr double kTolD = 1.0e-10; // [10um]
 constexpr double kTol = 1.0e-5; // [10um]
+constexpr double kTolRI = 1.0e-3; // [mm]
 
 TEST(earthellipsoid, ECEF_LPH) {
   EarthEllipsoid ee;
@@ -154,4 +156,40 @@ TEST(earthellipsoid, Inflate_Octant) {
     std::cout << "max distance at height " << hgt << " & lat " << maxLat 
       << ": " << maxDist << std::endl;
   }
+}
+
+/**
+ *  Test 5: ray intersection
+ */
+TEST(earthellipsoid, RayIntersect) {
+  EarthEllipsoid ee;
+  const Point3d org = ee.LPHToXYZ(Point3d{ Deg2Rad(0.0), Deg2Rad(45.0), 400'000.0 });
+
+  double diffX{}, diffY{}, diffZ{};
+  double maxDiffX{ -1.0 }, maxDiffY{ -1.0 }, maxDiffZ{ -1.0 };
+
+  for (double hgt = -2000.0; hgt < 10000.0; hgt += 1000.0) {
+    const Point3d grd = ee.LPHToXYZ(Point3d{ Deg2Rad(1.0), Deg2Rad(46.0), hgt });
+
+    const Point3d los = grd - org;  // line of sight poiting from satellite to ground
+    const Point3d ray = los * (1.0 / thirdparty::normL2(los)); // unit view vector
+    const Point3d grdN = ee.RayIntersect(org, ray, hgt);
+
+    diffX = fabs(grd.x - grdN.x);
+    if (maxDiffX < diffX)
+      maxDiffX = diffX;
+    diffY = fabs(grd.y - grdN.y);
+    if (maxDiffY < diffY)
+      maxDiffY = diffY;
+    diffZ = fabs(grd.z - grdN.z);
+    if (maxDiffZ < diffZ)
+      maxDiffZ = diffZ;
+
+    std::cout << "Difference at height " << hgt << ": " 
+      << diffX << ", " << diffY << ", " << diffZ << std::endl;
+  }
+
+  ASSERT_LT(maxDiffX, kTolRI) << "X difference > 1 mm";
+  ASSERT_LT(maxDiffY, kTolRI) << "Y difference > 1 mm";
+  ASSERT_LT(maxDiffZ, kTolRI) << "Z difference > 1 mm";
 }
