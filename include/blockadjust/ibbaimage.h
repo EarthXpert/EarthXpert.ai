@@ -20,7 +20,12 @@ public:
   virtual bool ImageToGround(const Point2d& image, Point3d& ground) const = 0;
   virtual bool GroundToImage(const Point3d& ground, Point2d& image) const = 0;
 
+  virtual bool AddPointObs() const = 0;
+
   virtual void UpdateModel() = 0;
+
+private:
+  virtual bool CalcJacobian() const = 0;
 };
 
 using UPIBbaImage = std::unique_ptr<IBbaImage>;
