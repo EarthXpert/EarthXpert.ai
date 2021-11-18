@@ -31,6 +31,9 @@ constexpr inline double Rad2Gon(const double rad) {
   return rad * kRAD2GON;
 }
 
+constexpr double kKM2METER = 1000.0;
+constexpr double kMETER2KM = 1.0e-3;
+
 constexpr double kFOOT2METER = 0.3048;
 constexpr double kMETER2FOOT = 1.0 / kFOOT2METER;
 constexpr double kUSFT2METER = 0.3048006096;

@@ -152,23 +152,44 @@ void EarthEllipsoid::SetLsrOrigin(const Point3d& origin) {
 
 /**
  *  Ray-Ellipsoid intersection.
+ *
+ *  \return Returns Cartesian XYZ coordinates [m]
+ */
+Point3d EarthEllipsoid::RayIntersect(const Point3d& origin, const Point3d& ray, double height) const {
+  // step 1: closed form at cm
+  Point3d xyz = RayIntersect0(origin, ray, height);
+  
+  // step 2: refined to mm
+  int iter{};
+  for (iter = 0; iter < kMaxIterRI; ++iter) {
+    const auto lph = XYZToLPH(xyz);
+    const double dh = lph.z - height;
+
+    xyz += ray * dh;
+
+    if (fabs(dh) < kTolHRI)
+      break;
+  }
+  return xyz;
+}
+
+/**
+ *  Ray-Ellipsoid intersection using infalted ellipsoid.
  * 
  *  \return Returns Cartesian XYZ coordinates [m]
  */
-Point3d EarthEllipsoid::RayIntersect(const Point3d& origin,
+Point3d EarthEllipsoid::RayIntersect0(const Point3d& origin,
   const Point3d& ray, const double height) const {
-  // step 1: closed form at cm
+  const Point3d org = origin * kMETER2KM;  // [km]
 
   // check the angle between ray and the vector from earth center to origin
   // to ensure the ray is pointed at least approximately at the earth
-  const double det = origin.dot(ray);
-  if (0.0 <= det) 
+  const double det = org.dot(ray);
+  if (0.0 <= det)
     return {};
 
-  const Point3d org = origin * 1.0e-3;  // [km]
-  const double ah = (mA + height) * 1.0e-3;  // inflated semi-major axis [km]
-  const double bh = (mB + height) * 1.0e-3;  // inflated semi-minor axis [km]
-
+  const double ah = (mA + height) * kMETER2KM;  // inflated semi-major axis [km]
+  const double bh = (mB + height) * kMETER2KM;  // inflated semi-minor axis [km]
   const double ah2 = ah * ah;
   const double eh2 = (bh * bh) / ah2;  // 1.0 - modified eccentricity squared
 
@@ -181,22 +202,9 @@ Point3d EarthEllipsoid::RayIntersect(const Point3d& origin,
   if (0.0 >= d)   //  ensure the quadratic equation has a non-imaginary solution
     return {};
 
-  const double range = ((-b - sqrt(d)) / (2.0 * a)) * 1000.0;   // [m]
+  const double range = ((-b - sqrt(d)) / (2.0 * a)) * kKM2METER;   // [m]
   assert(0.0 < range);  //  check if in the right direction
 
-  Point3d xyz = origin + ray * range;
-
-  // step 2: refine range at mm
-  int iter{};
-  for (iter = 0; iter < kMaxIterRI; ++iter) {
-    const auto lph = XYZToLPH(xyz);
-    const double dh = lph.z - height;
-
-    xyz += ray * dh;
-
-    if (fabs(dh) < kTolHRI)
-      break;
-  }
-
+  const Point3d xyz = origin + ray * range;
   return xyz;
 }
