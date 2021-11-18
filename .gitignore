@@ -16,3 +16,6 @@ test/samples/
 *.bin
 *.json
 *.pyc
+
+vim.exe.stackdump
+
