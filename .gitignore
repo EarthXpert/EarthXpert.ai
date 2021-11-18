@@ -5,6 +5,7 @@ build_win/
 build_linux/
 test/samples/
 
+*.bak
 *.ipch
 *.opendb
 *.db
@@ -17,3 +18,4 @@ test/samples/
 *.pyc
 
 vim.exe.stackdump
+
