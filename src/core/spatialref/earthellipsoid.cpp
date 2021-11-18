@@ -109,23 +109,23 @@ Point3d EarthEllipsoid::XYZToLPH(const double X, const double Y,
 
   const double lon = 2.0 * atan2(Y, X + p);
   double lat = atan(Z / (p * (1.0 - mEccSq)));
-  double height{};
+  double hgt{};
 
-  double hgt{ -mA };  // Height from previous iteration, default to earth center.
+  double h{ -mA };  // Height from previous iteration, default to earth center.
   double dh{ 1.0 };
 
   while (kTolH < fabs(dh)) {
     const double cp = cos(lat);
     const double N = RadiusInPrimeVertical(cp);
-    
-    height = p / cp - N;
-    lat = atan(Z / (p * (1.0 - (N * mEccSq / (N + height)))));
 
-    dh = height - hgt;
-    hgt = height;
+    hgt = p / cp - N;
+    lat = atan(Z / (p * (1.0 - (N * mEccSq / (N + hgt)))));
+
+    dh = hgt - h;
+    h = hgt;
   }
 
-  return {lon, lat, height};
+  return { lon, lat, hgt };
 }
 
 /**
