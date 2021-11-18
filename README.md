@@ -1,4 +1,4 @@
-# MapLeaps.ai
+# EarthXpert.ai
 
 Software platform and system for cloud geospatial computation.
 

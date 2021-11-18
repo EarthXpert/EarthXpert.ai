@@ -8,7 +8,7 @@ if(POLICY CMP0079)
   cmake_policy(SET CMP0079 NEW)
 endif()
 
-project(mapleaps)
+project(earthxpert)
 set(EARTHXPERTAI_VERSION 1.0.0)
 
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
