@@ -31,6 +31,10 @@ public:
     mCorrOrder = order;
   }
 
+  bool AddPointObs() const {
+    return false;
+  }
+
   void UpdateModel() override {
     mRatModel->SetCorrection(mLineCorr, mSampCorr, mCorrOrder);
   }
@@ -41,9 +45,13 @@ private:
   RationalModel* mRatModel{};
 
   int64_t mIndex{};   // index to the vector of unknowns
+  int mCorrOrder{-1};   // order of correction polynomial
   const double* mLineCorr{}; // polynomial for line correction
   const double* mSampCorr{}; // polynomial for sample correction
-  int mCorrOrder{};   // order of correction polynomial
+
+  bool CalcJacobian() const {
+    return false;
+  }
 };
 
 using UPRationalBbaImage = std::unique_ptr<RationalBbaImage>;

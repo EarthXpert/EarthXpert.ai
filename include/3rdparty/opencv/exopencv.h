@@ -19,6 +19,7 @@ namespace earthxpert {      // \todo ::thirdparty
 // CV_8U CV_8S CV_16U CV_16S CV_32S CV_32F CV_64F CV_16F
 constexpr size_t kNumDepth = 8;
 
+// element-wise oprators
 template<typename Ty> inline
 cv::Point_<Ty> operator+(const cv::Point_<Ty>& p, const Ty v) {
   return { p.x + v, p.y + v };
@@ -37,6 +38,26 @@ cv::Point_<Ty> operator*(const cv::Point_<Ty>& p1, const cv::Point_<Ty>& p2) {
 template<typename Ty> inline
 cv::Point_<Ty> operator/(const cv::Point_<Ty>& p1, const cv::Point_<Ty>& p2) {
   return { p1.x / p2.x, p1.y / p2.y };
+}
+
+template<typename Ty> inline
+cv::Point3_<Ty> operator+(const cv::Point3_<Ty>& p, const Ty v) {
+  return { p.x + v, p.y + v, p.z + v };
+}
+
+template<typename Ty> inline
+cv::Point3_<Ty> operator-(const cv::Point3_<Ty>& p, const Ty v) {
+  return { p.x - v, p.y - v, p.z - v };
+}
+
+template<typename Ty> inline
+cv::Point3_<Ty> operator*(const cv::Point3_<Ty>& p1, const cv::Point3_<Ty>& p2) {
+  return { p1.x * p2.x, p1.y * p2.y, p1.z * p2.z };
+}
+
+template<typename Ty> inline
+cv::Point3_<Ty> operator/(const cv::Point3_<Ty>& p1, const cv::Point3_<Ty>& p2) {
+  return { p1.x / p2.x, p1.y / p2.y, p1.z / p2.z };
 }
 
 using Point2f = cv::Point2f;
@@ -72,6 +93,11 @@ namespace thirdparty {
 /**
  *  \brief calculate the squared norm of a vector
  */
+template<typename PointTy> inline double normL2(const PointTy& pt) {
+  // requires ddot()
+  return sqrt(pt.ddot(pt));
+}
+
 template<typename PointTy> inline double normL2Sqr(const PointTy& pt) {
   // requires ddot()
   return pt.ddot(pt);
