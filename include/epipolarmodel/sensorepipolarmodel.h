@@ -245,7 +245,7 @@ public:
   }
 
   std::pair<float, float> GetHeightRange() const noexcept override {
-    return { 0.0f, 0.0f };
+    return mSensorModel->GetHeightRange();
   }
 
 protected:

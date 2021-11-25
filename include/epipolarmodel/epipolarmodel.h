@@ -112,10 +112,6 @@ public:
    */
   float GetMeanHeight() const noexcept override { return mEpiRect->mHeight; }
 
-  std::pair<float, float> GetHeightRange() const noexcept override {
-    return { 0.0f, 0.0f };
-  }
-
 private:
   friend class EpipolarStereoMarshaller;
 

@@ -25,11 +25,12 @@ namespace {
     Point2d offset;
     cv::Size2i epiSize;
     std::string epiFile;
+    std::string epiRpcFile;
 
     void write(CvFS& fs) const {
-      fs << "{" << "epiPos" << epiPos << "rawSize" << rawSize
-        << "mdlFile" << mdlFile << "bound" << bound << "offset" << offset
-        << "epiSize" << epiSize << "epiFile" << epiFile << "}";
+      fs << "{" << "epiPos" << epiPos << "rawSize" << rawSize << "mdlFile" << mdlFile 
+        << "bound" << bound << "offset" << offset << "epiSize" << epiSize 
+        << "epiFile" << epiFile << "epiRpcFile" << epiRpcFile << "}";
     }
 
     void read(const cv::FileNode& node) {
@@ -40,6 +41,7 @@ namespace {
       node["offset"] >> offset;
       node["epiSize"] >> epiSize;
       node["epiFile"] >> epiFile;
+      node["epiRpcFile"] >> epiRpcFile;
     }
   };
 
@@ -69,6 +71,8 @@ namespace {
  *
  *  \param [in] modelFile name of the file to be serialized to
  *  \param [in] epiModel the epipolar model to be serialized
+ * 
+ *  \todo relative path
  */
 bool EpipolarStereoMarshaller::Serialize(const std::string& epiMdlFile,
   const std::vector<EpiModelInfo>& epiModels) const {
@@ -131,7 +135,7 @@ bool EpipolarStereoMarshaller::SerializeFS(const std::string& epiMdlFile,
     epiMdlRecs.push_back(EpiModelRecord{ epiMdl->mPos,
       cv::Size2i(rawNumCols, rawNumRows),
       em.sensorMdlFile, ss.str(), epiRect.mOffset,
-      cv::Size2i(epiRect.mNumCols, epiRect.mNumRows), em.epiImgFile });
+      cv::Size2i(epiRect.mNumCols, epiRect.mNumRows), em.epiImgFile, em.epiRpcFile });
   }
 
   CvFS fs(epiMdlFile, CvFS::WRITE);

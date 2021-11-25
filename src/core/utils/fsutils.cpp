@@ -97,7 +97,7 @@ PathSuffixFilename(const std::string& fileName, const std::string& suffix) {
  *  \brief replace extention for filename component
  *
  *  \param [in] fileName input full path filename
- *  \param [in] ext new extension
+ *  \param [in] ext new extension. e.g., ".txt"
  *  \return Returns filename with new extension
  */
 std::string
