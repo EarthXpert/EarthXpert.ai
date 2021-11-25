@@ -9,6 +9,11 @@
 #include "sensormodel/rationalmodel.h"
 
 namespace earthxpert {
+// 
+constexpr int kNUMINTI = 20;  // number of intervals in image
+constexpr int kNUMINTL = 10;  // number of layers in ground
+constexpr int kMARGIN = 100;  // 
+
 /**
  *  The class SensorModelFactory defines the behaviours for creating
  *  sensor model from image products.
@@ -34,6 +39,7 @@ public:
    *  \brief create rational model from another sensor model
    */
   static std::unique_ptr<RationalModel> 
-  CreateRationalModel(const ISensorModel* sensorModel);
+  CreateRationalModel(const ISensorModel* sensorModel, int numInt=kNUMINTI, 
+    int numLyr=kNUMINTL, int margin=kMARGIN, bool cc=false);
 };
 } // namespace earthxpert

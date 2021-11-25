@@ -11,7 +11,6 @@
 using namespace earthxpert;
 
 namespace {
-  constexpr int kNUMINT = 10;  // number of intervals
 }
 
 /**
@@ -46,27 +45,39 @@ SensorModelFactory::CreateFilmFrameModel() {
  *           3) testing points: generalization accuracy.
  */
 std::unique_ptr<RationalModel> 
-SensorModelFactory::CreateRationalModel(const ISensorModel* sensorModel) {
-  int numHoriz{ kNUMINT }, numVert{ kNUMINT }, numLayers{ kNUMINT };
+SensorModelFactory::CreateRationalModel(const ISensorModel* sensorModel,
+  const int numInt, const int numLyr, const int margin, const bool cc) {
   CubeType cubeType{ CubeType::eMODEL };
-  SensorCube sensorCube(numHoriz, numVert, numLayers, cubeType);
-  sensorCube.SetMargins(100, 100);
+  SensorCube sensorCube(numInt, numInt, numLyr, cubeType);
+  sensorCube.SetMargins(margin, margin);
 
   // fit cube
   std::vector<Point2f> images;
   std::vector<Point3d> grounds;
   sensorCube.CreateCube(sensorModel, images, grounds);
 
+  const int maxIters = cc ? 10 : 0;
+
   RationalFit ratFit;
+  ratFit.SetCrossCorelation(maxIters, 0.9);
   auto ratModelF = ratFit.CreateRationalModel(images, grounds);
 
-  // original accuracy
-  std::array<double, 4> sstats{}, lstats{};
-  CalcStatitics(sensorModel, images, grounds, sstats, lstats);
+  auto print = [](const std::array<double, 4>& stats, const std::string& name) {
+    std::cout << name << " mean: " << stats[0] << " rms: " << stats[1]
+      << " min: " << stats[2] << " max: " << stats[3] << std::endl;
+  };
+
+  // original accuray
+  //std::array<double, 4> sstats{}, lstats{};
+  //CalcStatitics(sensorModel, images, grounds, sstats, lstats);
+  //print(lstats, "original model line -");
+  //print(sstats, "original model samp -");
 
   // Fit accuracy
   std::array<double, 4> sstatsF{}, lstatsF{};
   CalcStatitics(ratModelF.get(), images, grounds, sstatsF, lstatsF);
+  print(lstatsF, "\nfitted model line -");
+  print(sstatsF, "fitted model samp -");
 
   // QC cube
   std::vector<Point2f> imagesQC;
@@ -74,12 +85,16 @@ SensorModelFactory::CreateRationalModel(const ISensorModel* sensorModel) {
   sensorCube.CreateCubeQC(sensorModel, imagesQC, groundsQC);
 
   // original accuracy QC
-  std::array<double, 4> sstatsQC{}, lstatsQC{};
-  CalcStatitics(sensorModel, imagesQC, groundsQC, sstatsQC, lstatsQC);
+  //std::array<double, 4> sstatsQC{}, lstatsQC{};
+  //CalcStatitics(sensorModel, imagesQC, groundsQC, sstatsQC, lstatsQC);
+  //print(lstatsQC, "original model line QC -");
+  //print(sstatsQC, "original model samp QC -");
 
   // Fit accuracy QC
   std::array<double, 4> sstatsFQC{}, lstatsFQC{};
   CalcStatitics(ratModelF.get(), imagesQC, groundsQC, sstatsFQC, lstatsFQC);
+  print(lstatsFQC, "\nfitted model line QC -");
+  print(sstatsFQC, "fitted model samp QC -");
 
   return ratModelF;
 }
