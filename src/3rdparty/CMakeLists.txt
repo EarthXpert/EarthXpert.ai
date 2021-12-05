@@ -103,6 +103,7 @@ set(ex3rdparty_srcs
   "xsimd/exxsimd.cpp"
   "xtensor/exxtensor.cpp"
   "xtl/exxtl.cpp"
+  "yaml/exyaml.cpp"
   "zlib/exzlib.cpp")
 set(ex3rdparty_items Boost::boost Boost::date_time Boost::filesystem 
   Boost::iostreams Boost::locale Boost::numpy Boost::program_options Boost::python Boost::timer 
@@ -116,7 +117,7 @@ set(ex3rdparty_items Boost::boost Boost::date_time Boost::filesystem
   ${nsimd_LIBRARIES} ${PCRE_LIBRARIES} ${PDAL_LIBRARIES} ${proj_LIBRARIES} ${Protobuf_LIBRARIES} 
   ${PYTHON_LIBRARIES} Qt5::Widgets 
   ${Simd_LIBRARIES} ${SLTBENCH_LIBRARIES} ${TBB_LIBRARIES} ${tiff_LIBRARIES} tinyply
-  ${wxwidgets_LIBRARIES} ${zlib_LIBRARIES})   
+  ${wxwidgets_LIBRARIES} yaml ${zlib_LIBRARIES})   
 exai_add_library(ex3rdparty "3rdparty"
   SRCS ${ex3rdparty_srcs}
   ITEMS ${ex3rdparty_items})

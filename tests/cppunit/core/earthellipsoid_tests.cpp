@@ -166,6 +166,7 @@ TEST(earthellipsoid, RayIntersect) {
   const Point3d org = ee.LPHToXYZ(Point3d{ Deg2Rad(0.0), Deg2Rad(45.0), 400'000.0 });
 
   double diffX{}, diffY{}, diffZ{};
+  double maxDiffX0{ -1.0 }, maxDiffY0{ -1.0 }, maxDiffZ0{ -1.0 };
   double maxDiffX{ -1.0 }, maxDiffY{ -1.0 }, maxDiffZ{ -1.0 };
 
   for (double hgt = -2000.0; hgt < 10000.0; hgt += 1000.0) {
@@ -173,6 +174,24 @@ TEST(earthellipsoid, RayIntersect) {
 
     const Point3d los = grd - org;  // line of sight poiting from satellite to ground
     const Point3d ray = los * (1.0 / thirdparty::normL2(los)); // unit view vector
+
+    // intial
+    const Point3d grdN0 = ee.RayIntersect0(org, ray, hgt);
+
+    diffX = fabs(grd.x - grdN0.x);
+    if (maxDiffX0 < diffX)
+      maxDiffX0 = diffX;
+    diffY = fabs(grd.y - grdN0.y);
+    if (maxDiffY0 < diffY)
+      maxDiffY0 = diffY;
+    diffZ = fabs(grd.z - grdN0.z);
+    if (maxDiffZ0 < diffZ)
+      maxDiffZ0 = diffZ;
+
+    std::cout << "Difference at height (initial) " << hgt << ": "
+      << diffX << ", " << diffY << ", " << diffZ << std::endl;
+
+    // refined
     const Point3d grdN = ee.RayIntersect(org, ray, hgt);
 
     diffX = fabs(grd.x - grdN.x);
@@ -185,7 +204,7 @@ TEST(earthellipsoid, RayIntersect) {
     if (maxDiffZ < diffZ)
       maxDiffZ = diffZ;
 
-    std::cout << "Difference at height " << hgt << ": " 
+    std::cout << "Difference at height (refined) " << hgt << ": "
       << diffX << ", " << diffY << ", " << diffZ << std::endl;
   }
 
