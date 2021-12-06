@@ -1,0 +1,7 @@
+    find_package(OpenMVG CONFIG REQUIRED)
+    # Note: 16 target(s) were omitted.
+    target_link_libraries(main PRIVATE OpenMVG::openMVG_sfm OpenMVG::openMVG_exif OpenMVG::openMVG_fast OpenMVG::openMVG_kvld)
+    
+    find_package(OpenMVS CONFIG REQUIRED)
+    target_link_libraries(main PRIVATE IO MVS Math Common)
+    
