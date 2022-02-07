@@ -14,6 +14,7 @@
 #include "marshaller/sensormodel/rationalmodelmarshaller.h"
 #include "rectification/epipolar/epipolargenerator.h"
 #include "sensormodel/utils/smutils.h"
+#include "sensormodel/sensormodelfactory.h"
 
 #include <boost/format.hpp>
 #include <iostream>
@@ -146,6 +147,13 @@ void GenerateRationalEpipolar(EpipolarOptions& epiOpt) {
     epiOpt.outBkgd, epiOpt.outPath, format, gdalDT, epiNumBands);
   std::cout << ToString(epiGen.GetPerfMettrics());
 
+  auto leftSM = dynamic_cast<ISensorModel*>(leftEpiModel.get());
+  auto leftRatMdlF = SensorModelFactory::CreateRationalModel(leftSM, 20, 10, 100);
+  auto leftMdlFn = PathSuffixFilename(PathReplaceExt(leftEpiFile, ".txt"), "_rpc");
+  fs::path leftFitPath(epiOpt.outPath + leftMdlFn);
+  RemoveFile(leftFitPath);
+  rmMarshaller.Serialize(leftFitPath.string(), leftRatMdlF.get());
+
   // generate right epipolar image, allowing for in-compatible image files
   format = rightReader.GetFileFormat();   
   gdalDT = rightReader.GetDataType();
@@ -157,6 +165,13 @@ void GenerateRationalEpipolar(EpipolarOptions& epiOpt) {
     epiOpt.outBkgd, epiOpt.outPath, format, gdalDT, epiNumBands);
   std::cout << ToString(epiGen.GetPerfMettrics());
 
+  auto rightSM = dynamic_cast<ISensorModel*>(rightEpiModel.get());
+  auto rightRatMdlF = SensorModelFactory::CreateRationalModel(rightSM, 20, 10, 100);
+  auto rightMdlFn = PathSuffixFilename(PathReplaceExt(rightEpiFile, ".txt"), "_rpc");
+  fs::path rightFitPath(epiOpt.outPath + rightMdlFn);
+  RemoveFile(rightFitPath);
+  rmMarshaller.Serialize(rightFitPath.string(), rightRatMdlF.get());
+
   // save epipolar model information
   std::string leftImgFile = fs::path(epiOpt.leftImgFile).stem().string();
   std::string rightImgFile = fs::path(epiOpt.rightImgFile).stem().string();
@@ -166,8 +181,8 @@ void GenerateRationalEpipolar(EpipolarOptions& epiOpt) {
   std::cout << "epiModelPath: " << epiModelPath << std::endl << std::endl;
 
   std::vector<EpiModelInfo> epiModels{ 
-    {epiOpt.leftMdlFile, leftEpiFile, leftEpiModel.get()},
-    {epiOpt.rightMdlFile, rightEpiFile, rightEpiModel.get()} };
+    {epiOpt.leftMdlFile, leftEpiFile, leftFitPath.string(), leftEpiModel.get()},
+    {epiOpt.rightMdlFile, rightEpiFile, rightFitPath.string(), rightEpiModel.get()} };
 
   EpipolarStereoMarshaller marshaller;
   marshaller.Serialize(epiModelPath.string(), epiModels);

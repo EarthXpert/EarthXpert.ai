@@ -8,6 +8,7 @@
 #include "core/math/interpcube.h"
 #include "sensormodel/datatypes.h"
 #include "sensormodel/sensormodel.h"
+#include "sensormodel/utils/rpcinfo.h"
 
 #include <array>
 

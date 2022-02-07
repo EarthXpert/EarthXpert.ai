@@ -1,7 +1,7 @@
-from enum import Enum, unique
+from enum import IntEnum, unique
 
 @unique
-class SensorType(Enum):
+class SensorType(IntEnum):
   eUNDEFINED = -1
   # physical sensor models
   eMT_ADS = 0       # Indicates an aerial push-broom sensor
@@ -14,4 +14,6 @@ class SensorType(Enum):
   eMT_NETWORK = 6   # Indicates a neural network model
   eMT_RATIONAL = 7  # Indicates a rational polynomial model
   NumSensorTypes = 8
-  
+
+class RationalModel(object):
+  pass

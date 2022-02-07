@@ -155,7 +155,8 @@ void EarthEllipsoid::SetLsrOrigin(const Point3d& origin) {
  *
  *  \return Returns Cartesian XYZ coordinates [m]
  */
-Point3d EarthEllipsoid::RayIntersect(const Point3d& origin, const Point3d& ray, double height) const {
+Point3d EarthEllipsoid::RayIntersect(const Point3d& origin, 
+  const Point3d& ray, const double height) const {
   // step 1: closed form at cm
   Point3d xyz = RayIntersect0(origin, ray, height);
   

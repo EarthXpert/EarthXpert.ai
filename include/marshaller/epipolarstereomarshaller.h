@@ -12,6 +12,7 @@ namespace earthxpert {
 struct EpiModelInfo {
   std::string sensorMdlFile;    // path to sensor model file
   std::string epiImgFile;       // path to the epipolar image file
+  std::string epiRpcFile;       // path to the epipolar image RPC file
   IEpipolarModel const* epiModel{}; // raw pointer to epipolar model object
 };
 
