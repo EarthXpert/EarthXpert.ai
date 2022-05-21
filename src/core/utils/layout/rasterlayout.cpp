@@ -61,9 +61,9 @@ int RasterLayout::SetWindowSize(const int winNumCols, const int winNumRows) {
  *  \return Returns actual number of tiles.
  */
 int RasterLayout::SetNumWindows(const int numWins) {
-  const auto ratio = double(mRange.numCols) / mRange.numRows;
-  const auto numSqWins = sqrt(double(numWins) / ratio);
-  int winNumCols = std::lround(mRange.numCols / (numSqWins * ratio));
+  const auto ratio = double(mRange.numRows) / mRange.numCols;
+  const auto numSqWins = sqrt(double(numWins) * ratio);
+  int winNumCols = std::lround(mRange.numCols * ratio / numSqWins);
   int winNumRows = std::lround(mRange.numRows / numSqWins);
   
   winNumCols = DivideUp(winNumCols, kTileDim) * kTileDim;
