@@ -48,6 +48,7 @@ add_subdirectory(cppunit)
 add_subdirectory(performance)
 #add_subdirectory(pyunit)
 #add_subdirectory(regression)
+#add_subdirectory(workflow)
 
 # section install
 if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
