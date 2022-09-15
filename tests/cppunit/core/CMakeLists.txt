@@ -3,7 +3,7 @@ project(tests_cppunit_core CXX)
 function(add_core_cppunit_test name)
   add_cppunit_test(${name}
     ex3rdparty core 
-    ${CERES_LIBRARY} ${GDAL_LIBRARIES} ${geotrans_LIBRARIES} ${LASLIB_LIBRARY} ${OpenCV_LIBS})
+    ${CERES_LIBRARY} ${GDAL_LIBRARIES} ${geotrans_LIBRARIES} ${LASLIB_LIBRARY} ${GTS_LIBRARIES} ${OpenCV_LIBS})
 endfunction()
 
 add_core_cppunit_test(coordinatesystem_tests)

@@ -4,7 +4,8 @@ add_definitions(-DEXUTILS_API -DNATIVE_WIN32)
 set(exutils_srcs 
   "./pcutils.cpp"
   "pointcloud/delaunay.cpp"
-  "pointcloud/pointcloudrasterize.cpp")
+  "pointcloud/pointcloudrasterize.cpp"
+  "spatialref/lsr2utm.cpp")
 set(exutils_items ex3rdparty core dataio exdem sensormodel
   Boost::boost Boost::filesystem Boost::iostreams
   ${CERES_LIBRARY} ${CGAL_LIBRARIES} ${GDAL_LIBRARIES} ${geotrans_LIBRARIES}
