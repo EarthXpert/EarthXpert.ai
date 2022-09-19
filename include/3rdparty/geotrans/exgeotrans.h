@@ -109,6 +109,13 @@ inline void ConvertMslEgm96ToEllHeight(ccs2& ccsMslEgm96ToEllHeight,
   ccsMslEgm96ToEllHeight.convertSourceToTarget(&lphMsl, &srcAcc, lph, tgtAcc);
   ellHeight = lph.height();
 }
+inline double ConvertMslEgm96ToEllHeight(ccs2& ccsMslEgm96ToEllHeight,
+  double lat, double lon, double hgtMsl) {
+  double ellHeight{};
+  ConvertMslEgm96ToEllHeight(ccsMslEgm96ToEllHeight,
+    lat, lon, hgtMsl, ellHeight);
+  return ellHeight;
+}
 
 /**
  * Function which uses the given Geodetic (Ellipsoid Height) to Geodetic
@@ -124,6 +131,13 @@ inline void ConvertEllHeightToMslEgm96(ccs2& ccsEllHeightToMslEgm96,
 
   ccsEllHeightToMslEgm96.convertSourceToTarget(&lph, &srcAcc, lphMsl, tgtAcc);
   hgtMsl = lphMsl.height();
+}
+inline double ConvertEllHeightToMslEgm96(ccs2& ccsEllHeightToMslEgm96,
+  double lat, double lon, double ellHeight) {
+  double hgtMsl{};
+  ConvertEllHeightToMslEgm96(ccsEllHeightToMslEgm96,
+    lat, lon, ellHeight, hgtMsl);
+  return hgtMsl;
 }
 
 /**

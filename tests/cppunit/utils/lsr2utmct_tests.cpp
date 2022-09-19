@@ -14,20 +14,19 @@ TEST(lsr2utmct, Convert) {
   std::string csvFile(TestConfig::DataPath("lsr2utm_africa.csv"));
   std::vector<Point3d> lsrs;
   std::vector<Point2d> utms;
-  testutils::ReadLsr2UtmCSV(csvFile, lsrs, utms);
+  const auto n = testutils::ReadLsr2UtmCSV(csvFile, lsrs, utms);
 
   const Point3d origin(Deg2Rad(39.02214166666666), Deg2Rad(5.453869444444445), 0);  // Africa 5°27?13.93?N, 39°1?19.71?E
   LsrToUtmCT ct(origin);
 
-  double pb[6] = {0, 0, 0, 0, 0, 0};   // three rotation angles and three translation
+  double pb[luc::NumCoef] = {1.0, 0, 0, 0, 0, 0, 0};   // scale, three rotation angles and three translation
 
   double de{}, dn{};
-  for (int i = 0; i < lsrs.size(); ++i) {
+  for (int i = 0; i < n; ++i) {
     const auto& lsr = lsrs[i];
     const auto& utm = utms[i];
 
-    Point2d utmT; // easting, northing;
-    ct.Convert(&lsr, pb, utmT);
+    const auto utmT = ct.Convert(&lsr, pb); // easting, northing;
 
     std::cout << lsr.x << ", " << lsr.y << ", " << lsr.z << "; "
       << utm.x << ", " << utm.y << "; " << utmT.x << ", " << utmT.y << "; "
@@ -35,5 +34,5 @@ TEST(lsr2utmct, Convert) {
     de += utmT.x - utm.x;
     dn += utmT.y - utm.y;
   }
-  std::cout << de / lsrs.size() << ", " << dn / lsrs.size() << std::endl;
+  std::cout << de / n << ", " << dn / n << std::endl;
 }

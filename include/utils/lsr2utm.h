@@ -35,11 +35,10 @@ struct NumericLsr2UtmResidual final : IResidual {
   }
 
   bool operator()(const double* const pb, double* residual) const {
-    Point2d utmE;
-    ct->Convert(lsr, pb, utmE);
+    const auto utmT = ct->Convert(lsr, pb);
 
-    residual[0] = utmE.x - utm->x;
-    residual[1] = utmE.y - utm->y;
+    residual[0] = utmT.x - utm->x;
+    residual[1] = utmT.y - utm->y;
     return true;
   }
 

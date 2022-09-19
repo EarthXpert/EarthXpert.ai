@@ -1,5 +1,6 @@
 #include "utils/lsr2utmct.h"
 #include "core/math/rotation.h"
+#include "core/spatialref/ccsutils.h"
 
 using namespace earthxpert;
 using namespace earthxpert::math;
@@ -31,9 +32,9 @@ void LsrToUtmCT::Initialize() {
 /**
  * 
  *  \param [in] pb scale, three rotation angles and three translations
- *  \param [out] utm easting, northing
+ *  \return utm easting, northing
  */
-void LsrToUtmCT::Convert(const Point3d* lsr, const double* pb, Point2d& utm) const {
+Point2d LsrToUtmCT::Convert(const Point3d* lsr, const double* pb) const {
   Vector3d lsrS = Vector3d(lsr->x, lsr->y, lsr->z) * pb[0]; // scale
 
   Matrix3d rot;
@@ -46,9 +47,9 @@ void LsrToUtmCT::Convert(const Point3d* lsr, const double* pb, Point2d& utm) con
 
   //Point3d utmT;
   //g2mCt->Transform(lph, utmT);
-  //utm = Point3To2(utmT);
+  //const auto utm = Point3To2(utmT);
 
-  double x{}, y{}, z{};
-  ConvertGeodeticToGeocentric(*ccsGeodToGeoc, lph.y, lph.x, lph.z, x, y, z);
-  ConvertGeocentricToUtm(*ccsGeocToUtm, x, y, z, utm.x, utm.y);
+  const auto geoc = ConvertGeodeticToGeocentric(*ccsGeodToGeoc, lph);
+  const auto utm = ConvertGeocentricToUtm(*ccsGeocToUtm, geoc);
+  return utm;
 }

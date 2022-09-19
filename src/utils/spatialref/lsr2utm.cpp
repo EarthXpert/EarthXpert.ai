@@ -25,7 +25,7 @@ void LsrToUtm::Initialize() {
   //mOptions.function_tolerance = 1e-3;   // [meter]
   //mOptions.gradient_tolerance = 1e-7;
   //mOptions.parameter_tolerance = 1e-8;  // [radian, meter]
-  mOptions.linear_solver_type = DENSE_QR; // DENSE_NORMAL_CHOLESKY
+  mOptions.linear_solver_type = CGNR; // DENSE_QR DENSE_NORMAL_CHOLESKY
   //mOptions.preconditioner_type = JACOBI;  // SUBSET
   mOptions.minimizer_progress_to_stdout = false;
   //mOptions.update_state_every_iteration = true;
@@ -45,12 +45,13 @@ bool LsrToUtm::Solve(const std::vector<Point3d>& lsrs,
   auto lossF = std::make_unique<CauchyLoss>(0.5);
 
   for (int i = 0; i < lsrs.size(); ++i) {
-    auto costFunc = new NumericDiffCostFunction<NumericLsr2UtmResidual, ceres::CENTRAL, 2, 7>(
+    auto costFunc = new NumericDiffCostFunction<NumericLsr2UtmResidual, ceres::CENTRAL, 2, luc::NumCoef>(
       new NumericLsr2UtmResidual(lsrs.data() + i, utms.data() + i, mCT.get()));
 
     problem.AddResidualBlock(costFunc, lossF.get(), pb);
   }
 
+  SetParameterBounds(problem, pb);
 
   Solver::Summary summary;
   ceres::Solve(mOptions, &problem, &summary);
@@ -66,25 +67,30 @@ std::vector<Point2d> LsrToUtm::Convert(const std::vector<Point3d>& lsrs, const d
   std::vector<Point2d> utms(lsrs.size());
 
   for (int i = 0; i < lsrs.size(); ++i) {
-    mCT->Convert(lsrs.data() + i, pb, utms[i]);
+    utms[i] = mCT->Convert(lsrs.data() + i, pb);
   }
   return utms;
 }
 
+/**
+ *  \brief bounds of parameters
+ */
 void LsrToUtm::SetParameterBounds(Problem& problem, double* pb) {
-  // bounds of parameters
-  problem.SetParameterLowerBound(pb, 0, 0.95);
-  problem.SetParameterUpperBound(pb, 0, 1.05);
+  // lower bounds
+  problem.SetParameterLowerBound(pb, 0, 0.9);
   problem.SetParameterLowerBound(pb, 1, -0.1);
-  problem.SetParameterUpperBound(pb, 1, 0.1);
   problem.SetParameterLowerBound(pb, 2, -0.1);
-  problem.SetParameterUpperBound(pb, 2, 0.1);
-  problem.SetParameterLowerBound(pb, 3, -0.1);
-  problem.SetParameterUpperBound(pb, 3, 0.1);
-  problem.SetParameterLowerBound(pb, 4, -3000);
-  problem.SetParameterUpperBound(pb, 4, 3000);
-  problem.SetParameterLowerBound(pb, 5, -3000);
-  problem.SetParameterUpperBound(pb, 5, 3000);
+  problem.SetParameterLowerBound(pb, 3, -0.5);
+  problem.SetParameterLowerBound(pb, 4, -10000);
+  problem.SetParameterLowerBound(pb, 5, -10000);
   problem.SetParameterLowerBound(pb, 6, -3000);
+
+  // upper bounds
+  problem.SetParameterUpperBound(pb, 0, 1.1);
+  problem.SetParameterUpperBound(pb, 1, 0.1);
+  problem.SetParameterUpperBound(pb, 2, 0.1);
+  problem.SetParameterUpperBound(pb, 3, 0.5);
+  problem.SetParameterUpperBound(pb, 4, 10000);
+  problem.SetParameterUpperBound(pb, 5, 10000);
   problem.SetParameterUpperBound(pb, 6, 3000);
 }

@@ -39,7 +39,7 @@ public:
   LsrToUtmCT(const Point3d& origin);
   ~LsrToUtmCT() = default;
 
-  void Convert(const Point3d* lsr, const double* pb, Point2d& utm) const;
+  Point2d Convert(const Point3d* lsr, const double* pb) const;
 
 private:
   EarthEllipsoid ee;
@@ -56,6 +56,8 @@ private:
 
   void Initialize();
 };
+
+using luc = LsrToUtmCT::L2UCoeff;
 
 using UPLsrToUtmCT = std::unique_ptr<LsrToUtmCT>;
 using SPLsrToUtmCT = std::shared_ptr<LsrToUtmCT>;

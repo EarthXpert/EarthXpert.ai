@@ -41,7 +41,7 @@ TEST(lsr2utm, Solve) {
   LsrToUtm l2u(origin);
 
   // solve six unknowns: three rotation angles and three translation
-  std::array<double, 7> pb{ 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0 };
+  std::array<double, luc::NumCoef> pb{ 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0 };
   auto ret = l2u.Solve(lsrs, utms, pb.data());
   if (!ret) {
     std::cout << "Lsr2Utm: failed to solve" << std::endl;
@@ -49,28 +49,33 @@ TEST(lsr2utm, Solve) {
 
   std::stringstream ss;
   ss << boost::format("scale: %1%; angles: %2%, %3%, %4%; translation: %5%, %6%, %7%") % pb[0] % pb[1] % pb[2] % pb[3] % pb[4] % pb[5] % pb[6];
-  std::cout << ss.str() << std::endl << std::endl;
+  std::cout << ss.str() << std::endl;
 
   auto utmsT = l2u.Convert(lsrs, pb.data());  // predicate with solved design parameters
-  std::vector<double> sqerr(lsrs.size());     // squared errors
 
+  // stats
+  std::vector<double> sqerr(n);     // squared errors
   for (int i = 0; i < n; ++i) {
     const auto& lsr = lsrs[i];
     const auto& utm = utms[i];
     const auto& utmT = utmsT[i];
     sqerr[i] = (utmT.x - utm.x) * (utmT.x - utm.x) + (utmT.y - utm.y) * (utmT.y - utm.y);
 
-    std::cout << lsr.x << ", " << lsr.y << ", " << lsr.z << "; "
-      << utm.x << ", " << utm.y << "; " << utmT.x << ", " << utmT.y << "; "
-      << utmT.x - utm.x << ", " << utmT.y - utm.y << std::endl;
+    //std::cout << lsr.x << ", " << lsr.y << ", " << lsr.z << "; "
+    //  << utm.x << ", " << utm.y << "; " << utmT.x << ", " << utmT.y << "; "
+    //  << utmT.x - utm.x << ", " << utmT.y - utm.y << std::endl;
   }
+  std::cout << std::endl;
+
+  const double rmse = sqrt(std::accumulate(sqerr.begin(), sqerr.end(), 0) / n);
+  std::cout << "rmse: " << rmse << std::endl;
 
   // worst: a possible outlier
   const auto idx = arg_max(sqerr);
   const auto& lsr = lsrs[idx];
   const auto& utm = utms[idx];
   const auto& utmT = utmsT[idx];
-  std::cout << std::endl << lsr.x << ", " << lsr.y << ", " << lsr.z << "; "
+  std::cout << "worst: "  << lsr.x << ", " << lsr.y << ", " << lsr.z << "; "
     << utm.x << ", " << utm.y << "; " << utmT.x << ", " << utmT.y << "; "
     << utmT.x - utm.x << ", " << utmT.y - utm.y << std::endl;
 }
