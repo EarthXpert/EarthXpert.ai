@@ -2,11 +2,13 @@ project(tests_cppunit_utils CXX)
 
 function(add_utils_cppunit_test name)
   add_cppunit_test(${name}
-    ex3rdparty core exutils 
+    ex3rdparty core exutils testutils
     ${CERES_LIBRARY} ${GDAL_LIBRARIES} ${geotrans_LIBRARIES} ${LASLIB_LIBRARY} ${OpenCV_LIBS})
 endfunction()
 
 add_utils_cppunit_test(delaunay_tests)
+add_utils_cppunit_test(lsr2utm_tests)
+add_utils_cppunit_test(lsr2utmct_tests)
 
 if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
   get_filename_component(BOOST_BIN_DIR "${Boost_DIR}/../.." ABSOLUTE)
@@ -17,10 +19,12 @@ ${GTEST_BIN_DIR};${BOOST_BIN_DIR};${GDAL_BIN_DIR};${geotrans_BIN_DIR};${OpenCV_B
 ${TESTS_BIN_DIR};$ENV{PATH}")
   string(REPLACE ";" "\\;" TESTS_UTILS_PATH "${TESTS_UTILS_PATH}")
   message(STATUS "Tests_Utils_Path: ${TESTS_UTILS_PATH}")
-  set_tests_properties(delaunay_tests 
+  set_tests_properties(delaunay_tests lsr2utm_tests lsr2utmct_tests
     PROPERTIES ENVIRONMENT "${TESTS_UTILS_PATH}")
 endif()
 
 if(EXAI_INSTALL_TESTS_CPPUNIT)
   exai_install_test(delaunay_tests)
+  exai_install_test(lsr2utm_tests)
+  exai_install_test(lsr2utmct_tests)
 endif()

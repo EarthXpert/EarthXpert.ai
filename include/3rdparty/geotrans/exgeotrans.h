@@ -132,18 +132,20 @@ inline void ConvertEllHeightToMslEgm96(ccs2& ccsEllHeightToMslEgm96,
  * a UTM zone, hemisphere, Easting and Northing.
  **/
 inline void ConvertGeocentricToUtm(ccs2& ccsGeocToUtm,
-  double x, double y, double z, long& zone,
-  char& hemisphere, double& easting, double& northing) {
+  double x, double y, double z, double& easting, double& northing,
+  long* zone=nullptr, char* hemisphere=nullptr) {
   ccs::Accuracy srcAcc, tgtAcc;
   ccs::CartesianCoordinates xyz(ccs_ct::geocentric, x, y, z);
   ccs::UTMCoordinates utm;
 
   ccsGeocToUtm.convertSourceToTarget(&xyz, &srcAcc, utm, tgtAcc);
 
-  zone = utm.zone();
-  hemisphere = utm.hemisphere();
   easting = utm.easting();
   northing = utm.northing();
+  if (zone)
+    *zone = utm.zone();
+  if (hemisphere)
+    *hemisphere = utm.hemisphere();
 }
 
 /**

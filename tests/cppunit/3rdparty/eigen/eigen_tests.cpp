@@ -8,9 +8,11 @@
 //#include "densesolver_bmp.hpp"
 #include "densesolver_dyn.hpp"
 #include "sparsesolver.hpp"
-
 #include <iostream>
 
+/**
+ *
+ */
 TEST(eigen, alias) {
   Eigen::MatrixXf A(3, 2), B(2, 2), C(2, 2);
   A << 2, 0, 0, 3, 1, 1;

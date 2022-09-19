@@ -6,6 +6,7 @@
 #include "3rdparty/geotrans/exgeotrans.h"
 #include "3rdparty/utils/constants.h"
 #include "testconfig.h"
+#include "testutils.h"
 
 #include "core/spatialref/ctfactory.h"
 #include "core/spatialref/earthellipsoid.h"
@@ -76,18 +77,16 @@ TEST(coordinatetransform, LSR_WGS84_UTM) {
   ccs2 ccsEllHeightToMslEgm96(datum, &ellParam, datum, &mslEgm96Param);
   ccs2 ccsGeocToUtm(datum, &geocParam, datum, &utmParam);
 
-  std::vector<Point3d> lsrs = {
-    Point3d(4780, 4596, 1736.94), Point3d(5088.76, 5110.15, 1839.34),
-    Point3d(5959.11, 5504.95, 1793.64)
-  };
-  std::vector<Point3d> utms = {
-    Point3d(502359.5, 602749.7, 0), Point3d(502727.3, 603243.8, 0),
-    Point3d(503178.1, 604121.5, 0)
-  };
+  std::string csvFile(TestConfig::DataPath("lsr2utm_africa.csv"));
+  std::vector<Point3d> lsrs;
+  std::vector<Point2d> utms;
+  testutils::ReadLsr2UtmCSV(csvFile, lsrs, utms);
 
   for (int i = 0; i < lsrs.size(); ++i) {
-    const auto lsr = lsrs[i] + Point3d(-4869, -4678, -1800);
-    const Point3d lph = ee.LSRToLPH(lsr);
+    const auto& lsr = lsrs[i];
+    const auto& utm = utms[i];
+
+    const Point3d lph = ee.LSRToLPH(lsr + Point3d(0, 0, 0));
 
     double x{}, y{}, z{};
     ConvertGeodeticToGeocentric(ccsGeodToGeoc, lph.y, lph.x, lph.z, x, y, z);
@@ -95,14 +94,15 @@ TEST(coordinatetransform, LSR_WGS84_UTM) {
     double hgtMsl{};
     ConvertEllHeightToMslEgm96(ccsEllHeightToMslEgm96, lph.y, lph.x, lph.z, hgtMsl);
 
-    long zone;
-    char hemi;
-    double easting, northing;
-    ConvertGeocentricToUtm(ccsGeocToUtm, x, y, z, zone, hemi, easting, northing);
+    Point2d utmT; // easting, northing
+    long zone{};
+    char hemi{};
+    ConvertGeocentricToUtm(ccsGeocToUtm, x, y, z, utmT.x, utmT.y, &zone, &hemi);
 
-    const auto& utm = utms[i];
-    std::cout << lsr.x << ", " << lsr.y << ", " << lsr.z << "  "
-      << easting << ", " << northing << ", " << easting-utm.x << ", " << northing-utm.y << "  "
-      << lph.x << ", " << lph.y << ", " << lph.z << ", " << hgtMsl << std::endl;
+    std::cout << lsr.x << ", " << lsr.y << ", " << lsr.z << "; "
+      << utm.x << ", " << utm.y << "; " << utmT.x << ", " << utmT.y << "; "
+      << utmT.x - utm.x << ", " << utmT.y - utm.y << "; "
+      << lph.x << ", " << lph.y << ", " << lph.z << ", " << hgtMsl << "; "
+      << zone << ", " << hemi << "; " << std::endl;
   }
 }

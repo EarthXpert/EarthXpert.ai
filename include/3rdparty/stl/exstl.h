@@ -71,6 +71,19 @@ inline MakeVecOfPairs(const std::vector<Ty1>& v1, const std::vector<Ty1>& v2) {
   return vp;
 }
 
+/**
+ * \todo generic container
+ */
+template <typename _Ty>
+inline int arg_max(std::vector<_Ty> const& vec) {
+  return static_cast<int>(std::distance(vec.begin(), max_element(vec.begin(), vec.end())));
+}
+
+template <typename _Ty>
+inline int arg_min(std::vector<_Ty> const& vec) {
+  return static_cast<int>(std::distance(vec.begin(), min_element(vec.begin(), vec.end())));
+}
+
 template<class Ty, class Deleter = std::default_delete<Ty>>
 using UP = class std::unique_ptr<Ty, Deleter>;
 

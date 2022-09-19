@@ -54,17 +54,20 @@ private:
  */
 class EXUTILS_EXPORTS LsrToUtm {
 public:
-  LsrToUtm();
+  LsrToUtm(const Point3d& origin);
   ~LsrToUtm() = default;
 
-  void Solve();
-  void Convert();
+  bool Solve(const std::vector<Point3d>& lsrs, const std::vector<Point2d>& utms, double* pb);
+
+  std::vector<Point2d> Convert(const std::vector<Point3d>& lsrs, const double* pb) const;
 
 private:
+  std::unique_ptr<LsrToUtmCT> mCT;
+
   Solver::Options mOptions;   // the options to control ceres solver
 
   void Initialize();
-
+  void SetParameterBounds(ceres::Problem& problem, double* pb);
 };
 
 using UPLsrToUtm = std::unique_ptr<LsrToUtm>;

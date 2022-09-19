@@ -99,10 +99,10 @@ TEST(geotrans, CCS_WGS84) {
   ASSERT_NEAR(hgtMslN, hgtMsl, kTolMM) << "Height difference > 1 mm";
 
   // Geocentric to UTM
-  long zone;
-  char hemi;
-  double easting, northing;
-  ConvertGeocentricToUtm(ccsGeocToUtm, x, y, z, zone, hemi, easting, northing);
+  double easting{}, northing{};
+  long zone{};
+  char hemi{};
+  ConvertGeocentricToUtm(ccsGeocToUtm, x, y, z, easting, northing, &zone, &hemi);
   ASSERT_EQ(zone, 17) << "zone 17";
   ASSERT_EQ(hemi, 'N') << "North hemisphere";
   ASSERT_NEAR(easting, 633301.7104163736, kTolMM) << "UTM easting difference > 1 mm";
@@ -127,9 +127,9 @@ TEST(geotrans, CCS_WGS84_NAD83) {
 
   ccs::Accuracy srcAcc, tgtAcc;
 
-  double lat = Deg2Rad(43.651070); // [radian]
-  double lon = Deg2Rad(-79.347015);
-  double hgt = 10000.0;  // [m]
+  const double lat = Deg2Rad(43.651070); // [radian]
+  const double lon = Deg2Rad(-79.347015);
+  const double hgt = 10000.0;  // [m]
 
   ccs::GeodeticCoordinates lph84(ccs_ct::geodetic, lon, lat, hgt);
   ccs::GeodeticCoordinates nad83;

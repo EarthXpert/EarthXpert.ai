@@ -25,42 +25,36 @@ namespace earthxpert {
  */
 class EXUTILS_EXPORTS LsrToUtmCT {
 public:
-  LsrToUtmCT(const Point3d& origin) {
-    ee.SetLsrOrigin(origin);
-    Initialize();
-  }
+  enum L2UCoeff {
+    eS = 0,     // scale
+    eO = 1,     // omega
+    eP = 2,     // phi
+    eK = 3,     // kappa
+    eX = 4,     // X
+    eY = 5,     // Y
+    eZ = 6,     // Z
+    NumCoef = 7 // number of coefficients
+  };
+
+  LsrToUtmCT(const Point3d& origin);
   ~LsrToUtmCT() = default;
 
-  void Convert(const Point3d* lsr, const double* pb, Point2d& utm) const {
-    const Point3d lph = ee.LSRToLPH(*lsr);
-
-    double x{}, y{}, z{};
-    ConvertGeodeticToGeocentric(*ccsGeodToGeoc, lph.y, lph.x, lph.z, x, y, z);
-
-    long zone;
-    char hemi;
-    ConvertGeocentricToUtm(*ccsGeocToUtm, x, y, z, zone, hemi, utm.x, utm.y);
-  }
+  void Convert(const Point3d* lsr, const double* pb, Point2d& utm) const;
 
 private:
   EarthEllipsoid ee;
 
-  ccs::GeodeticParameters ellParam;
-  ccs::CoordinateSystemParameters geocParam;
-  ccs::UTMParameters utmParam;
+  std::unique_ptr<OGRSpatialRef> wgs84Srs;
+  std::unique_ptr<OGRSpatialRef> utmSrs;
+  std::unique_ptr<OgrCt> g2mCt;  // WGS84 -> UTM
 
+  std::unique_ptr<ccs::GeodeticParameters> ellParam;
+  std::unique_ptr<ccs::CoordinateSystemParameters> geocParam;
+  std::unique_ptr<ccs::UTMParameters> utmParam;
   std::unique_ptr<ccs2> ccsGeodToGeoc;
   std::unique_ptr<ccs2> ccsGeocToUtm;
 
-  void Initialize() {
-    const char* datum = "WGE";
-    ellParam = ccs::GeodeticParameters(ccs_ct::geodetic, ccs_ht::ellipsoidHeight);
-    geocParam = ccs::CoordinateSystemParameters(ccs_ct::geocentric);
-    utmParam = ccs::UTMParameters(ccs_ct::universalTransverseMercator, 1, 0);
-
-    ccsGeodToGeoc = std::make_unique<ccs2>(datum, &ellParam, datum, &geocParam);
-    ccsGeocToUtm = std::make_unique<ccs2>(datum, &geocParam, datum, &utmParam);
-  }
+  void Initialize();
 };
 
 using UPLsrToUtmCT = std::unique_ptr<LsrToUtmCT>;
