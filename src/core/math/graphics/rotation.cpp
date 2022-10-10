@@ -6,6 +6,8 @@
 
 #include <cassert>
 
+using namespace::Eigen;
+
 namespace earthxpert::math {
 /**
  *  Convert Euler angles to a rotation matrix usually in object-centered system
@@ -99,6 +101,11 @@ void EulerZYXToMatrix(const double* angles, cv::Mat1d& mat3x3) {
   mat3x3(2, 0) = sr * sy + cr * sp_cy;
   mat3x3(2, 1) = -sr * cy + cr * sp_sy;
   mat3x3(2, 2) = cr * cp;
+}
+
+void EulerXYZToMatrix(const double* angles, Matrix3d& mat3x3) {
+  mat3x3 = AngleAxisd(angles[2], Vector3d::UnitZ()) *
+    AngleAxisd(angles[1], Vector3d::UnitY()) * AngleAxisd(angles[0], Vector3d::UnitX());
 }
 
 /**

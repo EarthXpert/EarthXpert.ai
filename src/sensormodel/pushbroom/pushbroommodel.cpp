@@ -120,7 +120,45 @@ PushbroomModel<CraftPolicy>::GroundToImage(const Point3d& ground,
 template <typename CraftPolicy> bool
 PushbroomModel<CraftPolicy>::GroundToImageNR(const Point3d& ground,
   Point2d& image) const {
-  return true;
+  // \todo image initial position from rfm
+  const auto [numCols, numRows] = mImgModel->GetImageSize();
+  image.x = numCols / 2.0f;
+  image.y = numRows / 2.0f;
+
+  int iter{};
+  for (iter = 0; iter < kMaxIterS2G; ++iter) {
+    Point3d grd{ ground };
+    ImageToGround(image, grd);
+
+    const auto w = grd - ground;  // misclosure
+    if (fabs(w.x) < kTol_deg && fabs(w.y) < kTol_deg)
+      break;
+
+    Point2d imgs[4] = { {image.x - kCR, image.y}, {image.x + kCR, image.y},
+                        {image.x, image.y - kCR}, {image.x, image.y + kCR} };
+    Point3d grds[4] = { ground };
+    for (int i = 0; i < 4; ++i) {
+      ImageToGround(imgs[i], grds[i]);
+    }
+
+    const auto dF_dCol = (grds[1] - grds[0]) * kFacCR;  // Jacobian
+    const auto dF_dRow = (grds[3] - grds[2]) * kFacCR;
+
+    const auto det = dF_dCol.x * dF_dRow.y - dF_dCol.y * dF_dRow.x;
+    if (fabs(det) < kTol)
+      return false;
+
+    const auto invDet = 1.0 / det;
+    const auto dCol = (dF_dRow.y * w.x - dF_dRow.x * w.y) * invDet;
+    const auto dRow = (dF_dCol.x * w.y - dF_dCol.y * w.x) * invDet;
+
+    image.x -= dCol;
+    image.y -= dRow;
+
+    if (fabs(dCol) < kTolCR && fabs(dRow) < kTolCR)
+      break;
+  }
+  return (iter < kMaxIterS2G);
 }
 
 /**

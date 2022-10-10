@@ -5,6 +5,8 @@
 #pragma once
 
 #include "core/excore.h"
+#include "3rdparty/eigen/exeigen.h"
+
 #include "core/math/math.h"
 #include "core/utils/typehelper.h"
 #include "opencv2/core/mat.hpp"
@@ -12,6 +14,7 @@
 #include <algorithm>
 #include <tuple>
 #include <utility>
+
 
 namespace earthxpert::math {
 /**
@@ -46,6 +49,8 @@ void EXCORE_EXPORTS EulerXYZToMatrix(const double* angles, cv::Mat1d& mat3x3);
 void EXCORE_EXPORTS EulerYXZToMatrix(const double* angles, cv::Mat1d& mat3x3);
 void EXCORE_EXPORTS EulerZXYToMatrix(const double* angles, cv::Mat1d& mat3x3);
 void EXCORE_EXPORTS EulerZYXToMatrix(const double* angles, cv::Mat1d& mat3x3);
+
+void EXCORE_EXPORTS EulerXYZToMatrix(const double* angles, Eigen::Matrix3d& mat3x3);
 
 template <RotateSeq rotSeq = eXYZ>
 inline void EulerToMatrix(const double* angles, cv::Mat1d& mat3x3) {

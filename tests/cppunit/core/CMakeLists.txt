@@ -2,8 +2,8 @@ project(tests_cppunit_core CXX)
 
 function(add_core_cppunit_test name)
   add_cppunit_test(${name}
-    ex3rdparty core 
-    ${CERES_LIBRARY} ${GDAL_LIBRARIES} ${geotrans_LIBRARIES} ${LASLIB_LIBRARY} ${OpenCV_LIBS})
+    ex3rdparty core testutils
+    ${CERES_LIBRARY} ${GDAL_LIBRARIES} ${geotrans_LIBRARIES} ${LASLIB_LIBRARY} ${GTS_LIBRARIES} ${OpenCV_LIBS})
 endfunction()
 
 add_core_cppunit_test(coordinatesystem_tests)
@@ -14,6 +14,7 @@ add_core_cppunit_test(layout_tests)
 add_core_cppunit_test(pointcloud_tests)
 add_core_cppunit_test(pointtypes_tests)
 add_core_cppunit_test(rasterwindow_tests)
+add_core_cppunit_test(rotation_tests)
 add_core_cppunit_test(singleton_tests)
 add_core_cppunit_test(spatialtile_tests)
 add_core_cppunit_test(typehelper_tests)
@@ -29,7 +30,7 @@ ${TESTS_BIN_DIR};$ENV{PATH}")
   message(STATUS "Tests_Core_Path: ${TESTS_CORE_PATH}")
   set_tests_properties(coordinatesystem_tests coordinatetransform_tests earthellipsoid_tests 
     graphfit_tests layout_tests pointcloud_tests pointtypes_tests rasterwindow_tests 
-    singleton_tests spatialtile_tests typehelper_tests
+    rotation_tests singleton_tests spatialtile_tests typehelper_tests
     PROPERTIES ENVIRONMENT "${TESTS_CORE_PATH}")
 endif()
 
@@ -42,6 +43,7 @@ if(EXAI_INSTALL_TESTS_CPPUNIT)
   exai_install_test(pointcloud_tests)
   exai_install_test(pointtypes_tests)
   exai_install_test(rasterwindow_tests)
+  exai_install_test(rotation_tests)
   exai_install_test(singleton_tests)
   exai_install_test(spatialtile_tests)
   exai_install_test(typehelper_tests)

@@ -109,6 +109,13 @@ inline void ConvertMslEgm96ToEllHeight(ccs2& ccsMslEgm96ToEllHeight,
   ccsMslEgm96ToEllHeight.convertSourceToTarget(&lphMsl, &srcAcc, lph, tgtAcc);
   ellHeight = lph.height();
 }
+inline double ConvertMslEgm96ToEllHeight(ccs2& ccsMslEgm96ToEllHeight,
+  double lat, double lon, double hgtMsl) {
+  double ellHeight{};
+  ConvertMslEgm96ToEllHeight(ccsMslEgm96ToEllHeight,
+    lat, lon, hgtMsl, ellHeight);
+  return ellHeight;
+}
 
 /**
  * Function which uses the given Geodetic (Ellipsoid Height) to Geodetic
@@ -125,6 +132,13 @@ inline void ConvertEllHeightToMslEgm96(ccs2& ccsEllHeightToMslEgm96,
   ccsEllHeightToMslEgm96.convertSourceToTarget(&lph, &srcAcc, lphMsl, tgtAcc);
   hgtMsl = lphMsl.height();
 }
+inline double ConvertEllHeightToMslEgm96(ccs2& ccsEllHeightToMslEgm96,
+  double lat, double lon, double ellHeight) {
+  double hgtMsl{};
+  ConvertEllHeightToMslEgm96(ccsEllHeightToMslEgm96,
+    lat, lon, ellHeight, hgtMsl);
+  return hgtMsl;
+}
 
 /**
  * Function which uses the given Geocentric to UTM Coordinate Conversion
@@ -132,18 +146,20 @@ inline void ConvertEllHeightToMslEgm96(ccs2& ccsEllHeightToMslEgm96,
  * a UTM zone, hemisphere, Easting and Northing.
  **/
 inline void ConvertGeocentricToUtm(ccs2& ccsGeocToUtm,
-  double x, double y, double z, long& zone,
-  char& hemisphere, double& easting, double& northing) {
+  double x, double y, double z, double& easting, double& northing,
+  long* zone=nullptr, char* hemisphere=nullptr) {
   ccs::Accuracy srcAcc, tgtAcc;
   ccs::CartesianCoordinates xyz(ccs_ct::geocentric, x, y, z);
   ccs::UTMCoordinates utm;
 
   ccsGeocToUtm.convertSourceToTarget(&xyz, &srcAcc, utm, tgtAcc);
 
-  zone = utm.zone();
-  hemisphere = utm.hemisphere();
   easting = utm.easting();
   northing = utm.northing();
+  if (zone)
+    *zone = utm.zone();
+  if (hemisphere)
+    *hemisphere = utm.hemisphere();
 }
 
 /**

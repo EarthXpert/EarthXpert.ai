@@ -3,12 +3,17 @@
  * -----------------------------------------------------------------------------
  */
 #include "3rdparty/gtest/gtest_main_gdal.h"
+#include "3rdparty/geotrans/exgeotrans.h"
 #include "3rdparty/utils/constants.h"
 #include "testconfig.h"
+#include "testutils.h"
 
 #include "core/spatialref/ctfactory.h"
+#include "core/spatialref/earthellipsoid.h"
 #include "core/spatialref/srsfactory.h"
 #include "core/utils/typehelper.h"
+#include <cmath>
+#include <iostream>
 
 using namespace earthxpert;
 
@@ -50,4 +55,54 @@ TEST(coordinatetransform, OGR_WGS84_UTM) {
   ASSERT_TRUE(eqA(geoPtN.x, geoPt.x)) << "Longitude difference > 1 mm";
   ASSERT_TRUE(eqA(geoPtN.y, geoPt.y)) << "Latitude difference > 1 mm";
   ASSERT_TRUE(eqM(geoPtN.z, geoPt.z)) << "Height difference > 1 mm";
+}
+
+/**
+ *  Test case: geotrans
+ */
+TEST(coordinatetransform, LSR_WGS84_UTM) {
+  const Point3d origin(Deg2Rad(39.02214166666666), Deg2Rad(5.453869444444445), 0);  // Africa 5°27?13.93?N, 39°1?19.71?E
+
+  EarthEllipsoid ee;
+  ee.SetLsrOrigin(origin);
+
+  const char* datum = "WGE";
+  ccs::GeodeticParameters ellParam(ccs_ct::geodetic, ccs_ht::ellipsoidHeight);
+  ccs::CoordinateSystemParameters geocParam(ccs_ct::geocentric);
+  ccs::GeodeticParameters mslEgm96Param(
+    ccs_ct::geodetic, ccs_ht::EGM96FifteenMinBilinear);
+  ccs::UTMParameters utmParam(ccs_ct::universalTransverseMercator, 1, 0);
+
+  ccs2 ccsGeodToGeoc(datum, &ellParam, datum, &geocParam);
+  ccs2 ccsEllHeightToMslEgm96(datum, &ellParam, datum, &mslEgm96Param);
+  ccs2 ccsGeocToUtm(datum, &geocParam, datum, &utmParam);
+
+  std::string csvFile(TestConfig::DataPath("lsr2utm_africa.csv"));
+  std::vector<Point3d> lsrs;
+  std::vector<Point2d> utms;
+  testutils::ReadLsr2UtmCSV(csvFile, lsrs, utms);
+
+  for (int i = 0; i < lsrs.size(); ++i) {
+    const auto& lsr = lsrs[i];
+    const auto& utm = utms[i];
+
+    const Point3d lph = ee.LSRToLPH(lsr + Point3d(0, 0, 0));
+
+    double x{}, y{}, z{};
+    ConvertGeodeticToGeocentric(ccsGeodToGeoc, lph.y, lph.x, lph.z, x, y, z);
+
+    double hgtMsl{};
+    ConvertEllHeightToMslEgm96(ccsEllHeightToMslEgm96, lph.y, lph.x, lph.z, hgtMsl);
+
+    Point2d utmT; // easting, northing
+    long zone{};
+    char hemi{};
+    ConvertGeocentricToUtm(ccsGeocToUtm, x, y, z, utmT.x, utmT.y, &zone, &hemi);
+
+    std::cout << lsr.x << ", " << lsr.y << ", " << lsr.z << "; "
+      << utm.x << ", " << utm.y << "; " << utmT.x << ", " << utmT.y << "; "
+      << utmT.x - utm.x << ", " << utmT.y - utm.y << "; "
+      << lph.x << ", " << lph.y << ", " << lph.z << ", " << hgtMsl << "; "
+      << zone << ", " << hemi << "; " << std::endl;
+  }
 }

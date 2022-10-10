@@ -146,6 +146,13 @@ public:
   void SetCorrection(std::shared_ptr<ScannerEPCorr> scannerEPCorr);
 
 private:
+  static constexpr int kMaxIterS2G = 10; // max. number of iterations allowed for SensorToGround
+  static constexpr double kCR = 1.0e-3; // step used to calculate numerical difference for col/row
+  static constexpr double kFacCR = 0.5 / kCR;
+  static constexpr double kTol = std::numeric_limits<double>::epsilon();
+  static constexpr double kTolCR = kTolPIX3; // 
+  static constexpr double kTol_deg = kTolDEG; // tolerance in unit of degrees
+
   std::shared_ptr<ScannerImageModel>
       mImgModel{}; // image model defining raster vs focal plane relationship
   std::unique_ptr<ScannerIP> mScannerIP{}; // intrinsic parameters defining

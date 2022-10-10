@@ -10,17 +10,20 @@
 #define UNITTEST_TESTCONFIG_DATA_PATH "@EXAI_TEST_DATA_DIR@/"
 #define UNITTEST_TESTCONFIG_OUTPUT_PATH "@EXAI_TEST_OUTPUT_DIR@/"
 
-class TestConfig
-{
+class TestConfig {
 public:
-  static std::string DataPath(const std::string &file)
-  {
+  /**
+   *  Full path of test data file
+   */
+  static std::string DataPath(const std::string &file) {
     std::string dir_path = UNITTEST_TESTCONFIG_DATA_PATH;
     return dir_path + file;
   }
 
-  static std::string OutputPath(const std::string &file)
-  {
+  /**
+   *  Full path of output results file
+   */
+  static std::string OutputPath(const std::string &file) {
     std::string dir_path = UNITTEST_TESTCONFIG_OUTPUT_PATH;
     return dir_path + file;
   }
