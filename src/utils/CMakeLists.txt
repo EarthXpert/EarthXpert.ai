@@ -3,6 +3,7 @@ project(exutils CXX)
 add_definitions(-DEXUTILS_API -DNATIVE_WIN32)
 set(exutils_srcs 
   "./pcutils.cpp"
+  "model/image2dem.cpp"
   "pointcloud/delaunay.cpp"
   "pointcloud/pointcloudrasterize.cpp"
   "spatialref/lsr2utm.cpp"
