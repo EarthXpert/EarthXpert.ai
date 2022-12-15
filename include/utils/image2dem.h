@@ -21,6 +21,7 @@ public:
 
 private:
   static constexpr int kMaxIterI2D = 10; // max. number of iterations allowed for Project
+  static constexpr double kTolZ = 1.0e-3; // tolerance in unit of meter
 
   void Initialize();
 

@@ -24,12 +24,18 @@ void Image2Dem::Initialize() {
  *  \brief
  */
 void Image2Dem::Project(const Point2d& image, Point3d& ground) {
+  ground.z = mSensorModel->GetMeanHeight();
+
   for (int i = 0; i < kMaxIterI2D; ++i) {
     mSensorModel->ImageToGround(image, ground);
 
     // \todo convert ground from model CRS to DEM CRS
-    ground.z = mDem->GetElev(ground.x, ground.y);
+    float z = mDem->GetElev(ground.x, ground.y);
 
     // \todo convert elevation vertical datum from DEM to model
+    if (fabs(ground.z - z) < kTolZ) {
+      break;
+    }
+    ground.z = z;
   }
 }

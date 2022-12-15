@@ -30,6 +30,8 @@ public:
    *  \return Returns pointer to a coordinate system
    */
   virtual UPSpatialRefSys GetCoordinateSystem() const = 0;
+
+  //virtual void SetTargetCoordinateSystem() = 0;
 };
 
 using UPIDem = std::unique_ptr<IDem>;
