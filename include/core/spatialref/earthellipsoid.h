@@ -43,8 +43,8 @@ public:
   inline Point3d LPHToXYZ(const Point3d& lph) const;
   Point3d LPHToXYZ(double lon, double lat, double height) const;
 
-  inline Point3d XYZToLPH(const Point3d& xyz) const;
-  Point3d XYZToLPH(double X, double Y, double Z) const;
+  inline Point3d XYZToLPH(const Point3d& xyz, int* niters=nullptr) const;
+  Point3d XYZToLPH(double X, double Y, double Z, int* niters=nullptr) const;
 
   /**
    * Convert coordinates from LSR to XYZ in EXEF

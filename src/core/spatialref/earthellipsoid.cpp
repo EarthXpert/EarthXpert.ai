@@ -104,7 +104,7 @@ Point3d EarthEllipsoid::LPHToXYZ(const double lon, const double lat,
  * \remark how accurate in LPH?
  */
 Point3d EarthEllipsoid::XYZToLPH(const double X, const double Y,
-  const double Z) const {
+  const double Z, int* niters) const {
   const double p = sqrt(X * X + Y * Y);
 
   const double lon = 2.0 * atan2(Y, X + p);
@@ -113,6 +113,9 @@ Point3d EarthEllipsoid::XYZToLPH(const double X, const double Y,
 
   double h{ -mA };  // Height from previous iteration, default to earth center.
   double dh{ 1.0 };
+
+  //if (niters)
+  //  *niters = 0;
 
   while (kTolH < fabs(dh)) {
     const double cp = cos(lat);
@@ -123,6 +126,9 @@ Point3d EarthEllipsoid::XYZToLPH(const double X, const double Y,
 
     dh = hgt - h;
     h = hgt;
+
+    //if (niters)
+    //  *niters += 1;
   }
 
   return {lon, lat, hgt};

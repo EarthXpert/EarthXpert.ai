@@ -11,7 +11,7 @@ using namespace earthxpert;
 
 
 const float FLT_BASESIGMA = 0.5f; // Base sigma of Gaussian function for resampling
-const int INT_NUMSUBPIXELS = 64;  // Number of subpixel locations for pre-calculated kernel weights
+const int INT_NUMSUBPIXELS = 16;  // Number of subpixel locations for pre-calculated kernel weights
 
 
 /**
@@ -144,7 +144,7 @@ TEST(resample, GaussianKernel) {
   std::cout << std::setprecision(12);
 
   // determine the col sigma for downsampling
-  float fDsFactorCol = 9.5;
+  float fDsFactorCol = 2;
   const float fDsCol = std::max(1.1f, fDsFactorCol);
   const float fSigmaCol = FLT_BASESIGMA * sqrt(float(fDsCol * fDsCol - 1.0f));
   const int nWndNumCols = std::max(1, int(floor(fSigmaCol * 3 + 0.5f))) * 2;

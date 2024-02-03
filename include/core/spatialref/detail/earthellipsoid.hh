@@ -21,8 +21,8 @@ inline Point3d EarthEllipsoid::LPHToXYZ(const Point3d& lph) const {
   return LPHToXYZ(lph.x, lph.y, lph.z);
 }
 
-inline Point3d EarthEllipsoid::XYZToLPH(const Point3d& xyz) const {
-  return XYZToLPH(xyz.x, xyz.y, xyz.z);
+inline Point3d EarthEllipsoid::XYZToLPH(const Point3d& xyz, int* niters) const {
+  return XYZToLPH(xyz.x, xyz.y, xyz.z, niters);
 }
 
 inline Point3d EarthEllipsoid::LSRToXYZ(const Point3d& lsr) const {

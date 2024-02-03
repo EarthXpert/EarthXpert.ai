@@ -31,7 +31,7 @@ ${TESTS_BIN_DIR};$ENV{PATH}")
   message(STATUS "Tests_Core_Path: ${TESTS_CORE_PATH}")
   set_tests_properties(coordinatesystem_tests coordinatetransform_tests earthellipsoid_tests 
     graphfit_tests layout_tests pointcloud_tests pointtypes_tests rasterwindow_tests 
-    rotation_tests singleton_tests spatialtile_tests typehelper_tests
+    resample_tests rotation_tests singleton_tests spatialtile_tests typehelper_tests
     PROPERTIES ENVIRONMENT "${TESTS_CORE_PATH}")
 endif()
 
