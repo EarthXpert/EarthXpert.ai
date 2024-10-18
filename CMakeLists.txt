@@ -24,7 +24,10 @@ set(EXAI_WORKSPACE_DIR "$<SHELL_PATH:${CMAKE_SOURCE_DIR}>/..")
 message(STATUS "EXAI_WORKSPACE_DIR: ${EXAI_WORKSPACE_DIR}")
 
 set(EX_THIRD_PARTY "$ENV{EX_Third_Party}")
+
 set(CUDA_ROOT "$ENV{CUDA_PATH}")
+set(CUDAToolkit_ROOT ${CUDA_ROOT})
+set(CUDA_BUILD_EMULATION OFF)
 set(OpenCL_ROOT "$ENV{CUDA_PATH}")
 
 option(EXAI_PACKAGES_3RDPARTY_DYNAMIC "link dynamic 3rdparty packages" ON)
@@ -93,6 +96,8 @@ if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
                        "${CUDA_LIBRARIES_DIR}/cusparse.lib"
                        "${CUDA_LIBRARIES_DIR}/nvml.lib"
                        "${CUDA_LIBRARIES_DIR}/nrtc.lib")
+    set(CUDAToolkit_INCLUDE_DIR ${CUDA_INCLUDE_DIR})
+    set(CUDAToolkit_BIN_DIR ${CUDA_BIN_DIR})
     
     set(Eigen3_ROOT "${EX_THIRD_PARTY}/eigen_3.3.90")
     set(Eigen3_DIR "${Eigen3_ROOT}/share/eigen3/cmake")
@@ -530,7 +535,8 @@ find_package(Boost 1.71.0 COMPONENTS date_time filesystem fusion graph hana iost
 
 find_package(Ceres CONFIG REQUIRED)  # ceres Ceres::ceres
 find_package(CGAL CONFIG REQUIRED)   # CGAL::CGAL
-#find_package(CUDA CONFIG REQUIRED)
+find_package(CUDA REQUIRED)
+find_package(CUDAToolkit REQUIRED)
 find_package(Eigen3 CONFIG REQUIRED)
 find_package(exiv2 CONFIG REQUIRED) # exiv2lib exiv2-xmp
 find_package(fmt CONFIG REQUIRED)
